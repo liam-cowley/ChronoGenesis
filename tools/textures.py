@@ -771,6 +771,105 @@ def time_tear():
     save(img, "block/time_tear")
 
 
+# ---------------------------------------------------------------- 3D model parts
+
+def copper_beam():
+    # Solid copper with rivets every 4 pixels and creeping verdigris: frames of growing organisms.
+    r = rng(17)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            band = y % 4
+            c = COPPER_HI if band == 0 else COPPER if band in (1, 2) else COPPER_DK
+            img.putpixel((x, y), shade(c, r.randint(-8, 8)))
+    for y in range(1, 16, 4):
+        for x in range(1, 16, 4):
+            img.putpixel((x, y), BRASS_HI)
+            img.putpixel((x + 1, y + 1) if x < 15 and y < 15 else (x, y), BRASS_DDK)
+    for _ in range(12):
+        img.putpixel((r.randint(0, 15), r.randint(0, 15)), r.choice([VERD, VERD_HI, VERD_DK]))
+    save(img, "block/copper_beam")
+
+
+def brass_fitting():
+    r = rng(19)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            c = BRASS_HI if y % 8 == 0 else BRASS if y % 8 < 6 else BRASS_DK
+            img.putpixel((x, y), shade(c, r.randint(-6, 6)))
+    for (x, y) in [(2, 2), (13, 2), (2, 13), (13, 13), (7, 7)]:
+        img.putpixel((x, y), BRASS_HI)
+        img.putpixel((x + 1, y + 1), BRASS_DDK)
+    save(img, "block/brass_fitting")
+
+
+def steel():
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), STEEL_HI if x % 4 == 0 else STEEL if x % 4 < 3 else STEEL_DK)
+    save(img, "block/steel")
+
+
+def graft_flesh_texture():
+    # Plain pink flesh for the mounds grafts grow out of.
+    save(graft_flesh(47, FLESH, FLESH_DK), "block/graft_flesh")
+
+
+def leech_skin():
+    # Dark, ringed lamprey skin with pale ridges between segments.
+    r = rng(29)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            base = (140, 56, 68, 255) if y % 4 else (204, 120, 128, 255)
+            if y % 4 == 3:
+                base = (88, 30, 42, 255)
+            img.putpixel((x, y), shade(base, r.randint(-10, 10)))
+    for _ in range(6):
+        img.putpixel((r.randint(0, 15), r.randint(0, 15)), (230, 170, 170, 255))
+    save(img, "block/leech_skin")
+
+
+def flesh_pustule():
+    # Swollen, glistening sacs (untinted): sickly yellow with a wet highlight.
+    r = rng(31)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), shade((214, 196, 110, 255), r.randint(-14, 14)))
+    for (x, y) in [(3, 3), (10, 5), (5, 11), (12, 12)]:
+        img.putpixel((x, y), (255, 250, 220, 255))
+        img.putpixel((x + 1, y + 1), (160, 130, 60, 255))
+    save(img, "block/flesh_pustule")
+
+
+def organism_core_hungry_overlay():
+    # The eye when starving: lid half shut, bloodshot, the brass monocle tarnished.
+    p = {"k": BRASS_DDK, "B": BRASS_DK, "b": (110, 80, 40, 255), "r": (210, 50, 50, 255),
+         "S": (196, 180, 110, 255), "s": (150, 130, 80, 255), "i": (140, 160, 60, 255), "x": (16, 10, 14, 255),
+         "l": (120, 60, 70, 255), "L": (150, 80, 90, 255), "t": THREAD}
+    save(grid([
+        "................",
+        "................",
+        "......kbbk......",
+        "....kbBBBBbk....",
+        "...kBLLLLLLBk...",
+        "...bLLLLLLLLb...",
+        "..kBlllllllLBk..",
+        "..bBSrSixxiSBb..",
+        "..bBSiixxirSBb..",
+        "..kBsSrSiSSsBk..",
+        "...bsSSrSSSsb...",
+        "...kBsSSSSsBk...",
+        "....kbBBBBbk....",
+        "......kbbk......",
+        "................",
+        "................",
+    ], p), "block/organism_core_hungry_overlay")
+
+
 # ---------------------------------------------------------------- run
 
 syringe()
@@ -790,6 +889,13 @@ enhancing_gland()
 essence_jug()
 essence_jug_top()
 time_tear()
+copper_beam()
+brass_fitting()
+steel()
+graft_flesh_texture()
+leech_skin()
+flesh_pustule()
+organism_core_hungry_overlay()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

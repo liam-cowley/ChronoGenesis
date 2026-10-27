@@ -3,7 +3,9 @@ package com.chronogenesis.item;
 import java.util.List;
 
 import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.organism.CorePhase;
 import com.chronogenesis.organism.FleshBlock;
+import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
 
@@ -47,7 +49,8 @@ public class CultureItem extends Item {
         }
         if (!level.isClientSide()) {
             Aspect aspect = aspect(context.getItemInHand());
-            level.setBlockAndUpdate(pos, ModBlocks.ORGANISM_CORE.get().defaultBlockState().setValue(FleshBlock.ASPECT, aspect));
+            level.setBlockAndUpdate(pos, ModBlocks.ORGANISM_CORE.get().defaultBlockState().setValue(FleshBlock.ASPECT, aspect)
+                    .setValue(OrganismCoreBlock.PHASE, CorePhase.SEED));
             level.playSound(null, pos, SoundEvents.SLIME_BLOCK_PLACE, SoundSource.BLOCKS, 1.0f, 0.6f);
             if (context.getPlayer() != null) {
                 context.getPlayer().displayClientMessage(Component.translatable("message.chronogenesis.culture.took_hold")

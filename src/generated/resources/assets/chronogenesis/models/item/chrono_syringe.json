@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "chronogenesis:item/chrono_syringe",
-    "layer1": "chronogenesis:item/chrono_syringe_fill",
-    "layer2": "chronogenesis:item/chrono_syringe_front"
-  }
-}

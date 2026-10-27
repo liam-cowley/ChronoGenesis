@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "chronogenesis:block/organism_core_necrotic"
-  }
-}

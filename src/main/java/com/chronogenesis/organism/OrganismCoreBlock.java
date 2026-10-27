@@ -16,6 +16,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -25,8 +26,10 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * The heart of an organism: where the culture took hold. Holds the organism's stored essence and
@@ -34,11 +37,11 @@ import net.minecraft.world.phys.BlockHitResult;
  */
 public class OrganismCoreBlock extends BaseEntityBlock {
     public static final MapCodec<OrganismCoreBlock> CODEC = simpleCodec(OrganismCoreBlock::new);
-    public static final BooleanProperty NECROTIC = BooleanProperty.create("necrotic");
+    public static final EnumProperty<CorePhase> PHASE = EnumProperty.create("phase", CorePhase.class);
 
     public OrganismCoreBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FleshBlock.ASPECT, Aspect.DENSITY).setValue(NECROTIC, false));
+        registerDefaultState(stateDefinition.any().setValue(FleshBlock.ASPECT, Aspect.DENSITY).setValue(PHASE, CorePhase.SEED));
     }
 
     @Override
@@ -48,12 +51,18 @@ public class OrganismCoreBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FleshBlock.ASPECT, NECROTIC);
+        builder.add(FleshBlock.ASPECT, PHASE);
     }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    /** Every phase's model is smaller than a full block (frame, cradle, shrunken mass), so it hides nothing. */
+    @Override
+    protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.empty();
     }
 
     @Override
@@ -69,7 +78,7 @@ public class OrganismCoreBlock extends BaseEntityBlock {
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide() && !player.isCreative() && !state.getValue(NECROTIC)) {
+        if (!level.isClientSide() && !player.isCreative() && state.getValue(PHASE) != CorePhase.NECROTIC) {
             ItemStack culture = new ItemStack(ModItems.CULTURE.get());
             culture.set(ModDataComponents.ASPECT.get(), state.getValue(FleshBlock.ASPECT));
             popResource(level, pos, culture);
@@ -79,7 +88,7 @@ public class OrganismCoreBlock extends BaseEntityBlock {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (!state.getValue(NECROTIC) && random.nextInt(4) == 0) {
+        if (state.getValue(PHASE) != CorePhase.NECROTIC && random.nextInt(4) == 0) {
             level.addParticle(ParticleTypes.MYCELIUM, pos.getX() + random.nextDouble(), pos.getY() + 1.05,
                     pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0);
         }
