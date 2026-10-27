@@ -1,0 +1,211 @@
+package com.chronogenesis.organism;
+
+import java.util.List;
+
+import com.chronogenesis.Config;
+import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.registry.ModBlockEntities;
+import com.chronogenesis.registry.ModBlocks;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+
+/**
+ * Drives an organism (core-systems.md section 2):
+ * <ol>
+ *   <li>Fed essence is stored, up to a capacity that grows with the organism's size.</li>
+ *   <li>While there is frame (Copper Armature) touching it and enough stored essence, it grows
+ *       into the frame one block at a time: essence becomes flesh.</li>
+ *   <li>It eats regularly (upkeep). If it cannot, it eats its own flesh, shrinking back to bare
+ *       frame, and finally turns Necrotic.</li>
+ * </ol>
+ */
+public class OrganismCoreBlockEntity extends BlockEntity {
+    private static final int SCAN_INTERVAL = 40;
+    private static final int GROWTH_INTERVAL = 10;
+    private static final int BASE_CAPACITY = 16;
+    private static final int CAPACITY_PER_BLOCK = 8;
+
+    private int stored;
+    private int size;
+    private int upkeepTimer;
+    private int tick;
+    private List<BlockPos> frontier = List.of();
+    private List<BlockPos> flesh = List.of();
+
+    public OrganismCoreBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.ORGANISM_CORE.get(), pos, state);
+    }
+
+    public Aspect aspect() {
+        return getBlockState().getValue(FleshBlock.ASPECT);
+    }
+
+    public boolean isNecrotic() {
+        return getBlockState().getValue(OrganismCoreBlock.NECROTIC);
+    }
+
+    public int stored() {
+        return stored;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public int capacity() {
+        return BASE_CAPACITY + size * CAPACITY_PER_BLOCK;
+    }
+
+    public int room() {
+        return Math.max(0, capacity() - stored);
+    }
+
+    /** Adds essence. Returns how much was accepted. */
+    public int feed(int amount) {
+        if (isNecrotic()) {
+            return 0;
+        }
+        int accepted = Math.min(amount, room());
+        if (accepted > 0) {
+            stored += accepted;
+            setChanged();
+        }
+        return accepted;
+    }
+
+    /** Takes essence out (Taps, Glands). Returns how much was taken. */
+    public int extract(int amount) {
+        int taken = Math.min(amount, stored);
+        if (taken > 0) {
+            stored -= taken;
+            setChanged();
+        }
+        return taken;
+    }
+
+    public int comparatorSignal() {
+        return capacity() == 0 ? 0 : Mth.floor(15.0f * stored / capacity());
+    }
+
+    public Component statusLine() {
+        if (isNecrotic()) {
+            return Component.translatable("message.chronogenesis.organism.necrotic");
+        }
+        String hunger = stored < capacity() / 4 ? "starving" : stored < capacity() * 3 / 4 ? "hungry" : "sated";
+        return Component.translatable("message.chronogenesis.organism.status",
+                aspect().displayName(), size + 1, stored, capacity(),
+                Component.translatable("message.chronogenesis.organism.hunger." + hunger));
+    }
+
+    // ---------------------------------------------------------------- ticking
+
+    public static void serverTick(Level level, BlockPos pos, BlockState state, OrganismCoreBlockEntity core) {
+        if (core.isNecrotic()) {
+            return;
+        }
+        ServerLevel serverLevel = (ServerLevel) level;
+        core.tick++;
+        if (core.tick % SCAN_INTERVAL == 1) {
+            core.rescan(serverLevel);
+        }
+        if (core.tick % GROWTH_INTERVAL == 0) {
+            core.tryGrow(serverLevel);
+        }
+        if (++core.upkeepTimer >= Config.UPKEEP_INTERVAL.getAsInt()) {
+            core.upkeepTimer = 0;
+            core.eat(serverLevel);
+        }
+        if (core.tick % 100 == 0 && core.stored < core.capacity() / 4) {
+            // Hungry organisms make it known.
+            serverLevel.playSound(null, pos, SoundEvents.WARDEN_HEARTBEAT, SoundSource.BLOCKS, 0.4f, 1.4f);
+        }
+    }
+
+    private void rescan(ServerLevel level) {
+        OrganismScan.Body body = OrganismScan.scan(level, worldPosition, aspect(), Config.MAX_ORGANISM_SIZE.getAsInt());
+        flesh = body.flesh();
+        frontier = body.frontier();
+        if (size != flesh.size()) {
+            size = flesh.size();
+            stored = Math.min(stored, capacity());
+            setChanged();
+        }
+    }
+
+    /** Essence becomes growth: spend stored drams to turn the nearest frame block into flesh. */
+    private void tryGrow(ServerLevel level) {
+        int cost = Config.GROWTH_COST.getAsInt();
+        if (stored < cost || frontier.isEmpty() || size >= Config.MAX_ORGANISM_SIZE.getAsInt()) {
+            return;
+        }
+        for (BlockPos target : frontier) {
+            if (level.getBlockState(target).is(ModBlocks.COPPER_ARMATURE.get())) {
+                level.setBlockAndUpdate(target, ModBlocks.CHRONOFLESH.get().defaultBlockState()
+                        .setValue(FleshBlock.ASPECT, aspect()));
+                level.playSound(null, target, SoundEvents.HONEY_BLOCK_PLACE, SoundSource.BLOCKS, 0.8f, 0.6f);
+                level.sendParticles(ParticleTypes.ITEM_SLIME, target.getX() + 0.5, target.getY() + 0.5, target.getZ() + 0.5,
+                        12, 0.4, 0.4, 0.4, 0.05);
+                stored -= cost;
+                size++;
+                rescan(level);
+                setChanged();
+                return;
+            }
+        }
+        rescan(level);
+    }
+
+    /** Upkeep: 1 dram per 8 blocks of flesh. If it cannot eat, it eats itself. */
+    private void eat(ServerLevel level) {
+        int meal = 1 + size / 8;
+        if (stored >= meal) {
+            stored -= meal;
+            setChanged();
+            return;
+        }
+        stored = 0;
+        if (flesh.isEmpty()) {
+            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(OrganismCoreBlock.NECROTIC, true));
+            level.playSound(null, worldPosition, SoundEvents.SCULK_BLOCK_BREAK, SoundSource.BLOCKS, 1.0f, 0.5f);
+            return;
+        }
+        // Starving: the farthest flesh withers back to bare frame.
+        BlockPos withered = flesh.get(flesh.size() - 1);
+        if (OrganismScan.isTissue(level.getBlockState(withered), aspect())) {
+            level.setBlockAndUpdate(withered, ModBlocks.COPPER_ARMATURE.get().defaultBlockState());
+            level.sendParticles(ParticleTypes.SMOKE, withered.getX() + 0.5, withered.getY() + 0.5, withered.getZ() + 0.5,
+                    10, 0.3, 0.3, 0.3, 0.01);
+        }
+        rescan(level);
+        setChanged();
+    }
+
+    // ---------------------------------------------------------------- saving
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.putInt("stored", stored);
+        tag.putInt("size", size);
+        tag.putInt("upkeep_timer", upkeepTimer);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        stored = tag.getInt("stored");
+        size = tag.getInt("size");
+        upkeepTimer = tag.getInt("upkeep_timer");
+    }
+}

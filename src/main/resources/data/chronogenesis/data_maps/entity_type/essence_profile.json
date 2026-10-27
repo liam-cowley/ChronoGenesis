@@ -1,0 +1,67 @@
+{
+  "values": {
+    "minecraft:cow": {
+      "density": 8,
+      "speed": 6,
+      "size": 6,
+      "awareness": 3,
+      "time": 0
+    },
+    "minecraft:sheep": {
+      "density": 5,
+      "speed": 6,
+      "size": 5,
+      "awareness": 3,
+      "time": 0
+    },
+    "minecraft:pig": {
+      "density": 6,
+      "speed": 6,
+      "size": 4,
+      "awareness": 3,
+      "time": 0
+    },
+    "minecraft:chicken": {
+      "density": 1,
+      "speed": 6,
+      "size": 1,
+      "awareness": 2,
+      "time": 0
+    },
+    "minecraft:villager": {
+      "density": 6,
+      "speed": 4,
+      "size": 4,
+      "awareness": 16,
+      "time": 0
+    },
+    "minecraft:zombie": {
+      "density": 8,
+      "speed": 5,
+      "size": 4,
+      "awareness": 6,
+      "time": 4
+    },
+    "minecraft:phantom": {
+      "density": 1,
+      "speed": 12,
+      "size": 6,
+      "awareness": 8,
+      "time": 8
+    },
+    "minecraft:enderman": {
+      "density": 10,
+      "speed": 10,
+      "size": 8,
+      "awareness": 16,
+      "time": 10
+    },
+    "minecraft:iron_golem": {
+      "density": 40,
+      "speed": 2,
+      "size": 16,
+      "awareness": 4,
+      "time": 0
+    }
+  }
+}

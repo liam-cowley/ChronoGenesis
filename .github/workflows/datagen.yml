@@ -1,0 +1,43 @@
+name: Datagen
+
+# Runs the data generators and uploads src/generated/resources as an artifact,
+# so generated files can be reviewed and committed without a local Minecraft setup.
+# Also acts as a smoke test: the mod is constructed and all registries are populated.
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore: [main]
+
+jobs:
+  datagen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run data generators
+        run: ./gradlew runData
+
+      - name: Upload generated resources
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-resources
+          path: src/generated/resources
+
+      - name: Upload run logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: datagen-logs
+          path: run/logs
+          if-no-files-found: ignore

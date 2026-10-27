@@ -3,8 +3,10 @@ package com.chronogenesis;
 import org.slf4j.Logger;
 
 import com.chronogenesis.registry.ModAttachments;
+import com.chronogenesis.registry.ModBlockEntities;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModCreativeTabs;
+import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModItems;
 import com.mojang.logging.LogUtils;
 
@@ -26,8 +28,10 @@ public class ChronoGenesis {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public ChronoGenesis(IEventBus modEventBus, ModContainer modContainer) {
+        ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
+        ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
 
