@@ -23,7 +23,8 @@ public final class ModBlockEntities {
     @SuppressWarnings("DataFlowIssue")
     public static final Supplier<BlockEntityType<GraftBlockEntity>> GRAFT = BLOCK_ENTITY_TYPES.register("graft",
             () -> BlockEntityType.Builder.of(GraftBlockEntity::new,
-                    ModBlocks.TAP.get(), ModBlocks.LEECH_TENDRIL.get(), ModBlocks.ENHANCING_GLAND.get()).build(null));
+                    ModBlocks.TAP.get(), ModBlocks.MAW.get(), ModBlocks.LEECH_TENDRIL.get(), ModBlocks.ENHANCING_GLAND.get(),
+                    ModBlocks.STASIS_BLADDER.get(), ModBlocks.STARTING_GATE.get(), ModBlocks.FINISH.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final Supplier<BlockEntityType<EssenceJugBlockEntity>> ESSENCE_JUG = BLOCK_ENTITY_TYPES.register("essence_jug",

@@ -52,7 +52,21 @@ public final class ModBlocks {
                     .sound(SoundType.SLIME_BLOCK)
                     .pushReaction(PushReaction.BLOCK));
 
+    /** Pipe frame for veins: a Tap grows veins along it, carrying essence to a Maw. */
+    public static final DeferredBlock<com.chronogenesis.organism.BrassConduitBlock> BRASS_CONDUIT = BLOCKS.registerBlock("brass_conduit",
+            com.chronogenesis.organism.BrassConduitBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.GOLD)
+                    .strength(1.5f, 6.0f)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion()
+                    .requiresCorrectToolForDrops());
+
     public static final DeferredBlock<GraftBlock> TAP = graft("tap", GraftType.TAP);
+    public static final DeferredBlock<GraftBlock> MAW = graft("maw", GraftType.MAW);
+    public static final DeferredBlock<GraftBlock> STASIS_BLADDER = graft("stasis_bladder", GraftType.STASIS_BLADDER);
+    public static final DeferredBlock<GraftBlock> STARTING_GATE = graft("starting_gate", GraftType.STARTING_GATE);
+    public static final DeferredBlock<GraftBlock> FINISH = graft("finish", GraftType.FINISH);
     public static final DeferredBlock<GraftBlock> LEECH_TENDRIL = graft("leech_tendril", GraftType.LEECH_TENDRIL);
     public static final DeferredBlock<GraftBlock> ENHANCING_GLAND = graft("enhancing_gland", GraftType.ENHANCING_GLAND);
 

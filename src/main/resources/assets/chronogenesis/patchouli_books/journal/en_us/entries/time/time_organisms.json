@@ -1,0 +1,27 @@
+{
+  "name": "Holding Time Still",
+  "icon": "chronogenesis:stasis_bladder",
+  "category": "chronogenesis:time",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A culture can be grown from Time: rotten flesh, bone meal, phantom membrane and a $(l)full Stasis Ampoule$(). What grows from it does not want to stay $(o)now$().$(br2)A Time organism must be held still with $(l)Stasis Bladders$(). Without enough of them it grows $(l)unstable$(): it ticks, the air shimmers, and those standing near feel it in their bones."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:time_culture",
+      "recipe2": "chronogenesis:stasis_bladder"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "The bigger it grows and the fuller it gets, the more it needs. Each bladder steadies it a good deal. $(l)Density$() flesh pressed against it steadies it too: $(o)heavy things keep time still$().$(br2)Ignore the ticking and it $(l)bursts$(): its flesh withers, the ground around it ages decades in an instant, and a $(l)Time Tear$() opens where its heart was.",
+      "title": "Instability"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "With bladders, a $(l)Leech Tendril$() on a Time organism draws Time from phantoms, endermen, the undead and the young. Every dram strains the place it was taken from.",
+      "title": "Farming Time"
+    }
+  ]
+}

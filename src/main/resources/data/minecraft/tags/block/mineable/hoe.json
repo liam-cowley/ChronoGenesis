@@ -1,9 +1,13 @@
 {
   "values": [
     "chronogenesis:chronoflesh",
-    "chronogenesis:organism_core",
-    "chronogenesis:tap",
+    "chronogenesis:enhancing_gland",
+    "chronogenesis:finish",
     "chronogenesis:leech_tendril",
-    "chronogenesis:enhancing_gland"
+    "chronogenesis:maw",
+    "chronogenesis:organism_core",
+    "chronogenesis:starting_gate",
+    "chronogenesis:stasis_bladder",
+    "chronogenesis:tap"
   ]
 }

@@ -48,7 +48,16 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.BRASS_ARMATURE, "Brass Armature");
         addBlock(ModBlocks.CHRONOFLESH, "Chronoflesh");
         addBlock(ModBlocks.ORGANISM_CORE, "Organism Core");
+        addBlock(ModBlocks.BRASS_CONDUIT, "Brass Conduit");
         addBlock(ModBlocks.TAP, "Tap Graft");
+        addBlock(ModBlocks.MAW, "Maw Graft");
+        addBlock(ModBlocks.STASIS_BLADDER, "Stasis Bladder Graft");
+        addBlock(ModBlocks.STARTING_GATE, "Starting Gate Graft");
+        addBlock(ModBlocks.FINISH, "Finish Graft");
+        addItem(ModItems.CHRONO_GOGGLES, "Chrono-Insulated Goggles");
+        addItem(ModItems.CHRONO_LAB_COAT, "Chrono-Insulated Lab Coat");
+        addItem(ModItems.CHRONO_TROUSERS, "Chrono-Insulated Trousers");
+        addItem(ModItems.CHRONO_GALOSHES, "Chrono-Insulated Galoshes");
         addBlock(ModBlocks.LEECH_TENDRIL, "Leech Tendril Graft");
         addBlock(ModBlocks.ENHANCING_GLAND, "Enhancing Gland Graft");
         addBlock(ModBlocks.ESSENCE_JUG, "Essence Jug");
@@ -100,6 +109,11 @@ public class ModLanguageProvider extends LanguageProvider {
                 "Time floods your veins. Somewhere, a clock skips a beat.");
         add("message.chronogenesis.power.unknown", "You have not taken that essence into yourself.");
         add("message.chronogenesis.power.empty", "Your %s is spent. Refill at an Enhancing Gland.");
+
+        // Veins, Racetrack, Time organisms
+        add("message.chronogenesis.vein.unclogged", "You cut the rotting clot out of the vein.");
+        add("message.chronogenesis.gate.pace", "Pace %s: %s ticks per block of track. Slower pulses make more Time, but stall past 600 ticks.");
+        add("message.chronogenesis.organism.stability", " | stability %s/%s, instability %s/%s");
 
         // Time
         add("message.chronogenesis.tear.not_enough", "Sealing a tear takes %s drams of Density.");

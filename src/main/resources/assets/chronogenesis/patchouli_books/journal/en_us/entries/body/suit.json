@@ -1,0 +1,22 @@
+{
+  "name": "The Chrono-Insulated Suit",
+  "icon": "chronogenesis:chrono_goggles",
+  "category": "chronogenesis:body",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Time in the blood ticks, skips and ages. Leather lined with phantom membrane keeps most of it out.$(br2)Each piece worn blocks a $(l)quarter$() of the Temporal Exposure that would reach me: from injected Time, from glands, from stuttering the world, from unstable organisms. The full suit blocks all of it."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:chrono_goggles",
+      "recipe2": "chronogenesis:chrono_lab_coat"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:chrono_trousers",
+      "recipe2": "chronogenesis:chrono_galoshes"
+    }
+  ]
+}

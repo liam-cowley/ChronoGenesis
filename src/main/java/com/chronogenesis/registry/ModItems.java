@@ -55,11 +55,31 @@ public final class ModItems {
     // Block items
     public static final DeferredItem<BlockItem> BRASS_ARMATURE = ITEMS.registerSimpleBlockItem("brass_armature", ModBlocks.BRASS_ARMATURE);
     public static final DeferredItem<BlockItem> CHRONOFLESH = ITEMS.registerSimpleBlockItem("chronoflesh", ModBlocks.CHRONOFLESH);
+    public static final DeferredItem<BlockItem> BRASS_CONDUIT = ITEMS.registerSimpleBlockItem("brass_conduit", ModBlocks.BRASS_CONDUIT);
     public static final DeferredItem<BlockItem> TAP = ITEMS.registerSimpleBlockItem("tap", ModBlocks.TAP);
+    public static final DeferredItem<BlockItem> MAW = ITEMS.registerSimpleBlockItem("maw", ModBlocks.MAW);
     public static final DeferredItem<BlockItem> LEECH_TENDRIL = ITEMS.registerSimpleBlockItem("leech_tendril", ModBlocks.LEECH_TENDRIL);
     public static final DeferredItem<BlockItem> ENHANCING_GLAND = ITEMS.registerSimpleBlockItem("enhancing_gland", ModBlocks.ENHANCING_GLAND);
+    public static final DeferredItem<BlockItem> STASIS_BLADDER = ITEMS.registerSimpleBlockItem("stasis_bladder", ModBlocks.STASIS_BLADDER);
+    public static final DeferredItem<BlockItem> STARTING_GATE = ITEMS.registerSimpleBlockItem("starting_gate", ModBlocks.STARTING_GATE);
+    public static final DeferredItem<BlockItem> FINISH = ITEMS.registerSimpleBlockItem("finish", ModBlocks.FINISH);
     public static final DeferredItem<EssenceJugItem> ESSENCE_JUG = ITEMS.registerItem("essence_jug",
             properties -> new EssenceJugItem(ModBlocks.ESSENCE_JUG.get(), properties), new Item.Properties().stacksTo(1));
+
+    // The Chrono-Insulated Suit: each piece worn blocks a quarter of Temporal Exposure.
+    public static final DeferredItem<net.minecraft.world.item.ArmorItem> CHRONO_GOGGLES = suit("chrono_goggles",
+            net.minecraft.world.item.ArmorItem.Type.HELMET);
+    public static final DeferredItem<net.minecraft.world.item.ArmorItem> CHRONO_LAB_COAT = suit("chrono_lab_coat",
+            net.minecraft.world.item.ArmorItem.Type.CHESTPLATE);
+    public static final DeferredItem<net.minecraft.world.item.ArmorItem> CHRONO_TROUSERS = suit("chrono_trousers",
+            net.minecraft.world.item.ArmorItem.Type.LEGGINGS);
+    public static final DeferredItem<net.minecraft.world.item.ArmorItem> CHRONO_GALOSHES = suit("chrono_galoshes",
+            net.minecraft.world.item.ArmorItem.Type.BOOTS);
+
+    private static DeferredItem<net.minecraft.world.item.ArmorItem> suit(String name, net.minecraft.world.item.ArmorItem.Type type) {
+        return ITEMS.registerItem(name, properties -> new net.minecraft.world.item.ArmorItem(ModArmorMaterials.CHRONO_INSULATED, type,
+                properties.durability(type.getDurability(12))));
+    }
 
     private static DeferredItem<NeedleItem> needle(String name, Aspect aspect) {
         return ITEMS.registerItem(name, properties -> new NeedleItem(properties, aspect), new Item.Properties().stacksTo(16));

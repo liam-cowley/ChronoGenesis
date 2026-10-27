@@ -2,6 +2,7 @@ package com.chronogenesis;
 
 import org.slf4j.Logger;
 
+import com.chronogenesis.registry.ModArmorMaterials;
 import com.chronogenesis.registry.ModAttachments;
 import com.chronogenesis.registry.ModBlockEntities;
 import com.chronogenesis.registry.ModBlocks;
@@ -30,6 +31,7 @@ public class ChronoGenesis {
     public ChronoGenesis(IEventBus modEventBus, ModContainer modContainer) {
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
+        ModArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);

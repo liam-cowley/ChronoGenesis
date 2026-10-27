@@ -49,6 +49,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         fleshStages();
         corePhases();
         grafts();
+        conduit();
         jug();
         timeTear();
     }
@@ -190,6 +191,102 @@ public class ModBlockStateProvider extends BlockStateProvider {
         box(gland, 6.5f, 10, 6.5f, 9.5f, 11.5f, 9.5f, "#brass", false);
         box(gland, 7.5f, 11.5f, 7.5f, 8.5f, 14, 8.5f, "#steel", false);
         graftBlock(ModBlocks.ENHANCING_GLAND.get(), gland);
+
+        // Maw: a puckered mouth on a mound, ringed with brass, open towards the vein it drinks from.
+        BlockModelBuilder maw = graftModel("maw", "graft_flesh")
+                .texture("mouth", modLoc("block/maw"));
+        box(maw, 3, 0, 3, 13, 3, 13, FLESH, false);
+        box(maw, 4, 3, 4, 12, 6, 12, FLESH, false);
+        maw.element().from(4, 6, 4).to(12, 7, 12)
+                .allFaces((dir, face) -> face.texture(dir == Direction.UP ? "#mouth" : "#brass")).end();
+        graftBlock(ModBlocks.MAW.get(), maw);
+
+        // Stasis Bladder: a swollen membrane sac, veined and dark, cinched with a brass band.
+        BlockModelBuilder bladder = graftModel("stasis_bladder", "graft_flesh")
+                .texture("sac", modLoc("block/stasis_bladder"));
+        box(bladder, 4, 0, 4, 12, 2, 12, FLESH, false);
+        box(bladder, 3, 2, 3, 13, 9, 13, "#sac", false);
+        box(bladder, 4, 9, 4, 12, 12, 12, "#sac", false);
+        box(bladder, 2.5f, 5, 2.5f, 13.5f, 6, 13.5f, "#brass", false);
+        box(bladder, 6, 12, 6, 10, 13, 10, "#sac", false);
+        graftBlock(ModBlocks.STASIS_BLADDER.get(), bladder);
+
+        // Starting Gate: a brass gate on a fleshy plinth, with a pace gauge.
+        BlockModelBuilder gate = graftModel("starting_gate", "graft_flesh")
+                .texture("gauge", modLoc("block/starting_gate"));
+        box(gate, 3, 0, 3, 13, 3, 13, FLESH, false);
+        box(gate, 3, 3, 7, 5, 13, 9, "#brass", false);
+        box(gate, 11, 3, 7, 13, 13, 9, "#brass", false);
+        box(gate, 3, 11, 7, 13, 13, 9, "#brass", false);
+        box(gate, 5, 5, 7.5f, 11, 11, 8.5f, "#gauge", false);
+        graftBlock(ModBlocks.STARTING_GATE.get(), gate);
+
+        // Finish: a brass bell-mouthed funnel on a plinth, where time condenses.
+        BlockModelBuilder finish = graftModel("finish", "graft_flesh")
+                .texture("gauge", modLoc("block/finish"));
+        box(finish, 3, 0, 3, 13, 3, 13, FLESH, false);
+        box(finish, 6, 3, 6, 10, 7, 10, "#brass", false);
+        box(finish, 4, 7, 4, 12, 9, 12, "#brass", false);
+        box(finish, 3, 9, 3, 13, 10, 13, "#brass", false);
+        box(finish, 5, 8.5f, 5, 11, 9.5f, 11, "#gauge", false);
+        graftBlock(ModBlocks.FINISH.get(), finish);
+    }
+
+    // ---------------------------------------------------------------- conduit and veins
+
+    /**
+     * Brass Conduit, as a multipart: a core plus one arm per connected side. Grown into a vein, the
+     * same shapes are wrapped in living tissue; a clogged vein shows the rotting clot.
+     */
+    private void conduit() {
+        ModelFile[] cores = new ModelFile[3];
+        ModelFile[] arms = new ModelFile[3];
+        String[][] variants = {{"brass_conduit", "brass_fitting"}, {"brass_conduit_vein", "vein"},
+                {"brass_conduit_clogged", "vein_clogged"}};
+        for (int i = 0; i < 3; i++) {
+            String name = variants[i][0];
+            String texture = variants[i][1];
+            BlockModelBuilder core = models().withExistingParent(name + "_core", mcLoc("block/block"))
+                    .texture("pipe", modLoc("block/" + texture))
+                    .texture("brass", modLoc("block/brass_fitting"))
+                    .texture("particle", modLoc("block/" + texture))
+                    .renderType("cutout");
+            box(core, 5, 5, 5, 11, 11, 11, "#pipe", false);
+            cores[i] = core;
+            BlockModelBuilder arm = models().withExistingParent(name + "_arm", mcLoc("block/block"))
+                    .texture("pipe", modLoc("block/" + texture))
+                    .texture("brass", modLoc("block/brass_fitting"))
+                    .texture("particle", modLoc("block/" + texture))
+                    .renderType("cutout");
+            box(arm, 6, 6, 0, 10, 10, 5, "#pipe", false);
+            box(arm, 5.5f, 5.5f, 0, 10.5f, 10.5f, 1, "#brass", false); // brass collar at the joint
+            arms[i] = arm;
+        }
+
+        var builder = getMultipartBuilder(ModBlocks.BRASS_CONDUIT.get());
+        for (int i = 0; i < 3; i++) {
+            boolean vein = i > 0;
+            boolean clogged = i == 2;
+            builder.part().modelFile(cores[i]).addModel()
+                    .condition(com.chronogenesis.organism.BrassConduitBlock.VEIN, vein)
+                    .condition(com.chronogenesis.organism.BrassConduitBlock.CLOGGED, clogged).end();
+            for (var entry : com.chronogenesis.organism.BrassConduitBlock.CONNECTIONS.entrySet()) {
+                Direction dir = entry.getKey();
+                int x = dir == Direction.UP ? 270 : dir == Direction.DOWN ? 90 : 0;
+                int y = dir.getAxis().isHorizontal() ? ((int) dir.toYRot() + 180) % 360 : 0;
+                builder.part().modelFile(arms[i]).rotationX(x).rotationY(y).addModel()
+                        .condition(entry.getValue(), true)
+                        .condition(com.chronogenesis.organism.BrassConduitBlock.VEIN, vein)
+                        .condition(com.chronogenesis.organism.BrassConduitBlock.CLOGGED, clogged).end();
+            }
+        }
+        // The item shows a straight length of pipe.
+        itemModels().getBuilder("brass_conduit").parent(new ModelFile.UncheckedModelFile(mcLoc("block/block")))
+                .texture("pipe", modLoc("block/brass_fitting"))
+                .texture("particle", modLoc("block/brass_fitting"))
+                .element().from(6, 6, 0).to(10, 10, 16).allFaces((dir, face) -> face.texture("#pipe")).end()
+                .element().from(5.5f, 5.5f, 5).to(10.5f, 10.5f, 6).allFaces((dir, face) -> face.texture("#pipe")).end()
+                .element().from(5.5f, 5.5f, 10).to(10.5f, 10.5f, 11).allFaces((dir, face) -> face.texture("#pipe")).end();
     }
 
     private BlockModelBuilder graftModel(String name, String fleshTexture) {

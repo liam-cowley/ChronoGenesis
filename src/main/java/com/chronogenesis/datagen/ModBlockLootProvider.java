@@ -27,7 +27,12 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         // Flesh and cores drop nothing: living tissue dies when cut out (a living core returns its culture in code).
         add(ModBlocks.CHRONOFLESH.get(), noDrop());
         add(ModBlocks.ORGANISM_CORE.get(), noDrop());
+        dropSelf(ModBlocks.BRASS_CONDUIT.get());
         dropSelf(ModBlocks.TAP.get());
+        dropSelf(ModBlocks.MAW.get());
+        dropSelf(ModBlocks.STASIS_BLADDER.get());
+        dropSelf(ModBlocks.STARTING_GATE.get());
+        dropSelf(ModBlocks.FINISH.get());
         dropSelf(ModBlocks.LEECH_TENDRIL.get());
         dropSelf(ModBlocks.ENHANCING_GLAND.get());
         // The jug keeps its essence when broken.

@@ -76,7 +76,7 @@
   slow Speed pulses on a long road condense into Time. You balance track length, vein upkeep,
   pulse strength and stall clogs, and fill the cellar with living intestine.
 - **Temporal Exposure** starts to show: ticking, micro-rewinds. The **Chrono-Insulated Suit**
-  (goggles, lab coat, gauntlets, galoshes) becomes necessary. The player now looks the part.
+  (goggles, lab coat, trousers, galoshes) becomes necessary. The player now looks the part.
 
 ## Hours 3.5–4.5 — "It's Alive!"
 - Reanimation ritual:
@@ -114,11 +114,11 @@
    AI throttling, ageing/desiccation).
 2. ✅ Chrono Syringe with needle component, Vials, Jugs, the Journal (Patchouli).
 3. ✅ Organism growth (culture → armature → hunger/growth → storage → starvation/necrosis);
-   Tap, Leech Tendril grafts. ⬜ Maw and Vein grafts.
+   Tap, Leech Tendril grafts. ✅ Maw graft, Brass Conduit and veins (grown by Taps).
 4. ✅ Enhancing Gland + player pools + Level 1 powers (keybinds + HUD; radial menu still to do).
 5. ✅ Stasis Ampoule, chunk Temporal Stress, Time Tears (ageing, swallowing, sealing).
-   ⬜ Stasis Bladder, Time organisms, Density stabilising.
-6. ⬜ Racetrack (Starting Gate, Finish, pulses). ✅ Temporal Exposure. ⬜ Chrono-Insulated Suit.
+   ✅ Stasis Bladder, Time organisms (instability, bursting), Density stabilising.
+6. ✅ Racetrack (Starting Gate, Finish, pace, stalls, heavy veins). ✅ Temporal Exposure. ✅ Chrono-Insulated Suit.
 7. ⬜ Chronocortex + Ganglion + research + reanimation ritual.
 8. ⬜ Umbilical Locket (Curios), Temporal Field, Temporal Lens + first structures.
 

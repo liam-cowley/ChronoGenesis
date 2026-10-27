@@ -1,0 +1,26 @@
+{
+  "name": "Veins",
+  "icon": "chronogenesis:brass_conduit",
+  "category": "chronogenesis:organisms",
+  "sortnum": 2,
+  "advancement": "chronogenesis:it_hungers",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Pipes are for plumbers. My organisms will share their essence the way a body does: through $(l)veins$().$(br2)Lay $(l)Brass Conduit$() from a $(l)Tap$() to wherever the essence should go. The Tap does the rest: every beat it grows the vein one block further along the brass, for a dram of essence."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:brass_conduit"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "At the far end, graft a $(l)Maw$() onto another organism of the same essence, facing the vein. Whatever the Tap pushes, the Maw drinks.$(br2)Veins are living tissue, so even $(l)Awareness$() travels through them, which no glass can hold.",
+      "title": "The Maw"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:maw"
+    }
+  ]
+}

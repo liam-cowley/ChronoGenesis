@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "item": "minecraft:bone_meal"
+    },
+    {
+      "type": "neoforge:components",
+      "items": "chronogenesis:stasis_ampoule",
+      "components": {
+        "chronogenesis:essence": {
+          "aspect": "time",
+          "amount": 4
+        }
+      }
+    },
+    {
+      "item": "minecraft:phantom_membrane"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:culture",
+    "count": 1,
+    "components": {
+      "chronogenesis:aspect": "time"
+    }
+  }
+}

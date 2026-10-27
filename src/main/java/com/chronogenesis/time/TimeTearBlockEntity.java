@@ -75,11 +75,22 @@ public class TimeTearBlockEntity extends BlockEntity {
         }
     }
 
+    /** Ages {@code count} random blocks within {@code radius}: the shockwave of a bursting Time organism. */
+    public static void ageArea(ServerLevel level, BlockPos center, int radius, int count) {
+        for (int i = 0; i < count; i++) {
+            ageRandomBlock(level, center, level.getRandom(), radius);
+        }
+    }
+
     private static void ageRandomBlock(ServerLevel level, BlockPos center, RandomSource random) {
+        ageRandomBlock(level, center, random, AGE_RADIUS);
+    }
+
+    private static void ageRandomBlock(ServerLevel level, BlockPos center, RandomSource random, int radius) {
         BlockPos target = center.offset(
-                random.nextInt(AGE_RADIUS * 2 + 1) - AGE_RADIUS,
-                random.nextInt(AGE_RADIUS * 2 + 1) - AGE_RADIUS,
-                random.nextInt(AGE_RADIUS * 2 + 1) - AGE_RADIUS);
+                random.nextInt(radius * 2 + 1) - radius,
+                random.nextInt(radius * 2 + 1) - radius,
+                random.nextInt(radius * 2 + 1) - radius);
         BlockState state = level.getBlockState(target);
         Optional<BlockState> aged = WeatheringCopper.getNext(state.getBlock())
                 .map(next -> next.withPropertiesOf(state));

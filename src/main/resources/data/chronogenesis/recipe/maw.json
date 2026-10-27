@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "item": "minecraft:bone"
+    },
+    {
+      "tag": "c:nuggets/brass"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:maw",
+    "count": 1
+  }
+}

@@ -21,6 +21,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         withFill(ModItems.ESSENCE_VIAL.get());
         withFill(ModItems.STASIS_AMPOULE.get());
 
+        basicItem(ModItems.CHRONO_GOGGLES.get());
+        basicItem(ModItems.CHRONO_LAB_COAT.get());
+        basicItem(ModItems.CHRONO_TROUSERS.get());
+        basicItem(ModItems.CHRONO_GALOSHES.get());
         basicItem(ModItems.BRASS_BLEND.get());
         basicItem(ModItems.BRASS_INGOT.get());
         basicItem(ModItems.BRASS_NUGGET.get());

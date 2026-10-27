@@ -130,7 +130,7 @@ Time organisms builds **Temporal Exposure** (a player attachment):
   your hair greys (cosmetic).
 
 The **Chrono-Insulated Suit** keeps the player "normal". It has four pieces: smoked-glass
-**Goggles**, a copper-lined **Lab Coat**, **Gauntlets** and **Galoshes**, made from leather,
+**Goggles**, a membrane-lined **Lab Coat**, **Trousers** and **Galoshes** (gauntlets became trousers: Minecraft has no hand slot), made from leather,
 copper and phantom membrane. Each piece cuts exposure. Wearing the full suit is required for
 higher Time powers and for working safely with Time machines. The Goggles also protect your eyes
 while using the Temporal Lens.

@@ -106,7 +106,7 @@ public final class Powers {
         int taken = core.extract(room);
         essence = essence.withPool(aspect, essence.pool(aspect) + taken);
         if (aspect == Aspect.TIME) {
-            essence = essence.withExposure(essence.exposure() + taken);
+            essence = essence.withExposure(essence.exposure() + TemporalExposure.scaled(player, taken));
         }
         set(player, essence);
 
@@ -131,7 +131,7 @@ public final class Powers {
         }
         int taken = Math.min(amount, essence.max(Aspect.TIME) - essence.pool(Aspect.TIME));
         essence = essence.withPool(Aspect.TIME, essence.pool(Aspect.TIME) + taken)
-                .withExposure(essence.exposure() + taken * 4);
+                .withExposure(essence.exposure() + TemporalExposure.scaled(player, taken * 4));
         set(player, essence);
         return taken;
     }
@@ -185,7 +185,7 @@ public final class Powers {
             return;
         }
         PlayerEssence essence = get(player);
-        set(player, essence.withExposure(essence.exposure() + 10));
+        set(player, essence.withExposure(essence.exposure() + TemporalExposure.scaled(player, 10)));
         STUTTERS.put(player.getUUID(), player.level().getGameTime() + STUTTER_TICKS);
         player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.0f, 0.5f);
     }

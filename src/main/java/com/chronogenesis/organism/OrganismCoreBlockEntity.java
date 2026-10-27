@@ -35,12 +35,21 @@ public class OrganismCoreBlockEntity extends BlockEntity {
     private static final int GROWTH_INTERVAL = 10;
     private static final int BASE_CAPACITY = 16;
     private static final int CAPACITY_PER_BLOCK = 8;
+    private static final int STABILITY_INTERVAL = 100;
+    public static final int BURST_AT = 20;
+    private static final int UNSTABLE_WARNING = 8;
 
     private int stored;
     private int size;
     private int upkeepTimer;
     private int missedMeals;
     private int tick;
+    /** Stasis Bladder grafts on this organism (Time organisms need them). Updated on every scan. */
+    private int bladders;
+    /** Density flesh blocks touching this organism: heavy mass steadies Time. Updated on every scan. */
+    private int densityTouching;
+    /** Time organisms only: builds up while under-stabilised; bursts at {@link #BURST_AT}. Saved. */
+    private int instability;
     private List<BlockPos> frontier = List.of();
     private List<BlockPos> flesh = List.of();
 
@@ -66,6 +75,24 @@ public class OrganismCoreBlockEntity extends BlockEntity {
 
     public int capacity() {
         return BASE_CAPACITY + size * CAPACITY_PER_BLOCK;
+    }
+
+    public int bladders() {
+        return bladders;
+    }
+
+    public int instability() {
+        return instability;
+    }
+
+    /** How much steadying this Time organism has: 3 per Stasis Bladder, 1 per 2 touching Density flesh. */
+    public int stability() {
+        return bladders * 3 + densityTouching / 2;
+    }
+
+    /** How much steadying it needs: more for a bigger body and a fuller store. */
+    public int stabilityNeeded() {
+        return 1 + size / 4 + (capacity() == 0 ? 0 : stored * 4 / capacity());
     }
 
     public int room() {
@@ -104,9 +131,14 @@ public class OrganismCoreBlockEntity extends BlockEntity {
             return Component.translatable("message.chronogenesis.organism.necrotic");
         }
         String hunger = stored < capacity() / 4 ? "starving" : stored < capacity() * 3 / 4 ? "hungry" : "sated";
-        return Component.translatable("message.chronogenesis.organism.status",
+        Component status = Component.translatable("message.chronogenesis.organism.status",
                 aspect().displayName(), size + 1, stored, capacity(),
                 Component.translatable("message.chronogenesis.organism.hunger." + hunger));
+        if (aspect() == Aspect.TIME) {
+            status = status.copy().append(Component.translatable("message.chronogenesis.organism.stability",
+                    stability(), stabilityNeeded(), instability, BURST_AT));
+        }
+        return status;
     }
 
     // ---------------------------------------------------------------- ticking
@@ -127,6 +159,12 @@ public class OrganismCoreBlockEntity extends BlockEntity {
             core.upkeepTimer = 0;
             core.eat(serverLevel);
         }
+        if (core.aspect() == Aspect.TIME && core.tick % STABILITY_INTERVAL == 0) {
+            core.checkStability(serverLevel);
+            if (core.isRemoved() || core.isNecrotic()) {
+                return;
+            }
+        }
         if (core.tick % 100 == 0 && core.stored < core.capacity() / 4) {
             // Hungry organisms make it known.
             serverLevel.playSound(null, pos, SoundEvents.WARDEN_HEARTBEAT, SoundSource.BLOCKS, 0.4f, 1.4f);
@@ -142,7 +180,83 @@ public class OrganismCoreBlockEntity extends BlockEntity {
             stored = Math.min(stored, capacity());
             setChanged();
         }
+        countNeighbours(level);
         updatePhase(level);
+    }
+
+    /** Counts Stasis Bladders grown on this organism and Density flesh pressing against it. */
+    private void countNeighbours(ServerLevel level) {
+        int bladderCount = 0;
+        java.util.Set<BlockPos> dense = new java.util.HashSet<>();
+        List<BlockPos> body = new java.util.ArrayList<>(flesh);
+        body.add(worldPosition);
+        for (BlockPos pos : body) {
+            for (net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
+                BlockPos next = pos.relative(direction);
+                BlockState state = level.getBlockState(next);
+                if (state.getBlock() instanceof GraftBlock graft && graft.type() == GraftType.STASIS_BLADDER
+                        && GraftBlock.supportPos(state, next).equals(pos)) {
+                    bladderCount++;
+                } else if (aspect() != Aspect.DENSITY && state.is(ModBlocks.CHRONOFLESH.get())
+                        && state.getValue(FleshBlock.ASPECT) == Aspect.DENSITY) {
+                    dense.add(next);
+                }
+            }
+        }
+        bladders = bladderCount;
+        densityTouching = dense.size();
+    }
+
+    /**
+     * Time organisms: if they hold more than their bladders (and any Density pressing on them) can
+     * keep still, instability builds. Warnings first; then it bursts.
+     */
+    private void checkStability(ServerLevel level) {
+        int shortfall = stabilityNeeded() - stability();
+        if (stored == 0 || shortfall <= 0) {
+            if (instability > 0) {
+                instability--;
+                setChanged();
+            }
+            return;
+        }
+        instability += shortfall;
+        setChanged();
+        if (instability >= BURST_AT) {
+            burst(level);
+            return;
+        }
+        if (instability >= UNSTABLE_WARNING) {
+            level.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_HAT.value(),
+                    SoundSource.BLOCKS, 1.0f, 2.0f);
+            level.sendParticles(ParticleTypes.REVERSE_PORTAL, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5,
+                    worldPosition.getZ() + 0.5, 20 + instability * 2, 0.8, 0.8, 0.8, 0.05);
+            for (net.minecraft.world.entity.player.Player player : level.getEntitiesOfClass(
+                    net.minecraft.world.entity.player.Player.class, new net.minecraft.world.phys.AABB(worldPosition).inflate(6))) {
+                com.chronogenesis.player.TemporalExposure.expose(player, 2);
+            }
+        }
+    }
+
+    /** The organism cannot hold its time any more: a Time Tear opens where the core was. */
+    private void burst(ServerLevel level) {
+        BlockPos core = worldPosition;
+        for (BlockPos pos : flesh) {
+            if (OrganismScan.isTissue(level.getBlockState(pos), aspect())) {
+                level.setBlockAndUpdate(pos, ModBlocks.BRASS_ARMATURE.get().defaultBlockState());
+            }
+        }
+        level.playSound(null, core, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 1.0f, 0.5f);
+        level.playSound(null, core, SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 1.0f, 1.8f);
+        level.sendParticles(ParticleTypes.REVERSE_PORTAL, core.getX() + 0.5, core.getY() + 0.5, core.getZ() + 0.5,
+                200, 2.0, 2.0, 2.0, 0.2);
+        for (net.minecraft.world.entity.player.Player player : level.getEntitiesOfClass(
+                net.minecraft.world.entity.player.Player.class, new net.minecraft.world.phys.AABB(core).inflate(8))) {
+            com.chronogenesis.player.TemporalExposure.expose(player, 40);
+        }
+        com.chronogenesis.time.TimeTearBlockEntity.ageArea(level, core, 5, 40);
+        level.setBlockAndUpdate(core, ModBlocks.TIME_TEAR.get().defaultBlockState());
+        com.chronogenesis.time.TemporalStress.add(level, core, stored);
     }
 
     /** Seed until it has grown flesh; then awake, or hungry below a quarter of its capacity. */
@@ -244,6 +358,7 @@ public class OrganismCoreBlockEntity extends BlockEntity {
         tag.putInt("size", size);
         tag.putInt("upkeep_timer", upkeepTimer);
         tag.putInt("missed_meals", missedMeals);
+        tag.putInt("instability", instability);
     }
 
     @Override
@@ -253,5 +368,6 @@ public class OrganismCoreBlockEntity extends BlockEntity {
         size = tag.getInt("size");
         upkeepTimer = tag.getInt("upkeep_timer");
         missedMeals = tag.getInt("missed_meals");
+        instability = tag.getInt("instability");
     }
 }

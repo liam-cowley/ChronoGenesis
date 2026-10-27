@@ -14,5 +14,13 @@ public final class ModTags {
         private Entities() {}
     }
 
+    public static final class Items {
+        /** Pieces of the Chrono-Insulated Suit: each one worn blocks a quarter of Temporal Exposure. */
+        public static final TagKey<net.minecraft.world.item.Item> CHRONO_INSULATED =
+                TagKey.create(Registries.ITEM, ChronoGenesis.id("chrono_insulated"));
+
+        private Items() {}
+    }
+
     private ModTags() {}
 }

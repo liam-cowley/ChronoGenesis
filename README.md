@@ -45,6 +45,14 @@ What exists so far (see `docs/design/early-game.md` for the full plan):
    press **Z** to select a power and **G** to use it. Pools are shown top-left.
 5. Time: amethyst needle + **Stasis Ampoule**. Over-harvest one area and a **Time Tear** opens
    (seal it with 4 drams of Density).
+6. **Brass Conduit** + a **Tap**: the Tap grows living veins along the conduit and pushes essence to a **Maw**
+   on another organism.
+7. **Time organisms** need **Stasis Bladders** (and like Density flesh pressed against them), or they burst.
+   Fill one with the **Racetrack**: a **Starting Gate** on a Speed organism sends pulses down a vein to a
+   **Finish** on the Time organism. Slower pace = more Time, until pulses stall and clog (shears clear clots).
+8. The **Chrono-Insulated Suit** blocks a quarter of Temporal Exposure per piece.
+
+Everything is in the ChronoGenesis creative tab, with pre-filled containers and a culture of every essence.
 
 ## Everyday commands
 

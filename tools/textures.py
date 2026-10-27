@@ -908,6 +908,253 @@ def organism_core_hungry_overlay():
     ], p), "block/organism_core_hungry_overlay")
 
 
+# ---------------------------------------------------------------- veins, new grafts
+
+def vein():
+    # Living pipe: dark red tissue in rings, threaded with blue veins.
+    img = graft_flesh(81, (150, 46, 58, 255), (96, 24, 36, 255))
+    for y in range(0, 16, 4):
+        for x in range(16):
+            img.putpixel((x, y), shade(img.getpixel((x, y)), -30))
+    r = rng(82)
+    for _ in range(3):
+        x, y = r.randint(0, 15), r.randint(0, 15)
+        for _ in range(8):
+            img.putpixel((x, y), (80, 84, 160, 255))
+            x = (x + 1) % 16
+            y = (y + r.choice([-1, 0, 1])) % 16
+    save(img, "block/vein")
+
+
+def vein_clogged():
+    # A pulse that died in the vein: grey-brown rot weeping sickly pus.
+    r = rng(83)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), shade((82, 64, 52, 255), r.randint(-16, 16)))
+    for _ in range(12):
+        img.putpixel((r.randint(0, 15), r.randint(0, 15)), r.choice([(170, 176, 80, 255), (120, 130, 60, 255)]))
+    for _ in range(8):
+        img.putpixel((r.randint(0, 15), r.randint(0, 15)), (34, 26, 24, 255))
+    save(img, "block/vein_clogged")
+
+
+def maw():
+    # A puckered, toothed mouth (the top of the Maw's brass ring samples the middle 8x8).
+    img = graft_flesh(84, FLESH, FLESH_DK)
+    grid([
+        "................",
+        "................",
+        "................",
+        "................",
+        "....dddddddd....",
+        "....dLwLLwLd....",
+        "....dwrrrrwd....",
+        "....dLrxxrLd....",
+        "....dLrxxrLd....",
+        "....dwrrrrwd....",
+        "....dLwLLwLd....",
+        "....dddddddd....",
+        "................",
+        "................",
+        "................",
+        "................",
+    ], {"d": FLESH_DDK, "L": (190, 96, 108, 255), "w": BONE_HI, "r": (120, 36, 50, 255), "x": (24, 8, 12, 255)}, img)
+    save(img, "block/maw")
+
+
+def stasis_bladder():
+    # Dark, stretched membrane (phantom-like), purple veins, a wet sheen.
+    r = rng(85)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            v = 10 * math.sin(x * 0.6 + y * 0.3)
+            img.putpixel((x, y), shade((84, 72, 112, 255), int(v + r.randint(-8, 8))))
+    for _ in range(3):
+        x, y = r.randint(0, 15), 0
+        for _ in range(16):
+            img.putpixel((x, y), (150, 90, 190, 255))
+            x = (x + r.choice([-1, 0, 1])) % 16
+            y += 1
+            if y > 15:
+                break
+    for (x, y) in [(3, 3), (4, 3), (3, 4), (11, 9), (12, 9)]:
+        img.putpixel((x, y), (200, 190, 230, 255))
+    save(img, "block/stasis_bladder")
+
+
+def dial(name, face, hand, marks):
+    # A brass-rimmed gauge face filling the middle of the texture.
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), BRASS_DK)
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, y - 7.5)
+            if d < 7.6:
+                img.putpixel((x, y), BRASS if d > 6.2 else face)
+            if 6.2 <= d < 7.0 and (x + y) % 3 == 0:
+                img.putpixel((x, y), BRASS_HI)
+    for (x, y) in marks:
+        img.putpixel((x, y), OUTLINE)
+    for (x, y) in hand:
+        img.putpixel((x, y), (150, 30, 30, 255))
+    img.putpixel((7, 7), BRASS_DDK)
+    img.putpixel((8, 8), BRASS_DDK)
+    save(img, "block/" + name)
+
+
+def gauges():
+    marks = [(7, 2), (8, 2), (13, 7), (13, 8), (2, 7), (2, 8), (3, 3), (12, 3), (3, 12), (12, 12)]
+    dial("starting_gate", (236, 228, 204, 255), [(8, 6), (9, 5), (10, 4)], marks)
+    dial("finish", (232, 170, 70, 255), [(7, 6), (7, 5), (7, 4), (9, 8), (10, 8)], marks)
+
+
+# ---------------------------------------------------------------- the Chrono-Insulated Suit
+
+COAT = (196, 204, 186, 255)
+COAT_DK = (150, 158, 140, 255)
+LEATHER = (96, 64, 44, 255)
+LEATHER_DK = (64, 42, 30, 255)
+RUBBER = (44, 44, 50, 255)
+RUBBER_HI = (90, 92, 104, 255)
+LENS = (60, 110, 90, 255)
+LENS_HI = (150, 220, 180, 255)
+
+
+def suit_icons():
+    save(grid([
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "..kBBk....kBBk..",
+        ".kBLLBk..kBLLBk.",
+        "aBLlLLBaaBLlLLBa",
+        "aBLLLLBaaBLLLLBa",
+        ".kBLLBk..kBLLBk.",
+        "..kBBk....kBBk..",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+    ], {"k": BRASS_DDK, "B": BRASS, "L": LENS, "l": LENS_HI, "a": LEATHER}), "item/chrono_goggles")
+    save(grid([
+        "................",
+        "....cc....cc....",
+        "...cCCddddCCc...",
+        "..cCCCdkkdCCCc..",
+        ".cCCCCCdkCCCCCc.",
+        ".cCCcCCCBCCcCCc.",
+        ".cCCcCCCCCCcCCc.",
+        ".cCCcCCCBCCcCCc.",
+        ".cBBcCCCCCCcBBc.",
+        "....cCCCBCCc....",
+        "....cCCgCCCc....",
+        "....cCCCBCCc....",
+        "....cCCCCCCc....",
+        "....cccccccc....",
+        "................",
+        "................",
+    ], {"c": COAT_DK, "C": COAT, "d": (110, 116, 104, 255), "k": OUTLINE, "B": BRASS, "g": ELDRITCH_DK}),
+        "item/chrono_lab_coat")
+    save(grid([
+        "................",
+        "...kBBBHBBBBk...",
+        "...aLLLLLLLLa...",
+        "...aLLLLLLLLa...",
+        "...aLLLaaLLLa...",
+        "...aLLLa.aLLa...",
+        "...aBBLa.aBBa...",
+        "...aBBLa.aBBa...",
+        "...aLLLa.aLLa...",
+        "...aLLLa.aLLa...",
+        "...aLLLa.aLLa...",
+        "...aLLLa.aLLa...",
+        "...aaaaa.aaaa...",
+        "................",
+        "................",
+        "................",
+    ], {"k": BRASS_DDK, "B": BRASS, "H": BRASS_HI, "a": LEATHER_DK, "L": LEATHER}), "item/chrono_trousers")
+    save(grid([
+        "................",
+        "................",
+        "................",
+        "................",
+        "...rrrr..rrrr...",
+        "...rRrr..rRrr...",
+        "...rRrr..rRrr...",
+        "...BBBB..BBBB...",
+        "...rRrr..rRrr...",
+        "...rRrr..rRrr...",
+        "..rRrrr.rRrrr...",
+        ".rRrrrr.rRrrrr..",
+        ".rrrrrr.rrrrrr..",
+        ".kkkkkk.kkkkkk..",
+        "................",
+        "................",
+    ], {"r": RUBBER, "R": RUBBER_HI, "B": BRASS, "k": (20, 20, 24, 255)}), "item/chrono_galoshes")
+
+
+def fill_rect(img, x0, y0, x1, y1, color_fn):
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            img.putpixel((x, y), color_fn(x, y))
+
+
+def suit_armor_layers():
+    """Worn textures (64x32, vanilla humanoid armour layout)."""
+    r = rng(91)
+    layer1 = Image.new("RGBA", (64, 32), CLEAR)
+
+    # Goggles: a leather strap round the head at eye level, two brass-rimmed lenses on the front.
+    fill_rect(layer1, 0, 11, 32, 13, lambda x, y: LEATHER if y == 11 else LEATHER_DK)
+    for cx in (10, 13):
+        for (dx, dy) in [(-1, 0), (0, 0), (-1, 1), (0, 1)]:
+            layer1.putpixel((cx + dx, 11 + dy), LENS)
+        layer1.putpixel((cx - 1, 11), LENS_HI)
+        for (dx, dy) in [(-2, 0), (1, 0), (-2, 1), (1, 1), (-1, -1), (0, -1), (-1, 2), (0, 2)]:
+            layer1.putpixel((cx + dx, 11 + dy), BRASS)
+
+    # Lab coat: body and both arms, stained, brass buttons, darker collar and cuffs.
+    coat = lambda x, y: shade(COAT, r.randint(-10, 8))
+    fill_rect(layer1, 16, 16, 40, 32, coat)   # body (all faces)
+    fill_rect(layer1, 40, 16, 56, 32, coat)   # arm (all faces)
+    fill_rect(layer1, 20, 20, 28, 21, lambda x, y: COAT_DK)    # collar line
+    for y in (22, 25, 28):
+        layer1.putpixel((24, y), BRASS)
+    for x in range(20, 28):
+        layer1.putpixel((x, 31), COAT_DK)
+    fill_rect(layer1, 40, 30, 56, 32, lambda x, y: BRASS_DK if y == 30 else LEATHER_DK)   # cuffs
+    for (x, y) in [(22, 26), (26, 23), (33, 27), (45, 25)]:
+        layer1.putpixel((x, y), ELDRITCH_DK)  # stains from a careless experiment
+
+    # Galoshes: black rubber over the feet, a brass strap.
+    fill_rect(layer1, 0, 25, 16, 32, lambda x, y: RUBBER_HI if (x % 4 == 1 and y < 30) else RUBBER)
+    fill_rect(layer1, 0, 26, 16, 27, lambda x, y: BRASS)
+    fill_rect(layer1, 4, 16, 12, 20, lambda x, y: CLEAR)
+
+    layer2 = Image.new("RGBA", (64, 32), CLEAR)
+    # Trousers: oiled leather, a brass-buckled belt, brass knee plates.
+    leather = lambda x, y: shade(LEATHER, r.randint(-8, 8))
+    fill_rect(layer2, 0, 16, 16, 32, leather)       # leg
+    fill_rect(layer2, 16, 20, 40, 32, leather)      # body (waist part is what shows)
+    fill_rect(layer2, 16, 20, 40, 22, lambda x, y: LEATHER_DK)
+    layer2.putpixel((23, 20), BRASS)
+    layer2.putpixel((24, 20), BRASS_HI)
+    fill_rect(layer2, 4, 24, 8, 26, lambda x, y: BRASS if y == 24 else BRASS_DK)
+
+    for img, name in [(layer1, "chrono_insulated_layer_1"), (layer2, "chrono_insulated_layer_2")]:
+        full = os.path.join(OUT, "models/armor", name + ".png")
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        img.save(full)
+
+
 # ---------------------------------------------------------------- run
 
 syringe()
@@ -937,6 +1184,14 @@ gland_sac()
 leech_skin()
 flesh_pustule()
 organism_core_hungry_overlay()
+
+vein()
+vein_clogged()
+maw()
+stasis_bladder()
+gauges()
+suit_icons()
+suit_armor_layers()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

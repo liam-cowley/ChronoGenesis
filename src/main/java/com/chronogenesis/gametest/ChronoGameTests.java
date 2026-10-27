@@ -3,8 +3,10 @@ package com.chronogenesis.gametest;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.MobEssence;
+import com.chronogenesis.organism.BrassConduitBlock;
 import com.chronogenesis.organism.CorePhase;
 import com.chronogenesis.organism.FleshBlock;
+import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
 import com.chronogenesis.registry.ModBlocks;
@@ -74,5 +76,61 @@ public final class ChronoGameTests {
             helper.assertBlockPresent(ModBlocks.CHRONOFLESH.get(), new BlockPos(3, 1, 3));
             helper.assertBlockProperty(corePos, OrganismCoreBlock.PHASE, CorePhase.AWAKE);
         });
+    }
+
+    /** A Tap facing a Brass Conduit grows living veins along it, one block per beat. */
+    @GameTest(template = "floor7", timeoutTicks = 300)
+    public static void tapGrowsVeins(GameTestHelper helper) {
+        BlockPos corePos = new BlockPos(1, 1, 3);
+        helper.setBlock(corePos, core(Aspect.DENSITY));
+        helper.setBlock(corePos.above(), graft(ModBlocks.TAP.get()));
+        for (int x = 1; x <= 3; x++) {
+            helper.setBlock(new BlockPos(x, 3, 3), ModBlocks.BRASS_CONDUIT.get());
+        }
+        OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+        core.feed(12);
+        helper.succeedWhen(() -> {
+            for (int x = 1; x <= 3; x++) {
+                helper.assertBlockProperty(new BlockPos(x, 3, 3), BrassConduitBlock.VEIN, true);
+            }
+        });
+    }
+
+    /** A Time organism with no Stasis Bladders, filled up, grows unstable and bursts into a Time Tear. */
+    @GameTest(template = "floor7", timeoutTicks = 700)
+    public static void unstableTimeOrganismBursts(GameTestHelper helper) {
+        BlockPos corePos = new BlockPos(3, 1, 3);
+        helper.setBlock(corePos, core(Aspect.TIME));
+        OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+        core.feed(16);
+        helper.succeedWhen(() -> helper.assertBlockPresent(ModBlocks.TIME_TEAR.get(), corePos));
+    }
+
+    /** Racetrack: a Speed pulse runs down the vein from the Starting Gate and Time condenses at the Finish. */
+    @GameTest(template = "floor7", timeoutTicks = 400)
+    public static void racetrackMakesTime(GameTestHelper helper) {
+        BlockPos speedCore = new BlockPos(1, 1, 1);
+        BlockPos timeCore = new BlockPos(5, 1, 1);
+        helper.setBlock(speedCore, core(Aspect.SPEED));
+        helper.setBlock(timeCore, core(Aspect.TIME));
+        helper.setBlock(speedCore.above(), graft(ModBlocks.STARTING_GATE.get()));
+        helper.setBlock(timeCore.above(), graft(ModBlocks.FINISH.get()));
+        for (int x = 1; x <= 5; x++) {
+            helper.setBlock(new BlockPos(x, 3, 1), ModBlocks.BRASS_CONDUIT.get().defaultBlockState()
+                    .setValue(BrassConduitBlock.VEIN, true));
+        }
+        OrganismCoreBlockEntity speed = helper.getBlockEntity(speedCore);
+        speed.feed(16);
+        OrganismCoreBlockEntity time = helper.getBlockEntity(timeCore);
+        helper.succeedWhen(() -> helper.assertTrue(time.stored() > 0, "no Time arrived at the finish"));
+    }
+
+    private static net.minecraft.world.level.block.state.BlockState core(Aspect aspect) {
+        return ModBlocks.ORGANISM_CORE.get().defaultBlockState()
+                .setValue(FleshBlock.ASPECT, aspect).setValue(OrganismCoreBlock.PHASE, CorePhase.SEED);
+    }
+
+    private static net.minecraft.world.level.block.state.BlockState graft(net.minecraft.world.level.block.Block block) {
+        return block.defaultBlockState().setValue(GraftBlock.FACING, net.minecraft.core.Direction.UP);
     }
 }

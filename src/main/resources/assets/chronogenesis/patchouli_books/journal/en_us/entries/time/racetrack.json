@@ -1,0 +1,32 @@
+{
+  "name": "The Law of the Road",
+  "icon": "chronogenesis:starting_gate",
+  "category": "chronogenesis:time",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(o)A traveller's time is the length of its road, divided by its haste. A long road walked slowly leaves the most time behind.$()$(br2)$(7)(t = d / v)$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Graft a $(l)Starting Gate$() onto a $(l)Speed$() organism and a $(l)Finish$() onto a $(l)Time$() organism, and join them with a vein. The gate sends a pulse of Speed down the vein; the time it spends on the road condenses at the finish: a dram for every two seconds.",
+      "title": "The Racetrack"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:starting_gate",
+      "recipe2": "chronogenesis:finish"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Use the gate with an empty hand to set its $(l)pace$(): slower pulses make more Time. But a pulse still travelling after thirty seconds $(l)stalls$(), dies, and $(l)clogs$() the vein. Cut the clot out with $(l)shears$().$(br2)Every launch costs Speed, more for a longer road: the veins feed on what passes.",
+      "title": "Pace and Stalls"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A vein running alongside $(l)Density$() flesh is $(l)heavy$(): pulses crawl through it at half pace. Coil the road through the cellar, weigh it down where you want it slow, and keep it just short of stalling.",
+      "title": "Tuning the Road"
+    }
+  ]
+}

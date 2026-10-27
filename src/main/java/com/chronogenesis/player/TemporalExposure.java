@@ -22,7 +22,8 @@ import net.minecraft.world.phys.Vec3;
  *   <li>80+: random micro-rewinds (you snap back ~2 seconds) and faster hunger.</li>
  *   <li>120+: you age: max health is reduced until exposure fades.</li>
  * </ul>
- * Exposure fades slowly on its own (see {@link Powers}). The Chrono-Insulated Suit will reduce it.
+ * Exposure fades slowly on its own (see {@link Powers}). Each piece of the Chrono-Insulated Suit
+ * blocks a quarter of all incoming exposure.
  */
 public final class TemporalExposure {
     public static final int TICKING = 40;
@@ -34,6 +35,33 @@ public final class TemporalExposure {
     private static final Map<UUID, Vec3[]> HISTORY = new HashMap<>();
 
     private TemporalExposure() {}
+
+    /** Pieces of the Chrono-Insulated Suit worn (0-4). Each blocks a quarter of incoming exposure. */
+    public static int suitPieces(net.minecraft.world.entity.player.Player player) {
+        int pieces = 0;
+        for (net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[] {
+                net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET}) {
+            if (player.getItemBySlot(slot).is(com.chronogenesis.registry.ModTags.Items.CHRONO_INSULATED)) {
+                pieces++;
+            }
+        }
+        return pieces;
+    }
+
+    /** Exposure after the suit: each piece worn removes a quarter. */
+    public static int scaled(net.minecraft.world.entity.player.Player player, int amount) {
+        return Math.round(amount * (1.0f - 0.25f * suitPieces(player)));
+    }
+
+    /** Adds exposure from the world (unstable organisms, bursts), reduced by the suit. */
+    public static void expose(net.minecraft.world.entity.player.Player player, int amount) {
+        int added = scaled(player, amount);
+        if (added > 0) {
+            PlayerEssence essence = Powers.get(player);
+            Powers.set(player, essence.withExposure(essence.exposure() + added));
+        }
+    }
 
     static void tick(ServerPlayer player, PlayerEssence essence) {
         int exposure = essence.exposure();

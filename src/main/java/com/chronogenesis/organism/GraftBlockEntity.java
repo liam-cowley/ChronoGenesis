@@ -1,5 +1,7 @@
 package com.chronogenesis.organism;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.chronogenesis.Config;
@@ -8,9 +10,14 @@ import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.essence.MobEssence;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlockEntities;
+import com.chronogenesis.registry.ModBlocks;
+import com.chronogenesis.time.TemporalStress;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -34,9 +41,35 @@ public class GraftBlockEntity extends BlockEntity {
     private static final int TAP_INTERVAL = 20;
     private static final int TAP_RATE = 4;
 
+    // Racetrack (core-systems.md section 4, Law of the Road).
+    private static final int GATE_INTERVAL = 40;
+    /** A pulse still travelling after this many ticks stalls and clogs its vein. */
+    public static final int STALL_TICKS = 600;
+    /** Each 40 ticks a pulse spends on the road condenses into one dram of Time. */
+    public static final int TICKS_PER_TIME_DRAM = 40;
+    public static final int MAX_PACE = 5;
+
     @Nullable
     private BlockPos cachedCore;
     private int tick;
+    /** Starting Gate setting: ticks per vein block = pace * 4. Higher pace = slower pulse = more Time. */
+    private int pace = 2;
+    @Nullable
+    private Pulse pulse;
+
+    /** A Speed pulse running down a vein track. Not saved: an unloaded track loses its pulse. */
+    private static final class Pulse {
+        final List<BlockPos> path;
+        final BlockPos finish;
+        int index;
+        int wait;
+        int travelled;
+
+        Pulse(List<BlockPos> path, BlockPos finish) {
+            this.path = path;
+            this.finish = finish;
+        }
+    }
 
     public GraftBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.GRAFT.get(), pos, state);
@@ -44,6 +77,10 @@ public class GraftBlockEntity extends BlockEntity {
 
     public GraftType type() {
         return ((GraftBlock) getBlockState().getBlock()).type();
+    }
+
+    public int pace() {
+        return pace;
     }
 
     /** The organism this graft belongs to, or null if it is cut off or dead. */
@@ -62,30 +99,41 @@ public class GraftBlockEntity extends BlockEntity {
         return found == null || found.isNecrotic() ? null : found;
     }
 
+    private BlockPos front() {
+        return worldPosition.relative(getBlockState().getValue(GraftBlock.FACING));
+    }
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, GraftBlockEntity graft) {
+        ServerLevel serverLevel = (ServerLevel) level;
         graft.tick++;
         switch (graft.type()) {
             case LEECH_TENDRIL -> {
                 if (graft.tick % LEECH_INTERVAL == 0) {
-                    graft.leech((ServerLevel) level);
+                    graft.leech(serverLevel);
                 }
             }
             case TAP -> {
                 if (graft.tick % TAP_INTERVAL == 0) {
-                    graft.tapIntoJug(level);
+                    graft.tap(serverLevel);
                 }
             }
+            case STARTING_GATE -> graft.gateTick(serverLevel);
             default -> { }
         }
     }
 
-    /** Leech Tendril: drain 1 dram of the organism's aspect from every mob in range. */
+    // ---------------------------------------------------------------- Leech Tendril
+
+    /** Drain 1 dram of the organism's aspect from every mob in range. Time needs Stasis Bladders. */
     private void leech(ServerLevel level) {
         OrganismCoreBlockEntity core = core();
-        if (core == null || core.room() <= 0 || core.aspect() == Aspect.TIME) {
-            return; // Time cannot be leeched without Stasis Bladders.
+        if (core == null || core.room() <= 0) {
+            return;
         }
         Aspect aspect = core.aspect();
+        if (aspect == Aspect.TIME && core.bladders() == 0) {
+            return;
+        }
         AABB area = new AABB(worldPosition).inflate(LEECH_RANGE);
         Vec3 mouth = Vec3.atCenterOf(worldPosition);
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, area, MobEssence::canBeDrained)) {
@@ -95,6 +143,9 @@ public class GraftBlockEntity extends BlockEntity {
             int taken = MobEssence.drain(entity, aspect, 1);
             if (taken > 0) {
                 core.feed(taken);
+                if (aspect == Aspect.TIME) {
+                    TemporalStress.add(level, entity.blockPosition(), taken * TemporalStress.PER_DRAM_EXTRACTED);
+                }
                 Vec3 from = entity.position().add(0, entity.getBbHeight() / 2, 0);
                 Vec3 step = mouth.subtract(from).scale(0.2);
                 for (int i = 0; i < 5; i++) {
@@ -105,22 +156,144 @@ public class GraftBlockEntity extends BlockEntity {
         }
     }
 
-    /** Tap: pour into an Essence Jug placed in front of it. */
-    private void tapIntoJug(Level level) {
-        BlockPos front = worldPosition.relative(getBlockState().getValue(GraftBlock.FACING));
-        if (!(level.getBlockEntity(front) instanceof EssenceJugBlockEntity jug)) {
-            return;
-        }
+    // ---------------------------------------------------------------- Tap
+
+    /** Pour into a jug in front, or push through the veins in front to the nearest Maw. */
+    private void tap(ServerLevel level) {
         OrganismCoreBlockEntity core = core();
         if (core == null || core.stored() <= 0) {
             return;
         }
-        int space = jug.space(core.aspect());
-        int moved = core.extract(Math.min(TAP_RATE, space));
-        if (moved > 0) {
-            jug.insert(core.aspect(), moved);
+        BlockPos front = front();
+        if (level.getBlockEntity(front) instanceof EssenceJugBlockEntity jug) {
+            int moved = core.extract(Math.min(TAP_RATE, jug.space(core.aspect())));
+            if (moved > 0) {
+                jug.insert(core.aspect(), moved);
+            }
+            return;
+        }
+        if (!level.getBlockState(front).is(ModBlocks.BRASS_CONDUIT.get())) {
+            return;
+        }
+        VeinNetwork network = VeinNetwork.walk(level, front, worldPosition);
+        // The veins grow along the conduit first, one block per beat, for a dram each.
+        if (network.growthTarget() != null && core.extract(1) == 1) {
+            growVein(level, network.growthTarget());
+            return;
+        }
+        for (BlockPos mawPos : network.grafts()) {
+            if (level.getBlockEntity(mawPos) instanceof GraftBlockEntity maw && maw.type() == GraftType.MAW) {
+                OrganismCoreBlockEntity target = maw.core();
+                if (target != null && target != core && target.aspect() == core.aspect() && target.room() > 0) {
+                    int moved = core.extract(Math.min(TAP_RATE, target.room()));
+                    target.feed(moved);
+                    level.sendParticles(ParticleTypes.FALLING_DRIPSTONE_LAVA, mawPos.getX() + 0.5, mawPos.getY() + 0.7,
+                            mawPos.getZ() + 0.5, 2, 0.1, 0.1, 0.1, 0);
+                    return;
+                }
+            }
         }
     }
+
+    private static void growVein(ServerLevel level, BlockPos conduit) {
+        BlockState state = level.getBlockState(conduit);
+        level.setBlockAndUpdate(conduit, state.setValue(BrassConduitBlock.VEIN, true));
+        level.playSound(null, conduit, SoundEvents.HONEY_BLOCK_PLACE, SoundSource.BLOCKS, 0.6f, 0.5f);
+        level.sendParticles(ParticleTypes.ITEM_SLIME, conduit.getX() + 0.5, conduit.getY() + 0.5, conduit.getZ() + 0.5,
+                6, 0.2, 0.2, 0.2, 0.02);
+    }
+
+    // ---------------------------------------------------------------- Racetrack
+
+    /**
+     * Starting Gate: every couple of seconds, if no pulse is running, spend Speed to send one down
+     * the veins to a Finish graft. Time made = time on the road (length x pace), the Law of the Road.
+     */
+    private void gateTick(ServerLevel level) {
+        if (pulse != null) {
+            advancePulse(level);
+            return;
+        }
+        if (tick % GATE_INTERVAL != 0) {
+            return;
+        }
+        OrganismCoreBlockEntity core = core();
+        if (core == null || core.aspect() != Aspect.SPEED) {
+            return;
+        }
+        VeinNetwork network = VeinNetwork.walk(level, front(), worldPosition);
+        for (BlockPos graftPos : network.grafts()) {
+            if (level.getBlockEntity(graftPos) instanceof GraftBlockEntity finish && finish.type() == GraftType.FINISH) {
+                List<BlockPos> path = network.pathTo(level, graftPos);
+                int cost = launchCost(path.size());
+                if (path.isEmpty() || core.stored() < cost) {
+                    return;
+                }
+                core.extract(cost);
+                pulse = new Pulse(path, graftPos);
+                level.playSound(null, worldPosition, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.6f, 1.6f);
+                return;
+            }
+        }
+    }
+
+    /** Speed spent per pulse: 1, plus 1 for every 8 blocks of track (veins feed on what passes). */
+    public static int launchCost(int trackLength) {
+        return 1 + trackLength / 8;
+    }
+
+    private void advancePulse(ServerLevel level) {
+        Pulse p = pulse;
+        BlockPos at = p.path.get(p.index);
+        if (!BrassConduitBlock.isOpenVein(level.getBlockState(at))) {
+            pulse = null; // the track was cut
+            return;
+        }
+        p.travelled++;
+        p.wait++;
+        if (p.travelled % 2 == 0) {
+            level.sendParticles(new DustParticleOptions(Vec3.fromRGB24(Aspect.SPEED.color()).toVector3f(), 1.2f),
+                    at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 2, 0.1, 0.1, 0.1, 0);
+        }
+        if (p.travelled > STALL_TICKS) {
+            // Too slow: the pulse dies in the vein and rots there.
+            level.setBlockAndUpdate(at, level.getBlockState(at).setValue(BrassConduitBlock.CLOGGED, true));
+            level.playSound(null, at, SoundEvents.SLIME_DEATH_SMALL, SoundSource.BLOCKS, 1.0f, 0.5f);
+            pulse = null;
+            return;
+        }
+        int delay = pace * 4 * (VeinNetwork.isHeavy(level, at) ? 2 : 1);
+        if (p.wait < delay) {
+            return;
+        }
+        p.wait = 0;
+        p.index++;
+        if (p.index >= p.path.size()) {
+            arrive(level, p);
+            pulse = null;
+        }
+    }
+
+    private static void arrive(ServerLevel level, Pulse p) {
+        int time = Math.max(1, p.travelled / TICKS_PER_TIME_DRAM);
+        BlockPos finishPos = p.finish;
+        level.playSound(null, finishPos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.0f, 0.7f);
+        if (level.getBlockEntity(finishPos) instanceof GraftBlockEntity finish) {
+            OrganismCoreBlockEntity core = finish.core();
+            if (core != null && core.aspect() == Aspect.TIME) {
+                int fed = core.feed(time);
+                TemporalStress.add(level, finishPos, fed);
+                level.sendParticles(new DustParticleOptions(Vec3.fromRGB24(Aspect.TIME.color()).toVector3f(), 1.5f),
+                        finishPos.getX() + 0.5, finishPos.getY() + 0.8, finishPos.getZ() + 0.5, 8 + fed, 0.2, 0.2, 0.2, 0);
+                return;
+            }
+        }
+        // No Time organism to catch it: the time scatters.
+        level.sendParticles(ParticleTypes.WHITE_ASH, finishPos.getX() + 0.5, finishPos.getY() + 0.8, finishPos.getZ() + 0.5,
+                12, 0.3, 0.3, 0.3, 0.02);
+    }
+
+    // ---------------------------------------------------------------- interaction
 
     public ItemInteractionResult useItemOn(ItemStack stack, Player player, InteractionHand hand) {
         if (level == null) {
@@ -158,17 +331,43 @@ public class GraftBlockEntity extends BlockEntity {
         if (level == null) {
             return InteractionResult.PASS;
         }
-        if (type() == GraftType.ENHANCING_GLAND) {
-            if (!level.isClientSide()) {
-                OrganismCoreBlockEntity core = core();
-                if (core == null) {
-                    OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.organism.dead"));
-                } else {
-                    Powers.infuseFromGland(player, core, worldPosition);
+        switch (type()) {
+            case ENHANCING_GLAND -> {
+                if (!level.isClientSide()) {
+                    OrganismCoreBlockEntity core = core();
+                    if (core == null) {
+                        OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.organism.dead"));
+                    } else {
+                        Powers.infuseFromGland(player, core, worldPosition);
+                    }
                 }
+                return InteractionResult.sidedSuccess(level.isClientSide());
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            case STARTING_GATE -> {
+                if (!level.isClientSide()) {
+                    pace = pace % MAX_PACE + 1;
+                    setChanged();
+                    OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gate.pace",
+                            pace, pace * 4));
+                    level.playSound(null, worldPosition, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.6f, 0.5f + pace * 0.15f);
+                }
+                return InteractionResult.sidedSuccess(level.isClientSide());
+            }
+            default -> {
+                return OrganismInteractions.inspect(level, GraftBlock.supportPos(getBlockState(), worldPosition), player);
+            }
         }
-        return OrganismInteractions.inspect(level, GraftBlock.supportPos(getBlockState(), worldPosition), player);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.putInt("pace", pace);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        pace = tag.contains("pace") ? tag.getInt("pace") : 2;
     }
 }
