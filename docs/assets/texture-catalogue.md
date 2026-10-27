@@ -23,6 +23,9 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `block/essence_jug_fill.png` | 16x16 | Jug liquid mask (tinted by aspect): the glass band between the hoops, cage bars left clear. Shown up to the `fill` level (0-4) |
 | `block/essence_jug_top.png` | 16x16 | Jug top: glass shoulder, brass rim, cork |
 | `block/finish.png` | 16x16 | Finish: amber clock face |
+| `block/heart.png` | 16x16 | Heart graft muscle: dark red bands, blue and red vessels, a stitched seam |
+| `block/eye.png` | 16x16 | Eye graft: lidded eyeball with an eldritch green iris (top face) |
+| `block/clock.png` | 16x16 | Clock graft: cream clock face in brass, hands near midnight |
 | `block/flesh_pustule.png` | 16x16 | Pustules on mature flesh |
 | `block/gland_sac.png` | 16x16 | Veined pink sac of the Enhancing Gland |
 | `block/graft_flesh.png` | 16x16 | Plain pink flesh for graft mounds |
@@ -60,6 +63,7 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `item/gold_needle.png` | 16x16 | Gold needle with gear collar (Speed) |
 | `item/iron_needle.png` | 16x16 | Iron needle (Density) |
 | `item/preserved_brain.png` | 16x16 | Brain in a jar with electrodes |
+| `item/preserved_heart.png` | 16x16 | Animal heart in a jar, a brass tube stitched into the aorta |
 | `item/stasis_ampoule.png` | 16x16 | Ampoule body: membrane-lined glass, brass caps |
 | `item/stasis_ampoule_fill.png` | 16x16 | Ampoule liquid mask (tinted) |
 | `item/stasis_ampoule_front.png` | 16x16 | Eldritch ward glowing on the glass |

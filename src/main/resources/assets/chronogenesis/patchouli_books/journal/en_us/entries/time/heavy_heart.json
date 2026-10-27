@@ -1,0 +1,26 @@
+{
+  "name": "The Law of the Heavy Heart",
+  "icon": "chronogenesis:clock",
+  "category": "chronogenesis:time",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(o)A heart buried in heavy flesh beats slower than one standing free. Count the beats it misses: they are yours.$()$(br2)$(7)(gravitational time dilation)$()"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Twin Clocks",
+      "text": "Graft one $(l)Clock$() deep in a $(l)Density$() organism, and its twin onto a $(l)Time$() organism. Join their faces with a vein.$(br2)The buried clock runs slow. Every two seconds the free clock counts how much heavy flesh presses on its twin, within two blocks, more than on itself. Six hundred missed beats make a dram of Time."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:clock"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Packing the Mass",
+      "text": "No pulses, no stalls: only weight. The puzzle is how much Density flesh you can pack around one small clock, and how far from it you keep the other.$(br2)Slow, but it never stops, and the only price is feeding the mass."
+    }
+  ]
+}

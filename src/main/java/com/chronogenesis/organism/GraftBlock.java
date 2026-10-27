@@ -135,6 +135,28 @@ public class GraftBlock extends BaseEntityBlock {
         return InteractionResult.PASS;
     }
 
+    // The Eye graft: redstone while it sees a creature, comparator output for how full the organism is.
+
+    @Override
+    protected boolean isSignalSource(BlockState state) {
+        return type == GraftType.EYE;
+    }
+
+    @Override
+    protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        return type == GraftType.EYE && level.getBlockEntity(pos) instanceof GraftBlockEntity eye && eye.seesCreature() ? 15 : 0;
+    }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return type == GraftType.EYE;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        return level.getBlockEntity(pos) instanceof GraftBlockEntity eye ? eye.reportedFill() : 0;
+    }
+
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

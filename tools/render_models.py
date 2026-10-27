@@ -152,6 +152,7 @@ def organisms_scene(out):
         ("organism_core_seed", tint, "Core: seed"), ("organism_core_awake", tint, "awake"),
         ("organism_core_hungry", tint, "hungry"), ("organism_core_necrotic", None, "necrotic"),
         ("tap", None, "Tap"), ("leech_tendril", None, "Leech Tendril"), ("enhancing_gland", None, "Enhancing Gland"),
+        ("heart", None, "Heart"), ("eye", None, "Eye"), ("clock", None, "Clock"),
     ]
     cols, cell = 4, 200
     rows = (len(cells) + cols - 1) // cols

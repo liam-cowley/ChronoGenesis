@@ -37,6 +37,7 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .texture("layer0", modLoc("item/culture"))
                 .texture("layer1", modLoc("item/culture_dish"));
         basicItem(ModItems.PRESERVED_BRAIN.get());
+        basicItem(ModItems.PRESERVED_HEART.get());
         basicItem(ModItems.TEMPORAL_RESIDUE.get());
     }
 

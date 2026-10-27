@@ -19,6 +19,24 @@
     {
       "type": "patchouli:crafting",
       "recipe": "chronogenesis:leech_tendril"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Heart",
+      "text": "A $(l)Heart$() grafted on pumps. Every Heart makes the organism's $(l)Taps$() push essence faster, into a jug or down the veins: twice as fast with one, up to four times with three. A fourth does nothing; the veins cannot carry more.$(br2)Cows, pigs and sheep sometimes leave a $(item)heart$() worth keeping."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:heart"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Eye",
+      "text": "An $(l)Eye$() watches. While a creature is within four blocks of it, it gives a $(l)redstone signal$(). A $(l)comparator$() against it reads how full the organism is.$(br2)A door that opens for the cows. A lamp that lights when the store is low. It never blinks."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:eye"
     }
   ],
   "sortnum": 0,

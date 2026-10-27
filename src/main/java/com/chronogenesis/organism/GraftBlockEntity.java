@@ -40,6 +40,19 @@ public class GraftBlockEntity extends BlockEntity {
     private static final int LEECH_RANGE = 4;
     private static final int TAP_INTERVAL = 20;
     private static final int TAP_RATE = 4;
+    /** Hearts beyond this many add nothing: the veins cannot carry more. */
+    public static final int MAX_HEARTS = 3;
+
+    // Eye: watches for creatures and reports how full the organism is.
+    private static final int EYE_INTERVAL = 10;
+    public static final int EYE_RANGE = 4;
+
+    // Twin Clocks (core-systems.md section 4, Law of the Heavy Heart).
+    private static final int CLOCK_INTERVAL = 40;
+    /** How far around a Clock Density flesh counts as the mass weighing on it. */
+    public static final int CLOCK_MASS_RADIUS = 2;
+    /** Missed beats (mass difference, summed every interval) that condense into one dram of Time. */
+    public static final int BEATS_PER_TIME_DRAM = 600;
 
     // Racetrack (core-systems.md section 4, Law of the Road).
     private static final int GATE_INTERVAL = 40;
@@ -56,6 +69,11 @@ public class GraftBlockEntity extends BlockEntity {
     private int pace = 2;
     @Nullable
     private Pulse pulse;
+    /** Eye: whether it sees a creature, and the comparator level it last reported. Not saved. */
+    private boolean seesCreature;
+    private int reportedFill;
+    /** Free Clock: missed beats gathered so far towards the next dram of Time. */
+    private int missedBeats;
 
     /** A Speed pulse running down a vein track. Not saved: an unloaded track loses its pulse. */
     private static final class Pulse {
@@ -81,6 +99,14 @@ public class GraftBlockEntity extends BlockEntity {
 
     public int pace() {
         return pace;
+    }
+
+    public boolean seesCreature() {
+        return seesCreature;
+    }
+
+    public int reportedFill() {
+        return reportedFill;
     }
 
     /** The organism this graft belongs to, or null if it is cut off or dead. */
@@ -118,6 +144,16 @@ public class GraftBlockEntity extends BlockEntity {
                 }
             }
             case STARTING_GATE -> graft.gateTick(serverLevel);
+            case EYE -> {
+                if (graft.tick % EYE_INTERVAL == 0) {
+                    graft.watch(serverLevel);
+                }
+            }
+            case CLOCK -> {
+                if (graft.tick % CLOCK_INTERVAL == 0) {
+                    graft.clockTick(serverLevel);
+                }
+            }
             default -> { }
         }
     }
@@ -165,8 +201,9 @@ public class GraftBlockEntity extends BlockEntity {
             return;
         }
         BlockPos front = front();
+        int rate = tapRate(core);
         if (level.getBlockEntity(front) instanceof EssenceJugBlockEntity jug) {
-            int moved = core.extract(Math.min(TAP_RATE, jug.space(core.aspect())));
+            int moved = core.extract(Math.min(rate, jug.space(core.aspect())));
             if (moved > 0) {
                 jug.insert(core.aspect(), moved);
             }
@@ -185,7 +222,7 @@ public class GraftBlockEntity extends BlockEntity {
             if (level.getBlockEntity(mawPos) instanceof GraftBlockEntity maw && maw.type() == GraftType.MAW) {
                 OrganismCoreBlockEntity target = maw.core();
                 if (target != null && target != core && target.aspect() == core.aspect() && target.room() > 0) {
-                    int moved = core.extract(Math.min(TAP_RATE, target.room()));
+                    int moved = core.extract(Math.min(rate, target.room()));
                     target.feed(moved);
                     level.sendParticles(ParticleTypes.FALLING_DRIPSTONE_LAVA, mawPos.getX() + 0.5, mawPos.getY() + 0.7,
                             mawPos.getZ() + 0.5, 2, 0.1, 0.1, 0.1, 0);
@@ -193,6 +230,11 @@ public class GraftBlockEntity extends BlockEntity {
                 }
             }
         }
+    }
+
+    /** Drams a Tap pushes per beat: 4, and 4 more for every Heart on the organism (up to {@value #MAX_HEARTS}). */
+    public static int tapRate(OrganismCoreBlockEntity core) {
+        return TAP_RATE * (1 + Math.min(core.hearts(), MAX_HEARTS));
     }
 
     private static void growVein(ServerLevel level, BlockPos conduit) {
@@ -293,6 +335,80 @@ public class GraftBlockEntity extends BlockEntity {
                 12, 0.3, 0.3, 0.3, 0.02);
     }
 
+    // ---------------------------------------------------------------- Eye
+
+    /** Redstone while a creature is within reach; comparator output follows how full the organism is. */
+    private void watch(ServerLevel level) {
+        OrganismCoreBlockEntity core = core();
+        boolean sees = core != null && !level.getEntitiesOfClass(LivingEntity.class,
+                new AABB(worldPosition).inflate(EYE_RANGE), entity -> entity.isAlive() && !entity.isSpectator()).isEmpty();
+        int fill = core == null ? 0 : core.comparatorSignal();
+        if (sees != seesCreature) {
+            seesCreature = sees;
+            level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
+        }
+        if (fill != reportedFill) {
+            reportedFill = fill;
+            level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
+        }
+    }
+
+    // ---------------------------------------------------------------- Twin Clocks
+
+    /**
+     * Runs on the free Clock, the one grafted on a Time organism. Every interval it compares itself with
+     * each Clock at the other end of its veins that is buried in a Density organism: the more Density flesh
+     * weighs on the buried Clock than on this one, the more beats it has missed. Missed beats are Time.
+     */
+    private void clockTick(ServerLevel level) {
+        OrganismCoreBlockEntity core = core();
+        if (core == null || core.aspect() != Aspect.TIME
+                || !level.getBlockState(front()).is(ModBlocks.BRASS_CONDUIT.get())) {
+            return;
+        }
+        int ownMass = massAround(level, worldPosition);
+        int missed = 0;
+        for (BlockPos other : VeinNetwork.walk(level, front(), worldPosition).grafts()) {
+            if (level.getBlockEntity(other) instanceof GraftBlockEntity buried && buried.type() == GraftType.CLOCK) {
+                OrganismCoreBlockEntity heavy = buried.core();
+                if (heavy != null && heavy.aspect() == Aspect.DENSITY) {
+                    missed += Math.max(0, massAround(level, other) - ownMass);
+                }
+            }
+        }
+        if (missed <= 0) {
+            return;
+        }
+        level.playSound(null, worldPosition, SoundEvents.NOTE_BLOCK_HAT.value(), SoundSource.BLOCKS, 0.3f, 0.6f);
+        missedBeats += missed;
+        int drams = missedBeats / BEATS_PER_TIME_DRAM;
+        if (drams > 0) {
+            int fed = core.feed(drams);
+            missedBeats -= drams * BEATS_PER_TIME_DRAM;
+            if (fed > 0) {
+                TemporalStress.add(level, worldPosition, fed);
+                level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.8f, 0.5f);
+                level.sendParticles(new DustParticleOptions(Vec3.fromRGB24(Aspect.TIME.color()).toVector3f(), 1.2f),
+                        worldPosition.getX() + 0.5, worldPosition.getY() + 0.7, worldPosition.getZ() + 0.5, 6, 0.2, 0.2, 0.2, 0);
+            }
+        }
+        setChanged();
+    }
+
+    /** Density flesh within {@value #CLOCK_MASS_RADIUS} blocks of a Clock: the mass slowing it down. */
+    public static int massAround(Level level, BlockPos clock) {
+        int mass = 0;
+        for (BlockPos pos : BlockPos.betweenClosed(clock.offset(-CLOCK_MASS_RADIUS, -CLOCK_MASS_RADIUS, -CLOCK_MASS_RADIUS),
+                clock.offset(CLOCK_MASS_RADIUS, CLOCK_MASS_RADIUS, CLOCK_MASS_RADIUS))) {
+            BlockState state = level.getBlockState(pos);
+            if ((state.is(ModBlocks.CHRONOFLESH.get()) || state.is(ModBlocks.ORGANISM_CORE.get()))
+                    && state.getValue(FleshBlock.ASPECT) == Aspect.DENSITY) {
+                mass++;
+            }
+        }
+        return mass;
+    }
+
     // ---------------------------------------------------------------- interaction
 
     public ItemInteractionResult useItemOn(ItemStack stack, Player player, InteractionHand hand) {
@@ -363,11 +479,13 @@ public class GraftBlockEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putInt("pace", pace);
+        tag.putInt("missed_beats", missedBeats);
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         pace = tag.contains("pace") ? tag.getInt("pace") : 2;
+        missedBeats = tag.getInt("missed_beats");
     }
 }

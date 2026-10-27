@@ -116,10 +116,11 @@
    containers in the inventory, the Journal (Patchouli).
 3. ✅ Organism growth (culture → armature → hunger/growth → storage → starvation/necrosis);
    Tap, Leech Tendril grafts. ✅ Maw graft, Brass Conduit and veins (grown by Taps).
-4. ✅ Enhancing Gland + player pools + Level 1 powers (keybinds + HUD; radial menu still to do).
+4. ✅ Enhancing Gland + player pools + Level 1 powers (keybinds, HUD, radial menu: hold the power key).
 5. ✅ Stasis Ampoule, chunk Temporal Stress, Time Tears (ageing, swallowing, sealing).
    ✅ Stasis Bladder, Time organisms (instability, bursting), Density stabilising.
 6. ✅ Racetrack (Starting Gate, Finish, pace, stalls, heavy veins). ✅ Temporal Exposure. ✅ Chrono-Insulated Suit.
+   ✅ Heart graft (Taps pump faster), Eye graft (redstone + comparator), Twin Clocks (Law of the Heavy Heart).
 7. ⬜ Chronocortex + Ganglion + research + reanimation ritual.
 8. ⬜ Umbilical Locket (Curios), Temporal Field, Temporal Lens + first structures.
 

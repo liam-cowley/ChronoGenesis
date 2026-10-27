@@ -87,8 +87,8 @@ datapacks.
 | **Maw** (input) | Flesh + bone | Takes essence from vials and jugs, or from a neighbouring organism's Tap |
 | **Leech Tendril** | Flesh + spider eye + matching needle | Drains its aspect from mobs within range. **This is how farms work** |
 | **Vein** | Grown along Brass Conduit frames | Carries essence between organisms. The living answer to pipes |
-| **Heart** | Animal heart specimen | Pumps: faster flow through Taps and Veins |
-| **Eye** | Spider or ender eye | Senses fill level and nearby mobs (comparator and redstone output) |
+| **Heart** | Animal heart specimen (cows, pigs, sheep) | Pumps: each Heart adds the base rate to the organism's Taps, up to three |
+| **Eye** | Spider or ender eye | Senses fill level and nearby creatures within 4 blocks (comparator and redstone output) |
 | **Enhancing Gland** | Flesh + aspect culture + amethyst | Infuses the **player** with the organism's essence (section 3) |
 | **Ganglion** | Brain specimen | Connects the organism to the Chronocortex for monitoring and control (section 5) |
 | **Stasis Bladder** | Phantom membrane + flesh | Required to keep Time essence (section 4) |
@@ -199,6 +199,9 @@ mad.
 inside a massive Density organism and keep the other outside, linked by a vein. Every tick, the
 **difference** between them turns into Time. More mass around the buried clock means more Time.
 The puzzle is packing mass around the buried clock as densely as possible.
+As built: the free clock sits on a **Time organism**, which catches the Time. Every 2 seconds it adds
+up how much more Density flesh lies within 2 blocks of the buried clock than of itself; 600 of these
+missed beats make a dram.
 
 #### Other Laws (other uses, and later conversions)
 | Law (notebook wording) | Real formula | Makes |

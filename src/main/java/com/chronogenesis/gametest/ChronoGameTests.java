@@ -7,6 +7,7 @@ import com.chronogenesis.organism.BrassConduitBlock;
 import com.chronogenesis.organism.CorePhase;
 import com.chronogenesis.organism.FleshBlock;
 import com.chronogenesis.organism.GraftBlock;
+import com.chronogenesis.organism.GraftBlockEntity;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
 import com.chronogenesis.registry.ModBlocks;
@@ -123,6 +124,72 @@ public final class ChronoGameTests {
         speed.feed(16);
         OrganismCoreBlockEntity time = helper.getBlockEntity(timeCore);
         helper.succeedWhen(() -> helper.assertTrue(time.stored() > 0, "no Time arrived at the finish"));
+    }
+
+    /** A Heart grafted on an organism is counted on its next scan and doubles its Taps' rate. */
+    @GameTest(template = "floor7", timeoutTicks = 200)
+    public static void heartSpeedsUpTap(GameTestHelper helper) {
+        BlockPos corePos = new BlockPos(3, 1, 3);
+        helper.setBlock(corePos, core(Aspect.DENSITY));
+        helper.setBlock(corePos.east(), ModBlocks.HEART.get().defaultBlockState()
+                .setValue(GraftBlock.FACING, net.minecraft.core.Direction.EAST));
+        OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(core.hearts() == 1, "heart not counted: " + core.hearts());
+            helper.assertTrue(GraftBlockEntity.tapRate(core) == 8, "tap rate should double: " + GraftBlockEntity.tapRate(core));
+        });
+    }
+
+    /** An Eye gives redstone while a creature is near, and a comparator reads how full the organism is. */
+    @GameTest(template = "floor7", timeoutTicks = 200)
+    public static void eyeWatches(GameTestHelper helper) {
+        BlockPos corePos = new BlockPos(1, 1, 1);
+        BlockPos eyePos = corePos.above();
+        helper.setBlock(corePos, core(Aspect.DENSITY));
+        helper.setBlock(eyePos, graft(ModBlocks.EYE.get()));
+        OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+        core.feed(16);
+        // A still cow, so it cannot wander out of the eye's sight during the test.
+        helper.spawn(EntityType.COW, 3, 1, 3).setNoAi(true);
+        helper.succeedWhen(() -> {
+            GraftBlockEntity eye = helper.getBlockEntity(eyePos);
+            helper.assertTrue(eye.seesCreature(), "eye should see the cow");
+            helper.assertTrue(helper.getLevel().hasNeighborSignal(helper.absolutePos(eyePos).above()),
+                    "the block above the eye should be powered");
+            helper.assertTrue(eye.reportedFill() > 0, "comparator should read a full organism");
+        });
+    }
+
+    /**
+     * Twin Clocks: a Clock buried in Density flesh, linked by a vein to a Clock on a Time organism, misses
+     * beats; the free Clock turns them into Time.
+     */
+    @GameTest(template = "floor7", timeoutTicks = 1000)
+    public static void twinClocksMakeTime(GameTestHelper helper) {
+        BlockPos densityCore = new BlockPos(1, 1, 1);
+        BlockPos timeCore = new BlockPos(5, 1, 1);
+        BlockPos buried = densityCore.above();
+        helper.setBlock(densityCore, core(Aspect.DENSITY));
+        helper.setBlock(timeCore, core(Aspect.TIME));
+        helper.setBlock(timeCore.east(), ModBlocks.STASIS_BLADDER.get().defaultBlockState()
+                .setValue(GraftBlock.FACING, net.minecraft.core.Direction.EAST));
+        // Heavy flesh packed around the buried clock, leaving its vein clear.
+        for (BlockPos pos : BlockPos.betweenClosed(0, 1, 0, 2, 4, 3)) {
+            boolean keep = pos.equals(densityCore) || pos.equals(buried) || (pos.getY() == 3 && pos.getZ() == 1 && pos.getX() >= 1);
+            if (!keep) {
+                helper.setBlock(pos, ModBlocks.CHRONOFLESH.get().defaultBlockState()
+                        .setValue(FleshBlock.ASPECT, Aspect.DENSITY).setValue(FleshBlock.GROWTH, FleshBlock.MATURE));
+            }
+        }
+        helper.setBlock(buried, graft(ModBlocks.CLOCK.get()));
+        helper.setBlock(timeCore.above(), graft(ModBlocks.CLOCK.get()));
+        for (int x = 1; x <= 5; x++) {
+            helper.setBlock(new BlockPos(x, 3, 1), ModBlocks.BRASS_CONDUIT.get().defaultBlockState()
+                    .setValue(BrassConduitBlock.VEIN, true));
+        }
+        helper.<OrganismCoreBlockEntity>getBlockEntity(densityCore).feed(64);
+        OrganismCoreBlockEntity time = helper.getBlockEntity(timeCore);
+        helper.succeedWhen(() -> helper.assertTrue(time.stored() > 0, "no Time from the twin clocks"));
     }
 
     private static net.minecraft.world.level.block.state.BlockState core(Aspect aspect) {

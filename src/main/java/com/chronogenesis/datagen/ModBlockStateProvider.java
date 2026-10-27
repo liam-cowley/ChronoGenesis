@@ -231,6 +231,34 @@ public class ModBlockStateProvider extends BlockStateProvider {
         box(finish, 3, 9, 3, 13, 10, 13, "#brass", false);
         box(finish, 5, 8.5f, 5, 11, 9.5f, 11, "#gauge", false);
         graftBlock(ModBlocks.FINISH.get(), finish);
+
+        // Heart: a clenched lump of muscle on a mound, a brass valve stitched into its top.
+        BlockModelBuilder heart = graftModel("heart", "graft_flesh")
+                .texture("muscle", modLoc("block/heart"));
+        box(heart, 4, 0, 4, 12, 2, 12, FLESH, false);
+        box(heart, 3, 2, 4, 13, 9, 12, "#muscle", false);
+        box(heart, 4, 9, 5, 11, 11, 11, "#muscle", false);
+        box(heart, 9, 9, 7, 11, 13, 9, "#brass", false);
+        box(heart, 5, 9, 6, 7, 12, 8, "#muscle", false);
+        graftBlock(ModBlocks.HEART.get(), heart);
+
+        // Eye: a lidded eyeball on a fleshy stalk, staring out of the organism.
+        BlockModelBuilder eye = graftModel("eye", "graft_flesh")
+                .texture("eye", modLoc("block/eye"));
+        box(eye, 4, 0, 4, 12, 2, 12, FLESH, false);
+        box(eye, 6, 2, 6, 10, 5, 10, FLESH, false);
+        eye.element().from(3.5f, 5, 3.5f).to(12.5f, 10, 12.5f)
+                .allFaces((dir, face) -> face.texture(dir == Direction.UP ? "#eye" : FLESH)).end();
+        graftBlock(ModBlocks.EYE.get(), eye);
+
+        // Clock: a brass-cased clock face on a plinth. Bury one in Density flesh, keep its twin free.
+        BlockModelBuilder clock = graftModel("clock", "graft_flesh")
+                .texture("face", modLoc("block/clock"));
+        box(clock, 3, 0, 3, 13, 3, 13, FLESH, false);
+        clock.element().from(3, 3, 3).to(13, 6, 13)
+                .allFaces((dir, face) -> face.texture(dir == Direction.UP ? "#face" : "#brass")).end();
+        box(clock, 7.5f, 6, 7.5f, 8.5f, 7, 8.5f, "#brass", false);
+        graftBlock(ModBlocks.CLOCK.get(), clock);
     }
 
     // ---------------------------------------------------------------- conduit and veins

@@ -33,6 +33,9 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.STASIS_BLADDER.get());
         dropSelf(ModBlocks.STARTING_GATE.get());
         dropSelf(ModBlocks.FINISH.get());
+        dropSelf(ModBlocks.HEART.get());
+        dropSelf(ModBlocks.EYE.get());
+        dropSelf(ModBlocks.CLOCK.get());
         dropSelf(ModBlocks.LEECH_TENDRIL.get());
         dropSelf(ModBlocks.ENHANCING_GLAND.get());
         // The jug keeps its essence when broken.

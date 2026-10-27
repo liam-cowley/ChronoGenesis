@@ -21,7 +21,16 @@ public enum GraftType implements StringRepresentable {
     /** Racetrack start, on a Speed organism: sends pulses of Speed down the veins. */
     STARTING_GATE,
     /** Racetrack finish, on a Time organism: the time a pulse spent travelling condenses here. */
-    FINISH;
+    FINISH,
+    /** Pumps: every Heart on an organism makes its Taps push essence faster (up to three). */
+    HEART,
+    /** Watches: redstone signal while a creature is near, comparator signal for how full the organism is. */
+    EYE,
+    /**
+     * Twin Clocks (Law of the Heavy Heart): a Clock buried in Density flesh, linked by veins to a Clock on a
+     * Time organism, runs slow. The beats it misses condense into Time at the free Clock.
+     */
+    CLOCK;
 
     public static final Codec<GraftType> CODEC = StringRepresentable.fromEnum(GraftType::values);
 

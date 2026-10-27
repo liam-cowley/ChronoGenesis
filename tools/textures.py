@@ -1038,6 +1038,86 @@ def gauges():
     dial("finish", (232, 170, 70, 255), [(7, 6), (7, 5), (7, 4), (9, 8), (10, 8)], marks)
 
 
+# ---------------------------------------------------------------- Heart, Eye and Clock grafts
+
+def heart_specimen():
+    # An animal heart in a jar of preserving fluid, a brass tube still stitched into the aorta.
+    p = {"s": STEEL, "k": BRASS_DDK, "B": BRASS, "b": BRASS_DK, "H": BRASS_HI,
+         "g": GLASS_EDGE, "G": GLASS_EDGE_DK, "F": (176, 150, 110, 190), "f": (150, 124, 90, 200),
+         "o": (230, 214, 170, 220), "r": (150, 30, 44, 255), "R": (196, 54, 64, 255), "h": (236, 120, 120, 255),
+         "v": (70, 60, 130, 255), "t": THREAD, "W": GLINT}
+    save(grid([
+        "................",
+        "......BH........",
+        "..kHBBBbBBBBbk..",
+        "..kbBBBbBBBbbk..",
+        "...gFFFbFvFFG...",
+        "...gFFFbvvFFG...",
+        "...gFRRRrRRFG...",
+        "...gWRhRRRrRG...",
+        "...gRhRRtRRrG...",
+        "...gRRRRtRRrG...",
+        "...gFRRRtRrFG...",
+        "...gFFRRRrFoG...",
+        "...gFFFRrFFFG...",
+        "...gffFoffffG...",
+        "...gffffffffG...",
+        "...kbBBBBBBbk...",
+    ], p), "item/preserved_heart")
+
+
+def heart_muscle():
+    # Heart graft: dark red muscle in diagonal bands, blue and red vessels, a stitched seam.
+    r = rng(91)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            v = 14 * math.sin((x + y) * 0.7)
+            img.putpixel((x, y), shade((150, 36, 50, 255), int(v + r.randint(-10, 10))))
+    for start, colour in [((2, 0), (70, 64, 140, 255)), ((11, 0), (210, 70, 70, 255))]:
+        x, y = start
+        while y < 16:
+            img.putpixel((x % 16, y), colour)
+            x += r.choice([-1, 0, 0, 1])
+            y += 1
+    for y in range(3, 13, 2):
+        img.putpixel((7, y), THREAD)
+        img.putpixel((8, y + 1), THREAD_HI)
+    save(img, "block/heart")
+
+
+def eye_graft():
+    # Eye graft: a lidded eyeball with an eldritch green iris, watching what passes.
+    p = {"l": (150, 80, 90, 255), "L": (190, 110, 120, 255), "w": (236, 228, 212, 255), "W": GLINT,
+         "s": (200, 186, 170, 255), "r": (200, 70, 70, 255), "i": ELDRITCH_DK, "I": ELDRITCH, "x": (12, 8, 12, 255),
+         "t": THREAD}
+    save(grid([
+        "llllllllllllllll",
+        "lLLLLLLLLLLLLLLl",
+        "lLLtLLtLLtLLtLLl",
+        "lLsssssssssssLLl",
+        "lLswwwwwwwwwsLLl",
+        "lswwwwiiiiwwrwsl",
+        "lswwwiIIIIiwwwsl",
+        "lswwiIIxxIIiwwsl",
+        "lswrwiIxxIIiwwsl",
+        "lswwwiIIIIiwWwsl",
+        "lswwwwiiiiwwwwsl",
+        "lLswwwwrwwwwwsLl",
+        "lLssswwwwwwsssLl",
+        "lLLLsssssssLLLLl",
+        "lLLLLLLLLLLLLLLl",
+        "llllllllllllllll",
+    ], p), "block/eye")
+
+
+def clock_graft():
+    # Clock graft: a vanilla clock face set in brass, the hands stopped at nearly midnight.
+    marks = [(7, 2), (8, 2), (13, 7), (13, 8), (2, 7), (2, 8), (7, 13), (8, 13),
+             (4, 4), (11, 4), (4, 11), (11, 11)]
+    dial("clock", (232, 222, 190, 255), [(7, 6), (7, 5), (7, 4), (7, 3), (8, 6), (9, 5)], marks)
+
+
 # ---------------------------------------------------------------- the Chrono-Insulated Suit
 
 COAT = (196, 204, 186, 255)
@@ -1216,6 +1296,10 @@ vein_clogged()
 maw()
 stasis_bladder()
 gauges()
+heart_specimen()
+heart_muscle()
+eye_graft()
+clock_graft()
 suit_icons()
 suit_armor_layers()
 

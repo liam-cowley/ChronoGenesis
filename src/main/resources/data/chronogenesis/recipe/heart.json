@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:preserved_heart"
+    },
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "tag": "c:nuggets/brass"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:heart",
+    "count": 1
+  }
+}

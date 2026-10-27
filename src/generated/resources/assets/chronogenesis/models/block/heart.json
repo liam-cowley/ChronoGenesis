@@ -1,0 +1,173 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh"
+        },
+        "east": {
+          "texture": "#flesh"
+        },
+        "north": {
+          "texture": "#flesh"
+        },
+        "south": {
+          "texture": "#flesh"
+        },
+        "up": {
+          "texture": "#flesh"
+        },
+        "west": {
+          "texture": "#flesh"
+        }
+      },
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        2,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#muscle"
+        },
+        "east": {
+          "texture": "#muscle"
+        },
+        "north": {
+          "texture": "#muscle"
+        },
+        "south": {
+          "texture": "#muscle"
+        },
+        "up": {
+          "texture": "#muscle"
+        },
+        "west": {
+          "texture": "#muscle"
+        }
+      },
+      "from": [
+        3,
+        2,
+        4
+      ],
+      "to": [
+        13,
+        9,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#muscle"
+        },
+        "east": {
+          "texture": "#muscle"
+        },
+        "north": {
+          "texture": "#muscle"
+        },
+        "south": {
+          "texture": "#muscle"
+        },
+        "up": {
+          "texture": "#muscle"
+        },
+        "west": {
+          "texture": "#muscle"
+        }
+      },
+      "from": [
+        4,
+        9,
+        5
+      ],
+      "to": [
+        11,
+        11,
+        11
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#brass"
+        },
+        "east": {
+          "texture": "#brass"
+        },
+        "north": {
+          "texture": "#brass"
+        },
+        "south": {
+          "texture": "#brass"
+        },
+        "up": {
+          "texture": "#brass"
+        },
+        "west": {
+          "texture": "#brass"
+        }
+      },
+      "from": [
+        9,
+        9,
+        7
+      ],
+      "to": [
+        11,
+        13,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#muscle"
+        },
+        "east": {
+          "texture": "#muscle"
+        },
+        "north": {
+          "texture": "#muscle"
+        },
+        "south": {
+          "texture": "#muscle"
+        },
+        "up": {
+          "texture": "#muscle"
+        },
+        "west": {
+          "texture": "#muscle"
+        }
+      },
+      "from": [
+        5,
+        9,
+        6
+      ],
+      "to": [
+        7,
+        12,
+        8
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "brass": "chronogenesis:block/brass_fitting",
+    "flesh": "chronogenesis:block/graft_flesh",
+    "muscle": "chronogenesis:block/heart",
+    "particle": "chronogenesis:block/heart",
+    "steel": "chronogenesis:block/steel"
+  }
+}

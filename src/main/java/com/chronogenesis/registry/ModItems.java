@@ -48,6 +48,9 @@ public final class ModItems {
     /** Taken from zombie villagers and witches. The seed of Awareness cultures. */
     public static final DeferredItem<Item> PRESERVED_BRAIN = ITEMS.registerSimpleItem("preserved_brain",
             new Item.Properties().stacksTo(16));
+    /** Taken from cows, pigs and sheep. Grafted on, it pumps. */
+    public static final DeferredItem<Item> PRESERVED_HEART = ITEMS.registerSimpleItem("preserved_heart",
+            new Item.Properties().stacksTo(16));
     /** Crystallised time left behind when a creature desiccates. */
     public static final DeferredItem<Item> TEMPORAL_RESIDUE = ITEMS.registerSimpleItem("temporal_residue",
             new Item.Properties().rarity(Rarity.UNCOMMON));
@@ -63,6 +66,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> STASIS_BLADDER = ITEMS.registerSimpleBlockItem("stasis_bladder", ModBlocks.STASIS_BLADDER);
     public static final DeferredItem<BlockItem> STARTING_GATE = ITEMS.registerSimpleBlockItem("starting_gate", ModBlocks.STARTING_GATE);
     public static final DeferredItem<BlockItem> FINISH = ITEMS.registerSimpleBlockItem("finish", ModBlocks.FINISH);
+    public static final DeferredItem<BlockItem> HEART = ITEMS.registerSimpleBlockItem("heart", ModBlocks.HEART);
+    public static final DeferredItem<BlockItem> EYE = ITEMS.registerSimpleBlockItem("eye", ModBlocks.EYE);
+    public static final DeferredItem<BlockItem> CLOCK = ITEMS.registerSimpleBlockItem("clock", ModBlocks.CLOCK);
     public static final DeferredItem<EssenceJugItem> ESSENCE_JUG = ITEMS.registerItem("essence_jug",
             properties -> new EssenceJugItem(ModBlocks.ESSENCE_JUG.get(), properties), new Item.Properties().stacksTo(1));
 

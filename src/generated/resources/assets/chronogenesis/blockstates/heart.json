@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "chronogenesis:block/heart",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "chronogenesis:block/heart",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "chronogenesis:block/heart",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "chronogenesis:block/heart",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "chronogenesis:block/heart"
+    },
+    "facing=west": {
+      "model": "chronogenesis:block/heart",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

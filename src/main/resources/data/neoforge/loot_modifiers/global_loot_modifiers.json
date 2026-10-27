@@ -2,6 +2,7 @@
   "replace": false,
   "entries": [
     "chronogenesis:brain_from_zombie_villager",
-    "chronogenesis:brain_from_witch"
+    "chronogenesis:brain_from_witch",
+    "chronogenesis:heart_from_livestock"
   ]
 }

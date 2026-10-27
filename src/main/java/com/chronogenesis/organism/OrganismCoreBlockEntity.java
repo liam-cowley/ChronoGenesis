@@ -46,6 +46,8 @@ public class OrganismCoreBlockEntity extends BlockEntity {
     private int tick;
     /** Stasis Bladder grafts on this organism (Time organisms need them). Updated on every scan. */
     private int bladders;
+    /** Heart grafts on this organism: each one makes its Taps pump faster. Updated on every scan. */
+    private int hearts;
     /** Density flesh blocks touching this organism: heavy mass steadies Time. Updated on every scan. */
     private int densityTouching;
     /** Time organisms only: builds up while under-stabilised; bursts at {@link #BURST_AT}. Saved. */
@@ -79,6 +81,10 @@ public class OrganismCoreBlockEntity extends BlockEntity {
 
     public int bladders() {
         return bladders;
+    }
+
+    public int hearts() {
+        return hearts;
     }
 
     public int instability() {
@@ -184,9 +190,10 @@ public class OrganismCoreBlockEntity extends BlockEntity {
         updatePhase(level);
     }
 
-    /** Counts Stasis Bladders grown on this organism and Density flesh pressing against it. */
+    /** Counts Stasis Bladders and Hearts grown on this organism, and Density flesh pressing against it. */
     private void countNeighbours(ServerLevel level) {
         int bladderCount = 0;
+        int heartCount = 0;
         java.util.Set<BlockPos> dense = new java.util.HashSet<>();
         List<BlockPos> body = new java.util.ArrayList<>(flesh);
         body.add(worldPosition);
@@ -194,9 +201,12 @@ public class OrganismCoreBlockEntity extends BlockEntity {
             for (net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
                 BlockPos next = pos.relative(direction);
                 BlockState state = level.getBlockState(next);
-                if (state.getBlock() instanceof GraftBlock graft && graft.type() == GraftType.STASIS_BLADDER
-                        && GraftBlock.supportPos(state, next).equals(pos)) {
-                    bladderCount++;
+                if (state.getBlock() instanceof GraftBlock graft && GraftBlock.supportPos(state, next).equals(pos)) {
+                    if (graft.type() == GraftType.STASIS_BLADDER) {
+                        bladderCount++;
+                    } else if (graft.type() == GraftType.HEART) {
+                        heartCount++;
+                    }
                 } else if (aspect() != Aspect.DENSITY && state.is(ModBlocks.CHRONOFLESH.get())
                         && state.getValue(FleshBlock.ASPECT) == Aspect.DENSITY) {
                     dense.add(next);
@@ -204,6 +214,7 @@ public class OrganismCoreBlockEntity extends BlockEntity {
             }
         }
         bladders = bladderCount;
+        hearts = heartCount;
         densityTouching = dense.size();
     }
 

@@ -69,6 +69,9 @@ public final class ModBlocks {
     public static final DeferredBlock<GraftBlock> FINISH = graft("finish", GraftType.FINISH);
     public static final DeferredBlock<GraftBlock> LEECH_TENDRIL = graft("leech_tendril", GraftType.LEECH_TENDRIL);
     public static final DeferredBlock<GraftBlock> ENHANCING_GLAND = graft("enhancing_gland", GraftType.ENHANCING_GLAND);
+    public static final DeferredBlock<GraftBlock> HEART = graft("heart", GraftType.HEART);
+    public static final DeferredBlock<GraftBlock> EYE = graft("eye", GraftType.EYE);
+    public static final DeferredBlock<GraftBlock> CLOCK = graft("clock", GraftType.CLOCK);
 
     public static final DeferredBlock<EssenceJugBlock> ESSENCE_JUG = BLOCKS.registerBlock("essence_jug", EssenceJugBlock::new,
             BlockBehaviour.Properties.of()

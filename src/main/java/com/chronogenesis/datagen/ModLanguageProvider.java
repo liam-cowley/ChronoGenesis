@@ -42,6 +42,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.CULTURE, "Culture");
         add("item.chronogenesis.culture.of", "%s Culture");
         addItem(ModItems.PRESERVED_BRAIN, "Preserved Brain");
+        addItem(ModItems.PRESERVED_HEART, "Preserved Heart");
         addItem(ModItems.TEMPORAL_RESIDUE, "Temporal Residue");
 
         // Blocks
@@ -54,6 +55,9 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.STASIS_BLADDER, "Stasis Bladder Graft");
         addBlock(ModBlocks.STARTING_GATE, "Starting Gate Graft");
         addBlock(ModBlocks.FINISH, "Finish Graft");
+        addBlock(ModBlocks.HEART, "Heart Graft");
+        addBlock(ModBlocks.EYE, "Eye Graft");
+        addBlock(ModBlocks.CLOCK, "Clock Graft");
         addItem(ModItems.CHRONO_GOGGLES, "Chrono-Insulated Goggles");
         addItem(ModItems.CHRONO_LAB_COAT, "Chrono-Insulated Lab Coat");
         addItem(ModItems.CHRONO_TROUSERS, "Chrono-Insulated Trousers");
@@ -121,7 +125,10 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Keys
         add("key.categories.chronogenesis", "ChronoGenesis");
-        add("key.chronogenesis.cycle_power", "Select next essence power");
+        add("key.chronogenesis.cycle_power", "Select power (tap: next, hold: radial menu)");
+        add("screen.chronogenesis.radial.title", "Choose a power");
+        add("screen.chronogenesis.radial.hint", "Point at a power and release");
+        add("screen.chronogenesis.radial.none", "No powers yet. Fill yourself at an Enhancing Gland.");
         add("key.chronogenesis.use_power", "Use / toggle selected power");
 
         // Config screen
