@@ -109,21 +109,18 @@
 | Sustainability | Breeding treadmill / rush Temporal Fields | Effort now vs. research cost |
 | Research order | Locket / Lens / Field / powers, through different clue sets | Exploration-led or lab-led playstyle |
 
-## Suggested build order (implementation)
-1. Essence-pool attachment + essence profiles (data) + drain effects:
-   - floating (Density)
-   - scale (Size)
-   - slowness (Speed)
-   - AI throttling (Awareness)
-   - ageing (Time)
-2. Chrono Syringe with needle component, Vials, Jugs, the Journal (Patchouli).
-3. Organism growth system: culture → armature → hunger and growth → storage. Then Tap, Maw and
-   Leech Tendril grafts.
-4. Enhancing Gland + player pools + Level 1 powers + radial keybind.
-5. Time: Stasis Ampoule, chunk Temporal Stress, Time Tears, Stasis Bladder, Density stabilising.
-6. Racetrack (Starting Gate, Finish, pulses), Temporal Exposure + Suit.
-7. Chronocortex + Ganglion + research (data-driven) + reanimation ritual.
-8. Umbilical Locket (Curios), Temporal Field, Temporal Lens + first structures.
+## Build order (implementation status)
+1. ✅ Essence-pool attachment + essence profiles (data map) + drain effects (float, shrink, slow,
+   AI throttling, ageing/desiccation).
+2. ✅ Chrono Syringe with needle component, Vials, Jugs, the Journal (Patchouli).
+3. ✅ Organism growth (culture → armature → hunger/growth → storage → starvation/necrosis);
+   Tap, Leech Tendril grafts. ⬜ Maw and Vein grafts.
+4. ✅ Enhancing Gland + player pools + Level 1 powers (keybinds + HUD; radial menu still to do).
+5. ✅ Stasis Ampoule, chunk Temporal Stress, Time Tears (ageing, swallowing, sealing).
+   ⬜ Stasis Bladder, Time organisms, Density stabilising.
+6. ⬜ Racetrack (Starting Gate, Finish, pulses). ✅ Temporal Exposure. ⬜ Chrono-Insulated Suit.
+7. ⬜ Chronocortex + Ganglion + research + reanimation ritual.
+8. ⬜ Umbilical Locket (Curios), Temporal Field, Temporal Lens + first structures.
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

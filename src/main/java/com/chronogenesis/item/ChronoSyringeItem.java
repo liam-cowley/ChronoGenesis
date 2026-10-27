@@ -51,8 +51,11 @@ public class ChronoSyringeItem extends EssenceContainerItem {
         return syringe.get(ModDataComponents.ASPECT.get());
     }
 
-    @Override
-    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
+    /**
+     * Draws from a creature. Called from {@link com.chronogenesis.essence.SyringeEvents} before the
+     * creature's own interaction (so villagers' trade screens don't swallow the click).
+     */
+    public InteractionResult drawFrom(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
         Aspect aspect = needle(stack);
         if (aspect == null) {
             message(player, "message.chronogenesis.syringe.no_needle");
@@ -125,7 +128,7 @@ public class ChronoSyringeItem extends EssenceContainerItem {
         }
         if (!level.isClientSide()) {
             int slot = EssenceItems.findSlotWithSpace(player, contents.aspect());
-            if (slot < 0 || player.getInventory().getItem(slot) == stack) {
+            if (slot < 0) {
                 message(player, "message.chronogenesis.syringe.no_vial");
                 return InteractionResultHolder.fail(stack);
             }

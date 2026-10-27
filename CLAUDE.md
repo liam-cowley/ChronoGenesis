@@ -42,3 +42,13 @@ and keep names consistent with it.
 - Prefer JSON data (recipes, ritual definitions, multiblock patterns via custom datapack registries) over hard-coded
   Java so content is tweakable by packs.
 - Test both `runClient` and `runServer` before calling a feature done.
+
+## CI and tooling
+- `.github/workflows/build.yml` compiles every push. `datagen.yml` (feature branches) runs `runData`, **commits
+  `src/generated/resources` back to the branch**, then boots a dedicated server as a smoke test; problems show up
+  as workflow annotations. Pull after pushing before editing generated files' sources again.
+- Placeholder textures come from `tools/placeholder_textures.py <textures dir>` (16x16 pixel art). Replace with
+  real art over time; keep the file names.
+- Hand-written data (recipes, tags, loot modifiers, data maps, advancements, Patchouli journal) lives in
+  `src/main/resources`; models, blockstates, lang and block loot tables are datagen.
+

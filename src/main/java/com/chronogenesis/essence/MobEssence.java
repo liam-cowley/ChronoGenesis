@@ -3,7 +3,7 @@ package com.chronogenesis.essence;
 import com.chronogenesis.registry.ModAttachments;
 
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Mob;
 
 /** Read and drain the essence held by a living mob. Server-side only. */
 public final class MobEssence {
@@ -31,8 +31,9 @@ public final class MobEssence {
         return (float) remaining(entity, aspect) / max;
     }
 
+    /** Only living mobs hold essence: not players, not armor stands. */
     public static boolean canBeDrained(LivingEntity entity) {
-        return !(entity instanceof Player) && entity.isAlive();
+        return entity instanceof Mob && entity.isAlive();
     }
 
     /**

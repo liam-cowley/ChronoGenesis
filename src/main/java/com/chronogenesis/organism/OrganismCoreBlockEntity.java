@@ -39,6 +39,7 @@ public class OrganismCoreBlockEntity extends BlockEntity {
     private int stored;
     private int size;
     private int upkeepTimer;
+    private int missedMeals;
     private int tick;
     private List<BlockPos> frontier = List.of();
     private List<BlockPos> flesh = List.of();
@@ -171,13 +172,20 @@ public class OrganismCoreBlockEntity extends BlockEntity {
         int meal = 1 + size / 8;
         if (stored >= meal) {
             stored -= meal;
+            missedMeals = 0;
             setChanged();
             return;
         }
         stored = 0;
-        if (flesh.isEmpty()) {
+        missedMeals++;
+        // A bare culture survives a few missed meals before it dies.
+        if (flesh.isEmpty() && missedMeals >= 3) {
             level.setBlockAndUpdate(worldPosition, getBlockState().setValue(OrganismCoreBlock.NECROTIC, true));
             level.playSound(null, worldPosition, SoundEvents.SCULK_BLOCK_BREAK, SoundSource.BLOCKS, 1.0f, 0.5f);
+            return;
+        }
+        if (flesh.isEmpty()) {
+            setChanged();
             return;
         }
         // Starving: the farthest flesh withers back to bare frame.
@@ -199,6 +207,7 @@ public class OrganismCoreBlockEntity extends BlockEntity {
         tag.putInt("stored", stored);
         tag.putInt("size", size);
         tag.putInt("upkeep_timer", upkeepTimer);
+        tag.putInt("missed_meals", missedMeals);
     }
 
     @Override
@@ -207,5 +216,6 @@ public class OrganismCoreBlockEntity extends BlockEntity {
         stored = tag.getInt("stored");
         size = tag.getInt("size");
         upkeepTimer = tag.getInt("upkeep_timer");
+        missedMeals = tag.getInt("missed_meals");
     }
 }

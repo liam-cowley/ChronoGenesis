@@ -97,21 +97,29 @@ public final class EssenceItems {
         return current.withAmount(moved);
     }
 
-    /** Finds an inventory slot whose container can take some of {@code aspect}, or -1. */
+    /**
+     * Finds an inventory slot whose storage container (vial, ampoule; never a syringe) can take
+     * some of {@code aspect}, or -1.
+     */
     public static int findSlotWithSpace(Player player, Aspect aspect) {
         var inventory = player.getInventory();
         for (int i = 0; i < inventory.getContainerSize(); i++) {
             ItemStack stack = inventory.getItem(i);
-            if (stack.getCount() == 1 && space(stack, aspect) > 0 && get(stack) != null) {
+            if (isStorage(stack) && stack.getCount() == 1 && space(stack, aspect) > 0 && get(stack) != null) {
                 return i; // prefer topping up a partly filled container
             }
         }
         for (int i = 0; i < inventory.getContainerSize(); i++) {
-            if (space(inventory.getItem(i), aspect) > 0) {
+            ItemStack stack = inventory.getItem(i);
+            if (isStorage(stack) && space(stack, aspect) > 0) {
                 return i;
             }
         }
         return -1;
+    }
+
+    private static boolean isStorage(ItemStack stack) {
+        return isContainer(stack) && !(stack.getItem() instanceof com.chronogenesis.item.ChronoSyringeItem);
     }
 
     /** Pours into the given inventory slot (splitting stacks as needed). Returns drams moved. */

@@ -54,14 +54,17 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlock(ModBlocks.TIME_TEAR.get(), tear);
     }
 
-    /** A graft is a fleshy lump on the face it grows from; the model points north before rotation. */
+    /**
+     * A graft is a fleshy lump on the face it grows from. The model points UP (base on the floor),
+     * which is what {@code directionalBlock} rotates from (like vanilla end rods).
+     */
     private void graft(DeferredBlock<GraftBlock> block) {
         String name = block.getId().getPath();
         ModelFile model = models().getBuilder(name)
                 .texture("all", modLoc("block/" + name))
                 .texture("particle", modLoc("block/" + name))
-                .element().from(3, 3, 8).to(13, 13, 16).allFaces((dir, face) -> face.texture("#all")).end()
-                .element().from(5, 5, 5).to(11, 11, 8)
+                .element().from(3, 0, 3).to(13, 8, 13).allFaces((dir, face) -> face.texture("#all")).end()
+                .element().from(5, 8, 5).to(11, 11, 11)
                 .allFaces((dir, face) -> face.texture("#all")).end();
         directionalBlock(block.get(), model);
         itemModels().withExistingParent(name, modLoc("block/" + name));

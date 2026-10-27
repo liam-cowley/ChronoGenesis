@@ -331,6 +331,12 @@ public final class Powers {
     }
 
     @SubscribeEvent
+    static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        STUTTERS.remove(event.getEntity().getUUID());
+        TemporalExposure.forget(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent
     static void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
         resync(event.getEntity());
     }

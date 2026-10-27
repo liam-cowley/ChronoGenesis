@@ -28,6 +28,21 @@ BioComputer strong enough to tear open the past — and eventually the end of ti
 In-game you should see a **ChronoGenesis** creative tab with Essence Vial, Temporal Residue and
 Chronoflesh.
 
+## Playing the current build
+
+What exists so far (see `docs/design/early-game.md` for the full plan):
+
+1. Pick up a **Clock**, craft the **Laboratory Journal** (book + clock + ink sac). It explains everything below.
+2. Craft a **Chrono Syringe** and needles (iron = Density, gold = Speed, bone = Size, amethyst = Time).
+   Fit a needle: hold it in the off hand and sneak-use the syringe. Use the syringe on a mob to draw essence,
+   use it in the air to empty it into an **Essence Vial**.
+3. Rotten flesh + bone meal + a full vial = a **Culture**. Build a frame of **Copper Armature**, use the culture
+   on it, then feed the organism vials of the same essence. It grows into the frame.
+4. Graft a **Tap**, **Leech Tendril** or **Enhancing Gland** onto the flesh. The gland fills you with essence:
+   press **Z** to select a power and **G** to use it. Pools are shown top-left.
+5. Time: amethyst needle + **Stasis Ampoule**. Over-harvest one area and a **Time Tear** opens
+   (seal it with 4 drams of Density).
+
 ## Everyday commands
 
 | Command | What it does |
@@ -55,9 +70,7 @@ src/main/templates/         neoforge.mods.toml (filled from gradle.properties at
 
 ## Optional library mods
 
-Pre-wired in `build.gradle` but commented out until they're needed:
-
-- **GeckoLib** — animated models for multiblock machines, prehistoric creatures and the Elder God.
-- **Patchouli** — the in-game codex.
+- **GeckoLib** (pre-wired, commented out) — animated models for multiblock machines, prehistoric creatures and the Elder God.
+- **Patchouli** (enabled) — the Laboratory Journal.
 
 Before enabling, confirm the version in `gradle.properties` is the latest for 1.21.1.
