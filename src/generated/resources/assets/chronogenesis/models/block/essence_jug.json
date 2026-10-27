@@ -3,7 +3,7 @@
     {
       "faces": {
         "down": {
-          "texture": "#side"
+          "texture": "#top"
         },
         "east": {
           "texture": "#side"
@@ -15,7 +15,7 @@
           "texture": "#side"
         },
         "up": {
-          "texture": "#side"
+          "texture": "#top"
         },
         "west": {
           "texture": "#side"
@@ -35,7 +35,7 @@
     {
       "faces": {
         "down": {
-          "texture": "#side"
+          "texture": "#top"
         },
         "east": {
           "texture": "#side"
@@ -47,7 +47,7 @@
           "texture": "#side"
         },
         "up": {
-          "texture": "#side"
+          "texture": "#top"
         },
         "west": {
           "texture": "#side"
@@ -68,6 +68,7 @@
   "render_type": "minecraft:cutout",
   "textures": {
     "particle": "chronogenesis:block/essence_jug",
-    "side": "chronogenesis:block/essence_jug"
+    "side": "chronogenesis:block/essence_jug",
+    "top": "chronogenesis:block/essence_jug_top"
   }
 }

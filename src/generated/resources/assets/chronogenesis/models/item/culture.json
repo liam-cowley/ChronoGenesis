@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "chronogenesis:item/culture"
+    "layer0": "chronogenesis:item/culture",
+    "layer1": "chronogenesis:item/culture_dish"
   }
 }

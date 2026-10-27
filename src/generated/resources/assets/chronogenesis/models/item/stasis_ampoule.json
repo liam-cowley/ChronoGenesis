@@ -2,6 +2,7 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "chronogenesis:item/stasis_ampoule",
-    "layer1": "chronogenesis:item/stasis_ampoule_fill"
+    "layer1": "chronogenesis:item/stasis_ampoule_fill",
+    "layer2": "chronogenesis:item/stasis_ampoule_front"
   }
 }
