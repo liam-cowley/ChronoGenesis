@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
  * Drives an organism (core-systems.md section 2):
  * <ol>
  *   <li>Fed essence is stored, up to a capacity that grows with the organism's size.</li>
- *   <li>While there is frame (Copper Armature) touching it and enough stored essence, it grows
+ *   <li>While there is frame (Brass Armature) touching it and enough stored essence, it grows
  *       into the frame one block at a time: essence becomes flesh.</li>
  *   <li>It eats regularly (upkeep). If it cannot, it eats its own flesh, shrinking back to bare
  *       frame, and finally turns Necrotic.</li>
@@ -166,7 +166,7 @@ public class OrganismCoreBlockEntity extends BlockEntity {
             return false;
         }
         for (BlockPos target : frontier) {
-            if (level.getBlockState(target).is(ModBlocks.COPPER_ARMATURE.get())) {
+            if (level.getBlockState(target).is(ModBlocks.BRASS_ARMATURE.get())) {
                 level.setBlockAndUpdate(target, ModBlocks.CHRONOFLESH.get().defaultBlockState()
                         .setValue(FleshBlock.ASPECT, aspect()).setValue(FleshBlock.GROWTH, 0));
                 level.playSound(null, target, SoundEvents.HONEY_BLOCK_PLACE, SoundSource.BLOCKS, 0.8f, 0.6f);
@@ -227,7 +227,7 @@ public class OrganismCoreBlockEntity extends BlockEntity {
             int growth = witheredState.hasProperty(FleshBlock.GROWTH) ? witheredState.getValue(FleshBlock.GROWTH) : 0;
             level.setBlockAndUpdate(withered, growth > 0
                     ? witheredState.setValue(FleshBlock.GROWTH, growth - 1)
-                    : ModBlocks.COPPER_ARMATURE.get().defaultBlockState());
+                    : ModBlocks.BRASS_ARMATURE.get().defaultBlockState());
             level.sendParticles(ParticleTypes.SMOKE, withered.getX() + 0.5, withered.getY() + 0.5, withered.getZ() + 0.5,
                     10, 0.3, 0.3, 0.3, 0.01);
         }

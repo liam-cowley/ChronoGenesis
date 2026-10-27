@@ -6,7 +6,7 @@
 ## Mood pillars
 - **You are a mad scientist,** the way Witchery made you a witch. Your tools are improvised from
   vanilla things: copper, glass, clocks, needles, amethyst, leather, lightning rods.
-- **Grown, not built.** Machines are flesh grown over copper frames, fed on what they hunger for.
+- **Grown, not built.** Machines are flesh grown over brass frames, fed on what they hunger for.
   They are never made of gears and plates.
 - **Gloomy, but Minecraft.** Verdigris green, bruised purple, candlelight, cloudy glass, ticking,
   heartbeats, distant thunder. Gore stays at the vanilla rotten-flesh level.
@@ -44,7 +44,7 @@
 
 ## Hours 0.5–1.5 — The First Organism
 - Make a **Density Culture**: vials of Density + rotten flesh + bone meal, set in a jar.
-- Build a small **Copper Armature** frame in your basement, put the culture in it, and **feed**
+- Build a small **Brass Armature** frame in your basement, put the culture in it, and **feed**
   it. It hungers. It grows into the frame block by block, then starts storing the surplus.
 - Graft a **Tap** onto it, and fill your first **Jug**.
 - Graft a **Leech Tendril**. Now the organism drains **leashed cows** in a pen automatically.

@@ -2,13 +2,13 @@
   "parent": "chronogenesis:living_culture",
   "display": {
     "icon": {
-      "id": "chronogenesis:copper_armature"
+      "id": "chronogenesis:brass_armature"
     },
     "title": {
       "text": "It Hungers"
     },
     "description": {
-      "text": "Seed an organism on a Copper Armature frame."
+      "text": "Seed an organism on a Brass Armature frame."
     },
     "frame": "goal",
     "show_toast": true,
@@ -28,7 +28,7 @@
           },
           {
             "condition": "minecraft:block_state_property",
-            "block": "chronogenesis:copper_armature"
+            "block": "chronogenesis:brass_armature"
           }
         ]
       }

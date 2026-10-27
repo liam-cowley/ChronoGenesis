@@ -20,7 +20,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Chronoflesh: living tissue grown over a Copper Armature frame by an organism.
+ * Chronoflesh: living tissue grown over a Brass Armature frame by an organism.
  * Tinted by the aspect it was grown on. Feeding any flesh block feeds the whole organism.
  * <p>
  * {@link #GROWTH} is how far the flesh has swallowed its frame:

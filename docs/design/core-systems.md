@@ -64,7 +64,7 @@ a frame you build, fed on exactly the aspect you want it to deal with.
 
 ### Growing one
 1. Make a **Culture** of an aspect (for example, a *Density Culture*) and place it inside a
-   **frame** of Copper Armature blocks. The shape of the frame is up to you.
+   **frame** of Brass Armature blocks. The shape of the frame is up to you.
 2. **Feed** it that aspect. The culture now **hungers** for more of it.
 3. Essence is **converted into growth**. Each new block of flesh costs drams, and the organism
    grows outward into the armature, one block at a time.
@@ -86,7 +86,7 @@ datapacks.
 | **Tap** (output) | Flesh + glass + copper | Opens up the stored essence: fill vials or jugs from it by hand, or let a neighbouring organism pull from it |
 | **Maw** (input) | Flesh + bone | Takes essence from vials and jugs, or from a neighbouring organism's Tap |
 | **Leech Tendril** | Flesh + spider eye + matching needle | Drains its aspect from mobs within range. **This is how farms work** |
-| **Vein** | Grown along Copper Conduit frames | Carries essence between organisms. The living answer to pipes |
+| **Vein** | Grown along Brass Conduit frames | Carries essence between organisms. The living answer to pipes |
 | **Heart** | Animal heart specimen | Pumps: faster flow through Taps and Veins |
 | **Eye** | Spider or ender eye | Senses fill level and nearby mobs (comparator and redstone output) |
 | **Enhancing Gland** | Flesh + aspect culture + amethyst | Infuses the **player** with the organism's essence (section 3) |

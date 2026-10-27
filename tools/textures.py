@@ -725,6 +725,92 @@ def time_tear():
     save(img, "block/time_tear")
 
 
+# ---------------------------------------------------------------- brass (material)
+
+YB_HI = (252, 232, 150, 255)
+YB_LT = (236, 202, 108, 255)
+YB = (214, 172, 76, 255)
+YB_DK = (170, 128, 50, 255)
+YB_DDK = (118, 84, 32, 255)
+
+
+def brass_block():
+    # In the manner of vanilla metal blocks: mostly one calm tone with soft lighter streaks, a few
+    # bright flecks, and no hard border so it tiles cleanly.
+    r = rng(71)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            n = (math.sin((x + y * 0.5) * 0.785) + 0.6 * math.sin((y - x * 0.4) * 0.785 * 2)
+                 + r.uniform(-0.2, 0.2))
+            c = YB_LT if n > 1.05 else YB_DK if n < -1.15 else YB
+            img.putpixel((x, y), c)
+    for (x, y) in [(2, 3), (9, 1), (13, 9), (5, 12), (11, 14)]:
+        img.putpixel((x, y), YB_HI)
+    save(img, "block/brass_block")
+
+
+def brass_ingot():
+    p = {"k": YB_DDK, "H": YB_HI, "Y": YB_LT, "M": YB, "d": YB_DK, "W": (255, 250, 220, 255)}
+    save(grid([
+        "................",
+        "................",
+        "................",
+        "................",
+        ".......kkkkkkk..",
+        ".....kkHHHHHHk..",
+        "...kkHHWHHHHdk..",
+        "..kHHHHHHHHddk..",
+        "..kYYYYYYYYddk..",
+        "..kYWMMMMMMddk..",
+        "..kMMMMMMMMdk...",
+        "..kddddddddk....",
+        "...kkkkkkkk.....",
+        "................",
+        "................",
+        "................",
+    ], p), "item/brass_ingot")
+
+
+def brass_nugget():
+    p = {"k": YB_DDK, "H": YB_HI, "Y": YB_LT, "M": YB, "d": YB_DK}
+    save(grid([
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "......kkk.......",
+        ".....kHHYk......",
+        "....kHYYMdk.....",
+        "....kYMMMdk.kk..",
+        ".....kddddk.kHk.",
+        "......kkkk..kdk.",
+        ".............k..",
+        "................",
+        "................",
+        "................",
+        "................",
+    ], p), "item/brass_nugget")
+
+
+def brass_blend():
+    # A heap of crushed copper and gold, not yet one metal: orange and yellow grains.
+    r = rng(73)
+    img = new()
+    heap = [(6, 9), (4, 11), (3, 12), (2, 13), (2, 13), (3, 12)]
+    for i, (x0, x1) in enumerate(heap):
+        y = 7 + i
+        for x in range(x0, x1 + 1):
+            c = r.choice([COPPER, COPPER_HI, COPPER_DK, YB, YB_LT, YB_HI, YB_DK])
+            if x in (x0, x1) or i == len(heap) - 1:
+                c = shade(c, -40)
+            img.putpixel((x, y), c)
+    for (x, y) in [(7, 6), (8, 6), (5, 8), (10, 8)]:
+        img.putpixel((x, y), r.choice([COPPER_HI, YB_HI]))
+    save(img, "item/brass_blend")
+
+
 # ---------------------------------------------------------------- 3D model parts
 
 def brass_fitting():
@@ -842,6 +928,10 @@ essence_jug_top()
 time_tear()
 brass_fitting()
 steel()
+brass_block()
+brass_ingot()
+brass_nugget()
+brass_blend()
 graft_flesh_texture()
 gland_sac()
 leech_skin()

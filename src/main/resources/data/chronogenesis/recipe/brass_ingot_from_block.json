@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:brass_block"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:brass_ingot",
+    "count": 9
+  }
+}

@@ -36,7 +36,7 @@ What exists so far (see `docs/design/early-game.md` for the full plan):
 2. Craft a **Chrono Syringe** and needles (iron = Density, gold = Speed, bone = Size, amethyst = Time).
    Fit a needle: hold it in the off hand and sneak-use the syringe. Use the syringe on a mob to draw essence,
    use it in the air to empty it into an **Essence Vial**.
-3. Rotten flesh + bone meal + a full vial = a **Culture**. Build a frame of **Copper Armature**, use the culture
+3. Rotten flesh + bone meal + a full vial = a **Culture**. Build a frame of **Brass Armature**, use the culture
    on it, then feed the organism vials of the same essence. It grows into the frame.
 4. Graft a **Tap**, **Leech Tendril** or **Enhancing Gland** onto the flesh. The gland fills you with essence:
    press **Z** to select a power and **G** to use it. Pools are shown top-left.

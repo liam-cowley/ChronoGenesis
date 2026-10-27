@@ -22,7 +22,8 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
 
     @Override
     protected void generate() {
-        dropSelf(ModBlocks.COPPER_ARMATURE.get());
+        dropSelf(ModBlocks.BRASS_BLOCK.get());
+        dropSelf(ModBlocks.BRASS_ARMATURE.get());
         // Flesh and cores drop nothing: living tissue dies when cut out (a living core returns its culture in code).
         add(ModBlocks.CHRONOFLESH.get(), noDrop());
         add(ModBlocks.ORGANISM_CORE.get(), noDrop());

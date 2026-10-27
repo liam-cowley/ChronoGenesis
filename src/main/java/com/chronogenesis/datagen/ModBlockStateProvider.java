@@ -17,8 +17,8 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 /**
  * Block states and 3D block models.
  * <p>
- * Organisms are built from shared parts: a copper frame (the twelve edges of the armature, textured
- * with vanilla's copper block),
+ * Organisms are built from shared parts: a brass frame (the twelve edges of the armature, textured
+ * with the Block of Brass),
  * flesh masses tinted by the organism's aspect (tint index 0), and untinted details (brass,
  * eyes, pustules). Flesh has four growth stages and cores have four phases; see {@link FleshBlock}
  * and {@link CorePhase}. Grafts are modelled pointing up; {@code directionalBlock} rotates them.
@@ -26,9 +26,9 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 public class ModBlockStateProvider extends BlockStateProvider {
     private static final String FLESH = "#flesh";
     private static final String FRAME = "#frame";
-    /** Frames use vanilla's own copper block texture, so they match copper blocks in the world. */
-    private static final net.minecraft.resources.ResourceLocation COPPER =
-            net.minecraft.resources.ResourceLocation.withDefaultNamespace("block/copper_block");
+    /** Frames are made of brass: the same texture as the Block of Brass. */
+    private static final net.minecraft.resources.ResourceLocation BRASS =
+            ChronoGenesis.id("block/brass_block");
 
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper fileHelper) {
         super(output, ChronoGenesis.MODID, fileHelper);
@@ -36,13 +36,15 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        // Frame: the bare armature is the same twelve copper beams every organism grows on.
-        BlockModelBuilder armature = models().withExistingParent("copper_armature", mcLoc("block/block"))
-                .texture("frame", COPPER)
-                .texture("particle", COPPER)
+        simpleBlockWithItem(ModBlocks.BRASS_BLOCK.get(), cubeAll(ModBlocks.BRASS_BLOCK.get()));
+
+        // Frame: the bare armature is the same twelve brass beams every organism grows on.
+        BlockModelBuilder armature = models().withExistingParent("brass_armature", mcLoc("block/block"))
+                .texture("frame", BRASS)
+                .texture("particle", BRASS)
                 .renderType("cutout");
         frame(armature);
-        simpleBlockWithItem(ModBlocks.COPPER_ARMATURE.get(), armature);
+        simpleBlockWithItem(ModBlocks.BRASS_ARMATURE.get(), armature);
 
         fleshStages();
         corePhases();
@@ -231,16 +233,16 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     // ---------------------------------------------------------------- shared parts
 
-    /** A model with the organism textures: flesh (tinted), the copper frame, and a particle texture. */
+    /** A model with the organism textures: flesh (tinted), the brass frame, and a particle texture. */
     private BlockModelBuilder organismModel(String name, String fleshTexture) {
         return models().withExistingParent(name, mcLoc("block/block"))
                 .texture("flesh", modLoc("block/" + fleshTexture))
-                .texture("frame", COPPER)
+                .texture("frame", BRASS)
                 .texture("particle", modLoc("block/" + fleshTexture))
                 .renderType("cutout");
     }
 
-    /** The twelve 2x2 copper beams along the edges of the block: the armature the organism grows on. */
+    /** The twelve 2x2 brass beams along the edges of the block: the armature the organism grows on. */
     private static void frame(BlockModelBuilder model) {
         int[] ends = {0, 14};
         for (int a : ends) {

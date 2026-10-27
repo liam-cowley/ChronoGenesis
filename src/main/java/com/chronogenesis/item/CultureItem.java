@@ -22,7 +22,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 /**
- * A living culture of one aspect. Use it on a Copper Armature block to seed an organism there;
+ * A living culture of one aspect. Use it on a Brass Armature block to seed an organism there;
  * then feed it essence of the same aspect and it grows into the rest of the frame.
  */
 public class CultureItem extends Item {
@@ -44,7 +44,7 @@ public class CultureItem extends Item {
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        if (!level.getBlockState(pos).is(ModBlocks.COPPER_ARMATURE.get())) {
+        if (!level.getBlockState(pos).is(ModBlocks.BRASS_ARMATURE.get())) {
             return InteractionResult.PASS;
         }
         if (!level.isClientSide()) {

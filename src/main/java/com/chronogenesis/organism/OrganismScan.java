@@ -55,7 +55,7 @@ public final class OrganismScan {
                 BlockState state = level.getBlockState(next);
                 if (state.is(ModBlocks.CHRONOFLESH.get()) && state.getValue(FleshBlock.ASPECT) == aspect) {
                     queue.add(next);
-                } else if (state.is(ModBlocks.COPPER_ARMATURE.get())) {
+                } else if (state.is(ModBlocks.BRASS_ARMATURE.get())) {
                     frontier.add(next);
                 }
             }

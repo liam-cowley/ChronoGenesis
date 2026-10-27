@@ -1,15 +1,25 @@
 {
   "name": "Grow, Don't Build",
-  "icon": "chronogenesis:copper_armature",
+  "icon": "chronogenesis:brass_armature",
   "category": "chronogenesis:organisms",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Gears wear out. Flesh heals. I will not $(o)build$() machines; I will $(o)grow$() them.$(br2)First, a frame of $(l)Copper Armature$() in whatever shape I like. Then a $(l)Culture$(), set into the frame. Then I feed it."
+      "text": "Gears wear out. Flesh heals. I will not $(o)build$() machines; I will $(o)grow$() them.$(br2)First, a frame of $(l)Brass Armature$() in whatever shape I like. Then a $(l)Culture$(), set into the frame. Then I feed it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Brass",
+      "text": "Copper turns green and soft with time. Flesh does not trust it. $(l)Brass$() holds: three parts copper to one of gold, crushed together into a $(l)Brass Blend$() and smelted.$(br2)Nine ingots make a block; nine nuggets an ingot."
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "chronogenesis:copper_armature"
+      "recipe": "chronogenesis:brass_blend",
+      "recipe2": "chronogenesis:brass_block"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:brass_armature"
     },
     {
       "type": "patchouli:text",

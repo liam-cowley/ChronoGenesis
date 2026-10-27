@@ -18,6 +18,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ChronoGenesis.MODID);
 
+    // Materials
+    /** Copper and gold, crushed together. Smelt it into brass. */
+    public static final DeferredItem<Item> BRASS_BLEND = ITEMS.registerSimpleItem("brass_blend", new Item.Properties());
+    public static final DeferredItem<Item> BRASS_INGOT = ITEMS.registerSimpleItem("brass_ingot", new Item.Properties());
+    public static final DeferredItem<Item> BRASS_NUGGET = ITEMS.registerSimpleItem("brass_nugget", new Item.Properties());
+    public static final DeferredItem<BlockItem> BRASS_BLOCK = ITEMS.registerSimpleBlockItem("brass_block", ModBlocks.BRASS_BLOCK);
+
     // Instruments
     public static final DeferredItem<ChronoSyringeItem> CHRONO_SYRINGE = ITEMS.registerItem("chrono_syringe",
             ChronoSyringeItem::new, new Item.Properties().stacksTo(1));
@@ -35,7 +42,7 @@ public final class ModItems {
             StasisAmpouleItem::new, new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
 
     // Biology
-    /** A living culture of one aspect: seeds an organism on a Copper Armature. */
+    /** A living culture of one aspect: seeds an organism on a Brass Armature. */
     public static final DeferredItem<CultureItem> CULTURE = ITEMS.registerItem("culture",
             CultureItem::new, new Item.Properties().stacksTo(16));
     /** Taken from zombie villagers and witches. The seed of Awareness cultures. */
@@ -46,7 +53,7 @@ public final class ModItems {
             new Item.Properties().rarity(Rarity.UNCOMMON));
 
     // Block items
-    public static final DeferredItem<BlockItem> COPPER_ARMATURE = ITEMS.registerSimpleBlockItem("copper_armature", ModBlocks.COPPER_ARMATURE);
+    public static final DeferredItem<BlockItem> BRASS_ARMATURE = ITEMS.registerSimpleBlockItem("brass_armature", ModBlocks.BRASS_ARMATURE);
     public static final DeferredItem<BlockItem> CHRONOFLESH = ITEMS.registerSimpleBlockItem("chronoflesh", ModBlocks.CHRONOFLESH);
     public static final DeferredItem<BlockItem> TAP = ITEMS.registerSimpleBlockItem("tap", ModBlocks.TAP);
     public static final DeferredItem<BlockItem> LEECH_TENDRIL = ITEMS.registerSimpleBlockItem("leech_tendril", ModBlocks.LEECH_TENDRIL);

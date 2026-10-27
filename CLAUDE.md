@@ -8,7 +8,7 @@ explicitly NOT an industrial/tech mod; progression should branch, not be linear.
 
 Mood: gloomy mad scientist, but still Minecraft (the player should feel like a mad scientist the way
 Witchery made you feel like a witch). Tools are improvised from vanilla materials (copper, glass,
-clocks, candles, amethyst, lightning rods); machines are *grown* over copper frames and jolted alive
+clocks, candles, amethyst, lightning rods); machines are *grown* over brass frames and jolted alive
 with lightning, never assembled from gears/plates. Gore stays at vanilla rotten-flesh level.
 
 Design docs live in `docs/design/`: `core-systems.md` is the source of truth for essences, grown
@@ -53,7 +53,7 @@ and keep names consistent with it.
   Edit the script and re-run rather than hand-editing PNGs, unless replacing a texture with real art for good.
 - `tools/render_models.py <out.png>` renders isometric previews of the generated block models (pull the
   datagen commit first). Use it to check model changes without launching the game.
-- Organism models are built in `ModBlockStateProvider` from shared parts (copper frame, tinted flesh masses,
+- Organism models are built in `ModBlockStateProvider` from shared parts (brass frame, tinted flesh masses,
   untinted brass/eyes). Flesh has `growth` 0-3 (tendrils, creeping, swelling, mature); cores have `phase`
   (seed, awake, hungry, necrotic). Keep new organism blocks in the same style.
 - Layered textures: containers = `<name>` + `<name>_fill` (tinted by aspect, layer 1) + `<name>_front`;

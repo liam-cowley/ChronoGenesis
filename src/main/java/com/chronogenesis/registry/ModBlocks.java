@@ -19,10 +19,18 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ChronoGenesis.MODID);
 
-    /** The frame organisms grow into. Its shape is the player's design decision. */
-    public static final DeferredBlock<Block> COPPER_ARMATURE = BLOCKS.registerSimpleBlock("copper_armature",
+    /** Storage block for brass: copper alloyed with gold, the mad scientist's metal. */
+    public static final DeferredBlock<Block> BRASS_BLOCK = BLOCKS.registerSimpleBlock("brass_block",
             BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_ORANGE)
+                    .mapColor(MapColor.GOLD)
+                    .strength(3.0f, 6.0f)
+                    .sound(SoundType.COPPER)
+                    .requiresCorrectToolForDrops());
+
+    /** The frame organisms grow into, twelve brass beams. Its shape is the player's design decision. */
+    public static final DeferredBlock<Block> BRASS_ARMATURE = BLOCKS.registerSimpleBlock("brass_armature",
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.GOLD)
                     .strength(2.0f, 6.0f)
                     .sound(SoundType.COPPER)
                     .noOcclusion()

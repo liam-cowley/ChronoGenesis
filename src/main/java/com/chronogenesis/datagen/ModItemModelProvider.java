@@ -21,6 +21,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         withFill(ModItems.ESSENCE_VIAL.get());
         withFill(ModItems.STASIS_AMPOULE.get());
 
+        basicItem(ModItems.BRASS_BLEND.get());
+        basicItem(ModItems.BRASS_INGOT.get());
+        basicItem(ModItems.BRASS_NUGGET.get());
         basicItem(ModItems.IRON_NEEDLE.get());
         basicItem(ModItems.GOLD_NEEDLE.get());
         basicItem(ModItems.BONE_NEEDLE.get());

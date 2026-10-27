@@ -25,6 +25,12 @@ public class ModLanguageProvider extends LanguageProvider {
         add(Aspect.AWARENESS.translationKey(), "Awareness");
         add(Aspect.TIME.translationKey(), "Time");
 
+        // Materials
+        addItem(ModItems.BRASS_BLEND, "Brass Blend");
+        addItem(ModItems.BRASS_INGOT, "Brass Ingot");
+        addItem(ModItems.BRASS_NUGGET, "Brass Nugget");
+        addBlock(ModBlocks.BRASS_BLOCK, "Block of Brass");
+
         // Items
         addItem(ModItems.CHRONO_SYRINGE, "Chrono Syringe");
         addItem(ModItems.IRON_NEEDLE, "Iron Needle");
@@ -39,7 +45,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.TEMPORAL_RESIDUE, "Temporal Residue");
 
         // Blocks
-        addBlock(ModBlocks.COPPER_ARMATURE, "Copper Armature");
+        addBlock(ModBlocks.BRASS_ARMATURE, "Brass Armature");
         addBlock(ModBlocks.CHRONOFLESH, "Chronoflesh");
         addBlock(ModBlocks.ORGANISM_CORE, "Organism Core");
         addBlock(ModBlocks.TAP, "Tap Graft");
@@ -55,7 +61,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("tooltip.chronogenesis.no_needle", "No needle fitted");
         add("tooltip.chronogenesis.needle_draws", "Draws %s");
         add("tooltip.chronogenesis.needle_hint", "Hold in off hand, sneak-use a syringe to fit");
-        add("tooltip.chronogenesis.culture", "Use on a Copper Armature, then feed it");
+        add("tooltip.chronogenesis.culture", "Use on a Brass Armature, then feed it");
         add("tooltip.chronogenesis.ampoule", "Use to inject the Time into yourself");
 
         // Syringe

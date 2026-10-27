@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "NNN",
+    "NNN"
+  ],
+  "key": {
+    "N": {
+      "item": "chronogenesis:brass_nugget"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:brass_ingot"
+  }
+}
