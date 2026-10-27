@@ -1,0 +1,37 @@
+{
+  "parent": "chronogenesis:living_culture",
+  "display": {
+    "icon": {
+      "id": "chronogenesis:copper_armature"
+    },
+    "title": {
+      "text": "It Hungers"
+    },
+    "description": {
+      "text": "Seed an organism on a Copper Armature frame."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "seed": {
+      "trigger": "minecraft:item_used_on_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "items": "chronogenesis:culture"
+            }
+          },
+          {
+            "condition": "minecraft:block_state_property",
+            "block": "chronogenesis:copper_armature"
+          }
+        ]
+      }
+    }
+  }
+}

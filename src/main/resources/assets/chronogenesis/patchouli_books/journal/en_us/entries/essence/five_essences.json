@@ -1,0 +1,21 @@
+{
+  "name": "The Five Essences",
+  "icon": "chronogenesis:temporal_residue",
+  "category": "chronogenesis:essence",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A creature is not its flesh. Flesh is only where its $(l)attributes$() happen to be kept. Draw them out and the flesh does strange things without them.$(br2)I count five, so far."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Density$(): weight, belonging to the ground.$(br)$(l)Speed$(): how quickly it moves and acts.$(br)$(l)Size$(): how much of the world it fills.$(br)$(l)Awareness$(): the mind, the noticing.$(br)$(l)Time$(): its age, and everything it has left."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Every kind of creature carries its own measure of each, which I record in $(l)drams$().$(br2)What is taken $(o)does not grow back$(). A cow I have drained stays drained. Calves, however, are born whole.",
+      "title": "Drams"
+    }
+  ],
+  "sortnum": 0
+}

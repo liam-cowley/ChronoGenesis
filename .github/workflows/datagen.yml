@@ -1,12 +1,22 @@
-name: Datagen
+name: Datagen and smoke test
 
-# Runs the data generators and uploads src/generated/resources as an artifact,
-# so generated files can be reviewed and committed without a local Minecraft setup.
-# Also acts as a smoke test: the mod is constructed and all registries are populated.
+# On feature branches:
+#  1. Runs the data generators and commits src/generated/resources back to the branch.
+#  2. Starts a dedicated server with the mod and waits for it to finish loading, which catches
+#     broken registrations, recipes, loot tables, data maps, advancements and the Patchouli book.
+# Problems are reported as workflow annotations (visible on the run page and via the API).
 on:
   workflow_dispatch:
   push:
     branches-ignore: [main]
+    paths-ignore: ['docs/**', '*.md']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: datagen-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   datagen:
@@ -25,19 +35,44 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run data generators
-        run: ./gradlew runData
+        run: ./gradlew runData 2>&1 | tee datagen.log
 
-      - name: Upload generated resources
+      - name: Report datagen problems
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: generated-resources
-          path: src/generated/resources
+        run: |
+          grep -E "(ERROR|WARN).*(chronogenesis|Missing|missing|Couldn't|Exception)" datagen.log \
+            | grep -v "Missing data pack" | head -40 \
+            | while IFS= read -r line; do echo "::warning title=datagen::${line//::/:}"; done || true
 
-      - name: Upload run logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: datagen-logs
-          path: run/logs
-          if-no-files-found: ignore
+      - name: Commit generated resources
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A src/generated/resources
+          if git diff --cached --quiet; then
+            echo "Generated resources unchanged."
+          else
+            git commit -m "Update generated resources (datagen)"
+            git push
+          fi
+
+      - name: Server smoke test
+        run: |
+          mkdir -p run
+          echo "eula=true" > run/eula.txt
+          ./gradlew runServer > server.log 2>&1 &
+          for i in $(seq 1 120); do
+            if grep -q "Done (" server.log; then echo "Server started."; break; fi
+            if grep -q "BUILD FAILED\|Crash report saved\|Failed to start the minecraft server" server.log; then break; fi
+            sleep 5
+          done
+          pkill -f "runServer" || true
+          pkill -f "net.neoforged" || true
+          sleep 5
+          grep -E "ERROR|Exception|Failed to|Couldn't|Unknown|Parsing error" server.log \
+            | grep -iE "chronogenesis|patchouli|recipe|advancement|loot|data.?map|mixin|tag" | head -60 \
+            | while IFS= read -r line; do echo "::warning title=server::${line//::/:}"; done || true
+          if ! grep -q "Done (" server.log; then
+            tail -60 server.log | while IFS= read -r line; do echo "::error title=server-crash::${line//::/:}"; done
+            exit 1
+          fi

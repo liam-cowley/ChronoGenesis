@@ -1,0 +1,30 @@
+{
+  "parent": "chronogenesis:first_draw",
+  "display": {
+    "icon": {
+      "id": "chronogenesis:culture"
+    },
+    "title": {
+      "text": "It Lives"
+    },
+    "description": {
+      "text": "Grow a culture from essence and rotten flesh."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "culture": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "chronogenesis:culture"
+          }
+        ]
+      }
+    }
+  }
+}

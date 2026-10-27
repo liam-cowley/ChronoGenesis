@@ -1,0 +1,30 @@
+{
+  "parent": "chronogenesis:first_draw",
+  "display": {
+    "icon": {
+      "id": "chronogenesis:preserved_brain"
+    },
+    "title": {
+      "text": "A Mind of Its Own"
+    },
+    "description": {
+      "text": "Take a brain from a zombie villager or a witch."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "brain": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "chronogenesis:preserved_brain"
+          }
+        ]
+      }
+    }
+  }
+}

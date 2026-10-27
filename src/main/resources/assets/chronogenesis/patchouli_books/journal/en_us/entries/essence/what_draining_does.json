@@ -1,0 +1,17 @@
+{
+  "name": "What Draining Does",
+  "icon": "minecraft:lead",
+  "category": "chronogenesis:essence",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Density$(): the creature lifts off the ground and hovers. Take more and it rises higher, and higher. Only a $(l)lead$() keeps it down. Take all of it and it drifts into the sky, never to return."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Speed$(): it slows, then stops.$(br)$(l)Size$(): it shrinks.$(br)$(l)Awareness$(): it thinks less often. Emptied, it becomes $(o)Vacant$(): breathing, standing, doing nothing.$(br)$(l)Time$(): the young grow up at once. The old wither, and when the last moment is gone, they crumble."
+    }
+  ],
+  "sortnum": 0,
+  "advancement": "chronogenesis:first_draw"
+}

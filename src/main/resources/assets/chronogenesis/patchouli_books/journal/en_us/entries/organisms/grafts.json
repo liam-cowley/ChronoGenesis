@@ -1,0 +1,26 @@
+{
+  "name": "Grafts",
+  "icon": "chronogenesis:tap",
+  "category": "chronogenesis:organisms",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "An organism does what its grafts tell it to. Place a graft on its flesh.$(br2)A $(l)Tap$() lets the stored essence out: fill a vial from it, or set a jug in front of it and it fills the jug by itself."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:tap"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A $(l)Leech Tendril$() drains the organism's essence from every creature within four blocks. A pen of leashed cows around a Density organism is, I admit, a strange sight. It is also a farm.",
+      "title": "Leech Tendril"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:leech_tendril"
+    }
+  ],
+  "sortnum": 0,
+  "advancement": "chronogenesis:it_hungers"
+}

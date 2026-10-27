@@ -1,0 +1,39 @@
+{
+  "name": "The Chrono Syringe",
+  "icon": "chronogenesis:chrono_syringe",
+  "category": "chronogenesis:instruments",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Copper, glass, and a needle. The needle decides what is drawn: hold it in your $(l)off hand$() and $(l)sneak-use$() the syringe to fit it.$(br2)Use the syringe on a creature to draw one dram. It holds four. Use it in the air to empty it into a vial."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:chrono_syringe"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "chronogenesis:iron_needle",
+      "text": "Iron is heavy: it draws $(l)Density$().",
+      "title": "Iron Needle"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "chronogenesis:gold_needle",
+      "text": "Gold tools are the quickest there are: it draws $(l)Speed$().",
+      "title": "Gold Needle"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "chronogenesis:bone_needle",
+      "text": "Bone is the frame a body hangs on: it draws $(l)Size$().",
+      "title": "Bone Needle"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "No needle I have made can hold $(l)Awareness$(). It evaporates the instant it meets glass. Only living tissue can take it: see $(l)The Living Machine$().",
+      "title": "Awareness"
+    }
+  ],
+  "sortnum": 0
+}

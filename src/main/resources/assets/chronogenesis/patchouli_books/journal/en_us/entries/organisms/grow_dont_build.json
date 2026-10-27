@@ -1,0 +1,27 @@
+{
+  "name": "Grow, Don't Build",
+  "icon": "chronogenesis:copper_armature",
+  "category": "chronogenesis:organisms",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Gears wear out. Flesh heals. I will not $(o)build$() machines; I will $(o)grow$() them.$(br2)First, a frame of $(l)Copper Armature$() in whatever shape I like. Then a $(l)Culture$(), set into the frame. Then I feed it."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:copper_armature"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A culture is rotten flesh, bone meal and a $(l)full vial$() of one essence. Awareness cultures need a $(l)Preserved Brain$() instead (zombie villagers and witches carry them).$(br2)Use the culture on an armature block. That block becomes the organism's $(l)core$().",
+      "title": "Cultures"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Feed it essence of its own kind: right-click any part of it with a vial. It $(o)hungers$(). Fed essence becomes growth: flesh creeps over the frame, block by block. When the frame is full, it stores the rest.$(br2)It must eat regularly. Starved, it eats itself back to bare copper, and then it dies.",
+      "title": "Hunger"
+    }
+  ],
+  "sortnum": 0,
+  "advancement": "chronogenesis:living_culture"
+}

@@ -1,0 +1,30 @@
+{
+  "parent": "chronogenesis:first_draw",
+  "display": {
+    "icon": {
+      "id": "chronogenesis:temporal_residue"
+    },
+    "title": {
+      "text": "Borrowed Time"
+    },
+    "description": {
+      "text": "Drain a creature of every last moment."
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "residue": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "chronogenesis:temporal_residue"
+          }
+        ]
+      }
+    }
+  }
+}

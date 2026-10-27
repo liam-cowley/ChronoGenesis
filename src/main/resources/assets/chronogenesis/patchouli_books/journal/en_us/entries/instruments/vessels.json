@@ -1,0 +1,20 @@
+{
+  "name": "Vials and Jugs",
+  "icon": "chronogenesis:essence_vial",
+  "category": "chronogenesis:instruments",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Vials$() hold eight drams of one essence. $(l)Jugs$() hold sixty-four and can be set down on a shelf; they keep what is in them when picked up again. Pour into a jug with a full vial, fill a vial from it with an empty one."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:essence_vial"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:essence_jug"
+    }
+  ],
+  "sortnum": 0
+}

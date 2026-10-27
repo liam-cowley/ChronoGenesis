@@ -1,0 +1,26 @@
+{
+  "name": "Time Is Expensive",
+  "icon": "chronogenesis:amethyst_needle",
+  "category": "chronogenesis:time",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Few creatures have Time to spare: $(l)phantoms$(), $(l)endermen$(), the $(l)undead$(), and the very young. An $(l)amethyst needle$() draws it, but ordinary glass cannot hold it: it ages to sand in my hand.$(br2)A vial lined with phantom membrane, a $(l)Stasis Ampoule$(), holds a little."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:stasis_ampoule"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Take too much Time from one place and the place $(o)tears$(). A $(l)Time Tear$() ages everything around it and swallows anything dropped near it. Heavy things keep time still: four drams of $(l)Density$() press a tear shut.",
+      "title": "Time Tears"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Injecting Time into myself lets me $(l)stutter$() the world around me for a moment. It also leaves a ticking in my ears that does not stop for a long while. If the ticking turns into skipping... I will write that down when it happens.",
+      "title": "Self-Experimentation"
+    }
+  ],
+  "sortnum": 0
+}

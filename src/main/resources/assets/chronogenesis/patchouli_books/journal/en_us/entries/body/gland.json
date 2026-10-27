@@ -1,0 +1,21 @@
+{
+  "name": "The Enhancing Gland",
+  "icon": "chronogenesis:enhancing_gland",
+  "category": "chronogenesis:body",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Graft a gland onto an organism and press your wrist to it. It fills $(o)you$() with that essence. The first time, it changes you.$(br2)Your body holds a limited pool of each essence, and it only refills at a gland."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:enhancing_gland"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)$(k:chronogenesis.cycle_power)$() selects an essence. $(l)$(k:chronogenesis.use_power)$() uses it.$(br2)$(l)Density$(): fists like iron. Mine what an iron pick can, slowly.$(br)$(l)Speed$(): quicker legs and hands.$(br)$(l)Size$(): shrink, then grow, then normal.$(br)$(l)Awareness$(): see every creature within twenty blocks.",
+      "title": "Powers"
+    }
+  ],
+  "sortnum": 0
+}
