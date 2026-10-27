@@ -1,0 +1,23 @@
+{
+  "parent": "chronogenesis:it_hungers",
+  "display": {
+    "icon": {
+      "id": "chronogenesis:preserved_brain"
+    },
+    "title": {
+      "text": "It's Alive!"
+    },
+    "description": {
+      "text": "Wake a brain on a Dissection Table with lightning."
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "woke": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

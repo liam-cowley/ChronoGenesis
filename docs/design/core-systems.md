@@ -236,6 +236,20 @@ Its roles:
 It talks. At first it whispers in chat and in the journal, curious and childlike. As it grows it
 becomes demanding, and by the final stage it is insane.
 
+**As built (stage 0):**
+- *Ritual:* a Preserved Brain on a **Dissection Table** soaks up 16 drams each of Awareness (only from a
+  Tap facing the table, since glass cannot hold it) and Time (Tap or Stasis Ampoule). Lightning striking
+  within 3 blocks of a table with a lightning rod on its frame wakes it; an unready brain burns.
+- *Wiring:* Ganglion grafts within 32 blocks of the Chronocortex wire their organism in. Its screen
+  shows each wired organism's store, hunger and instability, and it warns aloud before a Time
+  organism bursts. Redirecting flow and Tap limits are not built yet.
+- *Research:* topics are a synced datapack registry, `data/<ns>/chronogenesis/research/<topic>.json`
+  (title, description, icon, stage, requires, essence, materials, alternative clue sets). Essence is
+  drawn from wired organisms. Completed topics are checked in code by id.
+- *Clues:* until the Lens exists, clues are witnessed (within 16 blocks): a creature floating from
+  lost Density, a Vacant mind, a desiccation, a Time Tear opening, a Racetrack pulse arriving, Twin
+  Clocks making Time, and the Chronocortex waking. Clues are spent by research and never re-granted.
+
 ## 6. Temporal manipulation (higher Time powers)
 
 Each step is unlocked by research and needs the full suit.

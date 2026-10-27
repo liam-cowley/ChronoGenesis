@@ -3,6 +3,8 @@ package com.chronogenesis.registry;
 import java.util.function.Supplier;
 
 import com.chronogenesis.ChronoGenesis;
+import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
+import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.organism.EssenceJugBlockEntity;
 import com.chronogenesis.organism.GraftBlockEntity;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
@@ -25,7 +27,7 @@ public final class ModBlockEntities {
             () -> BlockEntityType.Builder.of(GraftBlockEntity::new,
                     ModBlocks.TAP.get(), ModBlocks.MAW.get(), ModBlocks.LEECH_TENDRIL.get(), ModBlocks.ENHANCING_GLAND.get(),
                     ModBlocks.STASIS_BLADDER.get(), ModBlocks.STARTING_GATE.get(), ModBlocks.FINISH.get(),
-                    ModBlocks.HEART.get(), ModBlocks.EYE.get(), ModBlocks.CLOCK.get()).build(null));
+                    ModBlocks.HEART.get(), ModBlocks.EYE.get(), ModBlocks.CLOCK.get(), ModBlocks.GANGLION.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final Supplier<BlockEntityType<EssenceJugBlockEntity>> ESSENCE_JUG = BLOCK_ENTITY_TYPES.register("essence_jug",
@@ -34,6 +36,16 @@ public final class ModBlockEntities {
     @SuppressWarnings("DataFlowIssue")
     public static final Supplier<BlockEntityType<TimeTearBlockEntity>> TIME_TEAR = BLOCK_ENTITY_TYPES.register("time_tear",
             () -> BlockEntityType.Builder.of(TimeTearBlockEntity::new, ModBlocks.TIME_TEAR.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final Supplier<BlockEntityType<DissectionTableBlockEntity>> DISSECTION_TABLE =
+            BLOCK_ENTITY_TYPES.register("dissection_table", () -> BlockEntityType.Builder.of(
+                    DissectionTableBlockEntity::new, ModBlocks.DISSECTION_TABLE.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final Supplier<BlockEntityType<ChronocortexBlockEntity>> CHRONOCORTEX =
+            BLOCK_ENTITY_TYPES.register("chronocortex", () -> BlockEntityType.Builder.of(
+                    ChronocortexBlockEntity::new, ModBlocks.CHRONOCORTEX.get()).build(null));
 
     private ModBlockEntities() {}
 }

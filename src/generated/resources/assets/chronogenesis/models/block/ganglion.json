@@ -1,0 +1,205 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh"
+        },
+        "east": {
+          "texture": "#flesh"
+        },
+        "north": {
+          "texture": "#flesh"
+        },
+        "south": {
+          "texture": "#flesh"
+        },
+        "up": {
+          "texture": "#flesh"
+        },
+        "west": {
+          "texture": "#flesh"
+        }
+      },
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        2,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#nerve"
+        },
+        "east": {
+          "texture": "#nerve"
+        },
+        "north": {
+          "texture": "#nerve"
+        },
+        "south": {
+          "texture": "#nerve"
+        },
+        "up": {
+          "texture": "#nerve"
+        },
+        "west": {
+          "texture": "#nerve"
+        }
+      },
+      "from": [
+        5,
+        2,
+        5
+      ],
+      "to": [
+        11,
+        7,
+        11
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#nerve"
+        },
+        "east": {
+          "texture": "#nerve"
+        },
+        "north": {
+          "texture": "#nerve"
+        },
+        "south": {
+          "texture": "#nerve"
+        },
+        "up": {
+          "texture": "#nerve"
+        },
+        "west": {
+          "texture": "#nerve"
+        }
+      },
+      "from": [
+        6,
+        7,
+        6
+      ],
+      "to": [
+        10,
+        9,
+        10
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#nerve"
+        },
+        "east": {
+          "texture": "#nerve"
+        },
+        "north": {
+          "texture": "#nerve"
+        },
+        "south": {
+          "texture": "#nerve"
+        },
+        "up": {
+          "texture": "#nerve"
+        },
+        "west": {
+          "texture": "#nerve"
+        }
+      },
+      "from": [
+        1,
+        0,
+        7
+      ],
+      "to": [
+        4,
+        1,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#nerve"
+        },
+        "east": {
+          "texture": "#nerve"
+        },
+        "north": {
+          "texture": "#nerve"
+        },
+        "south": {
+          "texture": "#nerve"
+        },
+        "up": {
+          "texture": "#nerve"
+        },
+        "west": {
+          "texture": "#nerve"
+        }
+      },
+      "from": [
+        12,
+        0,
+        7
+      ],
+      "to": [
+        15,
+        1,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#nerve"
+        },
+        "east": {
+          "texture": "#nerve"
+        },
+        "north": {
+          "texture": "#nerve"
+        },
+        "south": {
+          "texture": "#nerve"
+        },
+        "up": {
+          "texture": "#nerve"
+        },
+        "west": {
+          "texture": "#nerve"
+        }
+      },
+      "from": [
+        7,
+        0,
+        1
+      ],
+      "to": [
+        9,
+        1,
+        4
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "brass": "chronogenesis:block/brass_fitting",
+    "flesh": "chronogenesis:block/graft_flesh",
+    "nerve": "chronogenesis:block/ganglion",
+    "particle": "chronogenesis:block/ganglion",
+    "steel": "chronogenesis:block/steel"
+  }
+}

@@ -1,6 +1,7 @@
 package com.chronogenesis.datagen;
 
 import com.chronogenesis.ChronoGenesis;
+import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.organism.CorePhase;
 import com.chronogenesis.organism.EssenceJugBlock;
 import com.chronogenesis.organism.FleshBlock;
@@ -53,6 +54,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         conduit();
         jug();
         timeTear();
+        chronocortex();
     }
 
     // ---------------------------------------------------------------- flesh
@@ -259,6 +261,64 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .allFaces((dir, face) -> face.texture(dir == Direction.UP ? "#face" : "#brass")).end();
         box(clock, 7.5f, 6, 7.5f, 8.5f, 7, 8.5f, "#brass", false);
         graftBlock(ModBlocks.CLOCK.get(), clock);
+
+        // Ganglion: a knot of nerve tissue on a mound, fibres reaching out across the flesh.
+        BlockModelBuilder ganglion = graftModel("ganglion", "graft_flesh")
+                .texture("nerve", modLoc("block/ganglion"));
+        box(ganglion, 4, 0, 4, 12, 2, 12, FLESH, false);
+        box(ganglion, 5, 2, 5, 11, 7, 11, "#nerve", false);
+        box(ganglion, 6, 7, 6, 10, 9, 10, "#nerve", false);
+        box(ganglion, 1, 0, 7, 4, 1, 9, "#nerve", false);
+        box(ganglion, 12, 0, 7, 15, 1, 9, "#nerve", false);
+        box(ganglion, 7, 0, 1, 9, 1, 4, "#nerve", false);
+        graftBlock(ModBlocks.GANGLION.get(), ganglion);
+    }
+
+    // ---------------------------------------------------------------- the Chronocortex
+
+    /** The Dissection Table (with or without its brain in a jar) and the woken Chronocortex built on it. */
+    private void chronocortex() {
+        BlockModelBuilder empty = tableModel("dissection_table");
+        BlockModelBuilder withBrain = tableModel("dissection_table_brain");
+        jar(withBrain, 4.5f, 11.5f, 15);
+        getVariantBuilder(ModBlocks.DISSECTION_TABLE.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(state.getValue(DissectionTableBlock.BRAIN) ? withBrain : empty).build());
+        simpleBlockItem(ModBlocks.DISSECTION_TABLE.get(), empty);
+
+        // Awake: a great jar, the brain swollen inside, electrodes through the brass lid.
+        BlockModelBuilder cortex = tableModel("chronocortex");
+        jar(cortex, 3, 13, 16);
+        box(cortex, 5, 16, 7.5f, 6, 19, 8.5f, "#steel", false);
+        box(cortex, 10, 16, 7.5f, 11, 19, 8.5f, "#steel", false);
+        simpleBlock(ModBlocks.CHRONOCORTEX.get(), cortex);
+    }
+
+    private BlockModelBuilder tableModel(String name) {
+        BlockModelBuilder model = models().withExistingParent(name, mcLoc("block/block"))
+                .texture("top", modLoc("block/dissection_table_top"))
+                .texture("side", modLoc("block/dissection_table_side"))
+                .texture("steel", modLoc("block/steel"))
+                .texture("brass", modLoc("block/brass_fitting"))
+                .texture("brain", modLoc("block/brain_tissue"))
+                .texture("fluid", modLoc("block/cortex_fluid"))
+                .texture("glass", modLoc("block/cortex_glass"))
+                .texture("particle", modLoc("block/dissection_table_top"))
+                .renderType("translucent");
+        model.element().from(0, 7, 0).to(16, 9, 16)
+                .allFaces((dir, face) -> face.texture(dir.getAxis().isVertical() ? "#top" : "#side")).end();
+        for (int[] leg : new int[][]{{1, 1}, {13, 1}, {1, 13}, {13, 13}}) {
+            box(model, leg[0], 0, leg[1], leg[0] + 2, 7, leg[1] + 2, "#side", false);
+        }
+        return model;
+    }
+
+    /** A specimen jar on the table: brain, preserving fluid, glass, brass lid. */
+    private static void jar(BlockModelBuilder model, float from, float to, float top) {
+        float inset = (to - from) * 0.15f;
+        box(model, from + inset, 9, from + inset, to - inset, top - 3, to - inset, "#brain", false);
+        box(model, from + 0.25f, 9, from + 0.25f, to - 0.25f, top - 1.5f, to - 0.25f, "#fluid", false);
+        box(model, from, 9, from, to, top - 1, to, "#glass", false);
+        box(model, from - 0.5f, top - 1, from - 0.5f, to + 0.5f, top, to + 0.5f, "#brass", false);
     }
 
     // ---------------------------------------------------------------- conduit and veins

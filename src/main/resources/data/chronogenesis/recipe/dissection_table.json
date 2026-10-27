@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "B B",
+    "B B"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:dissection_table",
+    "count": 1
+  }
+}

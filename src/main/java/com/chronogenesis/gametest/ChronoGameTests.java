@@ -1,6 +1,11 @@
 package com.chronogenesis.gametest;
 
 import com.chronogenesis.ChronoGenesis;
+import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
+import com.chronogenesis.biocomputer.Clues;
+import com.chronogenesis.biocomputer.DissectionTableBlock;
+import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
+import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.MobEssence;
 import com.chronogenesis.organism.BrassConduitBlock;
@@ -11,12 +16,19 @@ import com.chronogenesis.organism.GraftBlockEntity;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
 import com.chronogenesis.registry.ModBlocks;
+import com.chronogenesis.registry.ModItems;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -190,6 +202,100 @@ public final class ChronoGameTests {
         helper.<OrganismCoreBlockEntity>getBlockEntity(densityCore).feed(64);
         OrganismCoreBlockEntity time = helper.getBlockEntity(timeCore);
         helper.succeedWhen(() -> helper.assertTrue(time.stored() > 0, "no Time from the twin clocks"));
+    }
+
+    // ---------------------------------------------------------------- the Chronocortex (build step 7)
+
+    /** Lightning on a rod over a ready Dissection Table wakes the brain: the table becomes the Chronocortex. */
+    @GameTest(template = "floor7")
+    public static void lightningWakesChronocortex(GameTestHelper helper) {
+        BlockPos tablePos = readyTable(helper, true);
+        strike(helper, tablePos.above());
+        helper.succeedWhenBlockPresent(ModBlocks.CHRONOCORTEX.get(), tablePos);
+    }
+
+    /** A brain that has not soaked up enough Awareness and Time cooks instead. */
+    @GameTest(template = "floor7")
+    public static void unreadyBrainBurns(GameTestHelper helper) {
+        BlockPos tablePos = readyTable(helper, false);
+        strike(helper, tablePos.above());
+        helper.succeedWhen(() -> {
+            helper.assertBlockPresent(ModBlocks.DISSECTION_TABLE.get(), tablePos);
+            helper.assertBlockProperty(tablePos, DissectionTableBlock.BRAIN, false);
+        });
+    }
+
+    /** An organism with a Ganglion near the Chronocortex is wired in, and its essence shows up. */
+    @GameTest(template = "floor7", timeoutTicks = 200)
+    public static void ganglionWiresOrganism(GameTestHelper helper) {
+        BlockPos cortexPos = new BlockPos(1, 1, 1);
+        BlockPos corePos = new BlockPos(4, 1, 4);
+        helper.setBlock(cortexPos, ModBlocks.CHRONOCORTEX.get());
+        helper.setBlock(corePos, core(Aspect.DENSITY));
+        helper.setBlock(corePos.above(), graft(ModBlocks.GANGLION.get()));
+        OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+        core.feed(10);
+        ChronocortexBlockEntity cortex = helper.getBlockEntity(cortexPos);
+        // Neighbouring test arenas are within the cortex's reach too, so look for this organism specifically.
+        helper.succeedWhen(() -> {
+            helper.assertTrue(cortex.wiredCores().contains(core), "organism not wired");
+            helper.assertTrue(cortex.availableEssence().getOrDefault(Aspect.DENSITY, 0) >= 10,
+                    "essence not visible: " + cortex.availableEssence());
+        });
+    }
+
+    /** Researching Deeper Infusion draws essence from wired organisms, takes the materials and spends one clue set. */
+    @GameTest(template = "floor7", timeoutTicks = 200)
+    public static void researchPaysItsCosts(GameTestHelper helper) {
+        BlockPos cortexPos = new BlockPos(3, 1, 3);
+        BlockPos awarenessCore = new BlockPos(1, 1, 1);
+        BlockPos timeCore = new BlockPos(5, 1, 1);
+        helper.setBlock(cortexPos, ModBlocks.CHRONOCORTEX.get());
+        helper.setBlock(awarenessCore, core(Aspect.AWARENESS));
+        helper.setBlock(awarenessCore.above(), graft(ModBlocks.GANGLION.get()));
+        helper.setBlock(timeCore, core(Aspect.TIME));
+        helper.setBlock(timeCore.above(), graft(ModBlocks.GANGLION.get()));
+        OrganismCoreBlockEntity awareness = helper.getBlockEntity(awarenessCore);
+        awareness.feed(16);
+        helper.<OrganismCoreBlockEntity>getBlockEntity(timeCore).feed(8);
+
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        player.getInventory().add(new ItemStack(Items.AMETHYST_SHARD, 8));
+        player.getInventory().add(new ItemStack(ModItems.PRESERVED_HEART.get()));
+        Research.set(player, Research.get(player).withKnown(Clues.FLOATING).withKnown(Clues.VACANT));
+        ChronocortexBlockEntity cortex = helper.getBlockEntity(cortexPos);
+        OrganismCoreBlockEntity time = helper.getBlockEntity(timeCore);
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(cortex.wiredCores().contains(awareness) && cortex.wiredCores().contains(time),
+                    "both organisms should be wired");
+            helper.assertTrue(Research.perform(player, cortex, Research.LEVEL_2_POWERS), "research should succeed");
+            helper.assertTrue(Research.has(player, Research.LEVEL_2_POWERS), "research not recorded");
+            helper.assertTrue(awareness.stored() == 0, "Awareness not drawn: " + awareness.stored());
+            helper.assertFalse(player.getInventory().contains(new ItemStack(Items.AMETHYST_SHARD)), "materials not taken");
+            helper.assertFalse(Research.get(player).hasClue(Clues.FLOATING), "clue set not spent");
+        });
+    }
+
+    /** A Dissection Table with a brain and a lightning rod on it, soaked full (or not) of Awareness and Time. */
+    private static BlockPos readyTable(GameTestHelper helper, boolean soaked) {
+        BlockPos tablePos = new BlockPos(3, 1, 3);
+        helper.setBlock(tablePos, ModBlocks.DISSECTION_TABLE.get().defaultBlockState().setValue(DissectionTableBlock.BRAIN, true));
+        helper.setBlock(tablePos.above(), Blocks.LIGHTNING_ROD);
+        if (soaked) {
+            DissectionTableBlockEntity table = helper.getBlockEntity(tablePos);
+            table.insert(Aspect.AWARENESS, DissectionTableBlockEntity.NEEDED);
+            table.insert(Aspect.TIME, DissectionTableBlockEntity.NEEDED);
+        }
+        return tablePos;
+    }
+
+    /** A harmless (visual-only) lightning bolt on the given block. */
+    private static void strike(GameTestHelper helper, BlockPos pos) {
+        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(helper.getLevel());
+        bolt.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(pos)));
+        bolt.setVisualOnly(true);
+        helper.getLevel().addFreshEntity(bolt);
     }
 
     private static net.minecraft.world.level.block.state.BlockState core(Aspect aspect) {

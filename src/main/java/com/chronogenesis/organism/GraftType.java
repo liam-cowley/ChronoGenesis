@@ -30,7 +30,9 @@ public enum GraftType implements StringRepresentable {
      * Twin Clocks (Law of the Heavy Heart): a Clock buried in Density flesh, linked by veins to a Clock on a
      * Time organism, runs slow. The beats it misses condense into Time at the free Clock.
      */
-    CLOCK;
+    CLOCK,
+    /** Wires the organism to a Chronocortex within reach, which then reports on it and can draw from it. */
+    GANGLION;
 
     public static final Codec<GraftType> CODEC = StringRepresentable.fromEnum(GraftType::values);
 

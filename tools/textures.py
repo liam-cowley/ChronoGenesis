@@ -1118,6 +1118,92 @@ def clock_graft():
     dial("clock", (232, 222, 190, 255), [(7, 6), (7, 5), (7, 4), (7, 3), (8, 6), (9, 5)], marks)
 
 
+# ---------------------------------------------------------------- the Chronocortex (build step 7)
+
+def ganglion():
+    # Ganglion graft: a knot of grey-pink nerve tissue, white nerve fibres running out of it.
+    r = rng(101)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            v = 12 * math.sin(x * 0.9) * math.cos(y * 0.7)
+            img.putpixel((x, y), shade((176, 140, 150, 255), int(v + r.randint(-8, 8))))
+    for start in [(0, 4), (0, 11), (15, 7)]:
+        x, y = start
+        dx = 1 if x == 0 else -1
+        for _ in range(16):
+            if 0 <= x < 16 and 0 <= y < 16:
+                img.putpixel((x, y), (236, 228, 220, 255))
+            x += dx
+            y += r.choice([-1, 0, 0, 1])
+    for (x, y) in [(6, 6), (7, 6), (6, 7), (9, 9), (10, 8)]:
+        img.putpixel((x, y), (120, 70, 96, 255))
+    save(img, "block/ganglion")
+
+
+def dissection_table():
+    # Top: a zinc slab, stained, with a drain groove round the edge. Side: dark cast iron, rivets.
+    r = rng(103)
+    top = new()
+    for y in range(16):
+        for x in range(16):
+            edge = x in (0, 15) or y in (0, 15)
+            groove = x in (1, 14) or y in (1, 14)
+            if edge:
+                c = STEEL_DK
+            elif groove:
+                c = STEEL_DDK
+            else:
+                c = shade(STEEL, r.randint(-10, 6))
+            top.putpixel((x, y), c)
+    for (x, y) in [(5, 6), (6, 6), (6, 7), (7, 7), (10, 10), (11, 10), (4, 11)]:
+        top.putpixel((x, y), (110, 52, 58, 255))  # old stains
+    save(top, "block/dissection_table_top")
+
+    side = new()
+    for y in range(16):
+        for x in range(16):
+            side.putpixel((x, y), shade((62, 60, 66, 255), r.randint(-6, 6)))
+    for x in (2, 13):
+        for y in (3, 12):
+            side.putpixel((x, y), STEEL_HI)
+    save(side, "block/dissection_table_side")
+
+
+def brain_tissue():
+    # Folded brain matter for the jars: pink coils with darker sulci.
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            v = math.sin(x * 1.3 + math.sin(y * 0.9) * 2.2) + math.sin(y * 1.1 + x * 0.3)
+            c = (226, 142, 152, 255) if v > 0.6 else (186, 98, 114, 255) if v > -0.6 else (140, 60, 76, 255)
+            img.putpixel((x, y), c)
+    save(img, "block/brain_tissue")
+
+
+def cortex_jar():
+    # The jar's glass: clear, with a bright rim, a glint, and the preserving fluid seen through it.
+    glass = new()
+    for y in range(16):
+        for x in range(16):
+            if x in (0, 15) or y in (0, 15):
+                glass.putpixel((x, y), GLASS_EDGE)
+            else:
+                glass.putpixel((x, y), GLASS_IN)
+    for y in range(2, 9):
+        glass.putpixel((2, y), GLINT)
+    save(glass, "block/cortex_glass")
+
+    fluid = new()
+    r = rng(107)
+    for y in range(16):
+        for x in range(16):
+            fluid.putpixel((x, y), (120, 190, 120, 110 + r.randint(-10, 10)))
+    for (x, y) in [(4, 12), (9, 6), (12, 10), (6, 3)]:
+        fluid.putpixel((x, y), (210, 250, 200, 170))  # bubbles
+    save(fluid, "block/cortex_fluid")
+
+
 # ---------------------------------------------------------------- the Chrono-Insulated Suit
 
 COAT = (196, 204, 186, 255)
@@ -1300,6 +1386,10 @@ heart_specimen()
 heart_muscle()
 eye_graft()
 clock_graft()
+ganglion()
+dissection_table()
+brain_tissue()
+cortex_jar()
 suit_icons()
 suit_armor_layers()
 

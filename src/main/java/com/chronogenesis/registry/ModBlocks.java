@@ -1,6 +1,8 @@
 package com.chronogenesis.registry;
 
 import com.chronogenesis.ChronoGenesis;
+import com.chronogenesis.biocomputer.ChronocortexBlock;
+import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.organism.EssenceJugBlock;
 import com.chronogenesis.organism.FleshBlock;
 import com.chronogenesis.organism.GraftBlock;
@@ -72,6 +74,28 @@ public final class ModBlocks {
     public static final DeferredBlock<GraftBlock> HEART = graft("heart", GraftType.HEART);
     public static final DeferredBlock<GraftBlock> EYE = graft("eye", GraftType.EYE);
     public static final DeferredBlock<GraftBlock> CLOCK = graft("clock", GraftType.CLOCK);
+    public static final DeferredBlock<GraftBlock> GANGLION = graft("ganglion", GraftType.GANGLION);
+
+    /** The reanimation altar: a brain in a jar, Awareness and Time, lightning rods, a storm. */
+    public static final DeferredBlock<DissectionTableBlock> DISSECTION_TABLE = BLOCKS.registerBlock(
+            "dissection_table", DissectionTableBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(2.5f, 6.0f)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()
+                    .requiresCorrectToolForDrops());
+
+    /** The woken brain: the Chronocortex. Breaking it kills it; only the table is left. */
+    public static final DeferredBlock<ChronocortexBlock> CHRONOCORTEX = BLOCKS.registerBlock(
+            "chronocortex", ChronocortexBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PINK)
+                    .strength(5.0f, 1200.0f)
+                    .sound(SoundType.GLASS)
+                    .noOcclusion()
+                    .lightLevel(state -> 7)
+                    .requiresCorrectToolForDrops());
 
     public static final DeferredBlock<EssenceJugBlock> ESSENCE_JUG = BLOCKS.registerBlock("essence_jug", EssenceJugBlock::new,
             BlockBehaviour.Properties.of()

@@ -1,8 +1,12 @@
 {
   "values": [
     "chronogenesis:chronoflesh",
+    "chronogenesis:clock",
     "chronogenesis:enhancing_gland",
+    "chronogenesis:eye",
     "chronogenesis:finish",
+    "chronogenesis:ganglion",
+    "chronogenesis:heart",
     "chronogenesis:leech_tendril",
     "chronogenesis:maw",
     "chronogenesis:organism_core",

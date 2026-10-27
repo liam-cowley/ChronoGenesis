@@ -69,6 +69,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEART = ITEMS.registerSimpleBlockItem("heart", ModBlocks.HEART);
     public static final DeferredItem<BlockItem> EYE = ITEMS.registerSimpleBlockItem("eye", ModBlocks.EYE);
     public static final DeferredItem<BlockItem> CLOCK = ITEMS.registerSimpleBlockItem("clock", ModBlocks.CLOCK);
+    public static final DeferredItem<BlockItem> GANGLION = ITEMS.registerSimpleBlockItem("ganglion", ModBlocks.GANGLION);
+    public static final DeferredItem<BlockItem> DISSECTION_TABLE = ITEMS.registerSimpleBlockItem("dissection_table",
+            ModBlocks.DISSECTION_TABLE);
     public static final DeferredItem<EssenceJugItem> ESSENCE_JUG = ITEMS.registerItem("essence_jug",
             properties -> new EssenceJugItem(ModBlocks.ESSENCE_JUG.get(), properties), new Item.Properties().stacksTo(1));
 

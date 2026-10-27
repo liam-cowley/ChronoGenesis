@@ -1,0 +1,26 @@
+{
+  "name": "It's Alive!",
+  "icon": "chronogenesis:dissection_table",
+  "category": "chronogenesis:chronocortex",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A brain is only a clock that has stopped. Set one on a $(l)Dissection Table$() and it waits in its jar for what it is missing: $(l)Awareness$() to think with, and $(l)Time$() to think in.$(br2)Sixteen drams of each."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:dissection_table"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Feeding the Brain",
+      "text": "Awareness cannot be carried in glass, so point the $(l)Tap$() of an Awareness organism at the table and let it pour. Time can come the same way, or from a $(l)Stasis Ampoule$() by hand.$(br2)Use the table with an empty hand to see how far along it is. Sneak to lift the brain out again."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Spark",
+      "text": "Put $(l)lightning rods$() on the table's frame: on top of it, or around it. Then wait for a storm, or call the lightning down yourself with a $(l)Channeling$() trident.$(br2)If the brain is ready, it wakes. If it is not, it cooks. Brains are not easy to come by."
+    }
+  ]
+}

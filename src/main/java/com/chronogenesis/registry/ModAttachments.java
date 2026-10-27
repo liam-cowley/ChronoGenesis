@@ -3,6 +3,7 @@ package com.chronogenesis.registry;
 import java.util.function.Supplier;
 
 import com.chronogenesis.ChronoGenesis;
+import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.essence.DrainedEssence;
 import com.chronogenesis.player.PlayerEssence;
 import com.chronogenesis.time.TemporalStress;
@@ -36,6 +37,13 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<TemporalStress>> TEMPORAL_STRESS = ATTACHMENT_TYPES.register("temporal_stress",
             () -> AttachmentType.builder(() -> TemporalStress.NONE)
                     .serialize(TemporalStress.CODEC, value -> value.stress() > 0)
+                    .build());
+
+    /** On players: clues noticed and spent, research completed. Kept on death. */
+    public static final Supplier<AttachmentType<PlayerResearch>> PLAYER_RESEARCH = ATTACHMENT_TYPES.register("player_research",
+            () -> AttachmentType.builder(() -> PlayerResearch.EMPTY)
+                    .serialize(PlayerResearch.CODEC)
+                    .copyOnDeath()
                     .build());
 
     private ModAttachments() {}

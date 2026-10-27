@@ -2,6 +2,8 @@
   "values": [
     "chronogenesis:brass_armature",
     "chronogenesis:brass_block",
-    "chronogenesis:brass_conduit"
+    "chronogenesis:brass_conduit",
+    "chronogenesis:chronocortex",
+    "chronogenesis:dissection_table"
   ]
 }

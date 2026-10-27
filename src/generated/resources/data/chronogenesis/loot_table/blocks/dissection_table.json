@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "chronogenesis:dissection_table"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "block": "chronogenesis:dissection_table",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "brain": "true"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "chronogenesis:preserved_brain"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "chronogenesis:blocks/dissection_table"
+}

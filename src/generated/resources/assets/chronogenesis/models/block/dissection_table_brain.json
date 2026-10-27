@@ -1,0 +1,304 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#top"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#top"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        0,
+        7,
+        0
+      ],
+      "to": [
+        16,
+        9,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        3,
+        7,
+        3
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        13,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        7,
+        3
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        1,
+        0,
+        13
+      ],
+      "to": [
+        3,
+        7,
+        15
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        13,
+        0,
+        13
+      ],
+      "to": [
+        15,
+        7,
+        15
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#brain"
+        },
+        "east": {
+          "texture": "#brain"
+        },
+        "north": {
+          "texture": "#brain"
+        },
+        "south": {
+          "texture": "#brain"
+        },
+        "up": {
+          "texture": "#brain"
+        },
+        "west": {
+          "texture": "#brain"
+        }
+      },
+      "from": [
+        5.55,
+        9,
+        5.55
+      ],
+      "to": [
+        10.45,
+        12,
+        10.45
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#fluid"
+        },
+        "east": {
+          "texture": "#fluid"
+        },
+        "north": {
+          "texture": "#fluid"
+        },
+        "south": {
+          "texture": "#fluid"
+        },
+        "up": {
+          "texture": "#fluid"
+        },
+        "west": {
+          "texture": "#fluid"
+        }
+      },
+      "from": [
+        4.75,
+        9,
+        4.75
+      ],
+      "to": [
+        11.25,
+        13.5,
+        11.25
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#glass"
+        },
+        "east": {
+          "texture": "#glass"
+        },
+        "north": {
+          "texture": "#glass"
+        },
+        "south": {
+          "texture": "#glass"
+        },
+        "up": {
+          "texture": "#glass"
+        },
+        "west": {
+          "texture": "#glass"
+        }
+      },
+      "from": [
+        4.5,
+        9,
+        4.5
+      ],
+      "to": [
+        11.5,
+        14,
+        11.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#brass"
+        },
+        "east": {
+          "texture": "#brass"
+        },
+        "north": {
+          "texture": "#brass"
+        },
+        "south": {
+          "texture": "#brass"
+        },
+        "up": {
+          "texture": "#brass"
+        },
+        "west": {
+          "texture": "#brass"
+        }
+      },
+      "from": [
+        4,
+        14,
+        4
+      ],
+      "to": [
+        12,
+        15,
+        12
+      ]
+    }
+  ],
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "brain": "chronogenesis:block/brain_tissue",
+    "brass": "chronogenesis:block/brass_fitting",
+    "fluid": "chronogenesis:block/cortex_fluid",
+    "glass": "chronogenesis:block/cortex_glass",
+    "particle": "chronogenesis:block/dissection_table_top",
+    "side": "chronogenesis:block/dissection_table_side",
+    "steel": "chronogenesis:block/steel",
+    "top": "chronogenesis:block/dissection_table_top"
+  }
+}

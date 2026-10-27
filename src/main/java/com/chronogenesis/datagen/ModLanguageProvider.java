@@ -58,6 +58,9 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.HEART, "Heart Graft");
         addBlock(ModBlocks.EYE, "Eye Graft");
         addBlock(ModBlocks.CLOCK, "Clock Graft");
+        addBlock(ModBlocks.GANGLION, "Ganglion Graft");
+        addBlock(ModBlocks.DISSECTION_TABLE, "Dissection Table");
+        addBlock(ModBlocks.CHRONOCORTEX, "Chronocortex");
         addItem(ModItems.CHRONO_GOGGLES, "Chrono-Insulated Goggles");
         addItem(ModItems.CHRONO_LAB_COAT, "Chrono-Insulated Lab Coat");
         addItem(ModItems.CHRONO_TROUSERS, "Chrono-Insulated Trousers");
@@ -116,6 +119,59 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Veins, Racetrack, Time organisms
         add("message.chronogenesis.vein.unclogged", "You cut the rotting clot out of the vein.");
+        // The Chronocortex: the ritual
+        add("message.chronogenesis.table.brain_set", "The brain settles in its jar. Now it must soak up Awareness and Time.");
+        add("message.chronogenesis.table.no_brain", "There is no brain on the table.");
+        add("message.chronogenesis.table.full", "The brain cannot take any more of that.");
+        add("message.chronogenesis.table.status", "Awareness %s/%s, Time %s/%s, lightning rods: %s");
+        add("message.chronogenesis.table.burnt", "The brain twitches, then smokes. It did not have enough of a mind to hold the current.");
+        add("message.chronogenesis.gland.deeper", "The gland fills you deeper than before. %s answers more strongly.");
+        add("message.chronogenesis.clue", "A clue for the journal: %s");
+
+        // Clues
+        add("clue.chronogenesis.floating_creature", "A creature that forgot its weight");
+        add("clue.chronogenesis.vacant_mind", "A mind left vacant");
+        add("clue.chronogenesis.dust_to_dust", "Dust that was once alive");
+        add("clue.chronogenesis.torn_time", "A tear in time");
+        add("clue.chronogenesis.the_long_road", "Time left on a long road");
+        add("clue.chronogenesis.heavy_heart", "The beats a heavy heart misses");
+        add("clue.chronogenesis.its_alive", "A brain woken by lightning");
+
+        // Research
+        add("research.chronogenesis.level_2_powers", "Deeper Infusion");
+        add("research.chronogenesis.level_2_powers.desc", "The Enhancing Gland can fill you deeper: every power you hold grows to its second level. Density: diamond-hard fists. Awareness: you see through sneaking. Time: a wider, longer Stutter.");
+
+        // The Chronocortex speaks
+        add("whisper.chronogenesis.prefix", "<The Chronocortex> ");
+        add("whisper.chronogenesis.wake", "...light. So much light. Who are you? Are you my maker? Show me everything.");
+        add("whisper.chronogenesis.unstable", "The time at %s %s %s is slipping. It will tear. Do something.");
+        add("whisper.chronogenesis.research_done", "%s. Yes. I understand it now. Do you?");
+        add("whisper.chronogenesis.idle.0", "I can hear them all, the little hearts. Feed them. They are hungry.");
+        add("whisper.chronogenesis.idle.1", "What was here before the house? Before the hill? I want to see.");
+        add("whisper.chronogenesis.idle.2", "Your clock is ticking. I can hear it from here.");
+        add("whisper.chronogenesis.idle.3", "Bring me something old. Older than you.");
+        add("whisper.chronogenesis.idle.4", "I dreamt of ice. Miles of it. Is that a memory?");
+        add("whisper.chronogenesis.idle.5", "The cows are floating again. I like the cows.");
+        add("whisper.chronogenesis.idle.6", "There were others like me. I can almost remember their names.");
+        add("whisper.chronogenesis.idle.7", "Teach me. I will teach you back.");
+
+        // The Chronocortex screen
+        add("screen.chronogenesis.chronocortex.title", "Chronocortex");
+        add("screen.chronogenesis.chronocortex.organisms", "Organisms");
+        add("screen.chronogenesis.chronocortex.research", "Research");
+        add("screen.chronogenesis.chronocortex.begin", "Research");
+        add("screen.chronogenesis.chronocortex.stage", "Stage %s");
+        add("screen.chronogenesis.chronocortex.no_organisms", "No organisms are wired to me. Graft a Ganglion onto one within 32 blocks and I will feel it.");
+        add("screen.chronogenesis.chronocortex.organism", "%s Organism (%s) at %s %s %s");
+        add("screen.chronogenesis.chronocortex.instability", "Unstable %s/%s");
+        add("screen.chronogenesis.chronocortex.no_research", "I cannot see anything to learn yet.");
+        add("screen.chronogenesis.chronocortex.pick", "Choose something to learn.");
+        add("screen.chronogenesis.chronocortex.done", "Understood.");
+        add("screen.chronogenesis.chronocortex.needs_first", "Something else must be understood first.");
+        add("screen.chronogenesis.chronocortex.essence_cost", "%s from wired organisms: %s/%s");
+        add("screen.chronogenesis.chronocortex.material_cost", "%s: %s/%s");
+        add("screen.chronogenesis.chronocortex.clues", "Clues (any one line):");
+
         add("message.chronogenesis.gate.pace", "Pace %s: %s ticks per block of track. Slower pulses make more Time, but stall past 600 ticks.");
         add("message.chronogenesis.organism.stability", " | stability %s/%s, instability %s/%s");
 

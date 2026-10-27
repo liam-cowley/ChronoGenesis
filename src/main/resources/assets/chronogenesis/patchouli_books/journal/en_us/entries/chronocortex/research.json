@@ -1,0 +1,23 @@
+{
+  "name": "Research and Clues",
+  "icon": "minecraft:writable_book",
+  "category": "chronogenesis:chronocortex",
+  "sortnum": 2,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "It learns, if I give it the means. Every piece of $(l)research$() costs three things: essence, drawn from the organisms wired to it; materials, from my pockets; and $(l)clues$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Clues",
+      "text": "Clues are things I have noticed and written down: a cow that forgot its weight, a mind gone vacant, dust that was alive, a tear in the air, the time left on a long road, the beats a heavy heart misses.$(br2)Each topic accepts several different sets of clues. Any one set will do, and it is spent."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Deeper Infusion",
+      "text": "The first thing it offers to learn. Once understood, the $(l)Enhancing Gland$() fills me deeper: every power I hold grows to its $(l)second level$(). Diamond-hard fists; sight through sneaking; a wider, longer Stutter; more speed, more size, bigger pools."
+    }
+  ]
+}

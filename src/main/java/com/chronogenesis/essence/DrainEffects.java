@@ -7,6 +7,7 @@ import java.util.Set;
 import org.joml.Vector3f;
 
 import com.chronogenesis.ChronoGenesis;
+import com.chronogenesis.biocomputer.Clues;
 import com.chronogenesis.registry.ModAttachments;
 import com.chronogenesis.registry.ModItems;
 
@@ -81,6 +82,14 @@ public final class DrainEffects {
             onTimeDrained(entity, taken);
         }
         refresh(entity);
+        if (entity.level() instanceof ServerLevel level) {
+            // Things worth writing down, for whoever is watching.
+            if (aspect == Aspect.DENSITY && MobEssence.fraction(entity, Aspect.DENSITY) >= 0.5f) {
+                Clues.witness(level, entity.blockPosition(), Clues.FLOATING);
+            } else if (aspect == Aspect.AWARENESS && MobEssence.fraction(entity, Aspect.AWARENESS) >= 1.0f) {
+                Clues.witness(level, entity.blockPosition(), Clues.VACANT);
+            }
+        }
     }
 
     private static void onTimeDrained(LivingEntity entity, int taken) {
@@ -107,6 +116,7 @@ public final class DrainEffects {
             serverLevel.sendParticles(ParticleTypes.WHITE_ASH, entity.getX(), entity.getY(0.5), entity.getZ(), 20,
                     entity.getBbWidth() * 0.5, entity.getBbHeight() * 0.4, entity.getBbWidth() * 0.5, 0.01);
             serverLevel.playSound(null, entity.blockPosition(), SoundEvents.SAND_BREAK, SoundSource.NEUTRAL, 1.0f, 0.5f);
+            Clues.witness(serverLevel, entity.blockPosition(), Clues.DUST);
             ItemEntity residue = new ItemEntity(serverLevel, entity.getX(), entity.getY(0.5), entity.getZ(),
                     new ItemStack(ModItems.TEMPORAL_RESIDUE.get()));
             serverLevel.addFreshEntity(residue);

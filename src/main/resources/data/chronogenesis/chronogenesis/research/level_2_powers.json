@@ -1,0 +1,39 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.level_2_powers"
+  },
+  "description": {
+    "translate": "research.chronogenesis.level_2_powers.desc"
+  },
+  "icon": "chronogenesis:enhancing_gland",
+  "stage": 0,
+  "essence": {
+    "awareness": 16,
+    "time": 8
+  },
+  "materials": [
+    {
+      "item": "minecraft:amethyst_shard",
+      "count": 8
+    },
+    {
+      "item": "chronogenesis:preserved_heart",
+      "count": 1
+    }
+  ],
+  "clues": [
+    [
+      "chronogenesis:floating_creature",
+      "chronogenesis:vacant_mind"
+    ],
+    [
+      "chronogenesis:dust_to_dust",
+      "chronogenesis:the_long_road"
+    ],
+    [
+      "chronogenesis:torn_time",
+      "chronogenesis:heavy_heart"
+    ]
+  ],
+  "order": 0
+}

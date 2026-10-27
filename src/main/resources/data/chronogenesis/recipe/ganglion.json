@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:preserved_brain"
+    },
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "tag": "c:nuggets/brass"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:ganglion",
+    "count": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "brain=false": {
+      "model": "chronogenesis:block/dissection_table"
+    },
+    "brain=true": {
+      "model": "chronogenesis:block/dissection_table_brain"
+    }
+  }
+}

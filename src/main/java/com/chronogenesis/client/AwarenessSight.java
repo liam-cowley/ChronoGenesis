@@ -24,7 +24,8 @@ public final class AwarenessSight {
         if (!essence.isActive(Aspect.AWARENESS)) {
             return false;
         }
-        if (entity instanceof Player other && other.isShiftKeyDown()) {
+        // Level 2 sees through sneaking.
+        if (entity instanceof Player other && other.isShiftKeyDown() && essence.level(Aspect.AWARENESS) < 2) {
             return false;
         }
         double radius = Powers.AWARENESS_RADIUS + 10.0 * (essence.level(Aspect.AWARENESS) - 1);

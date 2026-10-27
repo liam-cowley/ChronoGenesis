@@ -121,7 +121,9 @@
    ✅ Stasis Bladder, Time organisms (instability, bursting), Density stabilising.
 6. ✅ Racetrack (Starting Gate, Finish, pace, stalls, heavy veins). ✅ Temporal Exposure. ✅ Chrono-Insulated Suit.
    ✅ Heart graft (Taps pump faster), Eye graft (redstone + comparator), Twin Clocks (Law of the Heavy Heart).
-7. ⬜ Chronocortex + Ganglion + research + reanimation ritual.
+7. ✅ Chronocortex (stage 0) + Ganglion + data-driven research + reanimation ritual. Clues come from
+   witnessed experiments until the Lens exists; the first topic is Level 2 powers (Deeper Infusion).
+   Still to do: flow control from the Chronocortex (redirecting, Tap limits), later stages.
 8. ⬜ Umbilical Locket (Curios), Temporal Field, Temporal Lens + first structures.
 
 ## Open questions

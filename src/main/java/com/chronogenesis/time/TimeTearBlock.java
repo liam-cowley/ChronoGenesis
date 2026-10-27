@@ -2,6 +2,7 @@ package com.chronogenesis.time;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.chronogenesis.biocomputer.Clues;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.essence.EssenceItems;
@@ -12,6 +13,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -48,6 +50,15 @@ public class TimeTearBlock extends BaseEntityBlock {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
+    }
+
+    /** However a tear opens (stress, or a Time organism bursting), whoever sees it takes note. */
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        if (level instanceof ServerLevel serverLevel && !oldState.is(state.getBlock())) {
+            Clues.witness(serverLevel, pos, Clues.TORN);
+        }
     }
 
     @Override

@@ -5,6 +5,8 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.chronogenesis.Config;
+import com.chronogenesis.biocomputer.Clues;
+import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.essence.MobEssence;
@@ -209,6 +211,16 @@ public class GraftBlockEntity extends BlockEntity {
             }
             return;
         }
+        if (level.getBlockEntity(front) instanceof DissectionTableBlockEntity table) {
+            // The reanimation altar soaks up Awareness and Time for the brain on it.
+            int moved = core.extract(Math.min(rate, table.space(core.aspect())));
+            if (moved > 0) {
+                table.insert(core.aspect(), moved);
+                level.sendParticles(ParticleTypes.DRIPPING_HONEY, front.getX() + 0.5, front.getY() + 1.0, front.getZ() + 0.5,
+                        2, 0.15, 0.1, 0.15, 0);
+            }
+            return;
+        }
         if (!level.getBlockState(front).is(ModBlocks.BRASS_CONDUIT.get())) {
             return;
         }
@@ -325,6 +337,9 @@ public class GraftBlockEntity extends BlockEntity {
             if (core != null && core.aspect() == Aspect.TIME) {
                 int fed = core.feed(time);
                 TemporalStress.add(level, finishPos, fed);
+                if (fed > 0) {
+                    Clues.witness(level, finishPos, Clues.LONG_ROAD);
+                }
                 level.sendParticles(new DustParticleOptions(Vec3.fromRGB24(Aspect.TIME.color()).toVector3f(), 1.5f),
                         finishPos.getX() + 0.5, finishPos.getY() + 0.8, finishPos.getZ() + 0.5, 8 + fed, 0.2, 0.2, 0.2, 0);
                 return;
@@ -387,6 +402,7 @@ public class GraftBlockEntity extends BlockEntity {
             missedBeats -= drams * BEATS_PER_TIME_DRAM;
             if (fed > 0) {
                 TemporalStress.add(level, worldPosition, fed);
+                Clues.witness(level, worldPosition, Clues.HEAVY_HEART);
                 level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.8f, 0.5f);
                 level.sendParticles(new DustParticleOptions(Vec3.fromRGB24(Aspect.TIME.color()).toVector3f(), 1.2f),
                         worldPosition.getX() + 0.5, worldPosition.getY() + 0.7, worldPosition.getZ() + 0.5, 6, 0.2, 0.2, 0.2, 0);

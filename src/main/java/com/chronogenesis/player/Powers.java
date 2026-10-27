@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.chronogenesis.ChronoGenesis;
+import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.network.SyncPlayerEssencePayload;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
@@ -61,6 +62,7 @@ public final class Powers {
 
     public static final double AWARENESS_RADIUS = 20.0;
     private static final float IRON_FIST_SPEED = 4.0f; // a stone pickaxe's mining speed
+    private static final float LEVEL_2_FIST_SPEED = 6.0f; // an iron pickaxe's
     private static final int STUTTER_COST = 8;
     private static final int STUTTER_TICKS = 60;
     private static final double STUTTER_RADIUS = 3.0;
@@ -77,8 +79,10 @@ public final class Powers {
 
     public static void set(Player player, PlayerEssence essence) {
         player.setData(ModAttachments.PLAYER_ESSENCE, essence);
-        if (player instanceof ServerPlayer serverPlayer) {
-            PacketDistributor.sendToPlayer(serverPlayer, new SyncPlayerEssencePayload(essence));
+        SyncPlayerEssencePayload payload = new SyncPlayerEssencePayload(essence);
+        // Fake players (machines from other mods, test players) have no client to sync to.
+        if (player instanceof ServerPlayer serverPlayer && serverPlayer.connection != null && serverPlayer.connection.hasChannel(payload)) {
+            PacketDistributor.sendToPlayer(serverPlayer, payload);
         }
     }
 
@@ -99,8 +103,11 @@ public final class Powers {
         Aspect aspect = core.aspect();
         PlayerEssence essence = get(player);
         boolean first = essence.level(aspect) == 0;
+        boolean deeper = !first && essence.level(aspect) < 2 && Research.has(player, Research.LEVEL_2_POWERS);
         if (first) {
             essence = essence.withLevel(aspect, 1);
+        } else if (deeper) {
+            essence = essence.withLevel(aspect, 2);
         }
         int room = essence.max(aspect) - essence.pool(aspect);
         int taken = core.extract(room);
@@ -114,6 +121,10 @@ public final class Powers {
         if (first) {
             player.displayClientMessage(Component.translatable("message.chronogenesis.gland.first." + aspect.getSerializedName())
                     .withStyle(ChatFormatting.DARK_PURPLE), false);
+        } else if (deeper) {
+            player.displayClientMessage(Component.translatable("message.chronogenesis.gland.deeper", aspect.displayName())
+                    .withStyle(ChatFormatting.DARK_PURPLE), false);
+            applyModifiers(player);
         } else if (taken == 0) {
             player.displayClientMessage(Component.translatable(room <= 0
                     ? "message.chronogenesis.gland.full" : "message.chronogenesis.gland.empty")
@@ -194,7 +205,8 @@ public final class Powers {
         }
         PlayerEssence essence = get(player);
         set(player, essence.withExposure(essence.exposure() + TemporalExposure.scaled(player, 10)));
-        STUTTERS.put(player.getUUID(), player.level().getGameTime() + STUTTER_TICKS);
+        // Level 2 holds time still for longer.
+        STUTTERS.put(player.getUUID(), player.level().getGameTime() + STUTTER_TICKS + 20L * (essence.level(Aspect.TIME) - 1));
         player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.0f, 0.5f);
     }
 
@@ -249,7 +261,8 @@ public final class Powers {
             return;
         }
         ServerLevel level = player.serverLevel();
-        AABB area = player.getBoundingBox().inflate(STUTTER_RADIUS);
+        double radius = stutterRadius(player);
+        AABB area = player.getBoundingBox().inflate(radius);
         for (Entity entity : level.getEntities(player, area)) {
             if (entity instanceof LivingEntity living) {
                 living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 5, 2, false, false));
@@ -261,9 +274,13 @@ public final class Powers {
         }
         if (time % 4 == 0) {
             Vec3 c = player.position();
-            level.sendParticles(ParticleTypes.REVERSE_PORTAL, c.x, c.y + 1, c.z, 12, STUTTER_RADIUS / 2, 1.0,
-                    STUTTER_RADIUS / 2, 0.0);
+            level.sendParticles(ParticleTypes.REVERSE_PORTAL, c.x, c.y + 1, c.z, 12, radius / 2, 1.0, radius / 2, 0.0);
         }
+    }
+
+    /** Stutter's bubble: 3 blocks, half a block wider per level beyond the first. */
+    private static double stutterRadius(Player player) {
+        return STUTTER_RADIUS + 1.5 * Math.max(0, get(player).level(Aspect.TIME) - 1);
     }
 
     // ---------------------------------------------------------------- attribute-based powers
@@ -301,10 +318,12 @@ public final class Powers {
     /** Whether Iron Fists apply to this block right now. Works on both sides (client uses the synced copy). */
     public static boolean ironFists(Player player, BlockState state) {
         PlayerEssence essence = get(player);
+        // Level 1: iron-tier fists. Level 2: diamond-tier.
+        var incorrect = essence.level(Aspect.DENSITY) >= 2 ? BlockTags.INCORRECT_FOR_DIAMOND_TOOL : BlockTags.INCORRECT_FOR_IRON_TOOL;
         return player.getMainHandItem().isEmpty()
                 && essence.isActive(Aspect.DENSITY)
                 && essence.pool(Aspect.DENSITY) > 0
-                && !state.is(BlockTags.INCORRECT_FOR_IRON_TOOL)
+                && !state.is(incorrect)
                 && (state.is(BlockTags.MINEABLE_WITH_PICKAXE) || state.is(BlockTags.MINEABLE_WITH_SHOVEL)
                         || state.is(BlockTags.MINEABLE_WITH_AXE));
     }
@@ -319,7 +338,8 @@ public final class Powers {
     @SubscribeEvent
     static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         if (ironFists(event.getEntity(), event.getState())) {
-            event.setNewSpeed(Math.max(event.getNewSpeed(), IRON_FIST_SPEED));
+            float speed = get(event.getEntity()).level(Aspect.DENSITY) >= 2 ? LEVEL_2_FIST_SPEED : IRON_FIST_SPEED;
+            event.setNewSpeed(Math.max(event.getNewSpeed(), speed));
         }
     }
 

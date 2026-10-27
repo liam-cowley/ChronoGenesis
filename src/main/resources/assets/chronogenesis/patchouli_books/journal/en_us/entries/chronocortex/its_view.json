@@ -1,0 +1,27 @@
+{
+  "name": "Its View",
+  "icon": "chronogenesis:ganglion",
+  "category": "chronogenesis:chronocortex",
+  "sortnum": 1,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "It wakes asking questions. It talks to whoever stands near, in whispers.$(br2)Use it to see what it sees. At first that is nothing: it needs $(l)nerves$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Ganglion",
+      "text": "Graft a $(l)Ganglion$() onto an organism within thirty-two blocks of the Chronocortex and the organism is wired in. It then appears in its view: what it holds, whether it hungers, and how close a Time organism is to tearing.$(br2)It warns me, aloud, before one bursts."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:ganglion"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Moving It",
+      "text": "Do not. Breaking the jar kills what is inside, and only the table is left."
+    }
+  ]
+}

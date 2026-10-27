@@ -2,9 +2,12 @@ package com.chronogenesis.datagen;
 
 import java.util.Set;
 
+import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
+import com.chronogenesis.registry.ModItems;
 
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
@@ -13,6 +16,7 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 public class ModBlockLootProvider extends BlockLootSubProvider {
@@ -36,6 +40,16 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.HEART.get());
         dropSelf(ModBlocks.EYE.get());
         dropSelf(ModBlocks.CLOCK.get());
+        dropSelf(ModBlocks.GANGLION.get());
+        // The table gives its brain back; the Chronocortex dies when broken, leaving only the table.
+        add(ModBlocks.DISSECTION_TABLE.get(), block -> createSingleItemTable(block)
+                .withPool(LootPool.lootPool()
+                        .add(LootItem.lootTableItem(ModItems.PRESERVED_BRAIN.get()))
+                        .when(LootItemBlockStatePropertyCondition
+                                .hasBlockStateProperties(block)
+                                .setProperties(StatePropertiesPredicate.Builder.properties()
+                                        .hasProperty(DissectionTableBlock.BRAIN, true)))));
+        dropOther(ModBlocks.CHRONOCORTEX.get(), ModItems.DISSECTION_TABLE.get());
         dropSelf(ModBlocks.LEECH_TENDRIL.get());
         dropSelf(ModBlocks.ENHANCING_GLAND.get());
         // The jug keeps its essence when broken.

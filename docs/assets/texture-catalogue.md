@@ -25,6 +25,12 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `block/finish.png` | 16x16 | Finish: amber clock face |
 | `block/heart.png` | 16x16 | Heart graft muscle: dark red bands, blue and red vessels, a stitched seam |
 | `block/eye.png` | 16x16 | Eye graft: lidded eyeball with an eldritch green iris (top face) |
+| `block/ganglion.png` | 16x16 | Ganglion graft: grey-pink nerve knot with white fibres |
+| `block/dissection_table_top.png` | 16x16 | Zinc slab with a drain groove and old stains |
+| `block/dissection_table_side.png` | 16x16 | Dark cast iron with rivets (also the legs) |
+| `block/brain_tissue.png` | 16x16 | Folded brain matter for the specimen jars |
+| `block/cortex_glass.png` | 16x16 | Jar glass: bright rim, faint fill, one glint (translucent) |
+| `block/cortex_fluid.png` | 16x16 | Green preserving fluid with bubbles (translucent) |
 | `block/clock.png` | 16x16 | Clock graft: cream clock face in brass, hands near midnight |
 | `block/flesh_pustule.png` | 16x16 | Pustules on mature flesh |
 | `block/gland_sac.png` | 16x16 | Veined pink sac of the Enhancing Gland |
