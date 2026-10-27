@@ -25,15 +25,20 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.GOLD_NEEDLE.get());
         basicItem(ModItems.BONE_NEEDLE.get());
         basicItem(ModItems.AMETHYST_NEEDLE.get());
-        basicItem(ModItems.CULTURE.get());
+        // Culture: the growth (tinted) in an untinted brass dish.
+        withExistingParent("culture", mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/culture"))
+                .texture("layer1", modLoc("item/culture_dish"));
         basicItem(ModItems.PRESERVED_BRAIN.get());
         basicItem(ModItems.TEMPORAL_RESIDUE.get());
     }
 
+    /** Vessel (layer 0), liquid tinted by aspect (layer 1), untinted brass and glints on top (layer 2). */
     private void withFill(Item item) {
         String name = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath();
         withExistingParent(name, mcLoc("item/generated"))
                 .texture("layer0", modLoc("item/" + name))
-                .texture("layer1", modLoc("item/" + name + "_fill"));
+                .texture("layer1", modLoc("item/" + name + "_fill"))
+                .texture("layer2", modLoc("item/" + name + "_front"));
     }
 }

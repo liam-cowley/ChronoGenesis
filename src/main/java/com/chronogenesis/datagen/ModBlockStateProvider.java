@@ -23,13 +23,11 @@ public class ModBlockStateProvider extends BlockStateProvider {
         ModelFile armature = models().cubeAll("copper_armature", modLoc("block/copper_armature")).renderType("cutout");
         simpleBlockWithItem(ModBlocks.COPPER_ARMATURE.get(), armature);
 
-        // Flesh: the vanilla leaves parent has a tint index on every face, so the aspect colour applies.
-        ModelFile flesh = models().withExistingParent("chronoflesh", mcLoc("block/leaves"))
-                .texture("all", modLoc("block/chronoflesh"));
+        // Flesh: a tinted layer (aspect colour) plus an untinted overlay (stitches, staples, the core's eye).
+        ModelFile flesh = tintedWithOverlay("chronoflesh");
         simpleBlockWithItem(ModBlocks.CHRONOFLESH.get(), flesh);
 
-        ModelFile core = models().withExistingParent("organism_core", mcLoc("block/leaves"))
-                .texture("all", modLoc("block/organism_core"));
+        ModelFile core = tintedWithOverlay("organism_core");
         ModelFile necrotic = models().cubeAll("organism_core_necrotic", modLoc("block/organism_core_necrotic"));
         getVariantBuilder(ModBlocks.ORGANISM_CORE.get()).forAllStates(state -> ConfiguredModel.builder()
                 .modelFile(state.getValue(OrganismCoreBlock.NECROTIC) ? necrotic : core).build());
@@ -40,10 +38,13 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
         ModelFile jug = models().getBuilder("essence_jug")
                 .texture("side", modLoc("block/essence_jug"))
+                .texture("top", modLoc("block/essence_jug_top"))
                 .texture("particle", modLoc("block/essence_jug"))
                 .renderType("cutout")
-                .element().from(4, 0, 4).to(12, 10, 12).allFaces((dir, face) -> face.texture("#side")).end()
-                .element().from(6, 10, 6).to(10, 13, 10).allFaces((dir, face) -> face.texture("#side")).end();
+                .element().from(4, 0, 4).to(12, 10, 12)
+                .allFaces((dir, face) -> face.texture(dir.getAxis().isVertical() ? "#top" : "#side")).end()
+                .element().from(6, 10, 6).to(10, 13, 10)
+                .allFaces((dir, face) -> face.texture(dir.getAxis().isVertical() ? "#top" : "#side")).end();
         simpleBlockWithItem(ModBlocks.ESSENCE_JUG.get(), jug);
 
         ModelFile tear = models().getBuilder("time_tear")
@@ -52,6 +53,20 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .renderType("translucent")
                 .element().from(3, 3, 3).to(13, 13, 13).allFaces((dir, face) -> face.texture("#all")).end();
         simpleBlock(ModBlocks.TIME_TEAR.get(), tear);
+    }
+
+    /**
+     * A full cube drawn twice: once with {@code block/<name>} tinted by the aspect colour (tint index 0),
+     * once with the untinted {@code block/<name>_overlay} on top (the same trick as vanilla grass).
+     */
+    private ModelFile tintedWithOverlay(String name) {
+        return models().withExistingParent(name, mcLoc("block/block"))
+                .texture("all", modLoc("block/" + name))
+                .texture("overlay", modLoc("block/" + name + "_overlay"))
+                .texture("particle", modLoc("block/" + name))
+                .renderType("cutout")
+                .element().allFaces((dir, face) -> face.texture("#all").cullface(dir).tintindex(0)).end()
+                .element().allFaces((dir, face) -> face.texture("#overlay").cullface(dir)).end();
     }
 
     /**
