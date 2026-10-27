@@ -53,6 +53,9 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   (16x16 pixel art, hand-placed grids). Art direction: Frankenstein (stitches, staples, electrodes, jars) +
   Call of Cthulhu (eyes, maws, tentacles, eldritch green) + steampunk (brass, copper, rivets, valves).
   Edit the script and re-run rather than hand-editing PNGs, unless replacing a texture with real art for good.
+- `tools/make_structures.py` writes the worldgen structure templates. Each ruin is generated from its "past"
+  template by seeded decay, so the Temporal Lens's past view lines up with it block for block. Edit the layout
+  there and re-run; never hand-edit the NBT.
 - `tools/render_models.py <out.png>` renders isometric previews of the generated block models (pull the
   datagen commit first). Use it to check model changes without launching the game.
 - Organism models are built in `ModBlockStateProvider` from shared parts (brass frame, tinted flesh masses,

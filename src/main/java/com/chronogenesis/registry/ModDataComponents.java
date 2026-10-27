@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.EssenceContents;
+import com.chronogenesis.lens.Blueprint;
+import com.chronogenesis.lens.LensDepth;
 
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponentType;
@@ -27,6 +29,14 @@ public final class ModDataComponents {
     /** Where an Umbilical Locket is tied to: an organism core, in a dimension. */
     public static final Supplier<DataComponentType<GlobalPos>> LOCKET_LINK = DATA_COMPONENTS.registerComponentType("locket_link",
             builder -> builder.persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC));
+
+    /** How far back a Temporal Lens looks. */
+    public static final Supplier<DataComponentType<LensDepth>> LENS_DEPTH = DATA_COMPONENTS.registerComponentType("lens_depth",
+            builder -> builder.persistent(LensDepth.CODEC).networkSynchronized(LensDepth.STREAM_CODEC));
+
+    /** Which machine an Intact Blueprint shows. */
+    public static final Supplier<DataComponentType<Blueprint>> BLUEPRINT = DATA_COMPONENTS.registerComponentType("blueprint",
+            builder -> builder.persistent(Blueprint.CODEC).networkSynchronized(Blueprint.STREAM_CODEC));
 
     private ModDataComponents() {}
 }

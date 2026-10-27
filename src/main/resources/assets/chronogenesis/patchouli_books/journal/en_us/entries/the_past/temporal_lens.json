@@ -1,0 +1,18 @@
+{
+  "name": "The Temporal Lens",
+  "icon": "chronogenesis:temporal_lens",
+  "category": "chronogenesis:the_past",
+  "sortnum": 0,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The Chronocortex can grow a spyglass that looks $(o)backwards$(). Hold it to my eye and the present fades; what stood here before shows through, a sepia ghost.$(br2)It burns $(l)Time$(): its own store first (pour a Stasis Ampoule onto it), then my pool. A dram every two seconds, more for deeper looks."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "How Far Back",
+      "text": "Sneak and use it to change the setting.$(br)$(l)Echo$(): hours. Nothing yet.$(br)$(l)Decades$(): ruined laboratories with their lights still on.$(br)$(l)Centuries$(): older ruins, whole.$(br2)Something tells me it can see further still, if the Chronocortex grows."
+    }
+  ]
+}

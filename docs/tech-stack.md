@@ -37,3 +37,4 @@
 - `textures.py`: generates every texture (see `docs/assets/texture-catalogue.md`).
 - `render_models.py`: isometric previews of the generated block models.
 - `make_test_structures.py`: the GameTest arena structure (`floor7`).
+- `make_structures.py`: worldgen structure templates (ruin + past template pairs for the Temporal Lens).

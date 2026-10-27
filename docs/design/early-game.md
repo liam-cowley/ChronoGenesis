@@ -125,7 +125,11 @@
    witnessed experiments until the Lens exists; the first topic is Level 2 powers (Deeper Infusion).
    Still to do: flow control from the Chronocortex (redirecting, Tap limits), later stages.
 8. ✅ Umbilical Locket (Curios necklace; grown by research, re-growable). ✅ Temporal Field (graft on a Time
-   organism; one creature per 5 s gets a dram back, for a dram of Time). ⬜ Temporal Lens + first structures.
+   organism; one creature per 5 s gets a dram back, for a dram of Time). ✅ Temporal Lens (Echo/Decades/
+   Centuries; ghosts of past templates; reads faded blueprints into clues). ✅ Abandoned Laboratory (worldgen,
+   ruin + past template, faded blueprints, loot with rare intact blueprints).
+   Still to do: the other structures (castle, marketplace, observatory, drowned specimen house, intact lab),
+   shrines and obelisks, Echo visuals (recent events), player-placed blocks fading in the Lens, "Ages" (stage 1).
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

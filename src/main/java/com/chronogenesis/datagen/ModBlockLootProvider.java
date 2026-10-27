@@ -42,6 +42,8 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.CLOCK.get());
         dropSelf(ModBlocks.GANGLION.get());
         dropSelf(ModBlocks.TEMPORAL_FIELD.get());
+        // Faded blueprints crumble if taken: they can only be read where they lie, through the Lens.
+        add(ModBlocks.FADED_BLUEPRINT.get(), noDrop());
         // The table gives its brain back; the Chronocortex dies when broken, leaving only the table.
         add(ModBlocks.DISSECTION_TABLE.get(), block -> createSingleItemTable(block)
                 .withPool(LootPool.lootPool()

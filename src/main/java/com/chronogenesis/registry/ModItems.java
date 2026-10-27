@@ -9,6 +9,8 @@ import com.chronogenesis.item.EssenceJugItem;
 import com.chronogenesis.item.NeedleItem;
 import com.chronogenesis.item.StasisAmpouleItem;
 import com.chronogenesis.item.UmbilicalLocketItem;
+import com.chronogenesis.lens.IntactBlueprintItem;
+import com.chronogenesis.lens.TemporalLensItem;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -59,6 +61,13 @@ public final class ModItems {
     /** Worn in the necklace slot, tied to an organism: refills your pool from a distance. Grown by research. */
     public static final DeferredItem<UmbilicalLocketItem> UMBILICAL_LOCKET = ITEMS.registerItem("umbilical_locket",
             UmbilicalLocketItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+
+    /** Look into the past. Burns Time. Grown by research. */
+    public static final DeferredItem<TemporalLensItem> TEMPORAL_LENS = ITEMS.registerItem("temporal_lens",
+            TemporalLensItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+    /** The rare blueprint that survived in an Abandoned Laboratory. Read it for a clue. */
+    public static final DeferredItem<IntactBlueprintItem> INTACT_BLUEPRINT = ITEMS.registerItem("intact_blueprint",
+            IntactBlueprintItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     // Block items
     public static final DeferredItem<BlockItem> BRASS_ARMATURE = ITEMS.registerSimpleBlockItem("brass_armature", ModBlocks.BRASS_ARMATURE);

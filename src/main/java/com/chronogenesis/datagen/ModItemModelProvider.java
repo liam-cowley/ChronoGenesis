@@ -39,6 +39,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.PRESERVED_BRAIN.get());
         basicItem(ModItems.PRESERVED_HEART.get());
         basicItem(ModItems.UMBILICAL_LOCKET.get());
+        basicItem(ModItems.TEMPORAL_LENS.get());
+        basicItem(ModItems.INTACT_BLUEPRINT.get());
         basicItem(ModItems.TEMPORAL_RESIDUE.get());
     }
 

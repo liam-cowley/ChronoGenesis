@@ -11,6 +11,7 @@ import com.chronogenesis.registry.ModBlocks;
 
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
@@ -56,6 +57,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         jug();
         timeTear();
         chronocortex();
+        fadedBlueprint();
     }
 
     // ---------------------------------------------------------------- flesh
@@ -313,6 +315,20 @@ public class ModBlockStateProvider extends BlockStateProvider {
         box(cortex, 5, 16, 7.5f, 6, 19, 8.5f, "#steel", false);
         box(cortex, 10, 16, 7.5f, 11, 19, 8.5f, "#steel", false);
         simpleBlock(ModBlocks.CHRONOCORTEX.get(), cortex);
+    }
+
+    /** A thin sheet of yellowed paper on a table, turned to face the reader. */
+    private void fadedBlueprint() {
+        BlockModelBuilder sheet = models().withExistingParent("faded_blueprint", mcLoc("block/block"))
+                .texture("paper", modLoc("block/faded_blueprint"))
+                .texture("particle", modLoc("block/faded_blueprint"))
+                .renderType("cutout");
+        sheet.element().from(1, 0, 2).to(15, 0.25f, 14)
+                .allFaces((dir, face) -> face.texture("#paper")).end();
+        getVariantBuilder(ModBlocks.FADED_BLUEPRINT.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(sheet)
+                .rotationY(((int) state.getValue(HorizontalDirectionalBlock.FACING).toYRot() + 180) % 360)
+                .build());
     }
 
     private BlockModelBuilder tableModel(String name) {

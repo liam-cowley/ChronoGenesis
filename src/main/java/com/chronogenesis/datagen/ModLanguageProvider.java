@@ -187,6 +187,27 @@ public class ModLanguageProvider extends LanguageProvider {
         add("research.chronogenesis.temporal_field", "Temporal Field");
         add("research.chronogenesis.temporal_field.desc", "A graft for a Time organism that gently rewinds the creatures around it, so what was drained from them slowly grows back. The end of breeding animals only to drain them.");
 
+        // The Temporal Lens and the past
+        addItem(ModItems.TEMPORAL_LENS, "Temporal Lens");
+        addItem(ModItems.INTACT_BLUEPRINT, "Intact Blueprint");
+        addBlock(ModBlocks.FADED_BLUEPRINT, "Faded Blueprint");
+        add("lens.chronogenesis.depth.echo", "Echo (hours)");
+        add("lens.chronogenesis.depth.decades", "Decades");
+        add("lens.chronogenesis.depth.centuries", "Centuries");
+        add("message.chronogenesis.lens.depth", "The Lens now looks back: %s");
+        add("message.chronogenesis.lens.no_time", "The Lens needs Time to see through. Pour a Stasis Ampoule onto it.");
+        add("message.chronogenesis.lens.scanned", "You trace the faded lines into your journal.");
+        add("message.chronogenesis.blueprint.faded", "The lines have faded past reading. Perhaps they were clearer once.");
+        add("tooltip.chronogenesis.lens.depth", "Looks back: %s");
+        add("tooltip.chronogenesis.lens.hint", "Hold use to look; sneak-use to look further back");
+        add("tooltip.chronogenesis.blueprint.locket", "A cord, a locket, a heart: something worn at the throat");
+        add("tooltip.chronogenesis.blueprint.field", "A dome on a Time organism, and animals around it, whole again");
+        add("clue.chronogenesis.blueprint_locket", "A scribbled blueprint: the locket on a cord");
+        add("clue.chronogenesis.blueprint_field", "A scribbled blueprint: the rewinding dome");
+        add("clue.chronogenesis.lab_in_its_prime", "A laboratory as it was, lights burning");
+        add("research.chronogenesis.temporal_lens", "Temporal Lens");
+        add("research.chronogenesis.temporal_lens.desc", "A spyglass that looks backwards. Burns Time to show the past over the present: ruins whole again, and old blueprints legible where they lie.");
+
         add("message.chronogenesis.gate.pace", "Pace %s: %s ticks per block of track. Slower pulses make more Time, but stall past 600 ticks.");
         add("message.chronogenesis.organism.stability", " | stability %s/%s, instability %s/%s");
 

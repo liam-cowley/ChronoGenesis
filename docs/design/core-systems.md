@@ -318,6 +318,15 @@ How it looks: a hazy, desaturated, slightly warped view.
 The view is generated from the world seed plus these changes, so it is a plausible past rather
 than a pure replay.
 
+**As built:** the Lens is grown by research and burns Time (its own store, then the player's pool;
+1 dram per 2 s, 2 at Centuries). While it is in use, the server compares each nearby structure with a
+**past view** (`data/<ns>/chronogenesis/past_view/<name>.json`: structure, past template, depth, clue)
+and sends the blocks of the past template that differ from what stands there now; the client draws
+them as translucent sepia ghosts under a vignette, zoomed like a spyglass. Air in the past is not
+shown (the Lens adds, it cannot take away), player-placed blocks do not fade yet, and Echo shows
+nothing yet. Holding the view on a Faded Blueprint for 2 s at Decades or deeper reads it into a
+`blueprint_<name>` clue.
+
 ### Clues and the journal
 Things you notice through the Lens become **Clues**, which are logged in the journal:
 - the merchant's stall that sold something important

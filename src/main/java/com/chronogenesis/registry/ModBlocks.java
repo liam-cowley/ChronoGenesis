@@ -3,6 +3,7 @@ package com.chronogenesis.registry;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlock;
+import com.chronogenesis.lens.FadedBlueprintBlock;
 import com.chronogenesis.organism.EssenceJugBlock;
 import com.chronogenesis.organism.FleshBlock;
 import com.chronogenesis.organism.GraftBlock;
@@ -104,6 +105,17 @@ public final class ModBlocks {
                     .strength(0.3f)
                     .sound(SoundType.GLASS)
                     .noOcclusion());
+
+    /** Left on the tables of Abandoned Laboratories. Readable only through the Temporal Lens; crumbles if taken. */
+    public static final DeferredBlock<FadedBlueprintBlock> FADED_BLUEPRINT = BLOCKS.registerBlock("faded_blueprint",
+            FadedBlueprintBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.TERRACOTTA_WHITE)
+                    .strength(0.1f)
+                    .sound(SoundType.WOOL)
+                    .noCollission()
+                    .noOcclusion()
+                    .pushReaction(PushReaction.DESTROY));
 
     /** A rift opened by too much Temporal Stress. Cannot be mined: seal it with Density. */
     public static final DeferredBlock<TimeTearBlock> TIME_TEAR = BLOCKS.registerBlock("time_tear", TimeTearBlock::new,

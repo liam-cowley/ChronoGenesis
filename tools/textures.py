@@ -1256,6 +1256,73 @@ def temporal_field():
     save(img, "block/temporal_field")
 
 
+def faded_blueprint():
+    # Yellowed paper, the drawing washed out to faint grey-blue lines and stains.
+    r = rng(131)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), shade((214, 200, 160, 255), r.randint(-10, 6)))
+    for y in (4, 8, 11):
+        for x in range(3, 13):
+            if r.random() < 0.55:
+                img.putpixel((x, y), (168, 172, 176, 255))
+    for x in (5, 10):
+        for y in range(3, 13):
+            if r.random() < 0.5:
+                img.putpixel((x, y), (168, 172, 176, 255))
+    for (x, y) in [(12, 2), (13, 3), (2, 13), (3, 13)]:
+        img.putpixel((x, y), (170, 140, 90, 255))  # water stains
+    save(img, "block/faded_blueprint")
+
+
+def intact_blueprint():
+    # A rolled blueprint: deep blue paper, crisp white lines, tied with string.
+    p = {"b": (40, 70, 140, 255), "B": (60, 96, 170, 255), "w": (230, 236, 250, 255), "s": (200, 180, 140, 255),
+         "k": (24, 40, 90, 255)}
+    save(grid([
+        "................",
+        "..........kk....",
+        ".........kBBk...",
+        "........kBwbBk..",
+        ".......kBbwbBk..",
+        "......kBwwbBk...",
+        ".....kBbbwBk....",
+        "....ksssssk.....",
+        "...kBbwbBk......",
+        "..kBwwbBk.......",
+        ".kBbbwBk........",
+        ".kBwbBk.........",
+        "..kBBk..........",
+        "...kk...........",
+        "................",
+        "................",
+    ], p), "item/intact_blueprint")
+
+
+def temporal_lens():
+    # A brass spyglass with an amethyst lens at its far end and verdigris on the joints.
+    p = {"k": BRASS_DDK, "b": BRASS_DK, "B": BRASS, "H": BRASS_HI, "a": AME_DK, "A": AME, "L": AME_HI, "v": VERD}
+    save(grid([
+        "................",
+        "...........kkk..",
+        "..........kALAk.",
+        ".........kAaLAk.",
+        "........kHaaAk..",
+        ".......kHBkkk...",
+        "......kHBbk.....",
+        ".....kvBbk......",
+        "....kHBbk.......",
+        "...kHBbk........",
+        "..kvBbk.........",
+        ".kHBbk..........",
+        ".kBbk...........",
+        "..kk............",
+        "................",
+        "................",
+    ], p), "item/temporal_lens")
+
+
 # ---------------------------------------------------------------- the Chrono-Insulated Suit
 
 COAT = (196, 204, 186, 255)
@@ -1445,6 +1512,9 @@ cortex_jar()
 essence_mote()
 umbilical_locket()
 temporal_field()
+faded_blueprint()
+intact_blueprint()
+temporal_lens()
 suit_icons()
 suit_armor_layers()
 

@@ -1,5 +1,6 @@
 package com.chronogenesis.gametest;
 
+import java.util.List;
 import java.util.UUID;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
@@ -9,8 +10,15 @@ import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.DrainEffects;
+import com.chronogenesis.essence.EssenceContents;
+import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.essence.MobEssence;
 import com.chronogenesis.item.UmbilicalLocketItem;
+import com.chronogenesis.lens.Blueprint;
+import com.chronogenesis.lens.FadedBlueprintBlock;
+import com.chronogenesis.lens.LensDepth;
+import com.chronogenesis.lens.PastViews;
+import com.chronogenesis.lens.TemporalLensItem;
 import com.chronogenesis.organism.BrassConduitBlock;
 import com.chronogenesis.organism.CorePhase;
 import com.chronogenesis.organism.FleshBlock;
@@ -25,9 +33,12 @@ import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModItems;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,6 +48,9 @@ import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.gametest.GameTestHolder;
@@ -370,6 +384,78 @@ public final class ChronoGameTests {
         helper.succeed();
     }
 
+    // ---------------------------------------------------------------- the Temporal Lens and the past (build step 8)
+
+    /** The lab's past template loads and maps onto the world the way a rotated jigsaw piece would. */
+    @GameTest(template = "floor7")
+    public static void pastTemplateMapsWithRotation(GameTestHelper helper) {
+        StructureTemplate past = helper.getLevel().getStructureManager()
+                .get(ChronoGenesis.id("abandoned_laboratory_past")).orElseThrow();
+        // Somewhere empty above the arena, so every past block counts as different.
+        BlockPos origin = helper.absolutePos(new BlockPos(0, 40, 0));
+        BlockState brainTable = ModBlocks.DISSECTION_TABLE.get().defaultBlockState().setValue(DissectionTableBlock.BRAIN, true);
+
+        List<PastViews.PastBlock> plain = PastViews.diff(helper.getLevel(), past, origin, Rotation.NONE);
+        helper.assertTrue(plain.contains(new PastViews.PastBlock(origin.offset(5, 1, 6), brainTable)), "table not at (5,1,6)");
+
+        // Clockwise: (x, y, z) -> (-z, y, x).
+        List<PastViews.PastBlock> turned = PastViews.diff(helper.getLevel(), past, origin, Rotation.CLOCKWISE_90);
+        helper.assertTrue(turned.contains(new PastViews.PastBlock(origin.offset(-6, 1, 5), brainTable)), "rotated table misplaced");
+        helper.assertTrue(plain.size() == turned.size(), "rotation changed the block count");
+        helper.succeed();
+    }
+
+    /** The ruin generates with its readable blueprints and a loot chest, and is registered as a structure. */
+    @GameTest(template = "floor7")
+    public static void laboratoryIsRegistered(GameTestHelper helper) {
+        var level = helper.getLevel();
+        helper.assertTrue(level.registryAccess().registryOrThrow(Registries.STRUCTURE)
+                .containsKey(ChronoGenesis.id("abandoned_laboratory")), "structure not registered");
+        helper.assertTrue(level.registryAccess().registryOrThrow(Registries.STRUCTURE_SET)
+                .containsKey(ChronoGenesis.id("abandoned_laboratory")), "structure set not registered");
+        StructureTemplate ruin = level.getStructureManager().get(ChronoGenesis.id("abandoned_laboratory")).orElseThrow();
+        helper.assertTrue(ruin.getSize().equals(new Vec3i(11, 7, 9)), "unexpected size " + ruin.getSize());
+        var blocks = ruin.palettes.get(0).blocks();
+        helper.assertTrue(blocks.stream().filter(info -> info.state().is(ModBlocks.FADED_BLUEPRINT.get())).count() == 2,
+                "the ruin should keep its two blueprints");
+        helper.assertTrue(blocks.stream().anyMatch(info -> info.state().is(Blocks.CHEST) && info.nbt() != null
+                && info.nbt().getString("LootTable").equals("chronogenesis:chests/abandoned_laboratory")), "chest loot missing");
+        helper.succeed();
+    }
+
+    /** Holding the Lens on a faded blueprint at Decades copies it into the journal as a clue. */
+    @GameTest(template = "floor7")
+    public static void lensReadsBlueprint(GameTestHelper helper) {
+        BlockPos sheet = new BlockPos(3, 1, 3);
+        helper.setBlock(sheet, ModBlocks.FADED_BLUEPRINT.get().defaultBlockState().setValue(FadedBlueprintBlock.DESIGN, Blueprint.FIELD));
+        ServerPlayer player = fakePlayer(helper);
+        // Standing over the sheet, looking straight down at the paper (it lies flat, a sliver above its block's floor).
+        player.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(sheet)).add(0, 1, 0));
+        player.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3.atBottomCenterOf(helper.absolutePos(sheet)).add(0, 0.01, 0));
+        boolean read = false;
+        for (int i = 0; i < TemporalLensItem.SCAN_TICKS && !read; i++) {
+            read = TemporalLensItem.scanTick(player, LensDepth.DECADES);
+        }
+        helper.assertTrue(read, "blueprint not read");
+        helper.assertTrue(Research.get(player).hasClue(Blueprint.FIELD.clue()), "blueprint clue not granted");
+        helper.assertFalse(TemporalLensItem.scanTick(player, LensDepth.ECHO), "Echo should not read blueprints");
+        helper.succeed();
+    }
+
+    /** The Lens burns its own Time first, then the wearer's pool. */
+    @GameTest(template = "floor7")
+    public static void lensPaysFromItselfFirst(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        Powers.set(player, PlayerEssence.EMPTY.withLevel(Aspect.TIME, 1).withPool(Aspect.TIME, 5));
+        ItemStack lens = new ItemStack(ModItems.TEMPORAL_LENS.get());
+        EssenceItems.set(lens, new EssenceContents(Aspect.TIME, 1));
+        helper.assertTrue(TemporalLensItem.pay(player, lens, 2), "should be able to pay 2");
+        helper.assertTrue(EssenceItems.get(lens) == null, "lens store should be spent first");
+        helper.assertTrue(Powers.get(player).pool(Aspect.TIME) == 4, "the rest from the pool");
+        helper.assertFalse(TemporalLensItem.pay(player, lens, 5), "cannot pay more than there is");
+        helper.succeed();
+    }
+
     /**
      * A stand-in player for server-side logic. Not a mock "joined" player: Curios tries to sync its slots to
      * those and fails without a client. A FakePlayer never joins the level and swallows packets.
@@ -400,12 +486,12 @@ public final class ChronoGameTests {
         helper.getLevel().addFreshEntity(bolt);
     }
 
-    private static net.minecraft.world.level.block.state.BlockState core(Aspect aspect) {
+    private static BlockState core(Aspect aspect) {
         return ModBlocks.ORGANISM_CORE.get().defaultBlockState()
                 .setValue(FleshBlock.ASPECT, aspect).setValue(OrganismCoreBlock.PHASE, CorePhase.SEED);
     }
 
-    private static net.minecraft.world.level.block.state.BlockState graft(net.minecraft.world.level.block.Block block) {
+    private static BlockState graft(net.minecraft.world.level.block.Block block) {
         return block.defaultBlockState().setValue(GraftBlock.FACING, Direction.UP);
     }
 }

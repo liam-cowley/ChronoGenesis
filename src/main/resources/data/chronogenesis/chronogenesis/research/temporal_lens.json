@@ -1,0 +1,39 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.temporal_lens"
+  },
+  "description": {
+    "translate": "research.chronogenesis.temporal_lens.desc"
+  },
+  "icon": "chronogenesis:temporal_lens",
+  "essence": {
+    "time": 16,
+    "awareness": 16
+  },
+  "materials": [
+    {
+      "item": "minecraft:spyglass",
+      "count": 1
+    },
+    {
+      "item": "minecraft:amethyst_shard",
+      "count": 4
+    },
+    {
+      "tag": "c:ingots/brass",
+      "count": 2
+    }
+  ],
+  "clues": [
+    [
+      "chronogenesis:its_alive"
+    ]
+  ],
+  "order": 5,
+  "rewards": [
+    {
+      "id": "chronogenesis:temporal_lens",
+      "count": 1
+    }
+  ]
+}

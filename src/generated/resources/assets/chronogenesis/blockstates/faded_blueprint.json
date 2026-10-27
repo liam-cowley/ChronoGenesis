@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "design=field,facing=east": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 90
+    },
+    "design=field,facing=north": {
+      "model": "chronogenesis:block/faded_blueprint"
+    },
+    "design=field,facing=south": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 180
+    },
+    "design=field,facing=west": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 270
+    },
+    "design=locket,facing=east": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 90
+    },
+    "design=locket,facing=north": {
+      "model": "chronogenesis:block/faded_blueprint"
+    },
+    "design=locket,facing=south": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 180
+    },
+    "design=locket,facing=west": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 270
+    }
+  }
+}

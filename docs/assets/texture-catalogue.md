@@ -26,6 +26,9 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `block/heart.png` | 16x16 | Heart graft muscle: dark red bands, blue and red vessels, a stitched seam |
 | `block/eye.png` | 16x16 | Eye graft: lidded eyeball with an eldritch green iris (top face) |
 | `block/temporal_field.png` | 16x16 | Temporal Field dome: teal spiral of time with amber sparks |
+| `block/faded_blueprint.png` | 16x16 | Yellowed paper, lines washed out to faint grey, water stains |
+| `item/intact_blueprint.png` | 16x16 | Rolled blue blueprint with crisp white lines, tied with string |
+| `item/temporal_lens.png` | 16x16 | Brass spyglass with an amethyst lens and verdigris joints |
 | `item/umbilical_locket.png` | 16x16 | Brass oval locket with a stitched seam, on a twisted fleshy cord |
 | `particle/essence_mote.png` | 8x8 | Soft round glow, white; tinted by the essence it carries (Leech Tendril streams) |
 | `block/ganglion.png` | 16x16 | Ganglion graft: grey-pink nerve knot with white fibres |

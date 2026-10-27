@@ -34,8 +34,11 @@ public final class Clues {
     public static final ResourceLocation HEAVY_HEART = ChronoGenesis.id("heavy_heart");
     /** The Chronocortex wakes. */
     public static final ResourceLocation ALIVE = ChronoGenesis.id("its_alive");
+    /** An Abandoned Laboratory seen through the Temporal Lens as it was. (Granted by its past view's data.) */
+    public static final ResourceLocation LAB_PRIME = ChronoGenesis.id("lab_in_its_prime");
 
-    public static final List<ResourceLocation> ALL = List.of(FLOATING, VACANT, DUST, TORN, LONG_ROAD, HEAVY_HEART, ALIVE);
+    /** Clues from witnessing things. Blueprints add one each: see {@link com.chronogenesis.lens.Blueprint#clue()}. */
+    public static final List<ResourceLocation> ALL = List.of(FLOATING, VACANT, DUST, TORN, LONG_ROAD, HEAVY_HEART, ALIVE, LAB_PRIME);
 
     /** How close a player must be to notice something. */
     public static final double WITNESS_RANGE = 16.0;

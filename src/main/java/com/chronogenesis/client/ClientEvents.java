@@ -60,6 +60,7 @@ public final class ClientEvents {
     @SubscribeEvent
     static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAboveAll(ChronoGenesis.id("essence_hud"), EssenceHud::render);
+        event.registerBelowAll(ChronoGenesis.id("lens_haze"), PastViewRenderer::renderHaze);
     }
 
     @SubscribeEvent

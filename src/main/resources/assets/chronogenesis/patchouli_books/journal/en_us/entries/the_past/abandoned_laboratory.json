@@ -1,0 +1,17 @@
+{
+  "name": "The One Before Me",
+  "icon": "minecraft:cobweb",
+  "category": "chronogenesis:the_past",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "There are $(l)abandoned laboratories$() out in the plains and forests: stone walls, a fallen roof, a dead organism in its frame, a Dissection Table with no brain. Someone did this before me.$(br2)Their chests still hold scraps of the work, and very rarely a blueprint that survived."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Faded Blueprints",
+      "text": "On their tables lie $(l)faded blueprints$(), illegible now and too brittle to carry. Through the Lens, at Decades, the lines come back. Hold the view on one for two seconds and I can copy it into this journal.$(br2)A copied blueprint is a $(l)clue$(): the Chronocortex accepts it in place of the experiments it would otherwise ask for."
+    }
+  ]
+}
