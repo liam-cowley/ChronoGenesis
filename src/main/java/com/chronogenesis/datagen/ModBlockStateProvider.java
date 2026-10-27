@@ -17,7 +17,8 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 /**
  * Block states and 3D block models.
  * <p>
- * Organisms are built from shared parts: a copper frame (the twelve edges of the armature),
+ * Organisms are built from shared parts: a copper frame (the twelve edges of the armature, textured
+ * with vanilla's copper block),
  * flesh masses tinted by the organism's aspect (tint index 0), and untinted details (brass,
  * eyes, pustules). Flesh has four growth stages and cores have four phases; see {@link FleshBlock}
  * and {@link CorePhase}. Grafts are modelled pointing up; {@code directionalBlock} rotates them.
@@ -25,6 +26,9 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 public class ModBlockStateProvider extends BlockStateProvider {
     private static final String FLESH = "#flesh";
     private static final String FRAME = "#frame";
+    /** Frames use vanilla's own copper block texture, so they match copper blocks in the world. */
+    private static final net.minecraft.resources.ResourceLocation COPPER =
+            net.minecraft.resources.ResourceLocation.withDefaultNamespace("block/copper_block");
 
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper fileHelper) {
         super(output, ChronoGenesis.MODID, fileHelper);
@@ -32,8 +36,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        // Frame: see-through copper lattice.
-        ModelFile armature = models().cubeAll("copper_armature", modLoc("block/copper_armature")).renderType("cutout");
+        // Frame: the bare armature is the same twelve copper beams every organism grows on.
+        BlockModelBuilder armature = models().withExistingParent("copper_armature", mcLoc("block/block"))
+                .texture("frame", COPPER)
+                .texture("particle", COPPER)
+                .renderType("cutout");
+        frame(armature);
         simpleBlockWithItem(ModBlocks.COPPER_ARMATURE.get(), armature);
 
         fleshStages();
@@ -227,7 +235,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private BlockModelBuilder organismModel(String name, String fleshTexture) {
         return models().withExistingParent(name, mcLoc("block/block"))
                 .texture("flesh", modLoc("block/" + fleshTexture))
-                .texture("frame", modLoc("block/copper_beam"))
+                .texture("frame", COPPER)
                 .texture("particle", modLoc("block/" + fleshTexture))
                 .renderType("cutout");
     }

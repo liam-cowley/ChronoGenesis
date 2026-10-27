@@ -35,7 +35,16 @@ def texture(ref):
     ns, path = ref.split(":") if ":" in ref else ("minecraft", ref)
     key = (ns, path)
     if key not in _tex_cache:
-        _tex_cache[key] = Image.open(os.path.join(TEXTURES, path + ".png")).convert("RGBA")
+        if ns == "minecraft":
+            # Vanilla textures are not in this repo: stand in a plain copper-coloured tile for previews.
+            img = Image.new("RGBA", (16, 16), (192, 108, 66, 255))
+            for i in range(16):
+                img.putpixel((i, 0), (226, 150, 104, 255))
+                img.putpixel((0, i), (226, 150, 104, 255))
+                img.putpixel((i, 15), (140, 74, 46, 255))
+            _tex_cache[key] = img
+        else:
+            _tex_cache[key] = Image.open(os.path.join(TEXTURES, path + ".png")).convert("RGBA")
     return _tex_cache[key]
 
 

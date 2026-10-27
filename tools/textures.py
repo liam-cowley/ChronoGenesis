@@ -545,52 +545,6 @@ def necrotic():
     save(img, "block/organism_core_necrotic")
 
 
-def armature():
-    img = new()
-    r = rng(3)
-    # Diagonal braces.
-    for i in range(16):
-        for (x, y) in [(i, i), (15 - i, i)]:
-            img.putpixel((x, y), COPPER_DK)
-    # Frame beams, lit from top-left.
-    for i in range(16):
-        img.putpixel((i, 0), COPPER_HI)
-        img.putpixel((i, 1), COPPER)
-        img.putpixel((0, i), COPPER_HI)
-        img.putpixel((1, i), COPPER)
-        img.putpixel((i, 14), COPPER)
-        img.putpixel((i, 15), COPPER_DK)
-        img.putpixel((14, i), COPPER)
-        img.putpixel((15, i), COPPER_DK)
-    # Verdigris creeping along the copper.
-    for _ in range(14):
-        x, y = r.choice([(r.randint(0, 15), r.choice([0, 1, 14, 15])), (r.choice([0, 1, 14, 15]), r.randint(0, 15))])
-        img.putpixel((x, y), r.choice([VERD, VERD_HI, VERD_DK]))
-    # Riveted corner plates.
-    for cx, cy in [(1, 1), (14, 1), (1, 14), (14, 14)]:
-        for dx in (-1, 0, 1):
-            for dy in (-1, 0, 1):
-                x, y = cx + dx, cy + dy
-                if 0 <= x < 16 and 0 <= y < 16:
-                    img.putpixel((x, y), BRASS)
-        img.putpixel((cx, cy), BRASS_HI)
-    # A brass gear at the crossing.
-    gear = [
-        "..b.b..",
-        ".bBBBb.",
-        "bBHkBBb",
-        ".BkkkB.",
-        "bBBkBBb",
-        ".bBBBb.",
-        "..b.b..",
-    ]
-    for gy, row in enumerate(gear):
-        for gx, ch in enumerate(row):
-            if ch != ".":
-                img.putpixel((5 + gx, 5 + gy), {"b": BRASS_DK, "B": BRASS, "H": BRASS_HI, "k": BRASS_DDK}[ch])
-    save(img, "block/copper_armature")
-
-
 def graft_flesh(seed, base, dark):
     r = rng(seed)
     img = new()
@@ -773,24 +727,6 @@ def time_tear():
 
 # ---------------------------------------------------------------- 3D model parts
 
-def copper_beam():
-    # Solid copper with rivets every 4 pixels and creeping verdigris: frames of growing organisms.
-    r = rng(17)
-    img = new()
-    for y in range(16):
-        for x in range(16):
-            band = y % 4
-            c = COPPER_HI if band == 0 else COPPER if band in (1, 2) else COPPER_DK
-            img.putpixel((x, y), shade(c, r.randint(-8, 8)))
-    for y in range(1, 16, 4):
-        for x in range(1, 16, 4):
-            img.putpixel((x, y), BRASS_HI)
-            img.putpixel((x + 1, y + 1) if x < 15 and y < 15 else (x, y), BRASS_DDK)
-    for _ in range(12):
-        img.putpixel((r.randint(0, 15), r.randint(0, 15)), r.choice([VERD, VERD_HI, VERD_DK]))
-    save(img, "block/copper_beam")
-
-
 def brass_fitting():
     r = rng(19)
     img = new()
@@ -898,14 +834,12 @@ residue()
 chronoflesh()
 organism_core()
 necrotic()
-armature()
 tap()
 leech_tendril()
 enhancing_gland()
 essence_jug()
 essence_jug_top()
 time_tear()
-copper_beam()
 brass_fitting()
 steel()
 graft_flesh_texture()
