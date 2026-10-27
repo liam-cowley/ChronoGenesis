@@ -1,27 +1,53 @@
 {
   "variants": {
-    "facing=down": {
+    "active=false,facing=down": {
       "model": "chronogenesis:block/clock",
       "x": 180
     },
-    "facing=east": {
+    "active=false,facing=east": {
       "model": "chronogenesis:block/clock",
       "x": 90,
       "y": 90
     },
-    "facing=north": {
+    "active=false,facing=north": {
       "model": "chronogenesis:block/clock",
       "x": 90
     },
-    "facing=south": {
+    "active=false,facing=south": {
       "model": "chronogenesis:block/clock",
       "x": 90,
       "y": 180
     },
-    "facing=up": {
+    "active=false,facing=up": {
       "model": "chronogenesis:block/clock"
     },
-    "facing=west": {
+    "active=false,facing=west": {
+      "model": "chronogenesis:block/clock",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=down": {
+      "model": "chronogenesis:block/clock",
+      "x": 180
+    },
+    "active=true,facing=east": {
+      "model": "chronogenesis:block/clock",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=north": {
+      "model": "chronogenesis:block/clock",
+      "x": 90
+    },
+    "active=true,facing=south": {
+      "model": "chronogenesis:block/clock",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=up": {
+      "model": "chronogenesis:block/clock"
+    },
+    "active=true,facing=west": {
       "model": "chronogenesis:block/clock",
       "x": 90,
       "y": 270

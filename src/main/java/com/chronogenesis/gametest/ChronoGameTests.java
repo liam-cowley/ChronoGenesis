@@ -204,6 +204,30 @@ public final class ChronoGameTests {
         helper.succeedWhen(() -> helper.assertTrue(time.stored() > 0, "no Time from the twin clocks"));
     }
 
+    /** A Leech Tendril drains a nearby creature into its organism, then swells as the stream of essence arrives. */
+    @GameTest(template = "floor7", timeoutTicks = 200)
+    public static void leechTendrilDrainsAndGulps(GameTestHelper helper) {
+        BlockPos corePos = new BlockPos(1, 1, 1);
+        BlockPos tendrilPos = corePos.above();
+        helper.setBlock(corePos, core(Aspect.DENSITY));
+        helper.setBlock(tendrilPos, graft(ModBlocks.LEECH_TENDRIL.get()));
+        Cow cow = helper.spawn(EntityType.COW, 3, 1, 3);
+        cow.setNoAi(true);
+        OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+        boolean[] gulped = {false};
+        helper.onEachTick(() -> {
+            if (helper.getBlockState(tendrilPos).getValue(GraftBlock.ACTIVE)) {
+                gulped[0] = true;
+            }
+        });
+        helper.succeedWhen(() -> {
+            helper.assertTrue(core.stored() > 0, "nothing drained into the organism");
+            helper.assertTrue(MobEssence.remaining(cow, Aspect.DENSITY) < MobEssence.max(cow, Aspect.DENSITY), "cow not drained");
+            helper.assertTrue(gulped[0], "the tendril never gulped");
+            helper.assertFalse(helper.getBlockState(tendrilPos).getValue(GraftBlock.ACTIVE), "the tendril should settle back");
+        });
+    }
+
     // ---------------------------------------------------------------- the Chronocortex (build step 7)
 
     /** Lightning on a rod over a ready Dissection Table wakes the brain: the table becomes the Chronocortex. */

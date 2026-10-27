@@ -58,6 +58,9 @@ Docs (read the relevant one before implementing a feature, and keep names consis
 - Organism models are built in `ModBlockStateProvider` from shared parts (brass frame, tinted flesh masses,
   untinted brass/eyes). Flesh has `growth` 0-3 (tendrils, creeping, swelling, mature); cores have `phase`
   (seed, awake, hungry, necrotic). Keep new organism blocks in the same style.
+- Grafts have an `active` blockstate for visible work (the Leech Tendril swells as it gulps); give a graft an
+  active model with `graftBlock(block, model, activeModel)`. Leeching is shown with `EssenceMoteOptions` particles
+  (client: `EssenceMoteParticle`), which home in on a target point.
 - Layered textures: containers = `<name>` + `<name>_fill` (tinted by aspect, layer 1) + `<name>_front`;
   culture = `culture` (tinted) + `culture_dish`; flesh/core = `<name>` (tinted) + `<name>_overlay`.
 - Hand-written data (recipes, tags, loot modifiers, data maps, advancements, Patchouli journal) lives in

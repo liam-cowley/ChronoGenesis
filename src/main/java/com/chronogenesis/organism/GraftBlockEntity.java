@@ -9,6 +9,7 @@ import com.chronogenesis.biocomputer.Clues;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.EssenceItems;
+import com.chronogenesis.essence.EssenceMoteOptions;
 import com.chronogenesis.essence.MobEssence;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlockEntities;
@@ -16,6 +17,7 @@ import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.time.TemporalStress;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -31,6 +33,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -40,6 +43,10 @@ import net.minecraft.world.phys.Vec3;
 public class GraftBlockEntity extends BlockEntity {
     private static final int LEECH_INTERVAL = 40;
     private static final int LEECH_RANGE = 4;
+    /** Motes drawn out of each creature per drain: the visible stream. */
+    private static final int LEECH_MOTES = 10;
+    /** Ticks the tendril stays swollen once the stream reaches it. */
+    private static final int GULP_TICKS = 8;
     private static final int TAP_INTERVAL = 20;
     private static final int TAP_RATE = 4;
     /** Hearts beyond this many add nothing: the veins cannot carry more. */
@@ -76,6 +83,8 @@ public class GraftBlockEntity extends BlockEntity {
     private int reportedFill;
     /** Free Clock: missed beats gathered so far towards the next dram of Time. */
     private int missedBeats;
+    /** Leech Tendril: tick at which the stream arrives (and it gulps), or -1. Not saved. */
+    private int gulpAt = -1;
 
     /** A Speed pulse running down a vein track. Not saved: an unloaded track loses its pulse. */
     private static final class Pulse {
@@ -139,6 +148,7 @@ public class GraftBlockEntity extends BlockEntity {
                 if (graft.tick % LEECH_INTERVAL == 0) {
                     graft.leech(serverLevel);
                 }
+                graft.gulpTick(serverLevel, state);
             }
             case TAP -> {
                 if (graft.tick % TAP_INTERVAL == 0) {
@@ -173,7 +183,7 @@ public class GraftBlockEntity extends BlockEntity {
             return;
         }
         AABB area = new AABB(worldPosition).inflate(LEECH_RANGE);
-        Vec3 mouth = Vec3.atCenterOf(worldPosition);
+        Vec3 mouth = mouth();
         for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, area, MobEssence::canBeDrained)) {
             if (core.room() <= 0) {
                 break;
@@ -184,13 +194,51 @@ public class GraftBlockEntity extends BlockEntity {
                 if (aspect == Aspect.TIME) {
                     TemporalStress.add(level, entity.blockPosition(), taken * TemporalStress.PER_DRAM_EXTRACTED);
                 }
-                Vec3 from = entity.position().add(0, entity.getBbHeight() / 2, 0);
-                Vec3 step = mouth.subtract(from).scale(0.2);
-                for (int i = 0; i < 5; i++) {
-                    Vec3 p = from.add(step.scale(i));
-                    level.sendParticles(ParticleTypes.CRIMSON_SPORE, p.x, p.y, p.z, 1, 0, 0, 0, 0);
-                }
+                // The essence seeps out of the body and streams into the tendril's mouth.
+                level.sendParticles(EssenceMoteOptions.of(aspect, mouth), entity.getX(), entity.getY(0.5), entity.getZ(),
+                        LEECH_MOTES * taken, entity.getBbWidth() * 0.3, entity.getBbHeight() * 0.3, entity.getBbWidth() * 0.3, 0);
+                level.playSound(null, entity.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 0.7f, 0.7f);
+                // Gulp when the slowest stream arrives, if several creatures are drained at once.
+                gulpAt = Math.max(gulpAt, tick + arrivalTicks(from(entity).distanceTo(mouth)));
             }
+        }
+    }
+
+    /**
+     * Ticks a stream of essence motes takes to fly from a creature to the tendril's mouth: they drift out for
+     * a moment, then accelerate in (see the client's EssenceMoteParticle). Measured: 14 ticks plus 2 per block.
+     */
+    public static int arrivalTicks(double distance) {
+        return 14 + (int) Math.round(distance * 2);
+    }
+
+    private static Vec3 from(LivingEntity entity) {
+        return new Vec3(entity.getX(), entity.getY(0.5), entity.getZ());
+    }
+
+    /** The tendril's mouth: just out from the block, the way it faces. */
+    private Vec3 mouth() {
+        Direction facing = getBlockState().getValue(GraftBlock.FACING);
+        return Vec3.atCenterOf(worldPosition).add(facing.getStepX() * 0.3, facing.getStepY() * 0.3, facing.getStepZ() * 0.3);
+    }
+
+    /** When the stream arrives the tendril swells and swallows, then settles back. */
+    private void gulpTick(ServerLevel level, BlockState state) {
+        if (gulpAt < 0) {
+            if (state.getValue(GraftBlock.ACTIVE)) {
+                // Unloaded mid-gulp: settle back.
+                level.setBlock(worldPosition, state.setValue(GraftBlock.ACTIVE, false), Block.UPDATE_CLIENTS);
+            }
+            return;
+        }
+        if (tick == gulpAt) {
+            level.setBlock(worldPosition, state.setValue(GraftBlock.ACTIVE, true), Block.UPDATE_CLIENTS);
+            level.playSound(null, worldPosition, SoundEvents.GENERIC_DRINK, SoundSource.BLOCKS, 0.6f, 0.5f);
+            Vec3 mouth = mouth();
+            level.sendParticles(ParticleTypes.ITEM_SLIME, mouth.x, mouth.y, mouth.z, 4, 0.1, 0.1, 0.1, 0.02);
+        } else if (tick >= gulpAt + GULP_TICKS) {
+            level.setBlock(worldPosition, state.setValue(GraftBlock.ACTIVE, false), Block.UPDATE_CLIENTS);
+            gulpAt = -1;
         }
     }
 

@@ -1204,6 +1204,19 @@ def cortex_jar():
     save(fluid, "block/cortex_fluid")
 
 
+def essence_mote():
+    # Particle: a soft round glow, white so the particle can tint it with the essence's colour.
+    img = Image.new("RGBA", (8, 8), CLEAR)
+    for y in range(8):
+        for x in range(8):
+            d = math.hypot(x - 3.5, y - 3.5)
+            if d < 3.8:
+                a = int(255 * max(0.0, 1.0 - d / 3.8) ** 1.4)
+                img.putpixel((x, y), (255, 255, 255, a))
+    img.putpixel((3, 3), GLINT)
+    save(img, "particle/essence_mote")
+
+
 # ---------------------------------------------------------------- the Chrono-Insulated Suit
 
 COAT = (196, 204, 186, 255)
@@ -1390,6 +1403,7 @@ ganglion()
 dissection_table()
 brain_tissue()
 cortex_jar()
+essence_mote()
 suit_icons()
 suit_armor_layers()
 

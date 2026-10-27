@@ -12,6 +12,7 @@ import com.chronogenesis.organism.EssenceJugBlockEntity;
 import com.chronogenesis.organism.FleshBlock;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModItems;
+import com.chronogenesis.registry.ModParticles;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.KeyMapping;
@@ -26,6 +27,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /** Client-only wiring: key bindings, the essence HUD, and aspect colour tints. */
@@ -48,6 +50,11 @@ public final class ClientEvents {
     static void registerKeys(RegisterKeyMappingsEvent event) {
         event.register(CYCLE_POWER);
         event.register(USE_POWER);
+    }
+
+    @SubscribeEvent
+    static void registerParticles(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(ModParticles.ESSENCE_MOTE.get(), EssenceMoteParticle.Provider::new);
     }
 
     @SubscribeEvent

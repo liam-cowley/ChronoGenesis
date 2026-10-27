@@ -5,6 +5,7 @@ import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.organism.CorePhase;
 import com.chronogenesis.organism.EssenceJugBlock;
 import com.chronogenesis.organism.FleshBlock;
+import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.registry.ModBlocks;
 
@@ -182,7 +183,18 @@ public class ModBlockStateProvider extends BlockStateProvider {
         leech.element().from(5, 10, 6.5f).to(11, 13, 12.5f)
                 .rotation().angle(22.5f).axis(Direction.Axis.X).origin(8, 10, 9.5f).end()
                 .allFaces((dir, face) -> face.texture(dir == Direction.UP ? "#maw" : FLESH)).end();
-        graftBlock(ModBlocks.LEECH_TENDRIL.get(), leech);
+        // Gulping: the stalk bulges and the maw gapes as the stream of essence arrives.
+        BlockModelBuilder gulping = graftModel("leech_tendril_gulping", "leech_skin", "leech_tendril")
+                .texture("maw", modLoc("block/leech_tendril"));
+        box(gulping, 4, 0, 4, 12, 3, 12, FLESH, false);
+        box(gulping, 4.5f, 3, 4.5f, 11.5f, 8, 11.5f, FLESH, false);
+        gulping.element().from(5.5f, 7, 5.5f).to(10.5f, 10.5f, 10.5f)
+                .rotation().angle(22.5f).axis(Direction.Axis.X).origin(8, 7, 8).end()
+                .allFaces((dir, face) -> face.texture(FLESH)).end();
+        gulping.element().from(4, 10, 5.5f).to(12, 14, 13.5f)
+                .rotation().angle(22.5f).axis(Direction.Axis.X).origin(8, 10, 9.5f).end()
+                .allFaces((dir, face) -> face.texture(dir == Direction.UP ? "#maw" : FLESH)).end();
+        graftBlock(ModBlocks.LEECH_TENDRIL.get(), leech, gulping);
 
         // Enhancing Gland: a swollen sac on a mound, a brass port and a needle on top.
         BlockModelBuilder gland = graftModel("enhancing_gland", "graft_flesh")
@@ -379,16 +391,33 @@ public class ModBlockStateProvider extends BlockStateProvider {
     }
 
     private BlockModelBuilder graftModel(String name, String fleshTexture) {
+        return graftModel(name, fleshTexture, name);
+    }
+
+    /** For model variants (e.g. a graft at work) that share their particle texture with the plain graft. */
+    private BlockModelBuilder graftModel(String name, String fleshTexture, String particleTexture) {
         return models().withExistingParent(name, mcLoc("block/block"))
                 .texture("flesh", modLoc("block/" + fleshTexture))
                 .texture("brass", modLoc("block/brass_fitting"))
                 .texture("steel", modLoc("block/steel"))
-                .texture("particle", modLoc("block/" + name))
+                .texture("particle", modLoc("block/" + particleTexture))
                 .renderType("cutout");
     }
 
     private void graftBlock(net.minecraft.world.level.block.Block block, ModelFile model) {
-        directionalBlock(block, model);
+        graftBlock(block, model, model);
+    }
+
+    /** A graft whose model changes while it is {@link GraftBlock#ACTIVE}; rotated like {@code directionalBlock}. */
+    private void graftBlock(net.minecraft.world.level.block.Block block, ModelFile model, ModelFile activeModel) {
+        getVariantBuilder(block).forAllStates(state -> {
+            Direction dir = state.getValue(GraftBlock.FACING);
+            return ConfiguredModel.builder()
+                    .modelFile(state.getValue(GraftBlock.ACTIVE) ? activeModel : model)
+                    .rotationX(dir == Direction.DOWN ? 180 : dir.getAxis().isHorizontal() ? 90 : 0)
+                    .rotationY(dir.getAxis().isVertical() ? 0 : ((int) dir.toYRot() + 180) % 360)
+                    .build();
+        });
         String name = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block).getPath();
         itemModels().withExistingParent(name, modLoc("block/" + name));
     }

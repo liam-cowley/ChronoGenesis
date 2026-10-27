@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -47,6 +48,8 @@ public class GraftBlock extends BaseEntityBlock {
     ).apply(instance, GraftBlock::new));
 
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
+    /** The graft is visibly at work right now (a Leech Tendril swelling as it swallows). Purely visual. */
+    public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
     private static final Map<Direction, VoxelShape> SHAPES = Map.of(
             Direction.NORTH, box(3, 3, 6, 13, 13, 16),
@@ -61,7 +64,7 @@ public class GraftBlock extends BaseEntityBlock {
     public GraftBlock(GraftType type, Properties properties) {
         super(properties);
         this.type = type;
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.UP));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.UP).setValue(ACTIVE, false));
     }
 
     public GraftType type() {
@@ -75,7 +78,7 @@ public class GraftBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, ACTIVE);
     }
 
     @Override
