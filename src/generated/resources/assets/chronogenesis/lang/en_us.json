@@ -1,0 +1,12 @@
+{
+  "block.chronogenesis.chronoflesh": "Chronoflesh",
+  "chronogenesis.configuration.essenceRegenTicks": "Essence Regen Interval (ticks)",
+  "chronogenesis.configuration.maxEntityEssence": "Max Essence per Entity",
+  "chronogenesis.configuration.section.chronogenesis.common.toml": "ChronoGenesis Configs",
+  "chronogenesis.configuration.section.chronogenesis.common.toml.title": "ChronoGenesis Configs",
+  "chronogenesis.configuration.temporal_essence": "Temporal Essence",
+  "chronogenesis.configuration.title": "ChronoGenesis Configs",
+  "item.chronogenesis.essence_vial": "Essence Vial",
+  "item.chronogenesis.temporal_residue": "Temporal Residue",
+  "itemGroup.chronogenesis": "ChronoGenesis"
+}

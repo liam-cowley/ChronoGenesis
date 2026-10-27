@@ -1,0 +1,34 @@
+# ChronoGenesis — notes for AI coding sessions
+
+Minecraft **1.21.1**, **NeoForge 21.1.x**, ModDevGradle, Java 21, Mojang mappings + Parchment.
+Mod id `chronogenesis`, base package `com.chronogenesis`. Design: temporal essence harvested from
+living beings powers rituals and grows biomechanical multiblocks, culminating in a BioComputer
+that unlocks travel to past eras (and finally an Elder God boss). Witchery/Botania-like feel,
+explicitly NOT an industrial/tech mod; progression should branch, not be linear.
+
+## Hard rules: use the 1.21.1 APIs, not older Forge or newer (1.21.2+/26.x) ones
+- Registration: `DeferredRegister.createBlocks/createItems` -> `DeferredBlock`/`DeferredItem`; other registries via
+  `DeferredRegister.create(Registries.X, MODID)`. Never use `RegistryObject` or `ForgeRegistries` (old Forge).
+- Item stack data uses **Data Components** (`DataComponentType`, registered on `Registries.DATA_COMPONENT_TYPE`), not NBT tags.
+- Entity/BE/chunk/level extra data uses **Data Attachments** (`ModAttachments`), not capabilities-as-storage.
+  Capabilities in 1.21.1 are only for exposing handlers (`RegisterCapabilitiesEvent`, `Capabilities.ItemHandler.BLOCK`).
+- `ResourceLocation.fromNamespaceAndPath(...)` / `ChronoGenesis.id(path)`; `new ResourceLocation(...)` no longer exists.
+- Networking: `RegisterPayloadHandlersEvent` + `CustomPacketPayload` records with `StreamCodec`.
+- Loot tables live in `data/<ns>/loot_table/` (singular), recipes in `data/<ns>/recipe/`, tags in `data/<ns>/tags/block/` etc.
+- Item models are the classic `models/item/*.json` (the 1.21.4 `items/` client item format does NOT apply).
+- `@EventBusSubscriber(modid = ChronoGenesis.MODID)` auto-routes mod-bus vs game-bus events; no `bus =` needed.
+- Datagen uses `GatherDataEvent` (single event, `includeClient()`/`includeServer()`), `BlockStateProvider`, `ItemModelProvider`.
+
+## Conventions
+- One registry class per type in `registry/` (`ModBlocks`, `ModItems`, `ModBlockEntities`, `ModEntities`,
+  `ModDataComponents`, `ModAttachments`, `ModRecipes`, `ModMenus`, `ModSounds`, `ModParticles`...), registered in the
+  `ChronoGenesis` constructor. Keep the main class free of gameplay logic.
+- Planned feature packages: `essence/` (extraction, storage, transfer), `ritual/`, `biomech/` (multiblock growth),
+  `biocomputer/`, `timetravel/` (era dimensions), `world/` (worldgen per era), `entity/`, `client/` (renderers, screens;
+  client-only code ONLY here or in `ChronoGenesisClient`).
+- Every new item/block needs: model/blockstate in datagen, lang entry in `ModLanguageProvider`, loot table for blocks,
+  a texture in `src/main/resources/assets/chronogenesis/textures/`. Run `gradlew runData` afterwards.
+- `src/generated/resources` is datagen output: change the providers, not the JSON.
+- Prefer JSON data (recipes, ritual definitions, multiblock patterns via custom datapack registries) over hard-coded
+  Java so content is tweakable by packs.
+- Test both `runClient` and `runServer` before calling a feature done.
