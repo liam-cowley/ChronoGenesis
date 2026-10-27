@@ -612,7 +612,7 @@
   "textures": {
     "brass": "chronogenesis:block/brass_fitting",
     "flesh": "chronogenesis:block/organism_core",
-    "frame": "chronogenesis:block/copper_beam",
+    "frame": "minecraft:block/copper_block",
     "particle": "chronogenesis:block/organism_core"
   }
 }
