@@ -38,6 +38,10 @@ public final class ClientEvents {
     public static final KeyMapping USE_POWER = new KeyMapping("key.chronogenesis.use_power",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, CATEGORY);
 
+    /** Holding the power key this long opens the radial menu instead of cycling. */
+    private static final int RADIAL_HOLD_TICKS = 5;
+    private static int cycleHeldTicks;
+
     private ClientEvents() {}
 
     @SubscribeEvent
@@ -56,8 +60,20 @@ public final class ClientEvents {
         if (Minecraft.getInstance().player == null) {
             return;
         }
+        // Tap the power key to cycle; hold it to open the radial menu.
         while (CYCLE_POWER.consumeClick()) {
-            PacketDistributor.sendToServer(new PowerKeyPayload(PowerKeyPayload.Action.CYCLE_SELECTED));
+            // Presses are handled through isDown below; drain the queue so they don't pile up.
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        if (CYCLE_POWER.isDown() && minecraft.screen == null) {
+            if (++cycleHeldTicks == RADIAL_HOLD_TICKS) {
+                minecraft.setScreen(new RadialPowerScreen(CYCLE_POWER));
+            }
+        } else {
+            if (cycleHeldTicks > 0 && cycleHeldTicks < RADIAL_HOLD_TICKS) {
+                PacketDistributor.sendToServer(new PowerKeyPayload(PowerKeyPayload.Action.CYCLE_SELECTED));
+            }
+            cycleHeldTicks = 0;
         }
         while (USE_POWER.consumeClick()) {
             PacketDistributor.sendToServer(new PowerKeyPayload(PowerKeyPayload.Action.USE_SELECTED));

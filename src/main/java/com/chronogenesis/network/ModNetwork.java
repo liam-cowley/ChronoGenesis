@@ -30,5 +30,12 @@ public final class ModNetwork {
                         }
                     }
                 }));
+
+        registrar.playToServer(SelectPowerPayload.TYPE, SelectPowerPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        Powers.select(player, payload.aspect());
+                    }
+                }));
     }
 }

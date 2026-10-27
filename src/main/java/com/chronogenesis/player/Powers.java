@@ -150,6 +150,14 @@ public final class Powers {
         }
     }
 
+    /** The radial menu picked a power. Only powers the player has unlocked can be selected. */
+    public static void select(ServerPlayer player, Aspect aspect) {
+        PlayerEssence essence = get(player);
+        if (essence.level(aspect) > 0 && essence.selected() != aspect) {
+            set(player, essence.withSelected(aspect));
+        }
+    }
+
     /** The "use power" key: toggles the selected power, or triggers it (Time), or cycles it (Size). */
     public static void use(ServerPlayer player) {
         PlayerEssence essence = get(player);
