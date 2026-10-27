@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "aspect=awareness,growth=0": {
+      "model": "chronogenesis:block/chronoflesh_growth_0"
+    },
+    "aspect=awareness,growth=1": {
+      "model": "chronogenesis:block/chronoflesh_growth_1"
+    },
+    "aspect=awareness,growth=2": {
+      "model": "chronogenesis:block/chronoflesh_growth_2"
+    },
+    "aspect=awareness,growth=3": {
+      "model": "chronogenesis:block/chronoflesh_growth_3"
+    },
+    "aspect=density,growth=0": {
+      "model": "chronogenesis:block/chronoflesh_growth_0"
+    },
+    "aspect=density,growth=1": {
+      "model": "chronogenesis:block/chronoflesh_growth_1"
+    },
+    "aspect=density,growth=2": {
+      "model": "chronogenesis:block/chronoflesh_growth_2"
+    },
+    "aspect=density,growth=3": {
+      "model": "chronogenesis:block/chronoflesh_growth_3"
+    },
+    "aspect=size,growth=0": {
+      "model": "chronogenesis:block/chronoflesh_growth_0"
+    },
+    "aspect=size,growth=1": {
+      "model": "chronogenesis:block/chronoflesh_growth_1"
+    },
+    "aspect=size,growth=2": {
+      "model": "chronogenesis:block/chronoflesh_growth_2"
+    },
+    "aspect=size,growth=3": {
+      "model": "chronogenesis:block/chronoflesh_growth_3"
+    },
+    "aspect=speed,growth=0": {
+      "model": "chronogenesis:block/chronoflesh_growth_0"
+    },
+    "aspect=speed,growth=1": {
+      "model": "chronogenesis:block/chronoflesh_growth_1"
+    },
+    "aspect=speed,growth=2": {
+      "model": "chronogenesis:block/chronoflesh_growth_2"
+    },
+    "aspect=speed,growth=3": {
+      "model": "chronogenesis:block/chronoflesh_growth_3"
+    },
+    "aspect=time,growth=0": {
+      "model": "chronogenesis:block/chronoflesh_growth_0"
+    },
+    "aspect=time,growth=1": {
+      "model": "chronogenesis:block/chronoflesh_growth_1"
+    },
+    "aspect=time,growth=2": {
+      "model": "chronogenesis:block/chronoflesh_growth_2"
+    },
+    "aspect=time,growth=3": {
+      "model": "chronogenesis:block/chronoflesh_growth_3"
+    }
+  }
+}

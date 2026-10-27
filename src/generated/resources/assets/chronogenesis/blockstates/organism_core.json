@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "aspect=awareness,phase=awake": {
+      "model": "chronogenesis:block/organism_core_awake"
+    },
+    "aspect=awareness,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_hungry"
+    },
+    "aspect=awareness,phase=necrotic": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=awareness,phase=seed": {
+      "model": "chronogenesis:block/organism_core_seed"
+    },
+    "aspect=density,phase=awake": {
+      "model": "chronogenesis:block/organism_core_awake"
+    },
+    "aspect=density,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_hungry"
+    },
+    "aspect=density,phase=necrotic": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=density,phase=seed": {
+      "model": "chronogenesis:block/organism_core_seed"
+    },
+    "aspect=size,phase=awake": {
+      "model": "chronogenesis:block/organism_core_awake"
+    },
+    "aspect=size,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_hungry"
+    },
+    "aspect=size,phase=necrotic": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=size,phase=seed": {
+      "model": "chronogenesis:block/organism_core_seed"
+    },
+    "aspect=speed,phase=awake": {
+      "model": "chronogenesis:block/organism_core_awake"
+    },
+    "aspect=speed,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_hungry"
+    },
+    "aspect=speed,phase=necrotic": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=speed,phase=seed": {
+      "model": "chronogenesis:block/organism_core_seed"
+    },
+    "aspect=time,phase=awake": {
+      "model": "chronogenesis:block/organism_core_awake"
+    },
+    "aspect=time,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_hungry"
+    },
+    "aspect=time,phase=necrotic": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=time,phase=seed": {
+      "model": "chronogenesis:block/organism_core_seed"
+    }
+  }
+}
