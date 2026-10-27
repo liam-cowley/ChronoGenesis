@@ -541,7 +541,7 @@
   "render_type": "minecraft:cutout",
   "textures": {
     "flesh": "chronogenesis:block/chronoflesh",
-    "frame": "minecraft:block/copper_block",
+    "frame": "chronogenesis:block/brass_block",
     "particle": "chronogenesis:block/chronoflesh"
   }
 }

@@ -388,7 +388,7 @@
   ],
   "render_type": "minecraft:cutout",
   "textures": {
-    "frame": "minecraft:block/copper_block",
-    "particle": "minecraft:block/copper_block"
+    "frame": "chronogenesis:block/brass_block",
+    "particle": "chronogenesis:block/brass_block"
   }
 }

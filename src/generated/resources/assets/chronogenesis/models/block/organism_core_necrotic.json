@@ -453,7 +453,7 @@
   "render_type": "minecraft:cutout",
   "textures": {
     "flesh": "chronogenesis:block/organism_core_necrotic",
-    "frame": "minecraft:block/copper_block",
+    "frame": "chronogenesis:block/brass_block",
     "particle": "chronogenesis:block/organism_core_necrotic"
   }
 }

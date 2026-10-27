@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "chronogenesis:copper_armature"
+          "name": "chronogenesis:brass_armature"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "chronogenesis:blocks/copper_armature"
+  "random_sequence": "chronogenesis:blocks/brass_armature"
 }
