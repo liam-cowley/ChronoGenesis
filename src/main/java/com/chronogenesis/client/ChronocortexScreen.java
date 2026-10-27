@@ -187,6 +187,8 @@ public class ChronocortexScreen extends Screen {
         }
         Research.Check check = Research.check(minecraft.player, selected, topic, data.stage(), data.essence());
         researchButton.active = check.ok();
+        researchButton.setMessage(Component.translatable(check.regrow()
+                ? "screen.chronogenesis.chronocortex.regrow" : "screen.chronogenesis.chronocortex.begin"));
 
         int line = y + 8;
         graphics.renderItem(new ItemStack(topic.icon()), dx, line - 2);
@@ -197,9 +199,12 @@ public class ChronocortexScreen extends Screen {
 
         if (check.completed()) {
             graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.done"), dx, line, OK, false);
-            return;
-        }
-        if (!check.prerequisites()) {
+            if (!check.regrow()) {
+                return;
+            }
+            // It can grow the reward again: only the essence and materials are asked for.
+            line += 12;
+        } else if (!check.prerequisites()) {
             graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.needs_first"), dx, line, MISSING, false);
             line += 10;
         }
@@ -217,7 +222,7 @@ public class ChronocortexScreen extends Screen {
                     name, have, material.count()), dx, line, have >= material.count() ? OK : MISSING, false);
             line += 10;
         }
-        if (!topic.clues().isEmpty()) {
+        if (!check.regrow() && !topic.clues().isEmpty()) {
             graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.clues"), dx, line, TEXT, false);
             line += 10;
             PlayerResearch research = research();

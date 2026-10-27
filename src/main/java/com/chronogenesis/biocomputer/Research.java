@@ -23,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -57,7 +58,8 @@ public final class Research {
         player.setData(ModAttachments.PLAYER_RESEARCH, research);
         SyncResearchPayload payload = new SyncResearchPayload(research);
         // Fake players (machines from other mods, test players) have no client to sync to.
-        if (player instanceof ServerPlayer serverPlayer && serverPlayer.connection != null && serverPlayer.connection.hasChannel(payload)) {
+        if (player instanceof ServerPlayer serverPlayer && !(serverPlayer instanceof FakePlayer)
+                && serverPlayer.connection != null && serverPlayer.connection.hasChannel(payload)) {
             PacketDistributor.sendToPlayer(serverPlayer, payload);
         }
     }
@@ -89,9 +91,13 @@ public final class Research {
      *
      * @param clueSet the first complete clue set (empty if the topic needs none), or null if none is complete
      */
-    public record Check(boolean completed, boolean prerequisites, boolean stage, boolean essence, boolean materials,
-                        @Nullable List<ResourceLocation> clueSet) {
+    public record Check(boolean completed, boolean regrow, boolean prerequisites, boolean stage, boolean essence,
+                        boolean materials, @Nullable List<ResourceLocation> clueSet) {
         public boolean ok() {
+            if (regrow) {
+                // Growing a reward again needs only the essence and materials.
+                return essence && materials;
+            }
             return !completed && prerequisites && stage && essence && materials && clueSet != null;
         }
     }
@@ -103,8 +109,9 @@ public final class Research {
         boolean essence = topic.essence().entrySet().stream()
                 .allMatch(cost -> availableEssence.getOrDefault(cost.getKey(), 0) >= cost.getValue());
         boolean materials = topic.materials().stream().allMatch(material -> count(player.getInventory(), material) >= material.count());
-        return new Check(research.isCompleted(id), prerequisites, topic.stage() <= cortexStage, essence, materials,
-                clueSet(research, topic));
+        boolean completed = research.isCompleted(id);
+        return new Check(completed, completed && !topic.rewards().isEmpty(), prerequisites, topic.stage() <= cortexStage,
+                essence, materials, clueSet(research, topic));
     }
 
     @Nullable
@@ -146,7 +153,12 @@ public final class Research {
         for (SizedIngredient material : topic.materials()) {
             take(player.getInventory(), material);
         }
-        set(player, get(player).withSpent(check.clueSet()).withCompleted(id));
+        if (!check.regrow()) {
+            set(player, get(player).withSpent(check.clueSet()).withCompleted(id));
+        }
+        for (ItemStack reward : topic.rewards()) {
+            player.getInventory().placeItemBackInInventory(reward.copy());
+        }
 
         player.level().playSound(null, cortex.getBlockPos(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0f, 0.6f);
         Whispers.say(player, "research_done", topic.title());

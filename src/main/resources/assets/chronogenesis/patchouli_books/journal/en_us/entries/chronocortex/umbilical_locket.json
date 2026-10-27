@@ -1,0 +1,18 @@
+{
+  "name": "The Umbilical Locket",
+  "icon": "chronogenesis:umbilical_locket",
+  "category": "chronogenesis:chronocortex",
+  "sortnum": 3,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Away from the Gland my pools run dry and stay dry. The Chronocortex can grow a cure: a $(l)locket$() on a living cord.$(br2)Research it, then use it on an organism's $(l)Tap$() to tie it there. Worn in the $(l)necklace$() slot, it draws a little of that organism's essence into me every two seconds while I stay within forty-eight blocks."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Lost Lockets",
+      "text": "If I lose it, the Chronocortex will grow another for the same essence and materials. It remembers how; I need not find the clues again."
+    }
+  ]
+}

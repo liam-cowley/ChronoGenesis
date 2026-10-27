@@ -1,5 +1,6 @@
 package com.chronogenesis.gametest;
 
+import java.util.UUID;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
 import com.chronogenesis.biocomputer.Clues;
@@ -8,6 +9,7 @@ import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.MobEssence;
+import com.chronogenesis.item.UmbilicalLocketItem;
 import com.chronogenesis.organism.BrassConduitBlock;
 import com.chronogenesis.organism.CorePhase;
 import com.chronogenesis.organism.FleshBlock;
@@ -15,10 +17,15 @@ import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.GraftBlockEntity;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
+import com.chronogenesis.player.PlayerEssence;
+import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlocks;
+import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModItems;
+import com.mojang.authlib.GameProfile;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,6 +36,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
@@ -283,7 +291,7 @@ public final class ChronoGameTests {
         awareness.feed(16);
         helper.<OrganismCoreBlockEntity>getBlockEntity(timeCore).feed(8);
 
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        ServerPlayer player = fakePlayer(helper);
         player.getInventory().add(new ItemStack(Items.AMETHYST_SHARD, 8));
         player.getInventory().add(new ItemStack(ModItems.PRESERVED_HEART.get()));
         Research.set(player, Research.get(player).withKnown(Clues.FLOATING).withKnown(Clues.VACANT));
@@ -299,6 +307,35 @@ public final class ChronoGameTests {
             helper.assertFalse(player.getInventory().contains(new ItemStack(Items.AMETHYST_SHARD)), "materials not taken");
             helper.assertFalse(Research.get(player).hasClue(Clues.FLOATING), "clue set not spent");
         });
+    }
+
+    /** A worn Umbilical Locket tied to an organism draws its essence into the wearer's pool, from a distance. */
+    @GameTest(template = "floor7")
+    public static void locketRefillsFromAfar(GameTestHelper helper) {
+        BlockPos corePos = new BlockPos(1, 1, 1);
+        helper.setBlock(corePos, core(Aspect.DENSITY));
+        OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+        core.feed(10);
+        ServerPlayer player = fakePlayer(helper);
+        player.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 1, 5))));
+        Powers.set(player, PlayerEssence.EMPTY.withLevel(Aspect.DENSITY, 1));
+        ItemStack locket = new ItemStack(ModItems.UMBILICAL_LOCKET.get());
+        locket.set(ModDataComponents.LOCKET_LINK.get(), GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(corePos)));
+
+        int drawn = UmbilicalLocketItem.refill(player, locket);
+        helper.assertTrue(drawn == 2, "locket should draw 2 drams, drew " + drawn);
+        helper.assertTrue(Powers.get(player).pool(Aspect.DENSITY) == 2, "pool not filled");
+        helper.assertTrue(core.stored() == 8, "organism not drawn from: " + core.stored());
+        helper.succeed();
+    }
+
+    /**
+     * A stand-in player for server-side logic. Not a mock "joined" player: Curios tries to sync its slots to
+     * those and fails without a client. A FakePlayer never joins the level and swallows packets.
+     */
+    private static ServerPlayer fakePlayer(GameTestHelper helper) {
+        return FakePlayerFactory.get(helper.getLevel(),
+                new GameProfile(UUID.nameUUIDFromBytes("chronogenesis-test".getBytes()), "chronogenesis_test"));
     }
 
     /** A Dissection Table with a brain and a lightning rod on it, soaked full (or not) of Awareness and Time. */

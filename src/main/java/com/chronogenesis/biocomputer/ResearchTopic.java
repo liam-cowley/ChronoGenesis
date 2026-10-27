@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 /**
@@ -24,10 +25,12 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
  * @param materials items taken from the researcher's inventory
  * @param clues     alternative clue sets: any one complete set will do, and is spent. Empty = no clues needed
  * @param order     position in the research list
+ * @param rewards   items the Chronocortex grows for the researcher on completion. A completed topic with rewards
+ *                  can be grown again for its essence and materials (no clues), so a lost item is not lost forever
  */
 public record ResearchTopic(Component title, Component description, Item icon, int stage, List<ResourceLocation> requires,
                             Map<Aspect, Integer> essence, List<SizedIngredient> materials,
-                            List<List<ResourceLocation>> clues, int order) {
+                            List<List<ResourceLocation>> clues, int order, List<ItemStack> rewards) {
     public static final Codec<ResearchTopic> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ComponentSerialization.CODEC.fieldOf("title").forGetter(ResearchTopic::title),
             ComponentSerialization.CODEC.fieldOf("description").forGetter(ResearchTopic::description),
@@ -38,6 +41,7 @@ public record ResearchTopic(Component title, Component description, Item icon, i
                     .forGetter(ResearchTopic::essence),
             SizedIngredient.FLAT_CODEC.listOf().optionalFieldOf("materials", List.of()).forGetter(ResearchTopic::materials),
             ResourceLocation.CODEC.listOf().listOf().optionalFieldOf("clues", List.of()).forGetter(ResearchTopic::clues),
-            Codec.INT.optionalFieldOf("order", 0).forGetter(ResearchTopic::order)
+            Codec.INT.optionalFieldOf("order", 0).forGetter(ResearchTopic::order),
+            ItemStack.CODEC.listOf().optionalFieldOf("rewards", List.of()).forGetter(ResearchTopic::rewards)
     ).apply(instance, ResearchTopic::new));
 }

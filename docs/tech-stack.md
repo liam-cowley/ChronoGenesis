@@ -17,7 +17,8 @@
 - **Patchouli 1.21.1-93** (required): the Laboratory Journal.
 - **JEI 19.21.2.313** (dev runtime only).
 - **GeckoLib**: pre-wired in `build.gradle`, commented out; enable for animated organisms/creatures.
-- **Curios**: not added yet; needed for the Umbilical Locket.
+- **Curios 9.5.1+1.21.1** (required): bauble slots. The Umbilical Locket is worn in the necklace slot
+  (`data/curios/tags/item/necklace.json`; players get the slot from `data/chronogenesis/curios/entities/`).
 
 ## Run configurations
 | Run | What it does |

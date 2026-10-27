@@ -6,6 +6,7 @@ import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.EssenceContents;
 
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -22,6 +23,10 @@ public final class ModDataComponents {
     /** The aspect of a culture, or of the needle fitted in a syringe. */
     public static final Supplier<DataComponentType<Aspect>> ASPECT = DATA_COMPONENTS.registerComponentType("aspect",
             builder -> builder.persistent(Aspect.CODEC).networkSynchronized(Aspect.STREAM_CODEC));
+
+    /** Where an Umbilical Locket is tied to: an organism core, in a dimension. */
+    public static final Supplier<DataComponentType<GlobalPos>> LOCKET_LINK = DATA_COMPONENTS.registerComponentType("locket_link",
+            builder -> builder.persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC));
 
     private ModDataComponents() {}
 }

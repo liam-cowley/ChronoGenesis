@@ -124,7 +124,7 @@
 7. ✅ Chronocortex (stage 0) + Ganglion + data-driven research + reanimation ritual. Clues come from
    witnessed experiments until the Lens exists; the first topic is Level 2 powers (Deeper Infusion).
    Still to do: flow control from the Chronocortex (redirecting, Tap limits), later stages.
-8. ⬜ Umbilical Locket (Curios), Temporal Field, Temporal Lens + first structures.
+8. ✅ Umbilical Locket (Curios necklace; grown by research, re-growable). ⬜ Temporal Field, Temporal Lens + first structures.
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

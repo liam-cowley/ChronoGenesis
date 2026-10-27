@@ -100,3 +100,11 @@ config="${mod_id}.mixins.json"
     versionRange="[1.21.1-93,)"
     ordering="NONE"
     side="BOTH"
+
+# The Umbilical Locket is a Curios bauble (necklace slot).
+[[dependencies.${mod_id}]]
+    modId="curios"
+    type="required"
+    versionRange="[9.5.1,)"
+    ordering="NONE"
+    side="BOTH"

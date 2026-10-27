@@ -1217,6 +1217,30 @@ def essence_mote():
     save(img, "particle/essence_mote")
 
 
+def umbilical_locket():
+    # A brass oval locket, a stitched seam down its face, hanging from a twisted fleshy cord.
+    p = {"c": FLESH, "C": FLESH_HI, "d": FLESH_DK, "k": BRASS_DDK, "b": BRASS_DK, "B": BRASS, "H": BRASS_HI,
+         "t": THREAD, "r": (150, 40, 60, 255), "W": GLINT}
+    save(grid([
+        ".....cC..Cc.....",
+        "....c.d..d.c....",
+        "...C..c..c..C...",
+        "...c...dd...c...",
+        "....d..cc..d....",
+        ".....c.Cd.c.....",
+        "......dccd......",
+        "......kHBk......",
+        ".....kHBBBk.....",
+        "....kHBtBBbk....",
+        "....kBBtrBbk....",
+        "....kBBtBBbk....",
+        "....kBBtBbbk....",
+        ".....kBtBbk.....",
+        "......kbbk......",
+        "................",
+    ], p), "item/umbilical_locket")
+
+
 # ---------------------------------------------------------------- the Chrono-Insulated Suit
 
 COAT = (196, 204, 186, 255)
@@ -1404,6 +1428,7 @@ dissection_table()
 brain_tissue()
 cortex_jar()
 essence_mote()
+umbilical_locket()
 suit_icons()
 suit_armor_layers()
 

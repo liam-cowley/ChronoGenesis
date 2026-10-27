@@ -172,6 +172,16 @@ public class ModLanguageProvider extends LanguageProvider {
         add("screen.chronogenesis.chronocortex.material_cost", "%s: %s/%s");
         add("screen.chronogenesis.chronocortex.clues", "Clues (any one line):");
 
+        // Umbilical Locket
+        addItem(ModItems.UMBILICAL_LOCKET, "Umbilical Locket");
+        add("message.chronogenesis.locket.linked", "The cord takes. You are tied to the %s organism.");
+        add("tooltip.chronogenesis.locket.unlinked", "Use it on an organism's Tap to tie it there");
+        add("tooltip.chronogenesis.locket.linked", "Tied to the organism at %s %s %s (%s)");
+        add("tooltip.chronogenesis.locket.range", "Wear it in the necklace slot. Refills you within %s blocks");
+        add("research.chronogenesis.umbilical_locket", "Umbilical Locket");
+        add("research.chronogenesis.umbilical_locket.desc", "A cord from a living store to your own body. Worn at the throat, tied to an organism through its Tap, it refills your pool of that essence while you stay near the lab.");
+        add("screen.chronogenesis.chronocortex.regrow", "Grow another");
+
         add("message.chronogenesis.gate.pace", "Pace %s: %s ticks per block of track. Slower pulses make more Time, but stall past 600 ticks.");
         add("message.chronogenesis.organism.stability", " | stability %s/%s, instability %s/%s");
 

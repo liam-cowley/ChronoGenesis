@@ -32,6 +32,12 @@ repositories {
         name = "BlameJared"
         url = "https://maven.blamejared.com/"
     }
+    // Curios
+    maven {
+        name = "Curios"
+        url = "https://maven.theillusivec4.top/"
+        content { includeGroup("top.theillusivec4.curios") }
+    }
     // GeckoLib
     maven {
         name = "GeckoLib"
@@ -138,6 +144,10 @@ dependencies {
 
     // --- Patchouli: the Journal (a Patchouli book). Required dependency. ---
     implementation "vazkii.patchouli:Patchouli:${patchouli_version}"
+
+    // --- Curios: bauble slots. The Umbilical Locket is worn in the necklace slot. Required dependency. ---
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+    runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

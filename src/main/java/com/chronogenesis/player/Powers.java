@@ -37,6 +37,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -81,7 +82,8 @@ public final class Powers {
         player.setData(ModAttachments.PLAYER_ESSENCE, essence);
         SyncPlayerEssencePayload payload = new SyncPlayerEssencePayload(essence);
         // Fake players (machines from other mods, test players) have no client to sync to.
-        if (player instanceof ServerPlayer serverPlayer && serverPlayer.connection != null && serverPlayer.connection.hasChannel(payload)) {
+        if (player instanceof ServerPlayer serverPlayer && !(serverPlayer instanceof FakePlayer)
+                && serverPlayer.connection != null && serverPlayer.connection.hasChannel(payload)) {
             PacketDistributor.sendToPlayer(serverPlayer, payload);
         }
     }

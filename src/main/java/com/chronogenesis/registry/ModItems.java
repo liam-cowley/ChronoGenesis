@@ -8,6 +8,7 @@ import com.chronogenesis.item.EssenceContainerItem;
 import com.chronogenesis.item.EssenceJugItem;
 import com.chronogenesis.item.NeedleItem;
 import com.chronogenesis.item.StasisAmpouleItem;
+import com.chronogenesis.item.UmbilicalLocketItem;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -54,6 +55,10 @@ public final class ModItems {
     /** Crystallised time left behind when a creature desiccates. */
     public static final DeferredItem<Item> TEMPORAL_RESIDUE = ITEMS.registerSimpleItem("temporal_residue",
             new Item.Properties().rarity(Rarity.UNCOMMON));
+
+    /** Worn in the necklace slot, tied to an organism: refills your pool from a distance. Grown by research. */
+    public static final DeferredItem<UmbilicalLocketItem> UMBILICAL_LOCKET = ITEMS.registerItem("umbilical_locket",
+            UmbilicalLocketItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
 
     // Block items
     public static final DeferredItem<BlockItem> BRASS_ARMATURE = ITEMS.registerSimpleBlockItem("brass_armature", ModBlocks.BRASS_ARMATURE);

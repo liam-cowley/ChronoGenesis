@@ -1,0 +1,51 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.umbilical_locket"
+  },
+  "description": {
+    "translate": "research.chronogenesis.umbilical_locket.desc"
+  },
+  "icon": "chronogenesis:umbilical_locket",
+  "essence": {
+    "awareness": 16,
+    "speed": 16
+  },
+  "materials": [
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 2
+    },
+    {
+      "item": "minecraft:chain",
+      "count": 2
+    },
+    {
+      "item": "chronogenesis:preserved_heart",
+      "count": 1
+    }
+  ],
+  "clues": [
+    [
+      "chronogenesis:floating_creature",
+      "chronogenesis:the_long_road"
+    ],
+    [
+      "chronogenesis:vacant_mind",
+      "chronogenesis:heavy_heart"
+    ],
+    [
+      "chronogenesis:dust_to_dust",
+      "chronogenesis:torn_time"
+    ],
+    [
+      "chronogenesis:blueprint_locket"
+    ]
+  ],
+  "order": 10,
+  "rewards": [
+    {
+      "id": "chronogenesis:umbilical_locket",
+      "count": 1
+    }
+  ]
+}
