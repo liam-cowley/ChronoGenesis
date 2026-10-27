@@ -5,7 +5,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "$(l)Vials$() hold eight drams of one essence. $(l)Jugs$() hold sixty-four and can be set down on a shelf; they keep what is in them when picked up again. Pour into a jug with a full vial, fill a vial from it with an empty one."
+      "text": "$(l)Vials$() hold eight drams of one essence. $(l)Jugs$() hold sixty-four and can be set down on a shelf; they keep what is in them when picked up again. Pour into a jug with a full vial, fill a vial from it with an empty one; the level shows through the glass.$(br2)To pour from one vessel straight into another, right-click one onto the other in your pack."
     },
     {
       "type": "patchouli:crafting",

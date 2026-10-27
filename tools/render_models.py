@@ -7,7 +7,7 @@ draws them from above-front-right with simple face shading and a depth buffer.
 Usage:
   python3 tools/render_models.py <output.png> [scene]
 Scenes: "organisms" (default) renders every flesh growth stage, core phase and graft, plus a small
-organism mid-growth.
+organism mid-growth. "vessels" renders the Essence Jug at every fill level.
 """
 import json
 import math
@@ -176,6 +176,23 @@ def organisms_scene(out):
     sheet.save(out)
 
 
+def vessels_scene(out):
+    # Jug fill levels 0-4, liquid tinted with a different aspect each.
+    cells = [("essence_jug", None)] + [
+        ("essence_jug_%d" % fill, aspect) for fill, aspect in zip(range(1, 5), ["density", "speed", "size", "density"])]
+    cell = 200
+    sheet = Image.new("RGBA", (len(cells) * cell, cell), (46, 42, 52, 255))
+    for i, (name, aspect) in enumerate(cells):
+        c = Canvas(cell, cell, 9.0, (cell / 2, cell / 2 - 30))
+        color = ASPECT_COLORS[aspect] if aspect else None
+        tint = None if color is None else ((color >> 16) & 255, (color >> 8) & 255, color & 255)
+        draw_model(c, name, tint=tint)
+        sheet.paste(c.img, (i * cell, 0))
+    sheet.save(out)
+
+
+SCENES = {"organisms": organisms_scene, "vessels": vessels_scene}
+
 if __name__ == "__main__":
-    organisms_scene(sys.argv[1])
+    SCENES[sys.argv[2] if len(sys.argv) > 2 else "organisms"](sys.argv[1])
     print("rendered", sys.argv[1])

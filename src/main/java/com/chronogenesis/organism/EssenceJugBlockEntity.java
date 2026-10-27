@@ -12,11 +12,19 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** A placeable jug holding up to 64 drams of one glass-safe aspect. Keeps its contents as an item. */
+/**
+ * A placeable jug holding up to 64 drams of one glass-safe aspect. Keeps its contents as an item.
+ * Contents are synced to the client, which tints the liquid behind the glass.
+ */
 public class EssenceJugBlockEntity extends BlockEntity {
     public static final int CAPACITY = 64;
 
@@ -67,8 +75,33 @@ public class EssenceJugBlockEntity extends BlockEntity {
 
     private void changed() {
         setChanged();
-        if (level != null) {
+        if (level != null && !level.isClientSide()) {
+            BlockState state = getBlockState();
+            int fill = EssenceJugBlock.fillLevel(contents);
+            if (state.getValue(EssenceJugBlock.FILL) != fill) {
+                level.setBlock(worldPosition, state.setValue(EssenceJugBlock.FILL, fill), Block.UPDATE_ALL);
+            }
+            level.sendBlockUpdated(worldPosition, state, getBlockState(), Block.UPDATE_CLIENTS);
             level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
+        }
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveCustomOnly(registries);
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    /** The liquid tint comes from the contents, so re-render once the client hears what is inside. */
+    @Override
+    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
+        super.onDataPacket(connection, packet, registries);
+        if (level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
     }
 

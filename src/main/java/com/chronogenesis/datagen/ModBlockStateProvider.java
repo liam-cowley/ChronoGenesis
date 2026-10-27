@@ -2,6 +2,7 @@ package com.chronogenesis.datagen;
 
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.organism.CorePhase;
+import com.chronogenesis.organism.EssenceJugBlock;
 import com.chronogenesis.organism.FleshBlock;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.registry.ModBlocks;
@@ -307,16 +308,34 @@ public class ModBlockStateProvider extends BlockStateProvider {
     // ---------------------------------------------------------------- misc blocks
 
     private void jug() {
-        ModelFile jug = models().getBuilder("essence_jug")
-                .texture("side", modLoc("block/essence_jug"))
-                .texture("top", modLoc("block/essence_jug_top"))
-                .texture("particle", modLoc("block/essence_jug"))
-                .renderType("cutout")
-                .element().from(4, 0, 4).to(12, 10, 12)
-                .allFaces((dir, face) -> face.texture(dir.getAxis().isVertical() ? "#top" : "#side")).end()
-                .element().from(6, 10, 6).to(10, 13, 10)
-                .allFaces((dir, face) -> face.texture(dir.getAxis().isVertical() ? "#top" : "#side")).end();
-        simpleBlockWithItem(ModBlocks.ESSENCE_JUG.get(), jug);
+        ModelFile[] levels = new ModelFile[5];
+        for (int fill = 0; fill <= 4; fill++) {
+            BlockModelBuilder jug = models().getBuilder(fill == 0 ? "essence_jug" : "essence_jug_" + fill)
+                    .texture("side", modLoc("block/essence_jug"))
+                    .texture("top", modLoc("block/essence_jug_top"))
+                    .texture("fill", modLoc("block/essence_jug_fill"))
+                    .texture("particle", modLoc("block/essence_jug"))
+                    .renderType("cutout")
+                    .element().from(4, 0, 4).to(12, 10, 12)
+                    .allFaces((dir, face) -> face.texture(dir.getAxis().isVertical() ? "#top" : "#side")).end()
+                    .element().from(6, 10, 6).to(10, 13, 10)
+                    .allFaces((dir, face) -> face.texture(dir.getAxis().isVertical() ? "#top" : "#side")).end();
+            if (fill > 0) {
+                // Liquid in the glass band between the brass hoops (y 2-8), drawn just outside the glass so the
+                // bars in the fill texture stay clear. Tint 0 = the aspect inside (ClientEvents).
+                float top = 2 + fill * 1.5f;
+                jug.element().from(3.99f, 2, 3.99f).to(12.01f, top, 12.01f)
+                        .face(Direction.NORTH).texture("#fill").tintindex(0).end()
+                        .face(Direction.SOUTH).texture("#fill").tintindex(0).end()
+                        .face(Direction.EAST).texture("#fill").tintindex(0).end()
+                        .face(Direction.WEST).texture("#fill").tintindex(0).end()
+                        .end();
+            }
+            levels[fill] = jug;
+        }
+        getVariantBuilder(ModBlocks.ESSENCE_JUG.get()).forAllStates(state ->
+                ConfiguredModel.builder().modelFile(levels[state.getValue(EssenceJugBlock.FILL)]).build());
+        simpleBlockItem(ModBlocks.ESSENCE_JUG.get(), levels[0]);
     }
 
     private void timeTear() {

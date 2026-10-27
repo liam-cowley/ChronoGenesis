@@ -67,6 +67,7 @@
   ],
   "render_type": "minecraft:cutout",
   "textures": {
+    "fill": "chronogenesis:block/essence_jug_fill",
     "particle": "chronogenesis:block/essence_jug",
     "side": "chronogenesis:block/essence_jug",
     "top": "chronogenesis:block/essence_jug_top"

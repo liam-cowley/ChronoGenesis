@@ -20,6 +20,7 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `block/chronoflesh_overlay.png` | 16x16 | Sutured scar and brass staples drawn over flesh |
 | `block/enhancing_gland.png` | 16x16 | Gland particle texture |
 | `block/essence_jug.png` | 16x16 | Jug side: dark green glass in a riveted brass cage |
+| `block/essence_jug_fill.png` | 16x16 | Jug liquid mask (tinted by aspect): the glass band between the hoops, cage bars left clear. Shown up to the `fill` level (0-4) |
 | `block/essence_jug_top.png` | 16x16 | Jug top: glass shoulder, brass rim, cork |
 | `block/finish.png` | 16x16 | Finish: amber clock face |
 | `block/flesh_pustule.png` | 16x16 | Pustules on mature flesh |

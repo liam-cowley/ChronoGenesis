@@ -16,26 +16,51 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * Essence Jug: a placeable 64-dram store. Use a filled container on it to pour in, an empty
- * container to fill up from it. A Tap facing the jug fills it automatically.
+ * container to fill up from it. A Tap facing the jug fills it automatically. {@link #FILL} shows how full
+ * it is through the glass; the liquid is tinted by the aspect inside.
  */
 public class EssenceJugBlock extends BaseEntityBlock {
     public static final MapCodec<EssenceJugBlock> CODEC = simpleCodec(EssenceJugBlock::new);
+    public static final IntegerProperty FILL = IntegerProperty.create("fill", 0, 4);
     private static final VoxelShape SHAPE = box(4, 0, 4, 12, 12, 12);
 
     public EssenceJugBlock(Properties properties) {
         super(properties);
+        registerDefaultState(stateDefinition.any().setValue(FILL, 0));
+    }
+
+    /** 0 when empty, otherwise 1-4. */
+    public static int fillLevel(@Nullable EssenceContents contents) {
+        if (contents == null || contents.amount() <= 0) {
+            return 0;
+        }
+        return 1 + Math.min(3, (contents.amount() - 1) * 4 / EssenceJugBlockEntity.CAPACITY);
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FILL);
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return defaultBlockState().setValue(FILL, fillLevel(EssenceItems.get(context.getItemInHand())));
     }
 
     @Override

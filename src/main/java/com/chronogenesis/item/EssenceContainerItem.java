@@ -9,7 +9,12 @@ import com.chronogenesis.essence.EssenceItems;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -31,6 +36,25 @@ public class EssenceContainerItem extends Item {
 
     public boolean accepts(Aspect aspect) {
         return accepts.test(aspect);
+    }
+
+    /**
+     * Right-click a container onto another in an inventory to pour between them: a filled one on the
+     * cursor pours in, an empty one on the cursor draws out. Otherwise vanilla behaviour is kept.
+     */
+    @Override
+    public boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack carried, Slot slot, ClickAction action,
+            Player player, SlotAccess access) {
+        if (action != ClickAction.SECONDARY || !EssenceItems.isContainer(carried)) {
+            return false;
+        }
+        boolean moved = EssenceItems.get(carried) != null
+                ? EssenceItems.pour(player, carried, stack)
+                : EssenceItems.pour(player, stack, carried);
+        if (moved) {
+            player.playSound(SoundEvents.BOTTLE_FILL, 0.6f, 1.4f);
+        }
+        return moved;
     }
 
     /** Using a filled container in a recipe gives the empty container back. */

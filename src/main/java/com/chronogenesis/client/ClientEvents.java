@@ -8,6 +8,7 @@ import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.item.ChronoSyringeItem;
 import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.network.PowerKeyPayload;
+import com.chronogenesis.organism.EssenceJugBlockEntity;
 import com.chronogenesis.organism.FleshBlock;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModItems;
@@ -67,6 +68,14 @@ public final class ClientEvents {
     static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
         event.register((state, level, pos, tintIndex) -> fleshColor(state),
                 ModBlocks.CHRONOFLESH.get(), ModBlocks.ORGANISM_CORE.get());
+        // The liquid behind the jug's glass takes the colour of what is inside.
+        event.register((state, level, pos, tintIndex) -> {
+            if (tintIndex == 0 && level != null && pos != null
+                    && level.getBlockEntity(pos) instanceof EssenceJugBlockEntity jug && jug.contents() != null) {
+                return opaque(jug.contents().aspect().color());
+            }
+            return -1;
+        }, ModBlocks.ESSENCE_JUG.get());
     }
 
     @SubscribeEvent

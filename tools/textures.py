@@ -667,6 +667,31 @@ def essence_jug():
     ], p), "block/essence_jug")
 
 
+def essence_jug_fill():
+    # Liquid seen through the glass band between the jug's brass hoops (rows 8-13 of the side), tinted by
+    # aspect. The cage bars (columns 6 and 11) stay clear so they read in front of the liquid. The model
+    # shows rows from the bottom up to the jug's fill level.
+    p = {"l": (200, 200, 200, 255), "L": (236, 236, 236, 255), "W": (255, 255, 255, 255)}
+    save(grid([
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "LLWLLL.LLLL.LLLL",
+        "lLllll.llll.llll",
+        "llllll.llll.llll",
+        "llllll.llll.llll",
+        "llllll.llll.llll",
+        "llllll.llll.llll",
+        "................",
+        "................",
+    ], p), "block/essence_jug_fill")
+
+
 def essence_jug_top():
     # Top of the jug: green glass shoulder in a brass rim, the cork in the middle (the neck samples the centre).
     p = {"G": (54, 100, 74, 255), "g": (36, 70, 52, 255), "L": (96, 150, 112, 255), "k": BRASS_DDK,
@@ -1171,6 +1196,7 @@ tap()
 leech_tendril()
 enhancing_gland()
 essence_jug()
+essence_jug_fill()
 essence_jug_top()
 time_tear()
 brass_fitting()

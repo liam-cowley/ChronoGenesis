@@ -143,4 +143,37 @@ public final class EssenceItems {
         }
         return moved;
     }
+
+    /**
+     * Pours as much as fits from one container into another (right-clicking one onto the other in an
+     * inventory). Stacks are split so only a single container on each side changes. Returns whether
+     * anything moved.
+     */
+    public static boolean pour(Player player, ItemStack source, ItemStack target) {
+        EssenceContents contents = get(source);
+        if (contents == null) {
+            return false;
+        }
+        int moved = Math.min(contents.amount(), space(target, contents.aspect()));
+        if (moved <= 0) {
+            return false;
+        }
+        EssenceContents current = get(target);
+        setSingle(player, target, new EssenceContents(contents.aspect(), (current == null ? 0 : current.amount()) + moved));
+        setSingle(player, source, contents.withAmount(contents.amount() - moved));
+        return true;
+    }
+
+    /** Sets the contents of one container of the stack, splitting it off into the inventory if needed. */
+    private static void setSingle(Player player, ItemStack stack, EssenceContents result) {
+        if (stack.getCount() == 1) {
+            set(stack, result);
+            return;
+        }
+        ItemStack single = stack.split(1);
+        set(single, result);
+        if (!player.getInventory().add(single)) {
+            player.drop(single, false);
+        }
+    }
 }

@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "fill=0": {
       "model": "chronogenesis:block/essence_jug"
+    },
+    "fill=1": {
+      "model": "chronogenesis:block/essence_jug_1"
+    },
+    "fill=2": {
+      "model": "chronogenesis:block/essence_jug_2"
+    },
+    "fill=3": {
+      "model": "chronogenesis:block/essence_jug_3"
+    },
+    "fill=4": {
+      "model": "chronogenesis:block/essence_jug_4"
     }
   }
 }

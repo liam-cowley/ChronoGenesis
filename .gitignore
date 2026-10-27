@@ -42,3 +42,6 @@ repo/
 ### Python ###
 __pycache__/
 *.pyc
+
+### Stray javac argument dumps
+javac.*.args
