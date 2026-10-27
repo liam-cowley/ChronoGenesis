@@ -172,7 +172,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
         // Enhancing Gland: a swollen sac on a mound, a brass port and a needle on top.
         BlockModelBuilder gland = graftModel("enhancing_gland", "graft_flesh")
-                .texture("sac", modLoc("block/enhancing_gland"));
+                .texture("sac", modLoc("block/gland_sac"));
         box(gland, 3, 0, 3, 13, 2, 13, FLESH, false);
         box(gland, 4, 2, 4, 12, 4, 12, "#sac", false);
         box(gland, 3, 4, 3, 13, 8, 13, "#sac", false);

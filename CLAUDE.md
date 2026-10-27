@@ -51,6 +51,11 @@ and keep names consistent with it.
   (16x16 pixel art, hand-placed grids). Art direction: Frankenstein (stitches, staples, electrodes, jars) +
   Call of Cthulhu (eyes, maws, tentacles, eldritch green) + steampunk (brass, copper, rivets, valves).
   Edit the script and re-run rather than hand-editing PNGs, unless replacing a texture with real art for good.
+- `tools/render_models.py <out.png>` renders isometric previews of the generated block models (pull the
+  datagen commit first). Use it to check model changes without launching the game.
+- Organism models are built in `ModBlockStateProvider` from shared parts (copper frame, tinted flesh masses,
+  untinted brass/eyes). Flesh has `growth` 0-3 (tendrils, creeping, swelling, mature); cores have `phase`
+  (seed, awake, hungry, necrotic). Keep new organism blocks in the same style.
 - Layered textures: containers = `<name>` + `<name>_fill` (tinted by aspect, layer 1) + `<name>_front`;
   culture = `culture` (tinted) + `culture_dish`; flesh/core = `<name>` (tinted) + `<name>_overlay`.
 - Hand-written data (recipes, tags, loot modifiers, data maps, advancements, Patchouli journal) lives in

@@ -817,6 +817,22 @@ def graft_flesh_texture():
     save(graft_flesh(47, FLESH, FLESH_DK), "block/graft_flesh")
 
 
+def gland_sac():
+    # The gland's swollen sac: tight pink skin with blue veins (no port; the 3D model has a real one).
+    img = graft_flesh(64, (226, 146, 172, 255), (186, 104, 136, 255))
+    r = rng(65)
+    vein = (96, 100, 176, 255)
+    for _ in range(4):
+        x, y = r.randint(0, 15), r.randint(0, 15)
+        for _ in range(7):
+            img.putpixel((x, y), vein)
+            x = (x + r.choice([1, 1, 0])) % 16
+            y = (y + r.choice([-1, 0, 1])) % 16
+    for (x, y) in [(4, 4), (11, 6), (6, 11)]:
+        img.putpixel((x, y), (255, 216, 232, 255))
+    save(img, "block/gland_sac")
+
+
 def leech_skin():
     # Dark, ringed lamprey skin with pale ridges between segments.
     r = rng(29)
@@ -893,6 +909,7 @@ copper_beam()
 brass_fitting()
 steel()
 graft_flesh_texture()
+gland_sac()
 leech_skin()
 flesh_pustule()
 organism_core_hungry_overlay()
