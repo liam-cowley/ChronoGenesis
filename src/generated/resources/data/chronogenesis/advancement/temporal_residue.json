@@ -1,0 +1,33 @@
+{
+  "parent": "chronogenesis:syringe",
+  "criteria": {
+    "has_temporal_residue": {
+      "conditions": {
+        "items": [
+          {
+            "items": "chronogenesis:temporal_residue"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.chronogenesis.temporal_residue.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "chronogenesis:temporal_residue"
+    },
+    "title": {
+      "translate": "advancements.chronogenesis.temporal_residue.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_temporal_residue"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

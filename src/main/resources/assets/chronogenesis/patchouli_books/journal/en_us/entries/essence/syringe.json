@@ -1,0 +1,12 @@
+{
+  "name": "The Chrono Syringe",
+  "icon": "chronogenesis:chrono_syringe",
+  "category": "chronogenesis:essence",
+  "sortnum": 1,
+  "pages": [
+    { "type": "patchouli:text", "text": "Copper and glass. Use it on a creature to draw one dram of an aspect. It holds $(l)4 drams$() of one aspect at a time.$(br2)Which aspect it draws depends on the $(l)needle$(). Right-click a needle onto the syringe in your inventory to fit it; right-click with an empty hand to pull it out.$(br2)Sneak and use it to squirt it empty." },
+    { "type": "patchouli:crafting", "recipe": "chronogenesis:chrono_syringe" },
+    { "type": "patchouli:text", "title": "Needles", "text": "$(item)Iron$(): Density. Iron is heavy.$(br)$(item)Gold$(): Speed. Gold tools are the fastest.$(br)$(item)Bone$(): Size. Bone is the frame of a body.$(br)$(item)Amethyst$(): Time. Amethyst resonates.$(br2)Nothing yet draws Awareness." },
+    { "type": "patchouli:crafting", "recipe": "chronogenesis:iron_needle", "recipe2": "chronogenesis:amethyst_needle" }
+  ]
+}

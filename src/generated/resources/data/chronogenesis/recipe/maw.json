@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:living_flesh"
+    },
+    {
+      "item": "chronogenesis:living_flesh"
+    },
+    {
+      "item": "minecraft:bone"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "chronogenesis:maw"
+  }
+}

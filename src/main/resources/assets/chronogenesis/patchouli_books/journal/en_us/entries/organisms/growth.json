@@ -1,0 +1,10 @@
+{
+  "name": "Feeding and Growth",
+  "icon": "chronogenesis:living_flesh",
+  "category": "chronogenesis:organisms",
+  "sortnum": 1,
+  "pages": [
+    { "type": "patchouli:text", "text": "Pour essence of its aspect onto any part of the organism. It $(l)hungers$() for it.$(br2)Every few seconds it spends $(l)2 drams$() to grow one block of flesh into the armature. When the frame is full, it stores what it is fed instead; each block of flesh lets it store more.$(br2)Use an empty hand on it to see how it fares." },
+    { "type": "patchouli:text", "title": "Hunger", "text": "It eats a little every minute, more the bigger it is. Starved, it burns its store, then eats its own flesh back to the bare frame, and at last turns $(l)Necrotic$(). Dead flesh does not grow.$(br2)Cut flesh from it with a hoe and you get $(item)Living Flesh$(). It grows back, if fed." }
+  ]
+}

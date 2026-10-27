@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:item/generated",
+  "overrides": [
+    {
+      "model": "chronogenesis:item/chrono_syringe_iron",
+      "predicate": {
+        "chronogenesis:needle": 0.25
+      }
+    },
+    {
+      "model": "chronogenesis:item/chrono_syringe_gold",
+      "predicate": {
+        "chronogenesis:needle": 0.5
+      }
+    },
+    {
+      "model": "chronogenesis:item/chrono_syringe_bone",
+      "predicate": {
+        "chronogenesis:needle": 0.75
+      }
+    },
+    {
+      "model": "chronogenesis:item/chrono_syringe_amethyst",
+      "predicate": {
+        "chronogenesis:needle": 1.0
+      }
+    }
+  ],
+  "textures": {
+    "layer0": "chronogenesis:item/chrono_syringe_liquid",
+    "layer1": "chronogenesis:item/chrono_syringe"
+  }
+}

@@ -136,9 +136,9 @@ dependencies {
     // [[dependencies.chronogenesis]] entry for "geckolib" in neoforge.mods.toml.
     // implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 
-    // --- Patchouli: uncomment when the codex book is started ---
-    // compileOnly "vazkii.patchouli:Patchouli:${patchouli_version}:api"
-    // localRuntime "vazkii.patchouli:Patchouli:${patchouli_version}"
+    // --- Patchouli: the Experimenter's Journal. The book is pure data (no API calls), so it is only
+    // needed at runtime; the journal recipe is conditional on Patchouli being installed.
+    localRuntime "vazkii.patchouli:Patchouli:${patchouli_version}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

@@ -1,0 +1,33 @@
+{
+  "parent": "chronogenesis:syringe",
+  "criteria": {
+    "has_culture": {
+      "conditions": {
+        "items": [
+          {
+            "items": "chronogenesis:culture_jar"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.chronogenesis.culture.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "chronogenesis:culture_jar"
+    },
+    "title": {
+      "translate": "advancements.chronogenesis.culture.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_culture"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

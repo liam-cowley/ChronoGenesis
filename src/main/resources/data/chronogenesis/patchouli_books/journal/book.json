@@ -1,0 +1,11 @@
+{
+  "name": "chronogenesis.journal.name",
+  "landing_text": "chronogenesis.journal.landing",
+  "i18n": true,
+  "use_resource_pack": true,
+  "show_progress": false,
+  "creative_tab": "chronogenesis:main",
+  "advancements_tab": "chronogenesis:root",
+  "book_texture": "patchouli:textures/gui/book_brown.png",
+  "model": "patchouli:book_brown"
+}

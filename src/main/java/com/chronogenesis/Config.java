@@ -10,16 +10,37 @@ public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     static {
-        BUILDER.push("temporal_essence");
+        BUILDER.push("essence");
     }
 
-    public static final ModConfigSpec.IntValue MAX_ENTITY_ESSENCE = BUILDER
-            .comment("Maximum temporal essence a single living entity can hold.")
-            .defineInRange("maxEntityEssence", 1000, 1, Integer.MAX_VALUE);
+    public static final ModConfigSpec.IntValue SYRINGE_COOLDOWN_TICKS = BUILDER
+            .comment("Ticks between two draws with a Chrono Syringe.")
+            .defineInRange("syringeCooldownTicks", 10, 0, 200);
 
-    public static final ModConfigSpec.IntValue ESSENCE_REGEN_TICKS = BUILDER
-            .comment("Ticks between each point of natural essence regeneration on a living entity. 0 disables regeneration.")
-            .defineInRange("essenceRegenTicks", 200, 0, Integer.MAX_VALUE);
+    static {
+        BUILDER.pop();
+        BUILDER.push("organisms");
+    }
+
+    public static final ModConfigSpec.IntValue ORGANISM_GROWTH_COST = BUILDER
+            .comment("Drams an organism spends to grow one block of flesh into its armature.")
+            .defineInRange("growthCost", 2, 1, 64);
+
+    public static final ModConfigSpec.IntValue ORGANISM_BASE_CAPACITY = BUILDER
+            .comment("Drams an organism core can store on its own.")
+            .defineInRange("baseCapacity", 16, 1, 4096);
+
+    public static final ModConfigSpec.IntValue ORGANISM_CAPACITY_PER_FLESH = BUILDER
+            .comment("Extra storage per block of grown flesh.")
+            .defineInRange("capacityPerFlesh", 8, 0, 4096);
+
+    public static final ModConfigSpec.IntValue ORGANISM_UPKEEP_INTERVAL = BUILDER
+            .comment("Ticks between feedings. Each feeding burns 1 dram plus 1 per 8 flesh blocks; a starving organism eats its own flesh.")
+            .defineInRange("upkeepIntervalTicks", 1200, 20, 72000);
+
+    public static final ModConfigSpec.IntValue LEECH_RANGE = BUILDER
+            .comment("How far (in blocks) a Leech Tendril reaches for creatures to drain.")
+            .defineInRange("leechRange", 5, 1, 16);
 
     static {
         BUILDER.pop();

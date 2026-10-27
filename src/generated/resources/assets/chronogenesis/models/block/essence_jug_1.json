@@ -1,0 +1,147 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#liquid",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#liquid",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#liquid",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#liquid",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#liquid",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#liquid",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        4.5,
+        0.5,
+        4.5
+      ],
+      "to": [
+        11.5,
+        2.75,
+        11.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#glass"
+        },
+        "east": {
+          "texture": "#glass"
+        },
+        "north": {
+          "texture": "#glass"
+        },
+        "south": {
+          "texture": "#glass"
+        },
+        "up": {
+          "texture": "#glass"
+        },
+        "west": {
+          "texture": "#glass"
+        }
+      },
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        10,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#glass"
+        },
+        "east": {
+          "texture": "#glass"
+        },
+        "north": {
+          "texture": "#glass"
+        },
+        "south": {
+          "texture": "#glass"
+        },
+        "up": {
+          "texture": "#glass"
+        },
+        "west": {
+          "texture": "#glass"
+        }
+      },
+      "from": [
+        6,
+        10,
+        6
+      ],
+      "to": [
+        10,
+        13,
+        10
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cork"
+        },
+        "east": {
+          "texture": "#cork"
+        },
+        "north": {
+          "texture": "#cork"
+        },
+        "south": {
+          "texture": "#cork"
+        },
+        "up": {
+          "texture": "#cork"
+        },
+        "west": {
+          "texture": "#cork"
+        }
+      },
+      "from": [
+        5.5,
+        13,
+        5.5
+      ],
+      "to": [
+        10.5,
+        15,
+        10.5
+      ]
+    }
+  ],
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "cork": "chronogenesis:block/essence_jug_cork",
+    "glass": "chronogenesis:block/essence_jug",
+    "liquid": "chronogenesis:block/essence_jug_liquid",
+    "particle": "chronogenesis:block/essence_jug"
+  }
+}

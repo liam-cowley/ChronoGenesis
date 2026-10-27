@@ -1,0 +1,12 @@
+{
+  "name": "Cultures",
+  "icon": "chronogenesis:culture_jar",
+  "category": "chronogenesis:organisms",
+  "sortnum": 0,
+  "pages": [
+    { "type": "patchouli:text", "text": "Machines are not built. They are $(l)grown$().$(br2)Rotten flesh and bone meal in a bottle make a $(item)Culture Jar$(). Pour $(l)4 drams$() of one aspect into it and it quickens into a $(l)Culture$() of that aspect." },
+    { "type": "patchouli:crafting", "recipe": "chronogenesis:culture_jar" },
+    { "type": "patchouli:text", "title": "The Frame", "text": "Build a frame of $(item)Copper Armature$() in whatever shape you like, and set the culture into one of its blocks. That block becomes the organism's $(l)core$().$(br2)The frame is the organism's future body. Its shape is a decision." },
+    { "type": "patchouli:crafting", "recipe": "chronogenesis:copper_armature" }
+  ]
+}

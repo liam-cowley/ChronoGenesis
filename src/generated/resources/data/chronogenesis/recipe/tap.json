@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "F": {
+      "item": "chronogenesis:living_flesh"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
+  },
+  "pattern": [
+    "F",
+    "G",
+    "C"
+  ],
+  "result": {
+    "count": 1,
+    "id": "chronogenesis:tap"
+  }
+}

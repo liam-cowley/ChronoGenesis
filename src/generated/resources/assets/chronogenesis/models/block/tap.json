@@ -1,0 +1,107 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#base"
+        },
+        "east": {
+          "texture": "#base"
+        },
+        "north": {
+          "texture": "#base"
+        },
+        "south": {
+          "texture": "#base"
+        },
+        "up": {
+          "texture": "#base"
+        },
+        "west": {
+          "texture": "#base"
+        }
+      },
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        2,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#tap"
+        },
+        "east": {
+          "texture": "#tap"
+        },
+        "north": {
+          "texture": "#tap"
+        },
+        "south": {
+          "texture": "#tap"
+        },
+        "up": {
+          "texture": "#tap"
+        },
+        "west": {
+          "texture": "#tap"
+        }
+      },
+      "from": [
+        6,
+        2,
+        6
+      ],
+      "to": [
+        10,
+        7,
+        10
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#tap"
+        },
+        "east": {
+          "texture": "#tap"
+        },
+        "north": {
+          "texture": "#tap"
+        },
+        "south": {
+          "texture": "#tap"
+        },
+        "up": {
+          "texture": "#tap"
+        },
+        "west": {
+          "texture": "#tap"
+        }
+      },
+      "from": [
+        5,
+        7,
+        5
+      ],
+      "to": [
+        11,
+        9,
+        11
+      ]
+    }
+  ],
+  "textures": {
+    "base": "chronogenesis:block/graft_base",
+    "particle": "chronogenesis:block/tap",
+    "tap": "chronogenesis:block/tap"
+  }
+}

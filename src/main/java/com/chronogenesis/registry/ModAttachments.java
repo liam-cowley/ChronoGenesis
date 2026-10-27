@@ -3,7 +3,7 @@ package com.chronogenesis.registry;
 import java.util.function.Supplier;
 
 import com.chronogenesis.ChronoGenesis;
-import com.mojang.serialization.Codec;
+import com.chronogenesis.essence.EntityEssence;
 
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -18,12 +18,11 @@ public final class ModAttachments {
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, ChronoGenesis.MODID);
 
     /**
-     * Temporal essence stored in a living entity. Saved with the entity.
-     * Read: {@code entity.getData(ModAttachments.TEMPORAL_ESSENCE)}
-     * Write: {@code entity.setData(ModAttachments.TEMPORAL_ESSENCE, value)}
+     * How much of each aspect has been drained from a living entity. Saved with the entity.
+     * Use {@link com.chronogenesis.essence.EssenceDrain} rather than touching it directly.
      */
-    public static final Supplier<AttachmentType<Integer>> TEMPORAL_ESSENCE = ATTACHMENT_TYPES.register("temporal_essence",
-            () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build());
+    public static final Supplier<AttachmentType<EntityEssence>> ESSENCE = ATTACHMENT_TYPES.register("essence",
+            () -> AttachmentType.builder(() -> EntityEssence.NONE).serialize(EntityEssence.CODEC).build());
 
     private ModAttachments() {}
 }

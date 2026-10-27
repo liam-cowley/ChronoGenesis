@@ -1,0 +1,10 @@
+{
+  "name": "Vials and Jugs",
+  "icon": "chronogenesis:essence_vial",
+  "category": "chronogenesis:essence",
+  "sortnum": 2,
+  "pages": [
+    { "type": "patchouli:text", "text": "An $(item)Essence Vial$() holds 8 drams, an $(item)Essence Jug$() 64. The jug can be set down; use a full container on it to pour in, an empty one to draw out. It keeps its contents when picked up.$(br2)To pour between containers, right-click one onto the other in your inventory." },
+    { "type": "patchouli:crafting", "recipe": "chronogenesis:essence_vial", "recipe2": "chronogenesis:essence_jug" }
+  ]
+}

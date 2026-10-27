@@ -1,0 +1,11 @@
+{
+  "name": "Time",
+  "icon": "chronogenesis:stasis_ampoule",
+  "category": "chronogenesis:essence",
+  "sortnum": 3,
+  "pages": [
+    { "type": "patchouli:text", "text": "Time ages glass to sand. Only a vial lined with $(item)phantom membrane$() holds it, and even that weeps: a filled $(item)Stasis Ampoule$() leaks if carried too long.$(br2)Fit the amethyst needle and carry an ampoule; the syringe draws Time straight into it." },
+    { "type": "patchouli:text", "text": "Few creatures have time to spare: $(l)phantoms$(), $(l)endermen$(), the $(l)undead$(). A $(l)baby$() carries its future; take it and it grows up on the spot.$(br2)Take all of a creature's time and it crumbles, leaving $(item)Temporal Residue$()." },
+    { "type": "patchouli:crafting", "recipe": "chronogenesis:stasis_ampoule" }
+  ]
+}

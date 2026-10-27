@@ -1,0 +1,94 @@
+{
+  "variants": {
+    "aspect=awareness": [
+      {
+        "model": "chronogenesis:block/organism_flesh_awareness"
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_awareness",
+        "y": 90
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_awareness",
+        "x": 180
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_awareness",
+        "x": 180,
+        "y": 270
+      }
+    ],
+    "aspect=density": [
+      {
+        "model": "chronogenesis:block/organism_flesh_density"
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_density",
+        "y": 90
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_density",
+        "x": 180
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_density",
+        "x": 180,
+        "y": 270
+      }
+    ],
+    "aspect=size": [
+      {
+        "model": "chronogenesis:block/organism_flesh_size"
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_size",
+        "y": 90
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_size",
+        "x": 180
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_size",
+        "x": 180,
+        "y": 270
+      }
+    ],
+    "aspect=speed": [
+      {
+        "model": "chronogenesis:block/organism_flesh_speed"
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_speed",
+        "y": 90
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_speed",
+        "x": 180
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_speed",
+        "x": 180,
+        "y": 270
+      }
+    ],
+    "aspect=time": [
+      {
+        "model": "chronogenesis:block/organism_flesh_time"
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_time",
+        "y": 90
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_time",
+        "x": 180
+      },
+      {
+        "model": "chronogenesis:block/organism_flesh_time",
+        "x": 180,
+        "y": 270
+      }
+    ]
+  }
+}

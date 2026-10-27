@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:living_flesh"
+    },
+    {
+      "item": "minecraft:spider_eye"
+    },
+    {
+      "tag": "chronogenesis:needles"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "chronogenesis:leech_tendril"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "aspect=awareness,necrotic=false": {
+      "model": "chronogenesis:block/organism_core_awareness"
+    },
+    "aspect=awareness,necrotic=true": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=density,necrotic=false": {
+      "model": "chronogenesis:block/organism_core_density"
+    },
+    "aspect=density,necrotic=true": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=size,necrotic=false": {
+      "model": "chronogenesis:block/organism_core_size"
+    },
+    "aspect=size,necrotic=true": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=speed,necrotic=false": {
+      "model": "chronogenesis:block/organism_core_speed"
+    },
+    "aspect=speed,necrotic=true": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=time,necrotic=false": {
+      "model": "chronogenesis:block/organism_core_time"
+    },
+    "aspect=time,necrotic=true": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    }
+  }
+}

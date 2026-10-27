@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "N": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "pattern": [
+    " A",
+    "N "
+  ],
+  "result": {
+    "count": 1,
+    "id": "chronogenesis:amethyst_needle"
+  }
+}

@@ -1,0 +1,110 @@
+package com.chronogenesis.biomech;
+
+import org.jetbrains.annotations.Nullable;
+
+import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.item.EssenceHolder;
+import com.chronogenesis.item.EssenceItems;
+import com.chronogenesis.registry.ModBlockEntities;
+import com.mojang.serialization.MapCodec;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
+
+/**
+ * The core of an organism, planted by setting a ripe Culture into a Copper Armature. Pour essence of its
+ * aspect onto any part of the organism to feed it; use an empty hand to check on it.
+ */
+public class OrganismCoreBlock extends BaseEntityBlock {
+    public static final MapCodec<OrganismCoreBlock> CODEC = simpleCodec(OrganismCoreBlock::new);
+    public static final EnumProperty<Aspect> ASPECT = EnumProperty.create("aspect", Aspect.class);
+    public static final BooleanProperty NECROTIC = BooleanProperty.create("necrotic");
+
+    public OrganismCoreBlock(Properties properties) {
+        super(properties);
+        registerDefaultState(stateDefinition.any().setValue(ASPECT, Aspect.DENSITY).setValue(NECROTIC, false));
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(ASPECT, NECROTIC);
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new OrganismCoreBlockEntity(pos, state);
+    }
+
+    @Override
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide ? null
+                : createTickerHelper(type, ModBlockEntities.ORGANISM_CORE.get(), OrganismCoreBlockEntity::serverTick);
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+                                              InteractionHand hand, BlockHitResult hit) {
+        return feed(stack, level, pos, player);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        return showStatus(level, pos, player);
+    }
+
+    /** Pours a held container into the organism the block at {@code pos} belongs to. */
+    static ItemInteractionResult feed(ItemStack stack, Level level, BlockPos pos, Player player) {
+        if (!(stack.getItem() instanceof EssenceHolder)) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+        if (level.isClientSide) {
+            return ItemInteractionResult.SUCCESS;
+        }
+        OrganismCoreBlockEntity core = Organisms.findCore(level, pos);
+        if (core == null || !EssenceItems.exchangeWithStorage(player, stack, core, true, false)) {
+            player.displayClientMessage(Component.translatable("message.chronogenesis.organism.refuses"), true);
+            return ItemInteractionResult.CONSUME;
+        }
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    static InteractionResult showStatus(Level level, BlockPos pos, Player player) {
+        if (!level.isClientSide) {
+            OrganismCoreBlockEntity core = Organisms.findCore(level, pos);
+            if (core != null) {
+                player.displayClientMessage(core.isNecrotic()
+                        ? Component.translatable("message.chronogenesis.organism.necrotic")
+                        : Component.translatable("message.chronogenesis.organism.status", core.aspect().displayName(),
+                                core.stored(), core.capacity(), core.fleshCount()), true);
+            }
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+}

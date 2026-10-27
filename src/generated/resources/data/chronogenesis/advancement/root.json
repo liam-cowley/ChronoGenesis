@@ -1,0 +1,34 @@
+{
+  "criteria": {
+    "has_clock": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:clock"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+    "description": {
+      "translate": "advancements.chronogenesis.root.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:clock"
+    },
+    "title": {
+      "translate": "advancements.chronogenesis.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_clock"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "minecraft:glass_pane"
+    }
+  },
+  "pattern": [
+    "P",
+    "P"
+  ],
+  "result": {
+    "count": 2,
+    "id": "chronogenesis:essence_vial"
+  }
+}

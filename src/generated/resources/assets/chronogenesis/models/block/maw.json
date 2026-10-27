@@ -1,0 +1,44 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#top"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        4,
+        13
+      ]
+    }
+  ],
+  "textures": {
+    "base": "chronogenesis:block/graft_base",
+    "particle": "chronogenesis:block/maw_side",
+    "side": "chronogenesis:block/maw_side",
+    "top": "chronogenesis:block/maw_top"
+  }
+}

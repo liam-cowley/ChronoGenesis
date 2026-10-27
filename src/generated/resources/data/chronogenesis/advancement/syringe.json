@@ -1,0 +1,33 @@
+{
+  "parent": "chronogenesis:root",
+  "criteria": {
+    "has_syringe": {
+      "conditions": {
+        "items": [
+          {
+            "items": "chronogenesis:chrono_syringe"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.chronogenesis.syringe.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "chronogenesis:chrono_syringe"
+    },
+    "title": {
+      "translate": "advancements.chronogenesis.syringe.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_syringe"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

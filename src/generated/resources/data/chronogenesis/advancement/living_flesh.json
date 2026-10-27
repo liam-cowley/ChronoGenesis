@@ -1,0 +1,34 @@
+{
+  "parent": "chronogenesis:culture",
+  "criteria": {
+    "has_living_flesh": {
+      "conditions": {
+        "items": [
+          {
+            "items": "chronogenesis:living_flesh"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.chronogenesis.living_flesh.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "chronogenesis:living_flesh"
+    },
+    "title": {
+      "translate": "advancements.chronogenesis.living_flesh.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_living_flesh"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

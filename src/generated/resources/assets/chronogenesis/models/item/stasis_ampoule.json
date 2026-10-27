@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "chronogenesis:item/stasis_ampoule_liquid",
+    "layer1": "chronogenesis:item/stasis_ampoule"
+  }
+}

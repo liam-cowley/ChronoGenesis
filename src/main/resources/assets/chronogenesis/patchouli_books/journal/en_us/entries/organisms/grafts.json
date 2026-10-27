@@ -1,0 +1,12 @@
+{
+  "name": "Grafts",
+  "icon": "chronogenesis:leech_tendril",
+  "category": "chronogenesis:organisms",
+  "sortnum": 2,
+  "pages": [
+    { "type": "patchouli:text", "text": "Flesh parts grafted onto the surface decide what an organism $(o)does$(). Place them against its flesh.$(br2)$(item)Tap$(): use an empty container on it to draw from the store.$(br)$(item)Maw$(): swallows what you pour into it, and sucks from a jug or another organism's Tap that faces it." },
+    { "type": "patchouli:text", "title": "Leech Tendril", "text": "Drains the organism's own aspect from creatures within a few blocks, a dram at a time. This is how farms work.$(br2)A Density organism in a pen of leashed cows: a field of floating cows, tethered, slowly being emptied. Exactly right." },
+    { "type": "patchouli:crafting", "recipe": "chronogenesis:tap", "recipe2": "chronogenesis:maw" },
+    { "type": "patchouli:crafting", "recipe": "chronogenesis:leech_tendril" }
+  ]
+}

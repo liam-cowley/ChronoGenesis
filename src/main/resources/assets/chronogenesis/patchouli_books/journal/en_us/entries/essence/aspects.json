@@ -1,0 +1,11 @@
+{
+  "name": "The Five Aspects",
+  "icon": "minecraft:clock",
+  "category": "chronogenesis:essence",
+  "sortnum": 0,
+  "pages": [
+    { "type": "patchouli:text", "text": "Everything that lives carries a clock. It also carries a weight, a haste, a size and a mind.$(br2)These are not organs. They are $(l)attributes$(), and they can be drawn out of a creature like blood. I call them the $(l)aspects$(), and measure them in $(l)drams$()." },
+    { "type": "patchouli:text", "title": "What Happens to Them", "text": "$(l)Density$(): drained, a creature floats. Drain more, it rises. Only a $(item)leash$() holds it down.$(br)$(l)Speed$(): it slows, then stands rooted.$(br)$(l)Size$(): it shrinks.$(br)$(l)Awareness$(): it thinks less often, then not at all.$(br)$(l)Time$(): it ages, then crumbles to dust." },
+    { "type": "patchouli:text", "title": "It Does Not Come Back", "text": "A drained cow stays drained. To keep experimenting I must $(l)breed$() them: calves are born full.$(br2)Awareness evaporated before I could stopper the vial. Glass will not hold it. I need something that can hold more. Something that $(o)wants$() it." }
+  ]
+}
