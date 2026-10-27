@@ -199,7 +199,7 @@
     "brass": "chronogenesis:block/brass_fitting",
     "flesh": "chronogenesis:block/graft_flesh",
     "particle": "chronogenesis:block/enhancing_gland",
-    "sac": "chronogenesis:block/enhancing_gland",
+    "sac": "chronogenesis:block/gland_sac",
     "steel": "chronogenesis:block/steel"
   }
 }
