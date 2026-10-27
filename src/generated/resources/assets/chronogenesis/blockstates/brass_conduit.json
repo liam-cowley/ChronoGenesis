@@ -1,0 +1,226 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_core"
+      },
+      "when": {
+        "clogged": "false",
+        "vein": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_arm",
+        "x": 90
+      },
+      "when": {
+        "clogged": "false",
+        "down": "true",
+        "vein": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_arm",
+        "x": 270
+      },
+      "when": {
+        "clogged": "false",
+        "up": "true",
+        "vein": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_arm"
+      },
+      "when": {
+        "clogged": "false",
+        "north": "true",
+        "vein": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_arm",
+        "y": 180
+      },
+      "when": {
+        "clogged": "false",
+        "south": "true",
+        "vein": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_arm",
+        "y": 270
+      },
+      "when": {
+        "clogged": "false",
+        "vein": "false",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_arm",
+        "y": 90
+      },
+      "when": {
+        "clogged": "false",
+        "east": "true",
+        "vein": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_vein_core"
+      },
+      "when": {
+        "clogged": "false",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_vein_arm",
+        "x": 90
+      },
+      "when": {
+        "clogged": "false",
+        "down": "true",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_vein_arm",
+        "x": 270
+      },
+      "when": {
+        "clogged": "false",
+        "up": "true",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_vein_arm"
+      },
+      "when": {
+        "clogged": "false",
+        "north": "true",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_vein_arm",
+        "y": 180
+      },
+      "when": {
+        "clogged": "false",
+        "south": "true",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_vein_arm",
+        "y": 270
+      },
+      "when": {
+        "clogged": "false",
+        "vein": "true",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_vein_arm",
+        "y": 90
+      },
+      "when": {
+        "clogged": "false",
+        "east": "true",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_clogged_core"
+      },
+      "when": {
+        "clogged": "true",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_clogged_arm",
+        "x": 90
+      },
+      "when": {
+        "clogged": "true",
+        "down": "true",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_clogged_arm",
+        "x": 270
+      },
+      "when": {
+        "clogged": "true",
+        "up": "true",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_clogged_arm"
+      },
+      "when": {
+        "clogged": "true",
+        "north": "true",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_clogged_arm",
+        "y": 180
+      },
+      "when": {
+        "clogged": "true",
+        "south": "true",
+        "vein": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_clogged_arm",
+        "y": 270
+      },
+      "when": {
+        "clogged": "true",
+        "vein": "true",
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "chronogenesis:block/brass_conduit_clogged_arm",
+        "y": 90
+      },
+      "when": {
+        "clogged": "true",
+        "east": "true",
+        "vein": "true"
+      }
+    }
+  ]
+}

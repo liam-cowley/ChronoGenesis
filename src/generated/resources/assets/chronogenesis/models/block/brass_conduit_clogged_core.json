@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#pipe"
+        },
+        "east": {
+          "texture": "#pipe"
+        },
+        "north": {
+          "texture": "#pipe"
+        },
+        "south": {
+          "texture": "#pipe"
+        },
+        "up": {
+          "texture": "#pipe"
+        },
+        "west": {
+          "texture": "#pipe"
+        }
+      },
+      "from": [
+        5,
+        5,
+        5
+      ],
+      "to": [
+        11,
+        11,
+        11
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "brass": "chronogenesis:block/brass_fitting",
+    "particle": "chronogenesis:block/vein_clogged",
+    "pipe": "chronogenesis:block/vein_clogged"
+  }
+}
