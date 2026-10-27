@@ -6,6 +6,16 @@ living beings powers rituals and grows biomechanical multiblocks, culminating in
 that unlocks travel to past eras (and finally an Elder God boss). Witchery/Botania-like feel,
 explicitly NOT an industrial/tech mod; progression should branch, not be linear.
 
+Mood: gloomy mad scientist, but still Minecraft (the player should feel like a mad scientist the way
+Witchery made you feel like a witch). Tools are improvised from vanilla materials (copper, glass,
+clocks, candles, amethyst, lightning rods); machines are *grown* over copper frames and jolted alive
+with lightning, never assembled from gears/plates. Gore stays at vanilla rotten-flesh level.
+
+Design docs live in `docs/design/`: `core-systems.md` is the source of truth for essences, grown
+organisms/grafts, powers, time manipulation, the Chronocortex, the Temporal Lens and structures;
+`early-game.md` covers pacing and build order. Read the relevant one before implementing a feature,
+and keep names consistent with it.
+
 ## Hard rules: use the 1.21.1 APIs, not older Forge or newer (1.21.2+/26.x) ones
 - Registration: `DeferredRegister.createBlocks/createItems` -> `DeferredBlock`/`DeferredItem`; other registries via
   `DeferredRegister.create(Registries.X, MODID)`. Never use `RegistryObject` or `ForgeRegistries` (old Forge).
