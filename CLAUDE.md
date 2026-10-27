@@ -11,10 +11,12 @@ Witchery made you feel like a witch). Tools are improvised from vanilla material
 clocks, candles, amethyst, lightning rods); machines are *grown* over brass frames and jolted alive
 with lightning, never assembled from gears/plates. Gore stays at vanilla rotten-flesh level.
 
-Design docs live in `docs/design/`: `core-systems.md` is the source of truth for essences, grown
-organisms/grafts, powers, time manipulation, the Chronocortex, the Temporal Lens and structures;
-`early-game.md` covers pacing and build order. Read the relevant one before implementing a feature,
-and keep names consistent with it.
+Docs (read the relevant one before implementing a feature, and keep names consistent with it):
+- `docs/design/core-systems.md`: source of truth for essences, grown organisms/grafts, veins, powers,
+  time manipulation, the Chronocortex, the Temporal Lens and structures.
+- `docs/design/early-game.md`: pacing, and the build order with what is done (✅) and what is next (⬜).
+- `docs/tech-stack.md`: versions, libraries, run configurations, CI, tools.
+- `docs/assets/texture-catalogue.md`: every texture, what it is, and how layered textures fit together.
 
 ## Hard rules: use the 1.21.1 APIs, not older Forge or newer (1.21.2+/26.x) ones
 - Registration: `DeferredRegister.createBlocks/createItems` -> `DeferredBlock`/`DeferredItem`; other registries via
