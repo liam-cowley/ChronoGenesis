@@ -182,6 +182,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add("research.chronogenesis.umbilical_locket.desc", "A cord from a living store to your own body. Worn at the throat, tied to an organism through its Tap, it refills your pool of that essence while you stay near the lab.");
         add("screen.chronogenesis.chronocortex.regrow", "Grow another");
 
+        // Temporal Field
+        addBlock(ModBlocks.TEMPORAL_FIELD, "Temporal Field Graft");
+        add("research.chronogenesis.temporal_field", "Temporal Field");
+        add("research.chronogenesis.temporal_field.desc", "A graft for a Time organism that gently rewinds the creatures around it, so what was drained from them slowly grows back. The end of breeding animals only to drain them.");
+
         add("message.chronogenesis.gate.pace", "Pace %s: %s ticks per block of track. Slower pulses make more Time, but stall past 600 ticks.");
         add("message.chronogenesis.organism.stability", " | stability %s/%s, instability %s/%s");
 

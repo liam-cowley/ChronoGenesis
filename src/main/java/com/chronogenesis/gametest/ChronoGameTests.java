@@ -8,6 +8,7 @@ import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.essence.DrainEffects;
 import com.chronogenesis.essence.MobEssence;
 import com.chronogenesis.item.UmbilicalLocketItem;
 import com.chronogenesis.organism.BrassConduitBlock;
@@ -25,6 +26,7 @@ import com.chronogenesis.registry.ModItems;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -152,7 +154,7 @@ public final class ChronoGameTests {
         BlockPos corePos = new BlockPos(3, 1, 3);
         helper.setBlock(corePos, core(Aspect.DENSITY));
         helper.setBlock(corePos.east(), ModBlocks.HEART.get().defaultBlockState()
-                .setValue(GraftBlock.FACING, net.minecraft.core.Direction.EAST));
+                .setValue(GraftBlock.FACING, Direction.EAST));
         OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
         helper.succeedWhen(() -> {
             helper.assertTrue(core.hearts() == 1, "heart not counted: " + core.hearts());
@@ -192,7 +194,7 @@ public final class ChronoGameTests {
         helper.setBlock(densityCore, core(Aspect.DENSITY));
         helper.setBlock(timeCore, core(Aspect.TIME));
         helper.setBlock(timeCore.east(), ModBlocks.STASIS_BLADDER.get().defaultBlockState()
-                .setValue(GraftBlock.FACING, net.minecraft.core.Direction.EAST));
+                .setValue(GraftBlock.FACING, Direction.EAST));
         // Heavy flesh packed around the buried clock, leaving its vein clear.
         for (BlockPos pos : BlockPos.betweenClosed(0, 1, 0, 2, 4, 3)) {
             boolean keep = pos.equals(densityCore) || pos.equals(buried) || (pos.getY() == 3 && pos.getZ() == 1 && pos.getX() >= 1);
@@ -329,6 +331,45 @@ public final class ChronoGameTests {
         helper.succeed();
     }
 
+    /** A Temporal Field on a Time organism gives a drained creature its essence back, for the organism's Time. */
+    @GameTest(template = "floor7", timeoutTicks = 300)
+    public static void temporalFieldRegenerates(GameTestHelper helper) {
+        BlockPos corePos = new BlockPos(3, 1, 3);
+        helper.setBlock(corePos, core(Aspect.TIME));
+        helper.setBlock(corePos.above(), graft(ModBlocks.TEMPORAL_FIELD.get()));
+        // Bladders keep the Time organism from bursting while the test runs.
+        for (Direction side : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
+            helper.setBlock(corePos.relative(side), ModBlocks.STASIS_BLADDER.get().defaultBlockState().setValue(GraftBlock.FACING, side));
+        }
+        OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+        core.feed(8);
+        Cow cow = helper.spawn(EntityType.COW, 1, 1, 1);
+        cow.setNoAi(true);
+        MobEssence.drain(cow, Aspect.SPEED, 3);
+        int drained = MobEssence.max(cow, Aspect.SPEED) - MobEssence.remaining(cow, Aspect.SPEED);
+        helper.succeedWhen(() -> {
+            int now = MobEssence.max(cow, Aspect.SPEED) - MobEssence.remaining(cow, Aspect.SPEED);
+            helper.assertTrue(now < drained, "speed not given back: still " + now + " drained");
+            helper.assertTrue(core.stored() < 8, "the field should pay in Time");
+        });
+    }
+
+    /** Clues come at the right moment: floating at half Density gone (not at the first dram), Vacant at none left. */
+    @GameTest(template = "floor7")
+    public static void drainCluesAtTheRightMoment(GameTestHelper helper) {
+        Cow cow = helper.spawn(EntityType.COW, 3, 1, 3);
+        cow.setNoAi(true);
+        MobEssence.drain(cow, Aspect.DENSITY, 1);
+        helper.assertTrue(DrainEffects.clueFor(cow, Aspect.DENSITY) == null, "one dram should not make it float yet");
+        MobEssence.drain(cow, Aspect.DENSITY, MobEssence.max(cow, Aspect.DENSITY) / 2);
+        helper.assertTrue(Clues.FLOATING.equals(DrainEffects.clueFor(cow, Aspect.DENSITY)), "half drained should float");
+        MobEssence.drain(cow, Aspect.AWARENESS, 1);
+        helper.assertTrue(DrainEffects.clueFor(cow, Aspect.AWARENESS) == null, "a little Awareness gone is not Vacant");
+        MobEssence.drain(cow, Aspect.AWARENESS, MobEssence.max(cow, Aspect.AWARENESS));
+        helper.assertTrue(Clues.VACANT.equals(DrainEffects.clueFor(cow, Aspect.AWARENESS)), "no Awareness left is Vacant");
+        helper.succeed();
+    }
+
     /**
      * A stand-in player for server-side logic. Not a mock "joined" player: Curios tries to sync its slots to
      * those and fails without a client. A FakePlayer never joins the level and swallows packets.
@@ -365,6 +406,6 @@ public final class ChronoGameTests {
     }
 
     private static net.minecraft.world.level.block.state.BlockState graft(net.minecraft.world.level.block.Block block) {
-        return block.defaultBlockState().setValue(GraftBlock.FACING, net.minecraft.core.Direction.UP);
+        return block.defaultBlockState().setValue(GraftBlock.FACING, Direction.UP);
     }
 }

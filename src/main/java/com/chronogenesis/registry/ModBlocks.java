@@ -75,6 +75,7 @@ public final class ModBlocks {
     public static final DeferredBlock<GraftBlock> EYE = graft("eye", GraftType.EYE);
     public static final DeferredBlock<GraftBlock> CLOCK = graft("clock", GraftType.CLOCK);
     public static final DeferredBlock<GraftBlock> GANGLION = graft("ganglion", GraftType.GANGLION);
+    public static final DeferredBlock<GraftBlock> TEMPORAL_FIELD = graft("temporal_field", GraftType.TEMPORAL_FIELD);
 
     /** The reanimation altar: a brain in a jar, Awareness and Time, lightning rods, a storm. */
     public static final DeferredBlock<DissectionTableBlock> DISSECTION_TABLE = BLOCKS.registerBlock(

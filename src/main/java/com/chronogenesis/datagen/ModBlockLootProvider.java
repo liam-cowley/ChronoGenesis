@@ -41,6 +41,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.EYE.get());
         dropSelf(ModBlocks.CLOCK.get());
         dropSelf(ModBlocks.GANGLION.get());
+        dropSelf(ModBlocks.TEMPORAL_FIELD.get());
         // The table gives its brain back; the Chronocortex dies when broken, leaving only the table.
         add(ModBlocks.DISSECTION_TABLE.get(), block -> createSingleItemTable(block)
                 .withPool(LootPool.lootPool()

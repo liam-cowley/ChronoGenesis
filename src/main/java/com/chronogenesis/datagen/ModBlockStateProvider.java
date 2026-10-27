@@ -284,6 +284,16 @@ public class ModBlockStateProvider extends BlockStateProvider {
         box(ganglion, 12, 0, 7, 15, 1, 9, "#nerve", false);
         box(ganglion, 7, 0, 1, 9, 1, 4, "#nerve", false);
         graftBlock(ModBlocks.GANGLION.get(), ganglion);
+
+        // Temporal Field: a teal dome ringed with brass, a slowly turning spiral of time inside.
+        BlockModelBuilder field = graftModel("temporal_field", "graft_flesh")
+                .texture("dome", modLoc("block/temporal_field"));
+        box(field, 3, 0, 3, 13, 2, 13, FLESH, false);
+        box(field, 2.5f, 2, 2.5f, 13.5f, 3, 13.5f, "#brass", false);
+        box(field, 4, 3, 4, 12, 7, 12, "#dome", false);
+        box(field, 5.5f, 7, 5.5f, 10.5f, 9, 10.5f, "#dome", false);
+        box(field, 7.5f, 9, 7.5f, 8.5f, 11, 8.5f, "#brass", false);
+        graftBlock(ModBlocks.TEMPORAL_FIELD.get(), field);
     }
 
     // ---------------------------------------------------------------- the Chronocortex

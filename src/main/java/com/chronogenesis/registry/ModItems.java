@@ -75,6 +75,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> EYE = ITEMS.registerSimpleBlockItem("eye", ModBlocks.EYE);
     public static final DeferredItem<BlockItem> CLOCK = ITEMS.registerSimpleBlockItem("clock", ModBlocks.CLOCK);
     public static final DeferredItem<BlockItem> GANGLION = ITEMS.registerSimpleBlockItem("ganglion", ModBlocks.GANGLION);
+    /** Grown by research, not crafted. */
+    public static final DeferredItem<BlockItem> TEMPORAL_FIELD = ITEMS.registerSimpleBlockItem("temporal_field",
+            ModBlocks.TEMPORAL_FIELD, new Item.Properties().rarity(Rarity.RARE));
     public static final DeferredItem<BlockItem> DISSECTION_TABLE = ITEMS.registerSimpleBlockItem("dissection_table",
             ModBlocks.DISSECTION_TABLE);
     public static final DeferredItem<EssenceJugItem> ESSENCE_JUG = ITEMS.registerItem("essence_jug",

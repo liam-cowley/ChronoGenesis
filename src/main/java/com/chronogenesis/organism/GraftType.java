@@ -32,7 +32,9 @@ public enum GraftType implements StringRepresentable {
      */
     CLOCK,
     /** Wires the organism to a Chronocortex within reach, which then reports on it and can draw from it. */
-    GANGLION;
+    GANGLION,
+    /** Temporal Field, on a Time organism: slowly rewinds drained creatures nearby, giving their essence back. */
+    TEMPORAL_FIELD;
 
     public static final Codec<GraftType> CODEC = StringRepresentable.fromEnum(GraftType::values);
 

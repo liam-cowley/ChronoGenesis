@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "active=false,facing=down": {
+      "model": "chronogenesis:block/temporal_field",
+      "x": 180
+    },
+    "active=false,facing=east": {
+      "model": "chronogenesis:block/temporal_field",
+      "x": 90,
+      "y": 90
+    },
+    "active=false,facing=north": {
+      "model": "chronogenesis:block/temporal_field",
+      "x": 90
+    },
+    "active=false,facing=south": {
+      "model": "chronogenesis:block/temporal_field",
+      "x": 90,
+      "y": 180
+    },
+    "active=false,facing=up": {
+      "model": "chronogenesis:block/temporal_field"
+    },
+    "active=false,facing=west": {
+      "model": "chronogenesis:block/temporal_field",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=down": {
+      "model": "chronogenesis:block/temporal_field",
+      "x": 180
+    },
+    "active=true,facing=east": {
+      "model": "chronogenesis:block/temporal_field",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=north": {
+      "model": "chronogenesis:block/temporal_field",
+      "x": 90
+    },
+    "active=true,facing=south": {
+      "model": "chronogenesis:block/temporal_field",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=up": {
+      "model": "chronogenesis:block/temporal_field"
+    },
+    "active=true,facing=west": {
+      "model": "chronogenesis:block/temporal_field",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

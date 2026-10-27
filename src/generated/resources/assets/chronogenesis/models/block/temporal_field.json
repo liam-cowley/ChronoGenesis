@@ -1,0 +1,173 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh"
+        },
+        "east": {
+          "texture": "#flesh"
+        },
+        "north": {
+          "texture": "#flesh"
+        },
+        "south": {
+          "texture": "#flesh"
+        },
+        "up": {
+          "texture": "#flesh"
+        },
+        "west": {
+          "texture": "#flesh"
+        }
+      },
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        2,
+        13
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#brass"
+        },
+        "east": {
+          "texture": "#brass"
+        },
+        "north": {
+          "texture": "#brass"
+        },
+        "south": {
+          "texture": "#brass"
+        },
+        "up": {
+          "texture": "#brass"
+        },
+        "west": {
+          "texture": "#brass"
+        }
+      },
+      "from": [
+        2.5,
+        2,
+        2.5
+      ],
+      "to": [
+        13.5,
+        3,
+        13.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#dome"
+        },
+        "east": {
+          "texture": "#dome"
+        },
+        "north": {
+          "texture": "#dome"
+        },
+        "south": {
+          "texture": "#dome"
+        },
+        "up": {
+          "texture": "#dome"
+        },
+        "west": {
+          "texture": "#dome"
+        }
+      },
+      "from": [
+        4,
+        3,
+        4
+      ],
+      "to": [
+        12,
+        7,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#dome"
+        },
+        "east": {
+          "texture": "#dome"
+        },
+        "north": {
+          "texture": "#dome"
+        },
+        "south": {
+          "texture": "#dome"
+        },
+        "up": {
+          "texture": "#dome"
+        },
+        "west": {
+          "texture": "#dome"
+        }
+      },
+      "from": [
+        5.5,
+        7,
+        5.5
+      ],
+      "to": [
+        10.5,
+        9,
+        10.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#brass"
+        },
+        "east": {
+          "texture": "#brass"
+        },
+        "north": {
+          "texture": "#brass"
+        },
+        "south": {
+          "texture": "#brass"
+        },
+        "up": {
+          "texture": "#brass"
+        },
+        "west": {
+          "texture": "#brass"
+        }
+      },
+      "from": [
+        7.5,
+        9,
+        7.5
+      ],
+      "to": [
+        8.5,
+        11,
+        8.5
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "brass": "chronogenesis:block/brass_fitting",
+    "dome": "chronogenesis:block/temporal_field",
+    "flesh": "chronogenesis:block/graft_flesh",
+    "particle": "chronogenesis:block/temporal_field",
+    "steel": "chronogenesis:block/steel"
+  }
+}

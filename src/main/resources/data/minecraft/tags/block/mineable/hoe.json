@@ -12,6 +12,7 @@
     "chronogenesis:organism_core",
     "chronogenesis:starting_gate",
     "chronogenesis:stasis_bladder",
-    "chronogenesis:tap"
+    "chronogenesis:tap",
+    "chronogenesis:temporal_field"
   ]
 }

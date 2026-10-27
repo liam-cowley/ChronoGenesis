@@ -1,0 +1,18 @@
+{
+  "name": "Temporal Field",
+  "icon": "chronogenesis:temporal_field",
+  "category": "chronogenesis:time",
+  "sortnum": 4,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "What I drain does not come back. That is why I breed calves only to empty them. The Chronocortex knows a kinder cruelty.$(br2)A $(l)Temporal Field$() grafted onto a $(l)Time$() organism gently rewinds the creatures within six blocks. Every five seconds one of them gets back a dram of whatever it has lost the most of."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Its Price",
+      "text": "Each dram given back costs a dram of the organism's Time, and leaves a little Temporal Stress behind. A Field next to a Leech Tendril makes a farm that never runs dry, if I keep the Time flowing.$(br2)Like the Locket, it is grown by the Chronocortex, and it will grow another."
+    }
+  ]
+}

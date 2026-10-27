@@ -1,0 +1,51 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.temporal_field"
+  },
+  "description": {
+    "translate": "research.chronogenesis.temporal_field.desc"
+  },
+  "icon": "chronogenesis:temporal_field",
+  "essence": {
+    "time": 24,
+    "density": 16
+  },
+  "materials": [
+    {
+      "item": "minecraft:clock",
+      "count": 1
+    },
+    {
+      "item": "minecraft:amethyst_shard",
+      "count": 4
+    },
+    {
+      "item": "minecraft:phantom_membrane",
+      "count": 2
+    }
+  ],
+  "clues": [
+    [
+      "chronogenesis:dust_to_dust",
+      "chronogenesis:heavy_heart"
+    ],
+    [
+      "chronogenesis:floating_creature",
+      "chronogenesis:torn_time"
+    ],
+    [
+      "chronogenesis:vacant_mind",
+      "chronogenesis:the_long_road"
+    ],
+    [
+      "chronogenesis:blueprint_field"
+    ]
+  ],
+  "order": 20,
+  "rewards": [
+    {
+      "id": "chronogenesis:temporal_field",
+      "count": 1
+    }
+  ]
+}

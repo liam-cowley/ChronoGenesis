@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import com.chronogenesis.ChronoGenesis;
@@ -83,13 +84,27 @@ public final class DrainEffects {
         }
         refresh(entity);
         if (entity.level() instanceof ServerLevel level) {
-            // Things worth writing down, for whoever is watching.
-            if (aspect == Aspect.DENSITY && MobEssence.fraction(entity, Aspect.DENSITY) >= 0.5f) {
-                Clues.witness(level, entity.blockPosition(), Clues.FLOATING);
-            } else if (aspect == Aspect.AWARENESS && MobEssence.fraction(entity, Aspect.AWARENESS) >= 1.0f) {
-                Clues.witness(level, entity.blockPosition(), Clues.VACANT);
+            ResourceLocation clue = clueFor(entity, aspect);
+            if (clue != null) {
+                Clues.witness(level, entity.blockPosition(), clue);
             }
         }
+    }
+
+    /**
+     * What a drain just did that is worth writing down, for whoever is watching: a creature that has lost half
+     * its Density floats; one with no Awareness left is Vacant. ({@code fraction()} is what is left.)
+     */
+    @Nullable
+    public static ResourceLocation clueFor(LivingEntity entity, Aspect aspect) {
+        if (aspect == Aspect.DENSITY && MobEssence.fraction(entity, Aspect.DENSITY) <= 0.5f) {
+            return Clues.FLOATING;
+        }
+        if (aspect == Aspect.AWARENESS && MobEssence.max(entity, Aspect.AWARENESS) > 0
+                && MobEssence.remaining(entity, Aspect.AWARENESS) == 0) {
+            return Clues.VACANT;
+        }
+        return null;
     }
 
     private static void onTimeDrained(LivingEntity entity, int taken) {

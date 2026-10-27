@@ -1241,6 +1241,21 @@ def umbilical_locket():
     ], p), "item/umbilical_locket")
 
 
+def temporal_field():
+    # Temporal Field dome: deep teal, a spiral of lighter time winding in, amber sparks.
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x - 7.5, y - 7.5
+            angle = math.atan2(dy, dx)
+            radius = math.hypot(dx, dy)
+            arm = math.sin(angle * 2 + radius * 0.9)
+            img.putpixel((x, y), TEAL_HI if arm > 0.75 else TEAL if arm > -0.2 else TEAL_DK)
+    for (x, y) in [(3, 4), (11, 3), (12, 11), (4, 12), (8, 8)]:
+        img.putpixel((x, y), AMBER_HI)
+    save(img, "block/temporal_field")
+
+
 # ---------------------------------------------------------------- the Chrono-Insulated Suit
 
 COAT = (196, 204, 186, 255)
@@ -1429,6 +1444,7 @@ brain_tissue()
 cortex_jar()
 essence_mote()
 umbilical_locket()
+temporal_field()
 suit_icons()
 suit_armor_layers()
 

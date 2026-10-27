@@ -56,6 +56,10 @@ public class GraftBlockEntity extends BlockEntity {
     private static final int EYE_INTERVAL = 10;
     public static final int EYE_RANGE = 4;
 
+    // Temporal Field (core-systems.md section 6): drained creatures slowly regenerate.
+    private static final int FIELD_INTERVAL = 100;
+    public static final int FIELD_RADIUS = 6;
+
     // Twin Clocks (core-systems.md section 4, Law of the Heavy Heart).
     private static final int CLOCK_INTERVAL = 40;
     /** How far around a Clock Density flesh counts as the mass weighing on it. */
@@ -164,6 +168,11 @@ public class GraftBlockEntity extends BlockEntity {
             case CLOCK -> {
                 if (graft.tick % CLOCK_INTERVAL == 0) {
                     graft.clockTick(serverLevel);
+                }
+            }
+            case TEMPORAL_FIELD -> {
+                if (graft.tick % FIELD_INTERVAL == 0) {
+                    graft.rewind(serverLevel);
                 }
             }
             default -> { }
@@ -414,6 +423,54 @@ public class GraftBlockEntity extends BlockEntity {
             reportedFill = fill;
             level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
         }
+    }
+
+    // ---------------------------------------------------------------- Temporal Field
+
+    /**
+     * Rewinds one drained creature in range: gives back a dram of the essence it has lost most of, paid for
+     * with a dram of the organism's Time. Breed-and-drain farms become sustainable.
+     */
+    private void rewind(ServerLevel level) {
+        OrganismCoreBlockEntity core = core();
+        if (core == null || core.aspect() != Aspect.TIME || core.stored() <= 0) {
+            return;
+        }
+        AABB area = new AABB(worldPosition).inflate(FIELD_RADIUS);
+        for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, area, MobEssence::canBeDrained)) {
+            Aspect lost = mostDrained(entity);
+            if (lost == null) {
+                continue;
+            }
+            if (MobEssence.restore(entity, lost, 1) > 0) {
+                core.extract(1);
+                TemporalStress.add(level, worldPosition, 1);
+                // The essence flows back the other way: out of the field and into the creature.
+                Vec3 from = Vec3.atCenterOf(worldPosition);
+                level.sendParticles(EssenceMoteOptions.of(lost, entity.position().add(0, entity.getBbHeight() / 2, 0)),
+                        from.x, from.y + 0.3, from.z, 8, 0.15, 0.15, 0.15, 0);
+                level.sendParticles(ParticleTypes.REVERSE_PORTAL, entity.getX(), entity.getY(0.5), entity.getZ(),
+                        10, entity.getBbWidth() / 2, entity.getBbHeight() / 3, entity.getBbWidth() / 2, 0.02);
+                level.playSound(null, entity.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.6f, 1.4f);
+                return; // one creature per beat
+            }
+        }
+    }
+
+    /** The aspect the creature has lost the largest share of, or null if it is whole. */
+    @Nullable
+    private static Aspect mostDrained(LivingEntity entity) {
+        Aspect most = null;
+        float worst = 0;
+        for (Aspect aspect : Aspect.values()) {
+            // fraction() is what is left (1.0 when whole, or when it never had any).
+            float lost = 1.0f - MobEssence.fraction(entity, aspect);
+            if (lost > worst) {
+                worst = lost;
+                most = aspect;
+            }
+        }
+        return most;
     }
 
     // ---------------------------------------------------------------- Twin Clocks
