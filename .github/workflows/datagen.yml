@@ -76,3 +76,15 @@ jobs:
             tail -60 server.log | while IFS= read -r line; do echo "::error title=server-crash::${line//::/:}"; done
             exit 1
           fi
+
+      - name: Game tests
+        if: always()
+        run: |
+          ./gradlew runGameTestServer > gametest.log 2>&1 && status=0 || status=$?
+          grep -E "passed|failed|GameTest|Exception|ERROR" gametest.log | grep -iE "test|chronogenesis|exception" | head -40 \
+            | while IFS= read -r line; do echo "::notice title=gametest::${line//::/:}"; done || true
+          if [ "$status" != "0" ]; then
+            tail -80 gametest.log | while IFS= read -r line; do echo "::error title=gametest::${line//::/:}"; done
+            exit "$status"
+          fi
+

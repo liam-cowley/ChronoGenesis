@@ -28,6 +28,9 @@ BioComputer strong enough to tear open the past — and eventually the end of ti
 In-game you should see a **ChronoGenesis** creative tab with Essence Vial, Temporal Residue and
 Chronoflesh.
 
+> **Which run configuration?** Use **runClient** to play. **runServer** starts a dedicated server,
+> **runData** regenerates resources, and **gameTestServer** only runs the automated tests and then stops.
+
 ## Playing the current build
 
 What exists so far (see `docs/design/early-game.md` for the full plan):
@@ -50,7 +53,7 @@ What exists so far (see `docs/design/early-game.md` for the full plan):
 | `gradlew runClient` | Launch a dev client with the mod (and JEI) loaded |
 | `gradlew runServer` | Launch a dev dedicated server (catches client-only code leaking into common code) |
 | `gradlew runData` | Regenerate models, blockstates, lang and loot tables into `src/generated/resources` |
-| `gradlew runGameTestServer` | Run automated game tests |
+| `gradlew runGameTestServer` | Run the automated in-world tests (`gametest/ChronoGameTests`), then exit. Not for playing |
 | `gradlew build` | Build the release jar into `build/libs/` |
 | `gradlew --refresh-dependencies` | Fix missing libraries in the IDE |
 
