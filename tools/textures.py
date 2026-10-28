@@ -1304,8 +1304,22 @@ LENS = (60, 110, 90, 255)
 LENS_HI = (150, 220, 180, 255)
 
 
+# Where tendrils curl out of each suit icon once the piece is warded: (x, y, dx, dy) from an edge pixel outwards.
+SUIT_SEEDS = {
+    "item/chrono_goggles": [(3, 5, -1, -1), (12, 5, 1, -1), (8, 8, 0, 1)],
+    "item/chrono_lab_coat": [(4, 1, -1, -1), (11, 1, 1, -1), (4, 13, -1, 1), (11, 13, 1, 1), (1, 8, -1, 1)],
+    "item/chrono_trousers": [(3, 12, -1, 1), (12, 12, 1, 1), (12, 1, 1, -1)],
+    "item/chrono_galoshes": [(3, 4, -1, -1), (12, 4, 1, -1), (13, 12, 1, 0)],
+}
+
+
+def _suit_save(img, path):
+    save(img.copy(), path)
+    warded_icon(img, SUIT_SEEDS[path], path + "_warded")
+
+
 def suit_icons():
-    save(grid([
+    _suit_save(grid([
         "................",
         "................",
         "................",
@@ -1323,7 +1337,7 @@ def suit_icons():
         "................",
         "................",
     ], {"k": BRASS_DDK, "B": BRASS, "L": LENS, "l": LENS_HI, "a": LEATHER}), "item/chrono_goggles")
-    save(grid([
+    _suit_save(grid([
         "................",
         "....cc....cc....",
         "...cCCddddCCc...",
@@ -1342,7 +1356,7 @@ def suit_icons():
         "................",
     ], {"c": COAT_DK, "C": COAT, "d": (110, 116, 104, 255), "k": OUTLINE, "B": BRASS, "g": ELDRITCH_DK}),
         "item/chrono_lab_coat")
-    save(grid([
+    _suit_save(grid([
         "................",
         "...kBBBHBBBBk...",
         "...aLLLLLLLLa...",
@@ -1360,7 +1374,7 @@ def suit_icons():
         "................",
         "................",
     ], {"k": BRASS_DDK, "B": BRASS, "H": BRASS_HI, "a": LEATHER_DK, "L": LEATHER}), "item/chrono_trousers")
-    save(grid([
+    _suit_save(grid([
         "................",
         "................",
         "................",
@@ -1387,51 +1401,260 @@ def fill_rect(img, x0, y0, x1, y1, color_fn):
 
 
 def suit_armor_layers():
-    """Worn textures (64x32, vanilla humanoid armour layout)."""
-    r = rng(91)
-    layer1 = Image.new("RGBA", (64, 32), CLEAR)
+    """128x128 for client/SuitModel's boxes (every piece of the suit on one sheet): a leather aviator cap with brass
+    goggles, a stained lab coat with brass fittings and a Time canister (murky, and glowing for the warded coat),
+    oiled leather trousers with copper knee pads, rubber galoshes; purple tendrils with green tips."""
+    img = Image.new("RGBA", (128, 128), CLEAR)
+    r = rng(933)
 
-    # Goggles: a leather strap round the head at eye level, two brass-rimmed lenses on the front.
-    fill_rect(layer1, 0, 11, 32, 13, lambda x, y: LEATHER if y == 11 else LEATHER_DK)
-    for cx in (10, 13):
-        for (dx, dy) in [(-1, 0), (0, 0), (-1, 1), (0, 1)]:
-            layer1.putpixel((cx + dx, 11 + dy), LENS)
-        layer1.putpixel((cx - 1, 11), LENS_HI)
-        for (dx, dy) in [(-2, 0), (1, 0), (-2, 1), (1, 1), (-1, -1), (0, -1), (-1, 2), (0, 2)]:
-            layer1.putpixel((cx + dx, 11 + dy), BRASS)
+    def faces(u, v, w, h, d):
+        w, h, d = (int(math.ceil(k)) for k in (w, h, d))
+        return {"top": (u + d, v, w, d), "bottom": (u + d + w, v, w, d), "right": (u, v + d, d, h),
+                "front": (u + d, v + d, w, h), "left": (u + d + w, v + d, d, h), "back": (u + 2 * d + w, v + d, w, h)}
 
-    # Lab coat: body and both arms, stained, brass buttons, darker collar and cuffs.
-    coat = lambda x, y: shade(COAT, r.randint(-10, 8))
-    fill_rect(layer1, 16, 16, 40, 32, coat)   # body (all faces)
-    fill_rect(layer1, 40, 16, 56, 32, coat)   # arm (all faces)
-    fill_rect(layer1, 20, 20, 28, 21, lambda x, y: COAT_DK)    # collar line
-    for y in (22, 25, 28):
-        layer1.putpixel((24, y), BRASS)
-    for x in range(20, 28):
-        layer1.putpixel((x, 31), COAT_DK)
-    fill_rect(layer1, 40, 30, 56, 32, lambda x, y: BRASS_DK if y == 30 else LEATHER_DK)   # cuffs
-    for (x, y) in [(22, 26), (26, 23), (33, 27), (45, 25)]:
-        layer1.putpixel((x, y), ELDRITCH_DK)  # stains from a careless experiment
+    def put(x, y, c, jitter=5):
+        if c is None:
+            img.putpixel((x, y), CLEAR)
+            return
+        j = r.randint(-jitter, jitter) if jitter else 0
+        img.putpixel((x, y), tuple(max(0, min(255, k + j)) for k in c[:3]) + (255,))
 
-    # Galoshes: black rubber over the feet, a brass strap.
-    fill_rect(layer1, 0, 25, 16, 32, lambda x, y: RUBBER_HI if (x % 4 == 1 and y < 30) else RUBBER)
-    fill_rect(layer1, 0, 26, 16, 27, lambda x, y: BRASS)
-    fill_rect(layer1, 4, 16, 12, 20, lambda x, y: CLEAR)
+    def paint(box, colour, grain=5, skip=(), detail=None):
+        """Fills a box's faces with a material, lit the vanilla way (top face lightest, sides lighter at the top,
+        bottom face darkest). detail(face, x, y, fw, fh) may return a colour (or CLEAR) for a pixel."""
+        for name, (fx, fy, fw, fh) in faces(*box).items():
+            if name in skip:
+                continue
+            for y in range(fh):
+                for x in range(fw):
+                    c = colour
+                    if name == "top":
+                        c = shade(c, 12)
+                    elif name == "bottom":
+                        c = shade(c, -22)
+                    else:
+                        c = shade(c, int(8 - 18 * y / max(1, fh - 1)))
+                    if detail:
+                        d = detail(name, x, y, fw, fh)
+                        if d is not None:
+                            c = d
+                    if c == CLEAR:
+                        put(fx + x, fy + y, None)
+                    else:
+                        put(fx + x, fy + y, c, grain)
 
-    layer2 = Image.new("RGBA", (64, 32), CLEAR)
-    # Trousers: oiled leather, a brass-buckled belt, brass knee plates.
-    leather = lambda x, y: shade(LEATHER, r.randint(-8, 8))
-    fill_rect(layer2, 0, 16, 16, 32, leather)       # leg
-    fill_rect(layer2, 16, 20, 40, 32, leather)      # body (waist part is what shows)
-    fill_rect(layer2, 16, 20, 40, 22, lambda x, y: LEATHER_DK)
-    layer2.putpixel((23, 20), BRASS)
-    layer2.putpixel((24, 20), BRASS_HI)
-    fill_rect(layer2, 4, 24, 8, 26, lambda x, y: BRASS if y == 24 else BRASS_DK)
+    stitch = (52, 34, 24, 255)
+    coat_stain = (150, 170, 120, 255)
+    glass_dk, glass = (58, 74, 78, 255), (96, 120, 124, 255)
+    amethyst, amethyst_hi = (150, 96, 196, 255), (214, 170, 240, 255)
+    flesh, flesh_dk = (138, 64, 128, 255), (104, 44, 98, 255)
+    sole = (28, 28, 32, 255)
 
-    for img, name in [(layer1, "chrono_insulated_layer_1"), (layer2, "chrono_insulated_layer_2")]:
-        full = os.path.join(OUT, "models/armor", name + ".png")
-        os.makedirs(os.path.dirname(full), exist_ok=True)
-        img.save(full)
+    # ---- the goggles
+    def cap(face, x, y, fw, fh):
+        if face == "bottom":
+            return CLEAR
+        if face == "front" and y >= 3:
+            return CLEAR                                   # the face shows below the forehead
+        if face == "top" and (x == 4 or y == 4) and (x + y) % 2 == 0:
+            return stitch                                  # the panels' seams
+        if face in ("right", "left") and x == 4 and y % 2 == 0:
+            return stitch
+        if face == "back" and x == 4 and y % 2 == 1:
+            return stitch
+        if face in ("right", "left") and y == 7:
+            return LEATHER_DK                              # the ear flaps' rolled edge
+        return None
+    paint((0, 0, 8, 8, 8), LEATHER, detail=cap)
+    img.putpixel((12, 4), BRASS)                           # the button at the crown
+
+    def strap(face, x, y, fw, fh):
+        if face in ("top", "bottom"):
+            return CLEAR
+        if face == "left" and 2 <= x <= 4:
+            return BRASS if y == 0 else BRASS_DK           # the buckle
+        if face == "back" and x in (2, 5):
+            return LEATHER
+        return None
+    paint((32, 0, 8, 2, 8), LEATHER_DK, detail=strap)
+    paint((64, 0, 3, 3, 2), BRASS_DK)
+    def lens(face, x, y, fw, fh):
+        if face == "front":
+            if 1 <= x <= 2 and 1 <= y <= 2:
+                return LENS_HI if (x, y) == (1, 1) else (34, 62, 54, 255)   # smoked glass, one glint
+            return BRASS if x + y < 3 else BRASS_DK
+        return None
+    paint((74, 0, 4, 4, 1), BRASS_DK, detail=lens)
+    def temple_can(face, x, y, fw, fh):
+        if face in ("front", "back"):
+            return BRASS_HI if (x, y) == (0, 0) else BRASS
+        if x == 1 and face in ("top", "bottom", "right", "left"):
+            return BRASS_DK                                # a band round its middle
+        return None
+    paint((84, 0, 2, 2, 3), COPPER, detail=temple_can)
+    paint((94, 0, 1, 4, 1), COPPER, detail=lambda f, x, y, fw, fh: VERD if y == 3 else None)
+    paint((98, 0, 2, 2, 2), amethyst, detail=lambda f, x, y, fw, fh: amethyst_hi if (x, y) == (0, 0) and f != "bottom" else None)
+
+    # ---- the lab coat
+    def coat(face, x, y, fw, fh):
+        if face == "front":
+            if x in (3, 4) and y < 3:
+                return COAT_DK if (x == 3) == (y % 2 == 0) else None   # the lapels' V
+            if x == 3 and y >= 3:
+                return COAT_DK                             # the placket
+            if x == 4 and y in (4, 7, 10):
+                return BRASS                               # buttons
+            if (x, y) in ((6, 9), (1, 10), (2, 11)):
+                return coat_stain                          # a careless experiment
+        if face == "back":
+            if y == 7:
+                return BRASS_DK if x in (2, 5) else COAT_DK   # the half belt and its buttons
+            if x == 4 and y > 8:
+                return COAT_DK                             # the vent
+        if face in ("right", "left") and x == 2 and y % 3 == 0:
+            return COAT_DK
+        if y == fh - 1 and face not in ("top", "bottom"):
+            return COAT_DK                                 # the hem
+        return None
+    paint((0, 16, 8, 12, 4), COAT, detail=coat)
+    def tails(face, x, y, fw, fh):
+        if face in ("front", "back") and x == 4 and y >= 2:
+            return CLEAR                                   # split up the back
+        if face == "top":
+            return CLEAR
+        if y == fh - 1 and face not in ("bottom",):
+            return COAT_DK
+        if face == "bottom" and x == 4:
+            return CLEAR
+        return None
+    paint((24, 16, 8, 7, 1), COAT, detail=tails)
+    def collar(face, x, y, fw, fh):
+        if face in ("top", "bottom") and 0 < x < fw - 1 and 0 < y < fh - 1:
+            return CLEAR
+        if face == "front" and x in (4,):
+            return CLEAR                                   # open at the throat
+        return None
+    paint((42, 16, 9, 2, 5), COAT_DK, detail=collar)
+    def canister(charged):
+        def detail(face, x, y, fw, fh):
+            if face in ("top", "bottom"):
+                return glass_dk
+            if x == 0 and face in ("back", "front"):
+                return GLASS_EDGE[:3] + (255,)             # the glass's glint
+            level = 2 if charged else 3
+            if y >= level:
+                if charged:
+                    return ELDRITCH if (x * 3 + y) % 7 == 0 else (120, 220, 96, 255)
+                return (70, 84, 60, 255) if (x + y) % 3 else (58, 70, 50, 255)
+            return None
+        return detail
+    paint((0, 32, 4, 6, 3), glass, detail=canister(False))
+    paint((14, 32, 4, 6, 3), glass, detail=canister(True))
+    paint((28, 32, 5, 1, 4), BRASS, detail=lambda f, x, y, fw, fh: BRASS_HI if f == "top" and (x, y) in ((0, 0), (4, 0), (0, 3), (4, 3)) else None)
+    hose = lambda f, x, y, fw, fh: BRASS if (f in ("top", "bottom") and y % 3 == 1) or (f in ("right", "left") and x % 3 == 1) else None
+    paint((46, 32, 1, 1, 7), RUBBER, detail=hose)
+    paint((62, 32, 1, 4, 1), RUBBER, detail=lambda f, x, y, fw, fh: BRASS if y == 3 else None)
+    paint((66, 32, 1, 3, 1), (120, 220, 96, 255), detail=lambda f, x, y, fw, fh: COPPER if y == 0 or f == "top" else (GLASS_EDGE[:3] + (255,) if y == 1 else None))
+    paint((70, 32, 3, 3, 1), COAT_DK, detail=lambda f, x, y, fw, fh: (BRASS if f == "front" and (x, y) == (1, 0) else (shade(COAT_DK, -18) if f == "top" else None)))
+    def gauge(face, x, y, fw, fh):
+        if face == "front":
+            return (40, 30, 26, 255) if (x, y) == (1, 0) else (232, 222, 190, 255)   # the dial, and its needle
+        return None
+    paint((78, 32, 2, 2, 1), BRASS, detail=gauge)
+    def sleeve(face, x, y, fw, fh):
+        if face == "left" and x == 2 and y % 2 == 0:
+            return COAT_DK                                 # the inner seam
+        if face == "front" and (x, y) == (1, 8):
+            return coat_stain
+        return None
+    paint((0, 48, 4, 12, 4), COAT, detail=sleeve)
+    def pauldron(face, x, y, fw, fh):
+        if face == "bottom":
+            return CLEAR
+        if face == "top" and (x, y) in ((0, 0), (4, 0), (0, 4), (4, 4)):
+            return BRASS_HI                                # rivets
+        if face == "top" and y == 2:
+            return BRASS_HI                                # the ridge
+        if face == "front" and y == 0 and x in (1, 3):
+            return BRASS_HI
+        return None
+    paint((16, 48, 5, 2, 5), BRASS, detail=pauldron)
+    paint((36, 48, 5, 2, 5), BRASS_DK, detail=lambda f, x, y, fw, fh: CLEAR if f in ("top", "bottom") else (BRASS if y == 0 else None))
+    paint((56, 48, 1, 1, 1), BRASS_HI)
+
+    # ---- the trousers
+    def trouser(face, x, y, fw, fh):
+        if face in ("right", "left") and x == 2 and y % 2 == 0:
+            return stitch                                  # the side seams
+        if face == "back" and 2 <= y <= 4 and 1 <= x <= 2:
+            return LEATHER_DK                              # a patch
+        if y == fh - 1 and face not in ("top", "bottom"):
+            return LEATHER_DK
+        return None
+    paint((0, 64, 4, 12, 4), LEATHER, detail=trouser)
+    paint((16, 64, 8, 2, 4), LEATHER_DK, detail=lambda f, x, y, fw, fh: CLEAR if f in ("top", "bottom") else (BRASS if y == 0 and x % 3 == 1 else None))
+    paint((40, 64, 2, 2, 1), BRASS, detail=lambda f, x, y, fw, fh: (BRASS_DDK if f == "front" and (x, y) == (1, 1) else (BRASS_HI if f == "front" and (x, y) == (0, 0) else None)))
+    def knee(face, x, y, fw, fh):
+        if face == "front":
+            if (x, y) in ((0, 0), (3, 0), (0, 2), (3, 2)):
+                return COPPER_HI                           # rivets
+            if (x + y * 2) % 5 == 0:
+                return VERD
+        return None
+    paint((46, 64, 4, 3, 1), COPPER, detail=knee)
+    paint((56, 64, 2, 3, 3), (124, 86, 58, 255), detail=lambda f, x, y, fw, fh: (LEATHER_DK if y == 0 and f != "bottom" else (BRASS if f == "right" and (x, y) == (1, 1) else None)))
+
+    # ---- the galoshes
+    def boot(face, x, y, fw, fh):
+        if face == "top":
+            return CLEAR if 0 < x < fw - 1 and 0 < y < fh - 1 else None
+        if face in ("front", "back", "right", "left") and x % 4 == 1 and y < fh - 2:
+            return RUBBER_HI                               # the shine
+        return None
+    paint((0, 80, 4, 7, 4), RUBBER, detail=boot)
+    def tread(face, x, y, fw, fh):
+        if face == "bottom" and y % 2 == 0:
+            return (16, 16, 18, 255)
+        if face != "bottom" and y == 0:
+            return shade(RUBBER, 10)                       # the welt
+        return None
+    paint((16, 80, 5, 2, 6), sole, detail=tread)
+    paint((38, 80, 4, 2, 2), BRASS, detail=lambda f, x, y, fw, fh: BRASS_HI if f in ("top", "front") and x == 0 else None)
+    def boot_strap(face, x, y, fw, fh):
+        if face in ("top", "bottom"):
+            return CLEAR
+        if face == "left" and x in (1, 2, 3):
+            return BRASS_HI if x == 2 else BRASS            # the buckle
+        return None
+    paint((50, 80, 5, 1, 5), LEATHER_DK, detail=boot_strap)
+
+    # ---- tendrils: purple flesh, the tip green
+    for x in range(0, 8):
+        for y in range(96, 100):
+            put(x, y, flesh if (x + y) % 3 else flesh_dk, 12)
+    for x in range(8, 16):
+        for y in range(96, 100):
+            put(x, y, (150, 220, 110, 255) if y == 96 else flesh, 8)
+
+    img = _smooth(img, wrap=False, passes=2, sigma=20.0)
+    full = os.path.join(OUT, "models/armor/chrono_suit.png")
+    os.makedirs(os.path.dirname(full), exist_ok=True)
+    img.save(full)
+    WRITTEN.append(("models/armor/chrono_suit", img.crop((0, 0, 16, 16))))
+
+
+def warded_icon(img, seeds, path):
+    """A suit icon with tendrils curling out of its seams: from each seed (x, y, dx, dy), three pixels outwards,
+    wavering, the last one green."""
+    out = img.copy()
+    for (x, y, dx, dy) in seeds:
+        for i in range(1, 4):
+            wob = (1 if i == 2 else 0)
+            px, py = x + dx * i + (wob if dy else 0) * (1 if dx >= 0 else -1), y + dy * i + (wob if not dy else 0)
+            if not (0 <= px < 16 and 0 <= py < 16) or out.getpixel((px, py))[3] != 0:
+                continue
+            out.putpixel((px, py), ELDRITCH if i == 3 else ((138, 64, 128, 255) if i == 1 else (118, 52, 112, 255)))
+    save(out, path)
 
 
 # ---------------------------------------------------------------- organisms by essence (texture overhaul)

@@ -68,6 +68,7 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `item/chrono_syringe_fill.png` | 16x16 | Syringe liquid mask (layer 1, tinted) |
 | `item/chrono_syringe_front.png` | 16x16 | Syringe glint and brass ticks (layer 2) |
 | `item/chrono_trousers.png` | 16x16 | Suit: trousers |
+| `item/chrono_*_warded.png` | 16x16 | Each suit icon once Time-warded: tendrils curling out of its seams (item property `chronogenesis:warded`) |
 | `item/culture.png` | 16x16 | Tentacled growth (tinted by aspect) |
 | `item/culture_dish.png` | 16x16 | Brass-rimmed petri dish (drawn over the growth) |
 | `item/essence_vial.png` | 16x16 | Vial body |
@@ -81,8 +82,7 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `item/stasis_ampoule_fill.png` | 16x16 | Ampoule liquid mask (tinted) |
 | `item/stasis_ampoule_front.png` | 16x16 | Eldritch ward glowing on the glass |
 | `item/temporal_residue.png` | 16x16 | Teal crystals around an amber clockwork core |
-| `models/armor/chrono_insulated_layer_1.png` | 64x32 | Worn suit (goggles, coat, galoshes), 64x32 armour layout |
-| `models/armor/chrono_insulated_layer_2.png` | 64x32 | Worn suit trousers, 64x32 armour layout |
+| `models/armor/chrono_suit.png` | 128x128 | Every worn suit piece, laid out for `client/SuitModel`'s boxes (cap, goggles, coat, plain and glowing canister, trousers, galoshes, tendrils) |
 
 ### Added with the powers rework and the Chronocortex's growth
 

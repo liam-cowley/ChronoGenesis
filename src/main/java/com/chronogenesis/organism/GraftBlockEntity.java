@@ -12,6 +12,7 @@ import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.essence.EssenceMoteOptions;
 import com.chronogenesis.essence.MobEssence;
+import com.chronogenesis.item.ChronoSuitItem;
 import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlockEntities;
@@ -547,6 +548,9 @@ public class GraftBlockEntity extends BlockEntity {
             if (stack.is(ModItems.CULTURE.get())) {
                 return growGland(stack, player);
             }
+            if (stack.getItem() instanceof ChronoSuitItem) {
+                return wardSuit(stack, player);
+            }
         }
         if (type() == GraftType.TAP && EssenceItems.isContainer(stack)) {
             if (level.isClientSide()) {
@@ -665,6 +669,50 @@ public class GraftBlockEntity extends BlockEntity {
         ((ServerLevel) level).sendParticles(ParticleTypes.ITEM_SLIME, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5,
                 worldPosition.getZ() + 0.5, 16, 0.3, 0.3, 0.3, 0.05);
         OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.grew", next));
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    /** Drams of Time a Time gland pays to ward one suit piece. */
+    public static final int WARD_COST = 48;
+    /** The gland must have swollen this far to take a suit piece in. */
+    public static final int WARD_GLAND_LEVEL = 2;
+
+    /**
+     * A suit piece pressed into a swollen Time gland is infused: Time-warded, and from then on it grows tendrils of
+     * its own.
+     */
+    private ItemInteractionResult wardSuit(ItemStack stack, Player player) {
+        if (level.isClientSide()) {
+            return ItemInteractionResult.SUCCESS;
+        }
+        OrganismCoreBlockEntity core = core();
+        if (core == null) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.organism.dead"));
+            return ItemInteractionResult.FAIL;
+        }
+        if (ChronoSuitItem.warded(stack)) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.ward.already"));
+            return ItemInteractionResult.FAIL;
+        }
+        if (core.aspect() != Aspect.TIME) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.ward.not_time"));
+            return ItemInteractionResult.FAIL;
+        }
+        if (getBlockState().getValue(GlandBlock.LEVEL) < WARD_GLAND_LEVEL) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.ward.small", WARD_GLAND_LEVEL));
+            return ItemInteractionResult.FAIL;
+        }
+        if (core.stored() < WARD_COST) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.ward.hungry", WARD_COST));
+            return ItemInteractionResult.FAIL;
+        }
+        core.extract(WARD_COST);
+        ChronoSuitItem.ward(stack);
+        level.playSound(null, worldPosition, SoundEvents.SLIME_SQUISH, SoundSource.BLOCKS, 1.0f, 0.4f);
+        level.playSound(null, worldPosition, SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.BLOCKS, 0.8f, 0.6f);
+        ((ServerLevel) level).sendParticles(ParticleTypes.REVERSE_PORTAL, worldPosition.getX() + 0.5, worldPosition.getY() + 0.7,
+                worldPosition.getZ() + 0.5, 30, 0.3, 0.3, 0.3, 0.05);
+        OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.ward.done", stack.getHoverName()));
         return ItemInteractionResult.SUCCESS;
     }
 

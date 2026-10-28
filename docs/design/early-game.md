@@ -148,6 +148,10 @@
     Titanosaurs, sealed temples with five ability seals (any three). Research gains alternative clue sets from the
     Jurassic (Dino Harness; Deepest Infusion through a broken temple). Next: the world's creation, the time before
     time (the Elder God).
+13. ✅ The suit as 3D models (cap and goggles, lab coat with a Time canister, trousers, galoshes). Time warding: a
+    suit piece pressed into a swollen (level 2+) Time gland grows tendrils; warded head to foot, shifts hold the
+    era's full minutes without nausea or exposure (half the minutes unwarded, and the era tugs at every unwarded
+    piece).
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

@@ -2,6 +2,7 @@ package com.chronogenesis.registry;
 
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.item.ChronoSuitItem;
 import com.chronogenesis.item.ChronoSyringeItem;
 import com.chronogenesis.item.ChronoTetherItem;
 import com.chronogenesis.item.ConfluenceNeedleItem;
@@ -20,6 +21,7 @@ import com.chronogenesis.lens.TemporalLensItem;
 import com.chronogenesis.temple.StilledCoreItem;
 import com.chronogenesis.timetravel.OffshootItem;
 
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -166,18 +168,13 @@ public final class ModItems {
             properties -> new EssenceJugItem(ModBlocks.ESSENCE_JUG.get(), properties), new Item.Properties().stacksTo(1));
 
     // The Chrono-Insulated Suit: each piece worn blocks a quarter of Temporal Exposure.
-    public static final DeferredItem<net.minecraft.world.item.ArmorItem> CHRONO_GOGGLES = suit("chrono_goggles",
-            net.minecraft.world.item.ArmorItem.Type.HELMET);
-    public static final DeferredItem<net.minecraft.world.item.ArmorItem> CHRONO_LAB_COAT = suit("chrono_lab_coat",
-            net.minecraft.world.item.ArmorItem.Type.CHESTPLATE);
-    public static final DeferredItem<net.minecraft.world.item.ArmorItem> CHRONO_TROUSERS = suit("chrono_trousers",
-            net.minecraft.world.item.ArmorItem.Type.LEGGINGS);
-    public static final DeferredItem<net.minecraft.world.item.ArmorItem> CHRONO_GALOSHES = suit("chrono_galoshes",
-            net.minecraft.world.item.ArmorItem.Type.BOOTS);
+    public static final DeferredItem<ChronoSuitItem> CHRONO_GOGGLES = suit("chrono_goggles", ArmorItem.Type.HELMET);
+    public static final DeferredItem<ChronoSuitItem> CHRONO_LAB_COAT = suit("chrono_lab_coat", ArmorItem.Type.CHESTPLATE);
+    public static final DeferredItem<ChronoSuitItem> CHRONO_TROUSERS = suit("chrono_trousers", ArmorItem.Type.LEGGINGS);
+    public static final DeferredItem<ChronoSuitItem> CHRONO_GALOSHES = suit("chrono_galoshes", ArmorItem.Type.BOOTS);
 
-    private static DeferredItem<net.minecraft.world.item.ArmorItem> suit(String name, net.minecraft.world.item.ArmorItem.Type type) {
-        return ITEMS.registerItem(name, properties -> new net.minecraft.world.item.ArmorItem(ModArmorMaterials.CHRONO_INSULATED, type,
-                properties.durability(type.getDurability(12))));
+    private static DeferredItem<ChronoSuitItem> suit(String name, ArmorItem.Type type) {
+        return ITEMS.registerItem(name, properties -> new ChronoSuitItem(type, properties.durability(type.getDurability(12))));
     }
 
     private static DeferredItem<NeedleItem> needle(String name, Aspect aspect) {

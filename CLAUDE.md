@@ -92,6 +92,9 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   `tools/render_models.py out.png essences` previews them.
 - Powers are `player/Power` entries (passive or active, single essence or composite). Per-chunk time (Slow Time,
   Time Freeze) is `time/TimeZones` plus mixins in `mixin/`; it must stay cheap when no zone exists.
+- The Chrono-Insulated Suit is worn as 3D models (`client/SuitModel`, one per slot, texture
+  `models/armor/chrono_suit.png` painted by `tools/textures.py` for its boxes). Time-warded pieces (`temporal_ward`
+  component, infused at a level 2+ Time gland) grow animated tendrils; `TemporalShift` checks warding, not just the suit.
 - Grafts have an `active` blockstate for visible work (the Leech Tendril swells as it gulps); give a graft an
   active model with `graftBlock(block, model, activeModel)`. Leeching is shown with `EssenceMoteOptions` particles
   (client: `EssenceMoteParticle`), which home in on a target point.

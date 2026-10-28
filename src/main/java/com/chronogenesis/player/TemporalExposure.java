@@ -23,7 +23,8 @@ import net.minecraft.world.phys.Vec3;
  *   <li>120+: you age: max health is reduced until exposure fades.</li>
  * </ul>
  * Exposure fades slowly on its own (see {@link Powers}). Each piece of the Chrono-Insulated Suit
- * blocks a quarter of all incoming exposure.
+ * blocks a quarter of all incoming exposure. Pieces infused with Time are also <i>warded</i>: what an era does to a
+ * traveller (see {@code TemporalShift}) only a fully warded suit keeps out.
  */
 public final class TemporalExposure {
     public static final int TICKING = 40;
@@ -49,6 +50,18 @@ public final class TemporalExposure {
         return pieces;
     }
 
+    /** Pieces of the suit worn that are Time-warded (infused at an Enhancing Gland), 0-4. */
+    public static int wardedPieces(net.minecraft.world.entity.player.Player player) {
+        int pieces = 0;
+        for (net.minecraft.world.item.ItemStack stack : player.getArmorSlots()) {
+            if (stack.is(com.chronogenesis.registry.ModTags.Items.CHRONO_INSULATED)
+                    && com.chronogenesis.item.ChronoSuitItem.warded(stack)) {
+                pieces++;
+            }
+        }
+        return pieces;
+    }
+
     /** Exposure after the suit: each piece worn removes a quarter. */
     public static int scaled(net.minecraft.world.entity.player.Player player, int amount) {
         return Math.round(amount * (1.0f - 0.25f * suitPieces(player)));
@@ -60,6 +73,14 @@ public final class TemporalExposure {
         if (added > 0) {
             PlayerEssence essence = Powers.get(player);
             Powers.set(player, essence.withExposure(essence.exposure() + added));
+        }
+    }
+
+    /** Adds exposure the suit cannot block (an era pulling at an unwarded body). */
+    public static void exposeUnshielded(net.minecraft.world.entity.player.Player player, int amount) {
+        if (amount > 0) {
+            PlayerEssence essence = Powers.get(player);
+            Powers.set(player, essence.withExposure(essence.exposure() + amount));
         }
     }
 

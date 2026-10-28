@@ -20,7 +20,7 @@ public final class ModArmorMaterials {
     /**
      * The Chrono-Insulated Suit: leather lined with phantom membrane, brass fittings. About as
      * protective as leather; what it really keeps out is Time (see TemporalExposure).
-     * Worn textures: textures/models/armor/chrono_insulated_layer_1.png and _layer_2.png.
+     * Worn as 3D models (client/SuitModel) with textures/models/armor/chrono_suit.png, see ChronoSuitItem.
      */
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> CHRONO_INSULATED = ARMOR_MATERIALS.register("chrono_insulated",
             () -> new ArmorMaterial(

@@ -125,6 +125,11 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.chronogenesis.gland.unknown_growth.2", "You do not know how to make it swell. (Research Deeper Infusion at the Chronocortex.)");
         add("message.chronogenesis.gland.unknown_growth.3", "It will not swell again until you know how. (Research Deepest Infusion: the Chronocortex must be at stage 2.)");
         add("message.chronogenesis.gland.hungry", "Swelling takes %s drams of %s from the organism.");
+        add("message.chronogenesis.gland.ward.done", "The gland closes round the %s, and lets it go warded: something in its seams has begun to move.");
+        add("message.chronogenesis.gland.ward.already", "This piece is warded already.");
+        add("message.chronogenesis.gland.ward.not_time", "Only a gland of Time can ward the suit against Time.");
+        add("message.chronogenesis.gland.ward.small", "The gland is too small to take the piece in. Swell it to level %s first.");
+        add("message.chronogenesis.gland.ward.hungry", "Warding a piece takes %s drams of Time from the organism.");
         add("message.chronogenesis.gland.grew", "The gland swells, veins thickening across it. It is now level %s.");
         add("message.chronogenesis.gland.needle", "The needle slides into the gland's port with a wet click.");
         add("message.chronogenesis.power.strength", "%s: strength %s/%s");
@@ -274,6 +279,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("precursor.chronogenesis.say.11", "(The cold is coming. Not in our lives. In the land's.)");
         add("item.chronogenesis.precursor_spawn_egg", "Precursor Spawn Egg");
         add("clue.chronogenesis.ice_age", "A world under ice");
+        add("message.chronogenesis.shift.unwarded", "Your suit is not warded head to foot: the shift wrenched you through, and the era tugs at every unwarded piece.");
         add("message.chronogenesis.shift.arrived", "You stand in %s. The tether pulls taut: %s minutes before it reels you home.");
         add("message.chronogenesis.shift.thinning", "The tether is thinning: %s seconds.");
         add("message.chronogenesis.shift.snapped_back", "Time snaps you back where you belong.");
@@ -284,6 +290,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.chronogenesis.shift.cannot", "It cannot reach that era yet.");
         add("message.chronogenesis.shift.unreachable", "That era does not exist in this world.");
         add("whisper.chronogenesis.shift", "Go. Look at %s for me. Remember everything.");
+        add("tooltip.chronogenesis.suit.warded", "Time-warded. Something lives in the seams.");
+        add("tooltip.chronogenesis.suit.unwarded", "Press it into a swollen Time gland to ward it against the eras.");
         add("tooltip.chronogenesis.chrono_tether", "The way back from another era. The Chronocortex will not send you without it.");
         add("tooltip.chronogenesis.chrono_tether.use", "Use it in another era to return early");
         add("screen.chronogenesis.chronocortex.eras", "Eras");

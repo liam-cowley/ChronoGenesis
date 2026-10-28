@@ -1,5 +1,13 @@
 {
   "parent": "minecraft:item/generated",
+  "overrides": [
+    {
+      "model": "chronogenesis:item/chrono_trousers_warded",
+      "predicate": {
+        "chronogenesis:warded": 1.0
+      }
+    }
+  ],
   "textures": {
     "layer0": "chronogenesis:item/chrono_trousers"
   }

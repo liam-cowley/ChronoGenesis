@@ -11,6 +11,8 @@ import com.chronogenesis.lens.LensDepth;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.Unit;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /** Item stack data. Never use custom NBT on stacks in 1.21.1. */
@@ -41,6 +43,10 @@ public final class ModDataComponents {
     /** Which machine an Intact Blueprint shows. */
     public static final Supplier<DataComponentType<Blueprint>> BLUEPRINT = DATA_COMPONENTS.registerComponentType("blueprint",
             builder -> builder.persistent(Blueprint.CODEC).networkSynchronized(Blueprint.STREAM_CODEC));
+
+    /** A Chrono-Insulated Suit piece infused with Time at an Enhancing Gland: Time-warded (and grown tendrils). */
+    public static final Supplier<DataComponentType<Unit>> TEMPORAL_WARD = DATA_COMPONENTS.registerComponentType("temporal_ward",
+            builder -> builder.persistent(Unit.CODEC).networkSynchronized(StreamCodec.unit(Unit.INSTANCE)));
 
     private ModDataComponents() {}
 }

@@ -47,7 +47,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
  *       (or an Eternal Hourglass), and a <b>Chrono Tether</b> on the traveller: without one there is no way back.</li>
  *   <li>The shift holds for the era's minutes. Then time snaps the traveller back to where they left. Using the
  *       tether returns them early. Dying there ends it (they wake at home, like any death).</li>
- *   <li>Shifting is hard on an unprotected body: Temporal Exposure, less with the suit.</li>
+ *   <li>Shifting is hard on an unprotected body: Temporal Exposure (less with the suit) and nausea, and while there
+ *       the era pulls at every suit piece that is not Time-warded. Only a traveller warded head to foot shifts
+ *       cleanly and stays the era's full minutes; with no warded piece the shift holds half of them.</li>
  * </ul>
  */
 @EventBusSubscriber(modid = ChronoGenesis.MODID)
@@ -56,6 +58,8 @@ public final class TemporalShift {
     public static final int REACH = 8;
     private static final int EXPOSURE = 40;
     private static final int SYNC_INTERVAL = 20;
+    /** Ticks between the era's pulls at an unwarded traveller (an exposure per unwarded piece). */
+    private static final int DRIFT_INTERVAL = 100;
 
     /** Where a traveller came from, which era they are in, and how long it holds. Not shifted: {@link #NONE}. */
     public record Shift(ResourceKey<Level> home, Vec3 homePos, ResourceLocation era, int ticksLeft) {
@@ -126,7 +130,8 @@ public final class TemporalShift {
         if (!EternalHourglassItem.carried(player)) {
             cortex.drawEssence(Aspect.TIME, era.cost());
         }
-        Shift shift = new Shift(player.level().dimension(), player.position(), id, era.minutes() * 60 * 20);
+        int warded = TemporalExposure.wardedPieces(player);
+        Shift shift = new Shift(player.level().dimension(), player.position(), id, duration(era, warded));
         ServerLevel here = player.serverLevel();
         here.playSound(null, player.blockPosition(), SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), SoundSource.PLAYERS, 1.0f, 0.5f);
         here.sendParticles(ParticleTypes.REVERSE_PORTAL, player.getX(), player.getY(1.0), player.getZ(), 80, 0.4, 1.0, 0.4, 0.1);
@@ -134,13 +139,25 @@ public final class TemporalShift {
 
         player.setData(ModAttachments.TIME_SHIFT, shift);
         travel(player, there, player.getX(), player.getZ(), player.getYRot(), player.getXRot());
-        TemporalExposure.expose(player, EXPOSURE);
-        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0, false, false));
-        player.displayClientMessage(Component.translatable("message.chronogenesis.shift.arrived", era.title(), era.minutes())
-                .withStyle(ChatFormatting.DARK_AQUA), false);
+        player.displayClientMessage(Component.translatable("message.chronogenesis.shift.arrived", era.title(),
+                Math.max(1, shift.ticksLeft() / 1200)).withStyle(ChatFormatting.DARK_AQUA), false);
+        if (warded < 4) {
+            // An unwarded body is wrenched through, and the era lets go of it sooner.
+            TemporalExposure.expose(player, EXPOSURE);
+            player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100, 0, false, false));
+            tell(player, "message.chronogenesis.shift.unwarded");
+        }
         era.clue().ifPresent(clue -> Clues.grant(player, clue));
         sync(player);
         return true;
+    }
+
+    /**
+     * How long a shift holds: the era's minutes for a traveller Time-warded head to foot, half of them with no warded
+     * piece, an eighth more for each warded piece between.
+     */
+    public static int duration(Era era, int wardedPieces) {
+        return era.minutes() * 60 * 20 * (4 + wardedPieces) / 8;
     }
 
     /** Back to where the shift began. */
@@ -205,6 +222,10 @@ public final class TemporalShift {
             player.setData(ModAttachments.TIME_SHIFT, Shift.NONE);
             sync(player);
             return;
+        }
+        if (player.tickCount % DRIFT_INTERVAL == 0) {
+            // The era pulls at every piece of the traveller that is not warded against it.
+            TemporalExposure.exposeUnshielded(player, 4 - TemporalExposure.wardedPieces(player));
         }
         Shift next = shift.tick();
         player.setData(ModAttachments.TIME_SHIFT, next);

@@ -9,6 +9,15 @@
       "text": "Time in the blood ticks, skips and ages. Leather lined with phantom membrane keeps most of it out.$(br2)Each piece worn blocks a $(l)quarter$() of the Temporal Exposure that would reach me: from injected Time, from glands, from stuttering the world, from unstable organisms. The full suit blocks all of it."
     },
     {
+      "type": "patchouli:text",
+      "title": "Warding",
+      "text": "The suit keeps Time out of me, but not out of $(l)itself$(). Another era tears at plain leather.$(br2)Pressed into an Enhancing Gland of $(l)Time$(), swollen at least once, a piece drinks 48 drams and comes out $(l)warded$(). Something lives in its seams afterwards. It moves."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Warded head to foot, I slip between eras cleanly and stay the full time the tether allows.$(br2)Without it the shift wrenches me through, sick and exposed; the era lets go of me in half the time, and tugs at every unwarded piece for as long as I stay."
+    },
+    {
       "type": "patchouli:crafting",
       "recipe": "chronogenesis:chrono_goggles",
       "recipe2": "chronogenesis:chrono_lab_coat"

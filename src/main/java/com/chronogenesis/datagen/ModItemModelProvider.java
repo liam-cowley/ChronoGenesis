@@ -23,10 +23,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         withFill(ModItems.ESSENCE_VIAL.get());
         withFill(ModItems.STASIS_AMPOULE.get());
 
-        basicItem(ModItems.CHRONO_GOGGLES.get());
-        basicItem(ModItems.CHRONO_LAB_COAT.get());
-        basicItem(ModItems.CHRONO_TROUSERS.get());
-        basicItem(ModItems.CHRONO_GALOSHES.get());
+        suitPiece(ModItems.CHRONO_GOGGLES.get());
+        suitPiece(ModItems.CHRONO_LAB_COAT.get());
+        suitPiece(ModItems.CHRONO_TROUSERS.get());
+        suitPiece(ModItems.CHRONO_GALOSHES.get());
         basicItem(ModItems.BRASS_BLEND.get());
         basicItem(ModItems.BRASS_INGOT.get());
         basicItem(ModItems.BRASS_NUGGET.get());
@@ -77,6 +77,16 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .transform(ItemDisplayContext.FIXED).rotation(0, 180, 0).scale(0.75f).end()
                 .transform(ItemDisplayContext.HEAD).translation(0, 13, 7).scale(1.0f).end()
                 .end();
+    }
+
+    /** A suit piece, and its Time-warded icon (tendrils in its seams) by the {@code chronogenesis:warded} property. */
+    private void suitPiece(Item item) {
+        String name = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath();
+        ModelFile warded = withExistingParent(name + "_warded", mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/" + name + "_warded"));
+        withExistingParent(name, mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/" + name))
+                .override().predicate(modLoc("warded"), 1.0f).model(warded).end();
     }
 
     /** Vessel (layer 0), liquid tinted by aspect (layer 1), untinted brass and glints on top (layer 2). */

@@ -167,6 +167,16 @@ copper and phantom membrane. Each piece cuts exposure. Wearing the full suit is 
 higher Time powers and for working safely with Time machines. The Goggles also protect your eyes
 while using the Temporal Lens.
 
+**As built:** each piece is worn as its own 3D model (`client/SuitModel`): a leather aviator cap with brass-rimmed
+smoked goggles, a temple canister and a copper aerial; a lab coat with tails, brass pauldrons and cuffs, a Time
+canister on the back, a chest gauge and a vial in the pocket; belted trousers with copper knee pads and a pouch;
+rubber galoshes with brass toe caps. **Time warding:** a piece pressed into an Enhancing Gland of Time, swollen to
+level 2 or more, is infused for 48 drams (`temporal_ward` component). Warded pieces grow writhing tendrils from
+their seams (like the Essence Manipulator) and the coat's canister glows. Warding is what makes time travel work
+properly: a traveller warded head to foot shifts cleanly and stays the era's full minutes; anyone else is wrenched
+through (exposure, nausea), the shift holds half the minutes (an eighth more per warded piece), and the era pulls
+an exposure from every unwarded piece every 5 seconds.
+
 ## 4. Time essence: scarce, dangerous, central
 
 ### Direct extraction (small and risky)

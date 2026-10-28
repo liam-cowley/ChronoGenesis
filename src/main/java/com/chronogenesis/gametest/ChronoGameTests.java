@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ import com.chronogenesis.essence.DrainEffects;
 import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.essence.MobEssence;
+import com.chronogenesis.item.ChronoSuitItem;
 import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.item.EternalHourglassItem;
 import com.chronogenesis.item.NerveSpoolItem;
@@ -48,6 +50,7 @@ import com.chronogenesis.player.PlayerEssence;
 import com.chronogenesis.player.Power;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.player.Rewind;
+import com.chronogenesis.player.TemporalExposure;
 import com.chronogenesis.registry.ModAttachments;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
@@ -83,7 +86,9 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.animal.Cow;
@@ -91,6 +96,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
@@ -478,6 +484,45 @@ public final class ChronoGameTests {
             core.feed(100);
             gland.useWithoutItem(player);
             helper.assertTrue(Powers.get(player).level(Aspect.DENSITY) == 2, "infusion should reach level 2");
+            helper.succeed();
+        });
+    }
+
+    /**
+     * A suit piece pressed into a swollen Time gland comes out Time-warded, for the gland's drams; a gland too small
+     * (or not of Time) refuses it. Warded head to foot, a shift holds the era's full minutes; unwarded, half.
+     */
+    @GameTest(template = "floor7", timeoutTicks = 100)
+    public static void timeGlandWardsTheSuit(GameTestHelper helper) {
+        BlockPos corePos = new BlockPos(3, 1, 3);
+        helper.setBlock(corePos, core(Aspect.TIME));
+        BlockState timeFlesh = ModBlocks.CHRONOFLESH.get().defaultBlockState().setValue(FleshBlock.ASPECT, Aspect.TIME);
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            helper.setBlock(corePos.relative(side), timeFlesh);
+            helper.setBlock(corePos.relative(side).relative(side.getClockWise()), timeFlesh);
+        }
+        helper.setBlock(corePos.above(), graft(ModBlocks.ENHANCING_GLAND.get()));
+        ServerPlayer player = fakePlayer(helper);
+        helper.runAfterDelay(10, () -> {
+            OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+            core.feed(100);
+            GraftBlockEntity gland = helper.getBlockEntity(corePos.above());
+            ItemStack coat = new ItemStack(ModItems.CHRONO_LAB_COAT.get());
+            gland.useItemOn(coat, player, InteractionHand.MAIN_HAND);
+            helper.assertFalse(ChronoSuitItem.warded(coat), "a level 1 gland is too small to ward");
+            helper.setBlock(corePos.above(), graft(ModBlocks.ENHANCING_GLAND.get()).setValue(GlandBlock.LEVEL, 2));
+            GraftBlockEntity swollen = helper.getBlockEntity(corePos.above());
+            int before = core.stored();
+            swollen.useItemOn(coat, player, InteractionHand.MAIN_HAND);
+            helper.assertTrue(ChronoSuitItem.warded(coat), "the coat should be warded (" + core.stored() + " drams)");
+            helper.assertTrue(core.stored() == before - GraftBlockEntity.WARD_COST, "warding should cost the gland's drams");
+
+            player.setItemSlot(EquipmentSlot.CHEST, coat);
+            helper.assertTrue(TemporalExposure.wardedPieces(player) == 1, "one warded piece worn");
+            Era era = new Era(Component.literal("Test"), Component.empty(), Items.CLOCK, Level.OVERWORLD, 1, Optional.empty(),
+                    Optional.empty(), List.of(), 10, 4, Optional.empty(), 0);
+            helper.assertTrue(TemporalShift.duration(era, 0) == 4 * 1200 / 2, "unwarded: half the minutes");
+            helper.assertTrue(TemporalShift.duration(era, 4) == 4 * 1200, "warded head to foot: all of them");
             helper.succeed();
         });
     }
