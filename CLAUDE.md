@@ -53,6 +53,10 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   (16x16 pixel art, hand-placed grids). Art direction: Frankenstein (stitches, staples, electrodes, jars) +
   Call of Cthulhu (eyes, maws, tentacles, eldritch green) + steampunk (brass, copper, rivets, valves).
   Edit the script and re-run rather than hand-editing PNGs, unless replacing a texture with real art for good.
+- Post-processing shaders live in `assets/chronogenesis/shaders/` (post chain + program JSON + `.fsh`), run from
+  client code with a `PostChain` (see `client/EventHorizonEffect`). They must compile under GL 3.2 core
+  (`#version 150`); a shader that fails to load disables its effect instead of crashing.
+- The creative-only Eternal Hourglass keeps essences full and instruments charged while carried: use it to test.
 - `tools/make_structures.py` writes the worldgen structure templates. Each ruin is generated from its "past"
   template by seeded decay, so the Temporal Lens's past view lines up with it block for block. Edit the layout
   there and re-run; never hand-edit the NBT.

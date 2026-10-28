@@ -10,6 +10,7 @@ import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.item.EssenceContainerItem;
+import com.chronogenesis.item.EternalHourglassItem;
 import com.chronogenesis.network.PastViewPayload;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlocks;
@@ -53,6 +54,11 @@ public class TemporalLensItem extends EssenceContainerItem {
 
     /** Who is reading which blueprint, and for how long. Server only, forgotten on release. */
     private static final Map<UUID, Scan> SCANS = new HashMap<>();
+    /** Ticks each viewer has held their gaze on an obelisk from the edge of its horizon. Server only. */
+    private static final Map<UUID, Integer> EDGE_READING = new HashMap<>();
+    /** How far an obelisk can be seen through the Lens. */
+    public static final double OBELISK_SIGHT = 48.0;
+    public static final int INSCRIPTION_TICKS = 60;
 
     private record Scan(BlockPos pos, int ticks) {}
 
@@ -117,6 +123,7 @@ public class TemporalLensItem extends EssenceContainerItem {
             send(player, PastViewPayload.of(view));
         }
         scanTick(player, depth(stack));
+        obeliskTick(player);
     }
 
     @Override
@@ -133,6 +140,7 @@ public class TemporalLensItem extends EssenceContainerItem {
     private static void stopLooking(LivingEntity entity) {
         if (entity instanceof ServerPlayer player) {
             SCANS.remove(player.getUUID());
+            EDGE_READING.remove(player.getUUID());
             send(player, PastViewPayload.CLOSED);
         }
         entity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0f, 0.7f);
@@ -141,12 +149,18 @@ public class TemporalLensItem extends EssenceContainerItem {
     // ---------------------------------------------------------------- Time
 
     public static int timeAvailable(Player player, ItemStack lens) {
+        if (EternalHourglassItem.carried(player)) {
+            return Integer.MAX_VALUE;
+        }
         EssenceContents own = EssenceItems.get(lens);
         return (own == null ? 0 : own.amount()) + Powers.get(player).pool(Aspect.TIME);
     }
 
-    /** Burns Time: the lens's own store first, then the wearer's pool. */
+    /** Burns Time: the lens's own store first, then the wearer's pool. Free with an Eternal Hourglass. */
     public static boolean pay(Player player, ItemStack lens, int cost) {
+        if (EternalHourglassItem.carried(player)) {
+            return true;
+        }
         if (timeAvailable(player, lens) < cost) {
             return false;
         }
@@ -160,6 +174,39 @@ public class TemporalLensItem extends EssenceContainerItem {
             Powers.spend(player, Aspect.TIME, fromPool);
         }
         return true;
+    }
+
+    // ---------------------------------------------------------------- obelisks
+
+    /**
+     * An obelisk in sight through the Lens is noted. Standing at the edge of its event horizon and holding
+     * the gaze on it for {@value #INSCRIPTION_TICKS} ticks, the older inscription can be read. Returns true then.
+     */
+    public static boolean obeliskTick(ServerPlayer player) {
+        List<BlockPos> obelisks = Obelisks.near(player.level(), player.getEyePosition(), OBELISK_SIGHT);
+        if (obelisks.isEmpty()) {
+            EDGE_READING.remove(player.getUUID());
+            return false;
+        }
+        Clues.grant(player, Clues.NAIL_IN_TIME);
+        for (BlockPos capstone : obelisks) {
+            Vec3 heart = Obelisks.heart(capstone);
+            double distance = heart.distanceTo(player.getEyePosition());
+            Vec3 toHeart = heart.subtract(player.getEyePosition()).normalize();
+            boolean atEdge = distance >= Obelisks.HORIZON && distance <= Obelisks.HORIZON + Obelisks.EDGE_WIDTH;
+            // Looking at the shaft: within about 20 degrees of its heart.
+            if (atEdge && player.getViewVector(1.0f).dot(toHeart) > 0.94) {
+                int ticks = EDGE_READING.merge(player.getUUID(), 1, Integer::sum);
+                if (ticks >= INSCRIPTION_TICKS) {
+                    EDGE_READING.remove(player.getUUID());
+                    Clues.grant(player, Clues.OLDER_INSCRIPTION);
+                    return true;
+                }
+                return false;
+            }
+        }
+        EDGE_READING.remove(player.getUUID());
+        return false;
     }
 
     // ---------------------------------------------------------------- reading blueprints

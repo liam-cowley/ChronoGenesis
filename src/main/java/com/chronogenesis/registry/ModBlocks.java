@@ -4,6 +4,7 @@ import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.lens.FadedBlueprintBlock;
+import com.chronogenesis.lens.ObeliskCapstoneBlock;
 import com.chronogenesis.organism.EssenceJugBlock;
 import com.chronogenesis.organism.FleshBlock;
 import com.chronogenesis.organism.GraftBlock;
@@ -116,6 +117,22 @@ public final class ModBlocks {
                     .noCollission()
                     .noOcclusion()
                     .pushReaction(PushReaction.DESTROY));
+
+    // Obelisks: nails holding time in place. Untouched by weather or tools.
+    private static BlockBehaviour.Properties obelisk() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_BLACK)
+                .strength(-1.0f, 3600000.0f)
+                .noLootTable()
+                .sound(SoundType.DEEPSLATE_TILES)
+                .pushReaction(PushReaction.BLOCK);
+    }
+
+    public static final DeferredBlock<Block> OBELISK_STONE = BLOCKS.registerSimpleBlock("obelisk_stone", obelisk());
+    public static final DeferredBlock<Block> OBELISK_INSCRIPTION = BLOCKS.registerSimpleBlock("obelisk_inscription",
+            obelisk().lightLevel(state -> 4));
+    public static final DeferredBlock<ObeliskCapstoneBlock> OBELISK_CAPSTONE = BLOCKS.registerBlock("obelisk_capstone",
+            ObeliskCapstoneBlock::new, obelisk().noOcclusion().lightLevel(state -> 6));
 
     /** A rift opened by too much Temporal Stress. Cannot be mined: seal it with Density. */
     public static final DeferredBlock<TimeTearBlock> TIME_TEAR = BLOCKS.registerBlock("time_tear", TimeTearBlock::new,

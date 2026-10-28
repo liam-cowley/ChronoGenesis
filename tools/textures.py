@@ -1323,6 +1323,53 @@ def temporal_lens():
     ], p), "item/temporal_lens")
 
 
+def obelisk():
+    # Obelisk stone: near-black and perfectly crisp, no weathering or moss, a faint violet sheen.
+    r = rng(151)
+    stone = new()
+    for y in range(16):
+        for x in range(16):
+            v = 6 if (x + y) % 7 == 0 else 0
+            stone.putpixel((x, y), shade((26, 22, 34, 255), v + r.randint(-3, 3)))
+    for x in range(16):
+        stone.putpixel((x, 0), (40, 34, 52, 255))
+    save(stone, "block/obelisk_stone")
+    # Inscription band: glyphs that glow a cold pale teal, in no alphabet anyone knows.
+    glyphs = stone.copy()
+    marks = [(2, 4), (2, 5), (2, 6), (3, 6), (4, 6), (6, 3), (7, 3), (7, 4), (7, 5), (8, 5), (6, 7), (7, 7),
+             (11, 4), (11, 5), (12, 4), (13, 4), (13, 5), (13, 6), (12, 8), (11, 9), (12, 10), (13, 9),
+             (3, 10), (4, 10), (4, 11), (4, 12), (5, 12), (8, 10), (8, 11), (9, 12), (8, 13)]
+    for (x, y) in marks:
+        glyphs.putpixel((x, y), (170, 255, 236, 255))
+    for (x, y) in marks[::3]:
+        glyphs.putpixel((x, min(15, y + 1)), (80, 160, 150, 255))
+    save(glyphs, "block/obelisk_inscription")
+
+
+def eternal_hourglass():
+    # Creative-only hourglass: a brass frame, glass bulbs, teal time running upwards.
+    p = {"k": BRASS_DDK, "b": BRASS_DK, "B": BRASS, "H": BRASS_HI, "g": GLASS_EDGE, "G": GLASS_EDGE_DK,
+         "t": TEAL, "T": TEAL_HI, "d": TEAL_DK, "a": AMBER_HI}
+    save(grid([
+        "................",
+        "...kHBBBBBBbk...",
+        "...kbbbbbbbbk...",
+        "....kg.TT.gk....",
+        "....kgtTTtgk....",
+        "....kgtttdgk....",
+        ".....kgddgk.....",
+        "......kgak......",
+        "......kgTk......",
+        ".....kg.a.gk....",
+        "....kg..T..gk...",
+        "....kg.....gk...",
+        "....kg..a..gk...",
+        "...kbbbbbbbbk...",
+        "...kHBBBBBBbk...",
+        "................",
+    ], p), "item/eternal_hourglass")
+
+
 # ---------------------------------------------------------------- the Chrono-Insulated Suit
 
 COAT = (196, 204, 186, 255)
@@ -1515,6 +1562,8 @@ temporal_field()
 faded_blueprint()
 intact_blueprint()
 temporal_lens()
+obelisk()
+eternal_hourglass()
 suit_icons()
 suit_armor_layers()
 

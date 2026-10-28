@@ -62,6 +62,8 @@ public final class Powers {
     private static final ResourceLocation SIZE_MOD = ChronoGenesis.id("power_size");
 
     public static final double AWARENESS_RADIUS = 20.0;
+    /** The highest power level there is so far (level 2 comes from the Deeper Infusion research). */
+    public static final int MAX_LEVEL = 2;
     private static final float IRON_FIST_SPEED = 4.0f; // a stone pickaxe's mining speed
     private static final float LEVEL_2_FIST_SPEED = 6.0f; // an iron pickaxe's
     private static final int STUTTER_COST = 8;

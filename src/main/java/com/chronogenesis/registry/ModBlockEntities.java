@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
+import com.chronogenesis.lens.ObeliskBlockEntity;
 import com.chronogenesis.organism.EssenceJugBlockEntity;
 import com.chronogenesis.organism.GraftBlockEntity;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
@@ -47,6 +48,10 @@ public final class ModBlockEntities {
     public static final Supplier<BlockEntityType<ChronocortexBlockEntity>> CHRONOCORTEX =
             BLOCK_ENTITY_TYPES.register("chronocortex", () -> BlockEntityType.Builder.of(
                     ChronocortexBlockEntity::new, ModBlocks.CHRONOCORTEX.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final Supplier<BlockEntityType<ObeliskBlockEntity>> OBELISK = BLOCK_ENTITY_TYPES.register("obelisk",
+            () -> BlockEntityType.Builder.of(ObeliskBlockEntity::new, ModBlocks.OBELISK_CAPSTONE.get()).build(null));
 
     private ModBlockEntities() {}
 }

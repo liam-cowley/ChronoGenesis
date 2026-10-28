@@ -1,0 +1,17 @@
+{
+  "name": "Obelisks",
+  "icon": "minecraft:lodestone",
+  "category": "chronogenesis:the_past",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "There are stones out there that time has not touched: black spires, unweathered, unmossed, with bands of writing that glow. Nothing I own will so much as scratch them.$(br2)Through the $(l)Lens$() they are worse. The past does not show near one. It bends around it, smears, tears into lines and goes black, like light falling into a hole that has no bottom."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Edge",
+      "text": "Inside a few blocks of its heart, nothing of the past survives: the $(l)event horizon$(). But standing right at its edge, holding the Lens on the stone for three seconds, I can read a few words of an inscription far older than the one on its face.$(br2)They are not nails for building. They are nails for $(o)holding$(). Holding what, in place?"
+    }
+  ]
+}

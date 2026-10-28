@@ -58,6 +58,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         timeTear();
         chronocortex();
         fadedBlueprint();
+        obelisk();
     }
 
     // ---------------------------------------------------------------- flesh
@@ -315,6 +316,21 @@ public class ModBlockStateProvider extends BlockStateProvider {
         box(cortex, 5, 16, 7.5f, 6, 19, 8.5f, "#steel", false);
         box(cortex, 10, 16, 7.5f, 11, 19, 8.5f, "#steel", false);
         simpleBlock(ModBlocks.CHRONOCORTEX.get(), cortex);
+    }
+
+    /** Obelisk stone, the glowing inscription band, and the stepped capstone (the nail's head). */
+    private void obelisk() {
+        simpleBlock(ModBlocks.OBELISK_STONE.get(), models().cubeAll("obelisk_stone", modLoc("block/obelisk_stone")));
+        simpleBlock(ModBlocks.OBELISK_INSCRIPTION.get(),
+                models().cubeAll("obelisk_inscription", modLoc("block/obelisk_inscription")));
+        BlockModelBuilder cap = models().withExistingParent("obelisk_capstone", mcLoc("block/block"))
+                .texture("stone", modLoc("block/obelisk_stone"))
+                .texture("glyph", modLoc("block/obelisk_inscription"))
+                .texture("particle", modLoc("block/obelisk_stone"));
+        box(cap, 1, 0, 1, 15, 6, 15, "#stone", false);
+        box(cap, 4, 6, 4, 12, 12, 12, "#glyph", false);
+        box(cap, 6.5f, 12, 6.5f, 9.5f, 16, 9.5f, "#stone", false);
+        simpleBlock(ModBlocks.OBELISK_CAPSTONE.get(), cap);
     }
 
     /** A thin sheet of yellowed paper on a table, turned to face the reader. */

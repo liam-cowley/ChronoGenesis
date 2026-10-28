@@ -7,16 +7,19 @@ import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
 import com.chronogenesis.biocomputer.Clues;
 import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
+import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.DrainEffects;
 import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.essence.MobEssence;
+import com.chronogenesis.item.EternalHourglassItem;
 import com.chronogenesis.item.UmbilicalLocketItem;
 import com.chronogenesis.lens.Blueprint;
 import com.chronogenesis.lens.FadedBlueprintBlock;
 import com.chronogenesis.lens.LensDepth;
+import com.chronogenesis.lens.Obelisks;
 import com.chronogenesis.lens.PastViews;
 import com.chronogenesis.lens.TemporalLensItem;
 import com.chronogenesis.organism.BrassConduitBlock;
@@ -456,13 +459,80 @@ public final class ChronoGameTests {
         helper.succeed();
     }
 
+    /** An obelisk is found by its capstone, and its event horizon swallows what lies close to its heart. */
+    @GameTest(template = "floor7")
+    public static void obeliskHorizonSwallows(GameTestHelper helper) {
+        BlockPos capstone = new BlockPos(3, 4, 3);
+        helper.setBlock(capstone, ModBlocks.OBELISK_CAPSTONE.get());
+        Vec3 heart = Obelisks.heart(helper.absolutePos(capstone));
+        List<BlockPos> found = Obelisks.near(helper.getLevel(), heart, 16);
+        helper.assertTrue(found.contains(helper.absolutePos(capstone)), "obelisk not found by its capstone");
+        helper.assertTrue(Obelisks.swallowed(found, heart.add(0, 1, 2)), "inside the horizon should be swallowed");
+        helper.assertFalse(Obelisks.swallowed(found, heart.add(0, 0, Obelisks.HORIZON + 1)), "outside should survive");
+        helper.succeed();
+    }
+
+    /** Through the Lens an obelisk is noted from afar; its older inscription can only be read from the edge. */
+    @GameTest(template = "floor7")
+    public static void obeliskInscriptionReadFromTheEdge(GameTestHelper helper) {
+        BlockPos capstone = new BlockPos(0, 4, 0);
+        helper.setBlock(capstone, ModBlocks.OBELISK_CAPSTONE.get());
+        Vec3 heart = Obelisks.heart(helper.absolutePos(capstone));
+        ServerPlayer player = fakePlayer(helper);
+        Research.set(player, PlayerResearch.EMPTY);
+        // About seven blocks from the heart: just outside the horizon.
+        player.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 1, 4))));
+        player.lookAt(EntityAnchorArgument.Anchor.EYES, heart);
+        double distance = heart.distanceTo(player.getEyePosition());
+        helper.assertTrue(distance > Obelisks.HORIZON && distance < Obelisks.HORIZON + Obelisks.EDGE_WIDTH, "not at the edge: " + distance);
+        boolean read = false;
+        for (int i = 0; i < TemporalLensItem.INSCRIPTION_TICKS && !read; i++) {
+            read = TemporalLensItem.obeliskTick(player);
+        }
+        helper.assertTrue(read, "inscription not read at the edge");
+        helper.assertTrue(Research.get(player).hasClue(Clues.NAIL_IN_TIME), "obelisk not noted");
+        helper.assertTrue(Research.get(player).hasClue(Clues.OLDER_INSCRIPTION), "inscription clue missing");
+
+        // Looking away, nothing more is read.
+        player.lookAt(EntityAnchorArgument.Anchor.EYES, heart.add(0, 0, 30));
+        for (int i = 0; i < TemporalLensItem.INSCRIPTION_TICKS; i++) {
+            helper.assertFalse(TemporalLensItem.obeliskTick(player), "read while looking away");
+        }
+        helper.succeed();
+    }
+
+    /** The creative Eternal Hourglass fills every pool at the top level and keeps the Lens charged and free. */
+    @GameTest(template = "floor7")
+    public static void eternalHourglassSaturates(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        player.getInventory().clearContent();
+        Powers.set(player, PlayerEssence.EMPTY);
+        ItemStack lens = new ItemStack(ModItems.TEMPORAL_LENS.get());
+        // setItem keeps this very stack in the slot (add() would move a copy in and empty ours).
+        player.getInventory().setItem(0, lens);
+        helper.assertTrue(TemporalLensItem.timeAvailable(player, lens) == 0, "an empty lens without the hourglass has no Time");
+        player.getInventory().add(new ItemStack(ModItems.ETERNAL_HOURGLASS.get()));
+
+        EternalHourglassItem.saturate(player);
+        PlayerEssence essence = Powers.get(player);
+        for (Aspect aspect : Aspect.values()) {
+            helper.assertTrue(essence.level(aspect) == Powers.MAX_LEVEL, aspect + " not at max level");
+            helper.assertTrue(essence.pool(aspect) == essence.max(aspect) && essence.max(aspect) > 0, aspect + " pool not full");
+        }
+        helper.assertTrue(EssenceItems.get(lens) != null && EssenceItems.get(lens).amount() == TemporalLensItem.CAPACITY, "lens not charged");
+        helper.assertTrue(TemporalLensItem.pay(player, lens, 2), "looking should be free");
+        helper.assertTrue(EssenceItems.get(lens).amount() == TemporalLensItem.CAPACITY, "the lens should not drain");
+        player.getInventory().clearContent();
+        helper.succeed();
+    }
+
     /**
      * A stand-in player for server-side logic. Not a mock "joined" player: Curios tries to sync its slots to
      * those and fails without a client. A FakePlayer never joins the level and swallows packets.
      */
     private static ServerPlayer fakePlayer(GameTestHelper helper) {
-        return FakePlayerFactory.get(helper.getLevel(),
-                new GameProfile(UUID.nameUUIDFromBytes("chronogenesis-test".getBytes()), "chronogenesis_test"));
+        // A fresh one per test (the factory caches by profile), so no inventory or pools leak between tests.
+        return FakePlayerFactory.get(helper.getLevel(), new GameProfile(UUID.randomUUID(), "chronogenesis_test"));
     }
 
     /** A Dissection Table with a brain and a lightning rod on it, soaked full (or not) of Awareness and Time. */

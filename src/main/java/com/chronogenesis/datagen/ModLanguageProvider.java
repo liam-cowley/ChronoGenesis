@@ -208,6 +208,18 @@ public class ModLanguageProvider extends LanguageProvider {
         add("research.chronogenesis.temporal_lens", "Temporal Lens");
         add("research.chronogenesis.temporal_lens.desc", "A spyglass that looks backwards. Burns Time to show the past over the present: ruins whole again, and old blueprints legible where they lie.");
 
+        // Obelisks
+        addBlock(ModBlocks.OBELISK_STONE, "Obelisk Stone");
+        addBlock(ModBlocks.OBELISK_INSCRIPTION, "Obelisk Inscription");
+        addBlock(ModBlocks.OBELISK_CAPSTONE, "Obelisk Capstone");
+        add("clue.chronogenesis.nail_in_time", "A stone that time bends around");
+        add("clue.chronogenesis.older_inscription", "Fragments of an inscription older than time");
+
+        // Creative testing aid
+        addItem(ModItems.ETERNAL_HOURGLASS, "Eternal Hourglass");
+        add("tooltip.chronogenesis.eternal_hourglass", "While carried: every power at its highest level, every pool full, no Temporal Exposure, every Temporal Lens charged and free to look through");
+        add("tooltip.chronogenesis.eternal_hourglass.creative", "Creative only");
+
         add("message.chronogenesis.gate.pace", "Pace %s: %s ticks per block of track. Slower pulses make more Time, but stall past 600 ticks.");
         add("message.chronogenesis.organism.stability", " | stability %s/%s, instability %s/%s");
 

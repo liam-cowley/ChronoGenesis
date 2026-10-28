@@ -7,6 +7,7 @@ line up block for block.
 
   abandoned_laboratory       the ruin that generates in the world
   abandoned_laboratory_past  the same lab in its prime, as the Lens shows it at Decades
+  obelisk                    an obelisk: untouched by time, so it has no past template of its own
 
 Usage: python3 tools/make_structures.py
 """
@@ -213,9 +214,28 @@ def laboratory_ruin(past):
     return b
 
 
+# ---------------------------------------------------------------- Obelisks
+
+def obelisk():
+    """A dark spire on a three-by-three plinth, bands of inscription, the capstone (the nail's head) on top.
+    The capstone sits HEART_BELOW_CAPSTONE (5) blocks above the middle of the shaft, matching Obelisks.java."""
+    b = {}
+    for x in range(3):
+        for z in range(3):
+            b[(x, 0, z)] = CG + "obelisk_stone"
+            b[(x, 1, z)] = CG + "obelisk_stone" if (x, z) == (1, 1) else "minecraft:polished_blackstone_slab[type=bottom]"
+            for y in range(2, 12):
+                b[(x, y, z)] = AIR
+    for y in range(1, 11):
+        b[(1, y, 1)] = CG + ("obelisk_inscription" if y in (3, 6, 9) else "obelisk_stone")
+    b[(1, 11, 1)] = CG + "obelisk_capstone"
+    return b
+
+
 if __name__ == "__main__":
     past = laboratory_past()
     ruin = laboratory_ruin(past)
     chest = {(9, 1, D - 2): {"id": "minecraft:chest", "LootTable": "chronogenesis:chests/abandoned_laboratory"}}
     write("abandoned_laboratory.nbt", structure((W, H, D), ruin, chest))
     write("abandoned_laboratory_past.nbt", structure((W, H, D), past, {}))
+    write("obelisk.nbt", structure((3, 12, 3), obelisk(), {}))

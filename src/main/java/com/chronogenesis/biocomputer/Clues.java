@@ -36,9 +36,14 @@ public final class Clues {
     public static final ResourceLocation ALIVE = ChronoGenesis.id("its_alive");
     /** An Abandoned Laboratory seen through the Temporal Lens as it was. (Granted by its past view's data.) */
     public static final ResourceLocation LAB_PRIME = ChronoGenesis.id("lab_in_its_prime");
+    /** An obelisk seen through the Lens: the past bends around it and goes dark. */
+    public static final ResourceLocation NAIL_IN_TIME = ChronoGenesis.id("nail_in_time");
+    /** Fragments of the much older inscription, read at the edge of an obelisk's event horizon. */
+    public static final ResourceLocation OLDER_INSCRIPTION = ChronoGenesis.id("older_inscription");
 
     /** Clues from witnessing things. Blueprints add one each: see {@link com.chronogenesis.lens.Blueprint#clue()}. */
-    public static final List<ResourceLocation> ALL = List.of(FLOATING, VACANT, DUST, TORN, LONG_ROAD, HEAVY_HEART, ALIVE, LAB_PRIME);
+    public static final List<ResourceLocation> ALL = List.of(FLOATING, VACANT, DUST, TORN, LONG_ROAD, HEAVY_HEART, ALIVE, LAB_PRIME,
+            NAIL_IN_TIME, OLDER_INSCRIPTION);
 
     /** How close a player must be to notice something. */
     public static final double WITNESS_RANGE = 16.0;

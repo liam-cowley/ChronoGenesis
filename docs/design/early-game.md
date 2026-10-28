@@ -127,9 +127,10 @@
 8. ✅ Umbilical Locket (Curios necklace; grown by research, re-growable). ✅ Temporal Field (graft on a Time
    organism; one creature per 5 s gets a dram back, for a dram of Time). ✅ Temporal Lens (Echo/Decades/
    Centuries; ghosts of past templates; reads faded blueprints into clues). ✅ Abandoned Laboratory (worldgen,
-   ruin + past template, faded blueprints, loot with rare intact blueprints).
+   ruin + past template, faded blueprints, loot with rare intact blueprints). ✅ Obelisks (worldgen, unbreakable;
+   through the Lens a black-hole distortion shader; past view swallowed by the horizon; two clues).
    Still to do: the other structures (castle, marketplace, observatory, drowned specimen house, intact lab),
-   shrines and obelisks, Echo visuals (recent events), player-placed blocks fading in the Lens, "Ages" (stage 1).
+   shrines, Echo visuals (recent events), player-placed blocks fading in the Lens, "Ages" (stage 1).
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

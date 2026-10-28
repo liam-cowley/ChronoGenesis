@@ -24,6 +24,7 @@ import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -84,6 +85,11 @@ public final class PastViews {
                     }
                 }
             }
+        }
+        // Nothing of the past survives inside an obelisk's event horizon.
+        List<BlockPos> obelisks = Obelisks.near(level, Vec3.atCenterOf(center), (CHUNK_RADIUS + 1) * 16.0);
+        if (!obelisks.isEmpty()) {
+            blocks.removeIf(block -> Obelisks.swallowed(obelisks, Vec3.atCenterOf(block.pos())));
         }
         return new View(blocks.size() > MAX_BLOCKS ? blocks.subList(0, MAX_BLOCKS) : blocks, clues);
     }

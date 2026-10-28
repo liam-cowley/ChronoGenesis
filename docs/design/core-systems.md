@@ -352,6 +352,15 @@ one through the Lens shows a distortion **like a black hole**:
 - At the edge, fragments of a much older inscription can be read: high-value Clues about the
   nature of time, and about something waiting at its end.
 
+**As built:** obelisks generate across the overworld (a dark spire on a plinth, bands of glowing
+inscription, a capstone) and cannot be broken. The capstone's block entity marks them. Through the
+Lens, a full-screen post shader (`assets/chronogenesis/shaders/post/event_horizon.json`) centred on the
+obelisk's projected heart lenses and swirls the image, smears it along the orbit, splits its colours,
+tears scanlines, jumps blocks of the image, and burns a photon ring around a black horizon with static
+inside; strength fades from 16 to 64 blocks. Past-view ghosts inside the horizon (4.5 blocks) are
+dropped. Seeing one gives *A stone that time bends around*; holding the Lens on it from the edge
+(4.5-7.5 blocks) for 3 s gives *Fragments of an inscription older than time*.
+
 Lore hook for later: obelisks are **nails holding time in place**, left by whoever (or whatever)
 came before. They become anchors and targets for time travel, and are a thread that leads to the
 Elder God.

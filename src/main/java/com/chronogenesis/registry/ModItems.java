@@ -6,6 +6,7 @@ import com.chronogenesis.item.ChronoSyringeItem;
 import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.item.EssenceContainerItem;
 import com.chronogenesis.item.EssenceJugItem;
+import com.chronogenesis.item.EternalHourglassItem;
 import com.chronogenesis.item.NeedleItem;
 import com.chronogenesis.item.StasisAmpouleItem;
 import com.chronogenesis.item.UmbilicalLocketItem;
@@ -68,6 +69,10 @@ public final class ModItems {
     /** The rare blueprint that survived in an Abandoned Laboratory. Read it for a clue. */
     public static final DeferredItem<IntactBlueprintItem> INTACT_BLUEPRINT = ITEMS.registerItem("intact_blueprint",
             IntactBlueprintItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    /** Creative only (no recipe): keeps essences full and instruments charged while carried. For testing. */
+    public static final DeferredItem<EternalHourglassItem> ETERNAL_HOURGLASS = ITEMS.registerItem("eternal_hourglass",
+            EternalHourglassItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
     // Block items
     public static final DeferredItem<BlockItem> BRASS_ARMATURE = ITEMS.registerSimpleBlockItem("brass_armature", ModBlocks.BRASS_ARMATURE);
