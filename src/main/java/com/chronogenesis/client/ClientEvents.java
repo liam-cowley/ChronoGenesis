@@ -58,6 +58,7 @@ public final class ClientEvents {
     @SubscribeEvent
     static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAboveAll(ChronoGenesis.id("essence_hud"), EssenceHud::render);
+        event.registerAboveAll(ChronoGenesis.id("shift_hud"), ShiftHud::render);
         event.registerBelowAll(ChronoGenesis.id("temporal_lens"), LensView::composite);
         // Below the lens: chunks with their own time are part of the world the lens looks out from.
         event.registerBelowAll(ChronoGenesis.id("time_zones"), TimeZoneView::composite);
@@ -69,6 +70,7 @@ public final class ClientEvents {
             return;
         }
         Minecraft minecraft = Minecraft.getInstance();
+        ShiftHud.tick();
         while (POWERS.consumeClick()) {
             if (minecraft.screen != null) {
                 continue;

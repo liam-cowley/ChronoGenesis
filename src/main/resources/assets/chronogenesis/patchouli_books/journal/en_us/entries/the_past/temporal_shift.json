@@ -1,0 +1,23 @@
+{
+  "name": "Temporal Shifts",
+  "icon": "chronogenesis:chrono_tether",
+  "category": "chronogenesis:the_past",
+  "sortnum": 5,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The Lens only looks. Once the Chronocortex has grown up a little (stage 1) it can $(o)send$() me: its $(l)Eras$() page lists the times it can reach. I arrive where I stood, in the land as it was then."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Tether",
+      "text": "It will not send me without a $(l)Chrono Tether$() (research: Temporal Shift), a pocket watch on a cord of living vein whose other end stays here. Each shift costs Time from its organisms and holds a few minutes; then time snaps me home. Pulling the tether brings me back early. Dying there, I wake at home."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Where It Can Send Me",
+      "text": "$(l)Before the Ruin$(): the land before anyone dug or built. Ruins stand whole.$(br2)$(l)The Ice Age$(): the same hills under ice. It must first be taught $(l)the cold$() (show it blue ice).$(br2)Shifting is hard on an unprotected body. The suit helps."
+    }
+  ]
+}

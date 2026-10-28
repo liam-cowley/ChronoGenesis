@@ -1,0 +1,48 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.temporal_shift"
+  },
+  "description": {
+    "translate": "research.chronogenesis.temporal_shift.desc"
+  },
+  "icon": "chronogenesis:chrono_tether",
+  "stage": 1,
+  "essence": {
+    "time": 32,
+    "awareness": 16
+  },
+  "materials": [
+    {
+      "item": "minecraft:clock",
+      "count": 1
+    },
+    {
+      "item": "minecraft:ender_pearl",
+      "count": 2
+    },
+    {
+      "tag": "c:ingots/brass",
+      "count": 4
+    }
+  ],
+  "clues": [
+    [
+      "chronogenesis:its_alive",
+      "chronogenesis:lab_in_its_prime"
+    ],
+    [
+      "chronogenesis:nail_in_time"
+    ],
+    [
+      "chronogenesis:torn_time",
+      "chronogenesis:the_long_road"
+    ]
+  ],
+  "order": 9,
+  "rewards": [
+    {
+      "id": "chronogenesis:chrono_tether",
+      "count": 1
+    }
+  ]
+}

@@ -264,6 +264,13 @@ Its roles:
    Most topics accept **several alternative clue sets**, so the research tree branches: you can
    unlock the Lens or the Suit through different discoveries in different orders.
 3. **Temporal shifts.** Time travel, from stage 1 onward.
+   **As built:** eras are data (`data/<ns>/chronogenesis/era/<name>.json`: dimension, stage, lesson, Time cost,
+   minutes, clue). Its **Eras** page sends a player within 8 blocks (`timetravel/TemporalShift`): it needs the era's
+   stage and lesson, the Time from wired organisms, and a **Chrono Tether** (research: Temporal Shift). They arrive at
+   the same x/z on the ground of the era's dimension (same seed, so the land lines up) and are snapped back where
+   they left when the minutes run out; using the tether returns them early; dying ends it. Eras: *Before the Ruin*
+   (`chronogenesis:past`, stage 1) and *The Ice Age* (`chronogenesis:ice_age`: the overworld's noise and seed with
+   only frozen biomes, stage 1 after the lesson of the cold).
 
 It talks. At first it whispers in chat and in the journal, curious and childlike. As it grows it
 becomes demanding, and by the final stage it is insane.

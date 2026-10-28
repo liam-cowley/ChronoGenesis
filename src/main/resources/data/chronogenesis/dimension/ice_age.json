@@ -1,0 +1,17 @@
+{
+  "type": "chronogenesis:past",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "minecraft:overworld",
+    "biome_source": {
+      "type": "minecraft:checkerboard",
+      "biomes": [
+        "minecraft:ice_spikes",
+        "minecraft:snowy_slopes",
+        "minecraft:frozen_peaks",
+        "minecraft:grove"
+      ],
+      "scale": 3
+    }
+  }
+}

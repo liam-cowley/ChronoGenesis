@@ -27,6 +27,8 @@ public final class Lessons {
     public static final ResourceLocation WORDS = ChronoGenesis.id("words");
     /** A named name tag: it learns it is someone, and takes the name. */
     public static final ResourceLocation SELF = ChronoGenesis.id("self");
+    /** Blue ice: it remembers the cold, and can find the Ice Age. */
+    public static final ResourceLocation COLD = ChronoGenesis.id("cold");
     /** A clock: it knows the time of day. */
     public static final ResourceLocation TIME = ChronoGenesis.id("time");
 

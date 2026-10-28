@@ -44,6 +44,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.ETERNAL_HOURGLASS.get());
         basicItem(ModItems.ESSENCE_MANIPULATOR.get());
         basicItem(ModItems.CONFLUENCE_NEEDLE.get());
+        basicItem(ModItems.CHRONO_TETHER.get());
         basicItem(ModItems.TEMPORAL_RESIDUE.get());
     }
 

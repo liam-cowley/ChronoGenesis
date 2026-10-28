@@ -7,6 +7,7 @@ import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.essence.DrainedEssence;
 import com.chronogenesis.player.PlayerEssence;
 import com.chronogenesis.time.TemporalStress;
+import com.chronogenesis.timetravel.TemporalShift;
 
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -44,6 +45,12 @@ public final class ModAttachments {
             () -> AttachmentType.builder(() -> PlayerResearch.EMPTY)
                     .serialize(PlayerResearch.CODEC)
                     .copyOnDeath()
+                    .build());
+
+    /** On players: a temporal shift into another era (where home is, how long it holds). Lost on death. */
+    public static final Supplier<AttachmentType<TemporalShift.Shift>> TIME_SHIFT = ATTACHMENT_TYPES.register("time_shift",
+            () -> AttachmentType.builder(() -> TemporalShift.Shift.NONE)
+                    .serialize(TemporalShift.Shift.CODEC, TemporalShift.Shift::active)
                     .build());
 
     private ModAttachments() {}

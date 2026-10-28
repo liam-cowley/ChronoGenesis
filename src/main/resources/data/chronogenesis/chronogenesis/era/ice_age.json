@@ -1,0 +1,16 @@
+{
+  "title": {
+    "translate": "era.chronogenesis.ice_age"
+  },
+  "description": {
+    "translate": "era.chronogenesis.ice_age.desc"
+  },
+  "icon": "minecraft:blue_ice",
+  "dimension": "chronogenesis:ice_age",
+  "stage": 1,
+  "lesson": "chronogenesis:cold",
+  "cost": 48,
+  "minutes": 5,
+  "clue": "chronogenesis:ice_age",
+  "order": 1
+}

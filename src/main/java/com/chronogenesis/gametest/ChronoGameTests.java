@@ -45,12 +45,16 @@ import com.chronogenesis.player.PlayerEssence;
 import com.chronogenesis.player.Power;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.player.Rewind;
+import com.chronogenesis.registry.ModAttachments;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModItems;
 import com.chronogenesis.time.TimeZones;
+import com.chronogenesis.timetravel.Era;
+import com.chronogenesis.timetravel.Eras;
 import com.chronogenesis.timetravel.PastDimension;
 import com.chronogenesis.timetravel.PastStamping;
+import com.chronogenesis.timetravel.TemporalShift;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.JsonOps;
@@ -553,6 +557,49 @@ public final class ChronoGameTests {
         ItemStack held = player.getMainHandItem();
         held.getItem().onItemUseFirst(held, new UseOnContext(player, InteractionHand.MAIN_HAND,
                 new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false)));
+    }
+
+    /** The Ice Age decodes with the game's own codec (the test server cannot load datapack dimensions). */
+    @GameTest(template = "floor7")
+    public static void iceAgeDimensionIsValid(GameTestHelper helper) throws Exception {
+        var server = helper.getLevel().getServer();
+        var resource = server.getResourceManager().getResourceOrThrow(ChronoGenesis.id("dimension/ice_age.json"));
+        try (var reader = resource.openAsReader()) {
+            var stem = LevelStem.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, server.registryAccess()), JsonParser.parseReader(reader));
+            helper.assertTrue(stem.result().isPresent(), "the Ice Age does not decode: " + stem.error().map(Object::toString).orElse(""));
+        }
+        helper.succeed();
+    }
+
+    /** A shift into the Ice Age needs a stage 1 cortex, the lesson of the cold, a tether and the Time. */
+    @GameTest(template = "floor7")
+    public static void shiftNeedsItsCosts(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        Era era = Eras.get(helper.getLevel().registryAccess(), ChronoGenesis.id("ice_age"));
+        helper.assertTrue(era != null, "the Ice Age era is missing");
+        Map<Aspect, Integer> time = Map.of(Aspect.TIME, era.cost());
+        TemporalShift.Check bare = TemporalShift.check(player, era, 0, Set.of(), Map.of());
+        helper.assertFalse(bare.stage() || bare.lesson() || bare.tether() || bare.time(), "nothing should be met yet");
+        player.getInventory().add(new ItemStack(ModItems.CHRONO_TETHER.get()));
+        TemporalShift.Check ready = TemporalShift.check(player, era, 1, Set.of(Lessons.COLD), time);
+        helper.assertTrue(ready.ok(), "everything is met: " + ready);
+        helper.succeed();
+    }
+
+    /** Pulling the tether in another era brings the traveller back where they left. */
+    @GameTest(template = "floor7")
+    public static void tetherReelsHome(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        Vec3 home = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
+        player.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 1, 5))));
+        player.setData(ModAttachments.TIME_SHIFT, new TemporalShift.Shift(helper.getLevel().dimension(), home,
+                ChronoGenesis.id("ice_age"), 1200));
+        ItemStack tether = new ItemStack(ModItems.CHRONO_TETHER.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, tether);
+        tether.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        helper.assertTrue(player.position().distanceTo(home) < 0.01, "not home: " + player.position());
+        helper.assertFalse(TemporalShift.get(player).active(), "still shifted");
+        helper.succeed();
     }
 
     /** A worn Umbilical Locket tied to an organism draws its essence into the wearer's pool, from a distance. */

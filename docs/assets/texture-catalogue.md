@@ -96,6 +96,7 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `block/cerebrum_eye.png` | A great eye opening in the Cerebrum's folds (face centres) |
 | `item/essence_manipulator.png` | Animated (8 frames, `.mcmeta`): leather and brass glove, tendrils curling out of its slits |
 | `item/confluence_needle.png` | Twin steel needles from a brass Y-joint |
+| `item/chrono_tether.png` | Brass pocket watch, cracked glass, on a cord of living vein |
 | `gui/power/<power>.png` | Wheel and HUD icons, one glyph per power, outlined |
 
 ## Models

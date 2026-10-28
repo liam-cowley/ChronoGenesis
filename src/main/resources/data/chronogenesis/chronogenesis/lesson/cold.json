@@ -8,8 +8,8 @@
   "item": {
     "item": "minecraft:blue_ice"
   },
-  "stage": 2,
-  "capacity": 40,
+  "stage": 1,
+  "capacity": 28,
   "awareness": 1,
   "learned": {
     "translate": "lesson.chronogenesis.cold.learned"

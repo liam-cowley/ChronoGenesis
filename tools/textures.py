@@ -1836,6 +1836,29 @@ def confluence_needle():
         "item/confluence_needle")
 
 
+def chrono_tether():
+    # A brass pocket watch, its glass cracked, on a cord of living vein that trails off the edge (to the present).
+    save(grid([
+        "................",
+        "..........vV....",
+        ".........vVv....",
+        "....kbbk.Vv.....",
+        "...kBHHBkv......",
+        "..kBwwwwBk......",
+        "..bwwtwwwb......",
+        "..bwwtwwgb......",
+        "..bwwwttwb......",
+        "..bwgwwwwb......",
+        "..kBwwwwBk......",
+        "...kBBBBk.......",
+        "....kbbk........",
+        "......vV........",
+        "......Vvv.......",
+        "........vV......",
+    ], {"k": BRASS_DDK, "b": BRASS_DK, "B": BRASS, "H": BRASS_HI, "w": (232, 222, 190, 255), "t": (40, 30, 30, 255),
+        "g": GLINT, "v": (120, 30, 44, 255), "V": (170, 60, 76, 255)}), "item/chrono_tether")
+
+
 # ---------------------------------------------------------------- power icons (wheel and HUD)
 
 GLYPH = (244, 236, 214, 255)
@@ -2036,6 +2059,7 @@ cortex_lobes()
 essence_manipulator()
 confluence_needle()
 power_icons()
+chrono_tether()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

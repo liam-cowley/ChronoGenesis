@@ -3,6 +3,7 @@ package com.chronogenesis.registry;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.item.ChronoSyringeItem;
+import com.chronogenesis.item.ChronoTetherItem;
 import com.chronogenesis.item.ConfluenceNeedleItem;
 import com.chronogenesis.item.CreativeBlockItem;
 import com.chronogenesis.item.CultureItem;
@@ -81,6 +82,10 @@ public final class ModItems {
     /** Fitted into an Enhancing Gland: mixes two essences wired together by veins. Grown by research. */
     public static final DeferredItem<ConfluenceNeedleItem> CONFLUENCE_NEEDLE = ITEMS.registerItem("confluence_needle",
             ConfluenceNeedleItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    /** Needed to be shifted into another era; pull it there to come home early. Grown by research. */
+    public static final DeferredItem<ChronoTetherItem> CHRONO_TETHER = ITEMS.registerItem("chrono_tether",
+            ChronoTetherItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
 
     /** Creative only (no recipe; in play it is woken by the ritual): an already awake Chronocortex. */
     public static final DeferredItem<CreativeBlockItem> CHRONOCORTEX = ITEMS.registerItem("chronocortex",

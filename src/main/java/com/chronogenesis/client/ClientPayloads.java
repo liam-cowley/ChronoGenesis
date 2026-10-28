@@ -2,6 +2,7 @@ package com.chronogenesis.client;
 
 import com.chronogenesis.network.OpenChronocortexPayload;
 import com.chronogenesis.network.PastSectionsPayload;
+import com.chronogenesis.network.ShiftStatusPayload;
 
 import net.minecraft.client.Minecraft;
 
@@ -11,6 +12,10 @@ public final class ClientPayloads {
 
     public static void pastSections(PastSectionsPayload payload) {
         PastSections.receive(payload);
+    }
+
+    public static void shiftStatus(ShiftStatusPayload payload) {
+        ShiftHud.receive(payload);
     }
 
     public static void openChronocortex(OpenChronocortexPayload payload) {
