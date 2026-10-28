@@ -101,6 +101,13 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `item/nerve_spool.png` | A brass bobbin wound with pale nerve, its end dangling |
 | `block/fossil_cortex.png` | Brain folds turned to grey stone, dark amethyst veins |
 | `block/fossil_cortex_awake.png` | The same, its veins lit teal: linked to the Chronocortex |
+| `entity/raptor.png` | 64x64: tan hide with dark stripes, cream belly, yellow eyes (RaptorModel's boxes) |
+| `entity/titanosaur.png` | 128x160: grey-green mottled hide, pale belly (TitanosaurModel's boxes) |
+| `block/harness_top.png`, `block/harness_side.png` | Leather straps, brass buckle, steel rings |
+| `block/riders_seat.png` | Tufted red leather |
+| `block/temporal_core.png`, `block/temporal_core_still.png` | Amethyst engine with teal sparks; grey once stilled |
+| `block/heavy_seal.png`, `narrow_seal`, `swift_seal`, `stilled_seal` | Blackstone bricks with a glowing glyph: weight, keyhole, chevrons, clock |
+| `item/dino_harness.png`, `item/stilled_core.png` | Crossed straps on a brass buckle; a grey stone heart with teal flecks |
 | `entity/precursor.png` | 64x64, villager layout: grey-teal skin, amethyst eyes, gold circlet and nose guard, blue and gold robes with teal glyphs |
 | `gui/power/<power>.png` | Wheel and HUD icons, one glyph per power, outlined |
 

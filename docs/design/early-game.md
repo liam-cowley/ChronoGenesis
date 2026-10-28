@@ -144,6 +144,11 @@
     Fossil Cortexes, Nerve Spools: memories of eras, each leading to the next. Next: the Jurassic age, the world's
     creation, the time before time (the Elder God); things to bring back from the eras; the Lens's "Ages" setting.
 
+12. ✅ The Jurassic Age (third era, two routes in): Raptors, Titanosaurs, building on and riding harnessed
+    Titanosaurs, sealed temples with five ability seals (any three). Research gains alternative clue sets from the
+    Jurassic (Dino Harness; Deepest Infusion through a broken temple). Next: the world's creation, the time before
+    time (the Elder God).
+
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or
    villagers too (darker)?

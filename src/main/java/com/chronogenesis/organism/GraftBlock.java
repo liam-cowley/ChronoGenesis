@@ -91,6 +91,17 @@ public class GraftBlock extends BaseEntityBlock {
         return SHAPES.get(state.getValue(FACING));
     }
 
+    /** Turned with whatever it grows on (a beast's cargo turning, a structure placed rotated). */
+    @Override
+    protected BlockState rotate(BlockState state, net.minecraft.world.level.block.Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, net.minecraft.world.level.block.Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
+    }
+
     /** The tissue block this graft grows out of. */
     public static BlockPos supportPos(BlockState state, BlockPos pos) {
         return pos.relative(state.getValue(FACING).getOpposite());

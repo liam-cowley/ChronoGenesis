@@ -5,10 +5,12 @@ import java.util.function.Supplier;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
+import com.chronogenesis.entity.DinoHarnessBlockEntity;
 import com.chronogenesis.lens.ObeliskBlockEntity;
 import com.chronogenesis.organism.EssenceJugBlockEntity;
 import com.chronogenesis.organism.GraftBlockEntity;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
+import com.chronogenesis.temple.TemporalCoreBlockEntity;
 import com.chronogenesis.time.TimeTearBlockEntity;
 import com.chronogenesis.timetravel.FossilCortexBlockEntity;
 
@@ -39,6 +41,12 @@ public final class ModBlockEntities {
     @SuppressWarnings("DataFlowIssue")
     public static final Supplier<BlockEntityType<FossilCortexBlockEntity>> FOSSIL_CORTEX = BLOCK_ENTITY_TYPES.register("fossil_cortex",
             () -> BlockEntityType.Builder.of(FossilCortexBlockEntity::new, ModBlocks.FOSSIL_CORTEX.get()).build(null));
+
+    public static final Supplier<BlockEntityType<DinoHarnessBlockEntity>> DINO_HARNESS = BLOCK_ENTITY_TYPES.register("buckled_harness",
+            () -> BlockEntityType.Builder.of(DinoHarnessBlockEntity::new, ModBlocks.BUCKLED_HARNESS.get()).build(null));
+
+    public static final Supplier<BlockEntityType<TemporalCoreBlockEntity>> TEMPORAL_CORE = BLOCK_ENTITY_TYPES.register("temporal_core",
+            () -> BlockEntityType.Builder.of(TemporalCoreBlockEntity::new, ModBlocks.TEMPORAL_CORE.get()).build(null));
 
     public static final Supplier<BlockEntityType<TimeTearBlockEntity>> TIME_TEAR = BLOCK_ENTITY_TYPES.register("time_tear",
             () -> BlockEntityType.Builder.of(TimeTearBlockEntity::new, ModBlocks.TIME_TEAR.get()).build(null));

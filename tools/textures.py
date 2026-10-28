@@ -2131,6 +2131,199 @@ def precursor_entity():
     WRITTEN.append(("entity/precursor", img.crop((0, 0, 16, 16))))
 
 
+# ---------------------------------------------------------------- the Jurassic Age: dinosaurs, harness, temples
+
+def paint_box(img, r, u, v, w, h, d, top, side, belly, stripes=None):
+    """Paints a model box's UV unwrap: top and bottom faces, then the four sides (darker towards the top)."""
+    def put(x, y, c):
+        if 0 <= x < img.width and 0 <= y < img.height:
+            j = r.randint(-7, 7)
+            img.putpixel((x, y), tuple(max(0, min(255, k + j)) for k in c[:3]) + (255,))
+    for x in range(u + d, u + d + w):
+        for y in range(v, v + d):
+            put(x, y, top)
+    for x in range(u + d + w, u + d + 2 * w):
+        for y in range(v, v + d):
+            put(x, y, belly)
+    for x in range(u, u + 2 * d + 2 * w):
+        for y in range(v + d, v + d + h):
+            t = max(0.0, ((y - v - d) / max(1, h - 1) - 0.7) / 0.3)
+            c = tuple(int(side[k] * (1 - t) + belly[k] * t) for k in range(3))
+            if stripes and stripes(x - u, y - v - d) and t < 0.6:
+                c = shade(c + (255,), -40)[:3]
+            put(x, y, c)
+    if stripes:
+        for x in range(u + d, u + d + w):
+            for y in range(v, v + d):
+                if stripes(x, y):
+                    put(x, y, shade(top + (255,), -40)[:3])
+
+
+def eyes(img, u, v, w, h, d, colour, row=1):
+    for x in (u + d - 2, u + d + w + 1):
+        img.putpixel((x, v + d + row), colour)
+        img.putpixel((x, v + d + row + 1), (20, 14, 10, 255))
+
+
+def raptor_entity():
+    img = Image.new("RGBA", (64, 64), CLEAR)
+    r = rng(901)
+    tan, belly = (168, 128, 78), (222, 200, 150)
+    stripes = lambda x, y: (x + y // 2) % 5 == 0
+    for (u, v, w, h, d) in [(0, 0, 6, 6, 12), (36, 0, 4, 8, 4), (0, 18, 5, 5, 7), (24, 18, 4, 4, 10), (0, 32, 2, 2, 9),
+                            (22, 32, 3, 6, 4), (36, 32, 2, 6, 2), (44, 32, 1, 4, 1)]:
+        paint_box(img, r, u, v, w, h, d, (130, 96, 56), tan, belly, stripes)
+    eyes(img, 0, 18, 5, 5, 7, (236, 200, 40, 255))
+    full = os.path.join(OUT, "entity/raptor.png")
+    img.save(full)
+    WRITTEN.append(("entity/raptor", img.crop((0, 0, 16, 16))))
+
+
+def titanosaur_entity():
+    img = Image.new("RGBA", (128, 160), CLEAR)
+    r = rng(902)
+    hide, top, belly = (112, 124, 92), (84, 96, 68), (188, 180, 140)
+    mottle = lambda x, y: (x * 7 + y * 3) % 11 == 0
+    for (u, v, w, h, d) in [(0, 0, 22, 16, 34), (0, 50, 6, 14, 6), (0, 70, 8, 8, 26), (68, 70, 8, 7, 10), (0, 104, 8, 8, 24),
+                            (64, 104, 5, 5, 22)]:
+        paint_box(img, r, u, v, w, h, d, top, hide, belly, mottle)
+    eyes(img, 68, 70, 8, 7, 10, (40, 30, 20, 255))
+    full = os.path.join(OUT, "entity/titanosaur.png")
+    img.save(full)
+    WRITTEN.append(("entity/titanosaur", img.crop((0, 0, 16, 16))))
+
+
+def harness_blocks():
+    r = rng(903)
+    leather, leather_dk = (122, 76, 44, 255), (82, 50, 28, 255)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), shade(leather, r.randint(-8, 8)))
+    for x in range(16):
+        img.putpixel((x, 5), leather_dk)
+        img.putpixel((x, 10), leather_dk)
+    grid([
+        "................",
+        "................",
+        "......kBBk......",
+        "......BHHB......",
+        "......B..B......",
+        "......kBBk......",
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "...cc.....cc....",
+        "...cC.....cC....",
+        "................",
+        "................",
+        "................",
+    ], {"k": BRASS_DDK, "B": BRASS, "H": BRASS_HI, "c": STEEL_DK, "C": STEEL}, img)
+    save(img, "block/harness_top")
+    side = new()
+    for y in range(16):
+        for x in range(16):
+            side.putpixel((x, y), shade(leather_dk if y > 11 else leather, r.randint(-8, 8)))
+    for y in range(16):
+        side.putpixel((7, y), STEEL_DK)
+        side.putpixel((8, y), STEEL)
+    save(side, "block/harness_side")
+    seat = new()
+    for y in range(16):
+        for x in range(16):
+            tuft = (x % 4 == 2 and y % 4 == 2)
+            seat.putpixel((x, y), shade((150, 40, 40, 255), -40 if tuft else r.randint(-10, 10)))
+    save(seat, "block/riders_seat")
+
+
+def temple_blocks():
+    r = rng(904)
+
+    def blackstone():
+        img = new()
+        for y in range(16):
+            for x in range(16):
+                mortar = y % 4 == 3 or (x + (8 if (y // 4) % 2 else 0)) % 8 == 7
+                img.putpixel((x, y), gray(30 if mortar else 52 + r.randint(-6, 6)))
+        return img
+
+    glyphs = {
+        "heavy_seal": ["................", "................", "................", "......gggg......", ".....g....g.....",
+                       ".....g....g.....", "...gggggggggg...", "..g..........g..", "..g..........g..", "..g..........g..",
+                       "..g..........g..", "...gggggggggg...", "................", "................", "................", "................"],
+        "narrow_seal": ["................", "................", "................", "................", ".......gg.......",
+                        "......g..g......", "......g..g......", ".......gg.......", ".......gg.......", "......gggg......",
+                        "......gggg......", "................", "................", "................", "................", "................"],
+        "swift_seal": ["................", "................", "................", "...g....g.......", "....g....g......",
+                       ".....g....g.....", "......g....g....", ".......g....g...", "......g....g....", ".....g....g.....",
+                       "....g....g......", "...g....g.......", "................", "................", "................", "................"],
+        "stilled_seal": ["................", "................", ".....gggggg.....", "....g......g....", "...g...g....g...",
+                         "...g...g....g...", "...g...g....g...", "...g...gggg.g...", "...g........g...", "...g........g...",
+                         "....g......g....", ".....gggggg.....", "................", "................", "................", "................"],
+    }
+    colours = {"heavy_seal": STEEL_HI, "narrow_seal": AME_HI, "swift_seal": (220, 240, 90, 255), "stilled_seal": TEAL_HI}
+    for name, rows in glyphs.items():
+        img = blackstone()
+        grid(rows, {"g": colours[name]}, img)
+        save(img, "block/" + name)
+
+    for active in (True, False):
+        img = new()
+        for y in range(16):
+            for x in range(16):
+                f = math.sin(x * 0.9 + y * 0.6) + math.cos(y * 0.8 - x * 0.3)
+                base = AME if f > 0.3 else AME_DK
+                if not active:
+                    base = gray(80 + 30 * (f > 0.3))
+                img.putpixel((x, y), shade(base, r.randint(-10, 10)))
+        if active:
+            for (x, y) in [(5, 4), (10, 7), (7, 11), (3, 9), (12, 3)]:
+                img.putpixel((x, y), TEAL_HI)
+        save(img, "block/temporal_core" if active else "block/temporal_core_still")
+
+
+def jurassic_items():
+    save(grid([
+        "................",
+        "..ll........ll..",
+        "..lL........Ll..",
+        "...lL......Ll...",
+        "....lL....Ll....",
+        ".....lkBBkl.....",
+        ".....lBHHBl.....",
+        ".....lB..Bl.....",
+        ".....lkBBkl.....",
+        "....lL....Ll....",
+        "...lL......Ll...",
+        "..lL..cCcC..Ll..",
+        "..ll........ll..",
+        "................",
+        "................",
+        "................",
+    ], {"l": (82, 50, 28, 255), "L": (138, 88, 52, 255), "k": BRASS_DDK, "B": BRASS, "H": BRASS_HI, "c": STEEL_DK,
+        "C": STEEL}), "item/dino_harness")
+    save(grid([
+        "................",
+        "................",
+        ".....kkkkkk.....",
+        "....kAaAaAAk....",
+        "...kAaTAaAaAk...",
+        "...kaAAaATaAk...",
+        "...kAaAaAaAak...",
+        "...kaATaAaAak...",
+        "...kAaAaAaTAk...",
+        "...kaAaAaAaAk...",
+        "....kAaAaAak....",
+        ".....kkkkkk.....",
+        "................",
+        "................",
+        "................",
+        "................",
+    ], {"k": (60, 50, 70, 255), "A": (140, 130, 150, 255), "a": (104, 96, 116, 255), "T": TEAL}), "item/stilled_core")
+
+
 # ---------------------------------------------------------------- run
 
 syringe()
@@ -2193,6 +2386,11 @@ fossil_cortex()
 cortex_offshoot_item()
 nerve_spool()
 precursor_entity()
+raptor_entity()
+titanosaur_entity()
+harness_blocks()
+temple_blocks()
+jurassic_items()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

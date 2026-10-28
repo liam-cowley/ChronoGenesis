@@ -1,0 +1,43 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.dino_harness"
+  },
+  "description": {
+    "translate": "research.chronogenesis.dino_harness.desc"
+  },
+  "icon": "chronogenesis:dino_harness",
+  "stage": 2,
+  "essence": {
+    "density": 24,
+    "awareness": 16
+  },
+  "materials": [
+    {
+      "item": "minecraft:leather",
+      "count": 8
+    },
+    {
+      "item": "minecraft:chain",
+      "count": 4
+    },
+    {
+      "tag": "c:ingots/brass",
+      "count": 4
+    }
+  ],
+  "clues": [
+    [
+      "chronogenesis:giants_walked"
+    ],
+    [
+      "chronogenesis:sealed_temple"
+    ]
+  ],
+  "order": 12,
+  "rewards": [
+    {
+      "id": "chronogenesis:dino_harness",
+      "count": 1
+    }
+  ]
+}

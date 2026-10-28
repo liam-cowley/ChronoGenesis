@@ -15,6 +15,8 @@ import com.chronogenesis.organism.GlandBlock;
 import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.registry.ModBlocks;
+import com.chronogenesis.temple.SealBlock;
+import com.chronogenesis.temple.TemporalCoreBlock;
 import com.chronogenesis.timetravel.FossilCortexBlock;
 
 import net.minecraft.core.Direction;
@@ -618,6 +620,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockItem(ModBlocks.CHRONOCORTEX.get(), cortex);
         lobes();
         offshoots();
+        jurassic();
     }
 
     /**
@@ -680,6 +683,59 @@ public class ModBlockStateProvider extends BlockStateProvider {
         getVariantBuilder(ModBlocks.FOSSIL_CORTEX.get()).forAllStates(state -> ConfiguredModel.builder()
                 .modelFile(fossils[state.getValue(FossilCortexBlock.AWAKE) ? 1 : 0]).build());
         simpleBlockItem(ModBlocks.FOSSIL_CORTEX.get(), fossils[0]);
+    }
+
+    /**
+     * The Jurassic Age's blocks: the buckled harness (leather straps and brass buckles), the Rider's Seat, the
+     * temple's Temporal Core (an amethyst engine in a gold cage; dull once stilled) and its five seals (each with its
+     * glyph; the veiled one is plain temple wall). A broken seal is cracked blackstone.
+     */
+    private void jurassic() {
+        simpleBlock(ModBlocks.BUCKLED_HARNESS.get(), models().cubeBottomTop("buckled_harness", modLoc("block/harness_side"),
+                modLoc("block/harness_side"), modLoc("block/harness_top")));
+
+        BlockModelBuilder seat = models().withExistingParent("riders_seat", mcLoc("block/block"))
+                .texture("cushion", modLoc("block/riders_seat"))
+                .texture("brass", modLoc("block/brass_fitting"))
+                .texture("particle", modLoc("block/riders_seat"));
+        box(seat, 1, 0, 1, 15, 3, 15, "#brass", false);
+        box(seat, 1, 3, 1, 15, 6, 15, "#cushion", false);
+        box(seat, 1, 6, 12, 15, 14, 15, "#cushion", false);
+        box(seat, 0, 3, 1, 1, 9, 15, "#brass", false);
+        box(seat, 15, 3, 1, 16, 9, 15, "#brass", false);
+        horizontalBlock(ModBlocks.RIDERS_SEAT.get(), seat);
+        simpleBlockItem(ModBlocks.RIDERS_SEAT.get(), seat);
+
+        BlockModelBuilder[] cores = new BlockModelBuilder[2];
+        for (int active = 0; active < 2; active++) {
+            BlockModelBuilder core = models().withExistingParent(active == 1 ? "temporal_core" : "temporal_core_still", mcLoc("block/block"))
+                    .texture("heart", modLoc(active == 1 ? "block/temporal_core" : "block/temporal_core_still"))
+                    .texture("cage", mcLoc("block/gold_block"))
+                    .texture("particle", modLoc("block/temporal_core"))
+                    .renderType("cutout");
+            box(core, 4, 3, 4, 12, 13, 12, "#heart", false);
+            box(core, 2, 0, 2, 14, 2, 14, "#cage", false);
+            box(core, 2, 14, 2, 14, 16, 14, "#cage", false);
+            for (int[] bar : new int[][] {{2, 2}, {12, 2}, {2, 12}, {12, 12}}) {
+                box(core, bar[0], 2, bar[1], bar[0] + 2, 14, bar[1] + 2, "#cage", false);
+            }
+            cores[active] = core;
+        }
+        getVariantBuilder(ModBlocks.TEMPORAL_CORE.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(cores[state.getValue(TemporalCoreBlock.ACTIVE) ? 1 : 0]).build());
+        simpleBlockItem(ModBlocks.TEMPORAL_CORE.get(), cores[1]);
+
+        ModelFile broken = models().cubeAll("seal_broken", mcLoc("block/cracked_polished_blackstone_bricks"));
+        for (var seal : java.util.List.of(ModBlocks.HEAVY_SEAL, ModBlocks.NARROW_SEAL, ModBlocks.SWIFT_SEAL, ModBlocks.VEILED_SEAL,
+                ModBlocks.STILLED_SEAL)) {
+            String name = seal.getId().getPath();
+            ModelFile whole = seal == ModBlocks.VEILED_SEAL
+                    ? models().cubeAll(name, mcLoc("block/polished_blackstone_bricks"))
+                    : models().cubeAll(name, modLoc("block/" + name));
+            getVariantBuilder(seal.get()).forAllStates(state -> ConfiguredModel.builder()
+                    .modelFile(state.getValue(SealBlock.BROKEN) ? broken : whole).build());
+            simpleBlockItem(seal.get(), whole);
+        }
     }
 
     /** Obelisk stone, the glowing inscription band, and the stepped capstone (the nail's head). */

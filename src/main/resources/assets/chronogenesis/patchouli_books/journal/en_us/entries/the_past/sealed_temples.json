@@ -1,0 +1,23 @@
+{
+  "name": "Sealed Temples",
+  "icon": "chronogenesis:temporal_core",
+  "category": "chronogenesis:the_past",
+  "sortnum": 8,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Great ziggurats stand in the Jurassic fernlands, older than any people. Inside, a $(l)Temporal Core$() holds everything still: nothing can be placed or broken, not even with an explosion. Raptors guard the halls."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Five seals lock the core, each opened by a different gift of the glands:$(br)$(l)Heavy$(): Iron Fists, or a Ground Slam.$(br)$(l)Narrow$(): at the end of a crawlspace; Shrink.$(br)$(l)Swift$(): run into it faster than a sprint; Quickening.$(br)$(l)Veiled$(): hidden in a wall; Glowing Sight.$(br)$(l)Stilled$(): slow or stop its time.",
+      "title": "The Seals"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Any three will do. Then the core stills, the barrier falls, and the core itself can be taken: a $(l)Stilled Core$(), all the time it held. Crushed, it fills my Time.",
+      "title": "Breaking In"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ line up block for block.
   abandoned_laboratory_past  the same lab in its prime, as the Lens shows it at Decades
   obelisk                    an obelisk: untouched by time, so it has no past template of its own
   precursor_city_<palette>   a city of the Precursors (the Precursor era only): sun, deep, verdant
+  jurassic_temple            a sealed ziggurat of the Jurassic Age: a Temporal Core, five seals, raptors
 
 Usage: python3 tools/make_structures.py
 """
@@ -378,6 +379,99 @@ def precursors_in(blocks):
     return entities
 
 
+# ---------------------------------------------------------------- the Jurassic temple
+# A great ziggurat whose Temporal Core holds the inside still: nothing in it can be placed or broken until three of
+# its five seals are broken, each by a different gift of the glands (see temple/SealBlock):
+#   heavy (east room, Iron Fists or a Ground Slam), narrow (west, at the end of a one-block crawlspace: Shrink),
+#   swift (north, at the end of a long hall: run into it with Quickening), veiled (one of the core chamber's walls,
+#   seen with Glowing Sight), stilled (the upper room, up the ladder: slow or stop its time).
+# Local coordinates: the core stands at (17, 1, 17); its barrier reaches 18 around it, from 3 below to 24 above.
+
+TEMPLE = 35
+TEMPLE_H = 26
+T_WALL = "minecraft:polished_blackstone_bricks"
+T_TRIM = "minecraft:gilded_blackstone"
+T_FLOOR = "minecraft:polished_deepslate"
+T_PILLAR = "minecraft:chiseled_polished_blackstone"
+T_LAMP = "minecraft:soul_lantern[hanging=true,waterlogged=false]"
+T_RAPTORS = [(17, 1, 28), (28, 1, 17), (8, 1, 5), (20, 10, 15)]
+
+
+def jurassic_temple():
+    b = {}
+
+    def box(x0, y0, z0, x1, y1, z1, state):
+        for x in range(x0, x1 + 1):
+            for y in range(y0, y1 + 1):
+                for z in range(z0, z1 + 1):
+                    b[(x, y, z)] = state
+
+    # Five tiers, each three blocks in from the last, gold-trimmed at their rims; a banded shrine on top.
+    for t in range(5):
+        lo, hi = 3 * t, TEMPLE - 1 - 3 * t
+        y0 = 5 * t
+        box(lo, y0, lo, hi, y0 + 4, hi, T_WALL)
+        for x in range(lo, hi + 1):
+            for z in range(lo, hi + 1):
+                if x in (lo, hi) or z in (lo, hi):
+                    b[(x, y0 + 4, z)] = T_TRIM
+    box(16, 25, 16, 18, 25, 18, CG + "obelisk_inscription")
+    b[(17, 25, 17)] = CG + "obelisk_capstone"
+    box(1, 0, 1, TEMPLE - 2, 0, TEMPLE - 2, T_FLOOR)
+
+    # The entrance hall, from the south face to the core chamber.
+    box(16, 1, 23, 18, 3, TEMPLE - 1, AIR)
+    for z in (26, 30):
+        b[(16, 3, z)] = T_LAMP
+        b[(18, 3, z)] = T_LAMP
+    # The core chamber: tall, pillared, the core in the middle, its treasure behind it.
+    box(11, 1, 11, 23, 8, 23, AIR)
+    for x, z in [(12, 12), (12, 22), (22, 12), (22, 22)]:
+        box(x, 1, z, x, 8, z, T_PILLAR)
+    b[(17, 0, 17)] = T_TRIM
+    b[(17, 1, 17)] = CG + "temporal_core[active=true]"
+    b[(17, 1, 12)] = "minecraft:chest[facing=south,type=single,waterlogged=false]"
+    for x, z in [(14, 14), (20, 14), (14, 20), (20, 20)]:
+        b[(x, 8, z)] = T_LAMP
+    # The veiled seal: one block of the west wall, like all the others.
+    b[(10, 3, 20)] = CG + "veiled_seal[broken=false]"
+
+    # East: the heavy seal on a gold plinth.
+    box(24, 1, 16, 25, 3, 18, AIR)
+    box(26, 1, 14, 31, 4, 20, AIR)
+    b[(30, 1, 17)] = T_TRIM
+    b[(30, 2, 17)] = CG + "heavy_seal[broken=false]"
+    b[(28, 4, 17)] = T_LAMP
+
+    # West: a crawlspace one block high, and the narrow seal in the low cell at its end.
+    box(4, 1, 17, 10, 1, 17, AIR)
+    box(2, 1, 15, 4, 1, 19, AIR)
+    b[(2, 1, 17)] = CG + "narrow_seal[broken=false]"
+
+    # North: a long hall to run down, the swift seal at its far end.
+    box(13, 1, 7, 13, 3, 10, AIR)
+    box(3, 1, 4, 31, 3, 6, AIR)
+    b[(32, 1, 5)] = CG + "swift_seal[broken=false]"
+    b[(32, 2, 5)] = CG + "swift_seal[broken=false]"
+    for x in (6, 14, 22, 30):
+        b[(x, 3, 4)] = T_LAMP
+
+    # Up: a ladder on the chamber's north wall, a hatchway, and the upper room with the stilled seal.
+    for y in range(1, 10):
+        b[(17, y, 11)] = "minecraft:ladder[facing=south,waterlogged=false]"
+    box(12, 10, 11, 22, 13, 17, AIR)
+    for y in range(9, 11):
+        b[(17, y, 11)] = "minecraft:ladder[facing=south,waterlogged=false]"
+    b[(17, 10, 15)] = T_TRIM
+    b[(17, 11, 15)] = CG + "stilled_seal[broken=false]"
+    b[(17, 13, 14)] = T_LAMP
+    return b
+
+
+def raptors_in_temple():
+    return [((x + 0.5, float(y), z + 0.5), (x, y, z), "chronogenesis:raptor") for x, y, z in T_RAPTORS]
+
+
 if __name__ == "__main__":
     past = laboratory_past()
     ruin = laboratory_ruin(past)
@@ -388,3 +482,5 @@ if __name__ == "__main__":
     for i, palette in enumerate(PALETTES):
         city = precursor_city(palette, 4100 + i)
         write("precursor_city_" + palette + ".nbt", structure((CITY, CITY_H, CITY), city, {}, precursors_in(city)))
+    temple_chest = {(17, 1, 12): {"id": "minecraft:chest", "LootTable": "chronogenesis:chests/jurassic_temple"}}
+    write("jurassic_temple.nbt", structure((TEMPLE, TEMPLE_H, TEMPLE), jurassic_temple(), temple_chest, raptors_in_temple()))

@@ -69,6 +69,10 @@ Docs (read the relevant one before implementing a feature, and keep names consis
 - Eras are dimensions sharing the overworld's seed (`data/chronogenesis/dimension/`), listed as data in
   `chronogenesis/era/`. The Precursor era has its own biomes (`worldgen/biome/precursor_*`, derived from vanilla ones)
   so its cities (`precursor_city`) and nothing else of the overworld's generate there.
+- Harnessed Titanosaurs carry real blocks (`entity/DinoCargo`): cargo moves by lifting and re-placing blocks (block
+  entities saved and reloaded, states rotated). Blocks with a facing must implement `rotate` (grafts do).
+- Temples' barriers (`temple/TempleBarrier`) cancel placing/breaking near a running Temporal Core; tests that place
+  blocks with a fake player must stay clear of one.
 - Lasting blocks placed in an era become remnants (`timetravel/Remnants`, data map `data_maps/block/remnant.json`):
   crumbled copies appear in the present and in the Lens's past dimension when the spot loads.
 - `tools/make_structures.py` writes the worldgen structure templates (including the Precursor cities, with their

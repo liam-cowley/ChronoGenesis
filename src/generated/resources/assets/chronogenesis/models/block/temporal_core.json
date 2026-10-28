@@ -1,0 +1,235 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#heart"
+        },
+        "east": {
+          "texture": "#heart"
+        },
+        "north": {
+          "texture": "#heart"
+        },
+        "south": {
+          "texture": "#heart"
+        },
+        "up": {
+          "texture": "#heart"
+        },
+        "west": {
+          "texture": "#heart"
+        }
+      },
+      "from": [
+        4,
+        3,
+        4
+      ],
+      "to": [
+        12,
+        13,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cage"
+        },
+        "east": {
+          "texture": "#cage"
+        },
+        "north": {
+          "texture": "#cage"
+        },
+        "south": {
+          "texture": "#cage"
+        },
+        "up": {
+          "texture": "#cage"
+        },
+        "west": {
+          "texture": "#cage"
+        }
+      },
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        2,
+        14
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cage"
+        },
+        "east": {
+          "texture": "#cage"
+        },
+        "north": {
+          "texture": "#cage"
+        },
+        "south": {
+          "texture": "#cage"
+        },
+        "up": {
+          "texture": "#cage"
+        },
+        "west": {
+          "texture": "#cage"
+        }
+      },
+      "from": [
+        2,
+        14,
+        2
+      ],
+      "to": [
+        14,
+        16,
+        14
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cage"
+        },
+        "east": {
+          "texture": "#cage"
+        },
+        "north": {
+          "texture": "#cage"
+        },
+        "south": {
+          "texture": "#cage"
+        },
+        "up": {
+          "texture": "#cage"
+        },
+        "west": {
+          "texture": "#cage"
+        }
+      },
+      "from": [
+        2,
+        2,
+        2
+      ],
+      "to": [
+        4,
+        14,
+        4
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cage"
+        },
+        "east": {
+          "texture": "#cage"
+        },
+        "north": {
+          "texture": "#cage"
+        },
+        "south": {
+          "texture": "#cage"
+        },
+        "up": {
+          "texture": "#cage"
+        },
+        "west": {
+          "texture": "#cage"
+        }
+      },
+      "from": [
+        12,
+        2,
+        2
+      ],
+      "to": [
+        14,
+        14,
+        4
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cage"
+        },
+        "east": {
+          "texture": "#cage"
+        },
+        "north": {
+          "texture": "#cage"
+        },
+        "south": {
+          "texture": "#cage"
+        },
+        "up": {
+          "texture": "#cage"
+        },
+        "west": {
+          "texture": "#cage"
+        }
+      },
+      "from": [
+        2,
+        2,
+        12
+      ],
+      "to": [
+        4,
+        14,
+        14
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cage"
+        },
+        "east": {
+          "texture": "#cage"
+        },
+        "north": {
+          "texture": "#cage"
+        },
+        "south": {
+          "texture": "#cage"
+        },
+        "up": {
+          "texture": "#cage"
+        },
+        "west": {
+          "texture": "#cage"
+        }
+      },
+      "from": [
+        12,
+        2,
+        12
+      ],
+      "to": [
+        14,
+        14,
+        14
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "cage": "minecraft:block/gold_block",
+    "heart": "chronogenesis:block/temporal_core",
+    "particle": "chronogenesis:block/temporal_core"
+  }
+}

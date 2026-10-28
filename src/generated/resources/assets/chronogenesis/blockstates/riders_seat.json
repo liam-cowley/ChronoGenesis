@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "chronogenesis:block/riders_seat",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "chronogenesis:block/riders_seat"
+    },
+    "facing=south": {
+      "model": "chronogenesis:block/riders_seat",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "chronogenesis:block/riders_seat",
+      "y": 270
+    }
+  }
+}

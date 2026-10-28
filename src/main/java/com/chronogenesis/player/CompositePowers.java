@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.temple.SealBlock;
 
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -101,6 +102,8 @@ public final class CompositePowers {
                     player.getZ(), 60, radius / 2, 0.1, radius / 2, 0.15);
         }
         level.sendParticles(ParticleTypes.EXPLOSION, player.getX(), player.getY() + 0.2, player.getZ(), 1, 0, 0, 0, 0);
+        // The ground heaves: a temple's Heavy Seal nearby is shaken loose.
+        SealBlock.slam(level, player.blockPosition(), 2 + strength);
         level.playSound(null, player.blockPosition(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 0.8f, 0.5f);
         level.playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.4f, 1.4f);
     }

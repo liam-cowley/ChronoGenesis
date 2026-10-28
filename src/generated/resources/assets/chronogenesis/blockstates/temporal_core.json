@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "chronogenesis:block/temporal_core_still"
+    },
+    "active=true": {
+      "model": "chronogenesis:block/temporal_core"
+    }
+  }
+}

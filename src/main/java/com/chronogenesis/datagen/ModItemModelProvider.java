@@ -48,6 +48,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.CORTEX_OFFSHOOT.get());
         basicItem(ModItems.NERVE_SPOOL.get());
         withExistingParent("precursor_spawn_egg", mcLoc("item/template_spawn_egg"));
+        withExistingParent("raptor_spawn_egg", mcLoc("item/template_spawn_egg"));
+        withExistingParent("titanosaur_spawn_egg", mcLoc("item/template_spawn_egg"));
+        basicItem(ModItems.DINO_HARNESS.get());
+        basicItem(ModItems.STILLED_CORE.get());
         basicItem(ModItems.TEMPORAL_RESIDUE.get());
     }
 

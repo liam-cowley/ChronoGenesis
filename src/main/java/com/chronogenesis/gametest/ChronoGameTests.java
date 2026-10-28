@@ -17,6 +17,7 @@ import com.chronogenesis.biocomputer.Lessons;
 import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.entity.Precursor;
+import com.chronogenesis.entity.Titanosaur;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.DrainEffects;
 import com.chronogenesis.essence.EssenceContents;
@@ -52,6 +53,9 @@ import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModEntities;
 import com.chronogenesis.registry.ModItems;
+import com.chronogenesis.temple.SealBlock;
+import com.chronogenesis.temple.TempleBarrier;
+import com.chronogenesis.temple.TemporalCoreBlock;
 import com.chronogenesis.time.TimeZones;
 import com.chronogenesis.timetravel.Era;
 import com.chronogenesis.timetravel.Eras;
@@ -91,6 +95,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -734,6 +739,131 @@ public final class ChronoGameTests {
         helper.assertTrue(helper.<ChronocortexBlockEntity>getBlockEntity(cortexPos).memories().contains(era),
                 "the spool used on a lobe did not link");
         helper.succeed();
+    }
+
+    /** The Jurassic Age decodes, its biomes are registered, and its temple's template is there. */
+    @GameTest(template = "floor7")
+    public static void jurassicAgeIsValid(GameTestHelper helper) throws Exception {
+        var server = helper.getLevel().getServer();
+        var resource = server.getResourceManager().getResourceOrThrow(ChronoGenesis.id("dimension/jurassic_age.json"));
+        try (var reader = resource.openAsReader()) {
+            var stem = LevelStem.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, server.registryAccess()), JsonParser.parseReader(reader));
+            helper.assertTrue(stem.result().isPresent(), "the Jurassic Age does not decode: " + stem.error().map(Object::toString).orElse(""));
+        }
+        var biomes = server.registryAccess().registryOrThrow(Registries.BIOME);
+        for (String biome : List.of("jurassic_fernlands", "jurassic_jungle", "jurassic_swamp", "jurassic_coast")) {
+            helper.assertTrue(biomes.containsKey(ChronoGenesis.id(biome)), biome + " is missing");
+        }
+        StructureTemplate temple = helper.getLevel().getStructureManager().get(ChronoGenesis.id("jurassic_temple")).orElseThrow();
+        helper.assertTrue(temple.getSize().getX() == 35 && temple.getSize().getZ() == 35, "the temple has the wrong size");
+        helper.succeed();
+    }
+
+    /** The Jurassic Age has two ways in: the Ice Age's memory, or the Precursors' and the lesson of Deep Time. */
+    @GameTest(template = "floor7")
+    public static void jurassicHasTwoRoutes(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        player.getInventory().add(new ItemStack(ModItems.CHRONO_TETHER.get()));
+        Era era = Eras.get(helper.getLevel().registryAccess(), ChronoGenesis.id("jurassic_age"));
+        Map<Aspect, Integer> time = Map.of(Aspect.TIME, era.cost());
+        ResourceLocation precursors = ChronoGenesis.id("precursor_era");
+        ResourceLocation deepTime = ChronoGenesis.id("deep_time");
+        helper.assertTrue(TemporalShift.check(player, era, 2, Set.of(), Set.of(ChronoGenesis.id("ice_age")), time).ok(),
+                "the Ice Age's memory should open it");
+        helper.assertTrue(TemporalShift.check(player, era, 2, Set.of(deepTime), Set.of(precursors), time).ok(),
+                "the Precursors' memory and Deep Time should open it");
+        helper.assertFalse(TemporalShift.check(player, era, 2, Set.of(), Set.of(precursors), time).ok(),
+                "the Precursors' memory alone should not");
+        helper.succeed();
+    }
+
+    /** A running Temporal Core holds its temple still; three broken seals (any three) bring the barrier down. */
+    @GameTest(template = "floor7")
+    public static void templeBarrierFallsAfterThreeSeals(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        helper.setBlock(new BlockPos(3, 1, 3), ModBlocks.TEMPORAL_CORE.get());
+        // A new core joins the barrier list as its block entity loads, on the next tick.
+        helper.runAfterDelay(2, () -> {
+            BlockPos inside = helper.absolutePos(new BlockPos(5, 2, 5));
+            helper.assertTrue(TempleBarrier.holds(level, inside), "the barrier should hold the temple");
+            List<BlockPos> seals = List.of(new BlockPos(1, 1, 1), new BlockPos(5, 1, 1), new BlockPos(1, 1, 5));
+            helper.setBlock(seals.get(0), ModBlocks.HEAVY_SEAL.get());
+            helper.setBlock(seals.get(1), ModBlocks.SWIFT_SEAL.get());
+            helper.setBlock(seals.get(2), ModBlocks.STILLED_SEAL.get());
+            SealBlock.breakSeal(level, helper.absolutePos(seals.get(0)));
+            SealBlock.breakSeal(level, helper.absolutePos(seals.get(1)));
+            helper.assertTrue(TempleBarrier.holds(level, inside), "two seals should not be enough");
+            SealBlock.breakSeal(level, helper.absolutePos(seals.get(2)));
+            helper.assertFalse(TempleBarrier.holds(level, inside), "three seals should bring the barrier down");
+            helper.assertBlockProperty(new BlockPos(3, 1, 3), TemporalCoreBlock.ACTIVE, false);
+            helper.succeed();
+        });
+    }
+
+    /** Each seal answers its own gift: shrunk for the Narrow Seal, Glowing Sight for the Veiled, slowed time for the Stilled. */
+    @GameTest(template = "floor7")
+    public static void sealsAnswerTheirGifts(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = fakePlayer(helper);
+        BlockPos pos = helper.absolutePos(new BlockPos(3, 1, 3));
+        SealBlock narrow = ModBlocks.NARROW_SEAL.get();
+        SealBlock veiled = ModBlocks.VEILED_SEAL.get();
+        SealBlock stilled = ModBlocks.STILLED_SEAL.get();
+        helper.assertTrue(narrow.refusal(player, level, pos) != null, "a full-sized hand should not turn it");
+        helper.assertTrue(veiled.refusal(player, level, pos) != null, "unseeing hands should not find it");
+        helper.assertTrue(stilled.refusal(player, level, pos) != null, "it should spin too fast in normal time");
+        Powers.set(player, PlayerEssence.EMPTY.withLevel(Aspect.SIZE, 1).withLevel(Aspect.AWARENESS, 1)
+                .withPool(Aspect.SIZE, 10).withPool(Aspect.AWARENESS, 10)
+                .withPassive(Power.SHRINK, true).withPassive(Power.GLOWING_SIGHT, true));
+        Powers.applyModifiers(player);
+        helper.assertTrue(narrow.refusal(player, level, pos) == null, "shrunk, it should turn: scale " + player.getScale());
+        helper.assertTrue(veiled.refusal(player, level, pos) == null, "Glowing Sight should find it");
+        helper.succeed();
+    }
+
+    /**
+     * A harnessed Titanosaur carries its cargo: real blocks (a chest keeps its contents) moved and turned with it.
+     * Breaking the harness drops the whole cargo.
+     */
+    @GameTest(template = "floor7", timeoutTicks = 200)
+    public static void titanosaurCarriesItsCargo(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        Titanosaur beast = helper.spawn(ModEntities.TITANOSAUR.get(), new BlockPos(3, 1, 3));
+        beast.setNoAi(true);
+        beast.setYRot(0);
+        ServerPlayer player = fakePlayer(helper);
+        helper.runAfterDelay(10, () -> {
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.DINO_HARNESS.get()));
+            beast.interact(player, InteractionHand.MAIN_HAND);
+            BlockPos harness = beast.cargo().harness();
+            helper.assertTrue(harness != null && level.getBlockState(harness).is(ModBlocks.BUCKLED_HARNESS.get()), "not harnessed");
+            BlockPos chestPos = harness.east();
+            level.setBlockAndUpdate(chestPos, Blocks.CHEST.defaultBlockState());
+            ((ChestBlockEntity) level.getBlockEntity(chestPos)).setItem(0, new ItemStack(Items.DIAMOND, 3));
+            helper.assertTrue(beast.cargo().attach(chestPos), "the chest should join the cargo");
+
+            // A step east: the cargo follows, the chest with its diamonds.
+            beast.setPos(beast.getX() + 1, beast.getY(), beast.getZ());
+            helper.assertTrue(beast.cargo().follow(), "the cargo should follow");
+            BlockPos moved = harness.east();
+            helper.assertTrue(moved.equals(beast.cargo().harness()), "the harness did not move: " + beast.cargo().harness());
+            helper.assertTrue(level.getBlockState(moved.east()).is(Blocks.CHEST), "the chest did not move");
+            helper.assertTrue(((ChestBlockEntity) level.getBlockEntity(moved.east())).getItem(0).getCount() == 3,
+                    "the chest lost its contents");
+            helper.assertTrue(level.getBlockState(harness).isAir(), "the old harness spot should be empty");
+
+            // A quarter turn clockwise: east becomes south.
+            beast.setYRot(90);
+            helper.assertTrue(beast.cargo().follow(), "the cargo should turn");
+            helper.assertTrue(level.getBlockState(moved.south()).is(Blocks.CHEST), "the chest did not turn with it");
+
+            // The harness breaks: everything falls.
+            level.destroyBlock(moved, true);
+            helper.assertFalse(beast.cargo().harnessed(), "still harnessed");
+            helper.assertTrue(level.getBlockState(moved.south()).isAir(), "the cargo should have fallen");
+            beast.discard();
+            helper.succeed();
+        });
     }
 
     /** A worn Umbilical Locket tied to an organism draws its essence into the wearer's pool, from a distance. */

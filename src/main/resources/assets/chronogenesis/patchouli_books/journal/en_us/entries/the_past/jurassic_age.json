@@ -1,0 +1,32 @@
+{
+  "name": "The Jurassic Age",
+  "icon": "minecraft:bone_block",
+  "category": "chronogenesis:the_past",
+  "sortnum": 7,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Ferns as tall as trees, air like a wet cloth, and giants. The Chronocortex can reach it two ways: remembering the Ice Age, or remembering the Precursors and knowing $(l)Deep Time$() (show it a bone block)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Raptors$() hunt in twos and threes, and leap.$(br2)$(l)Titanosaurs$() walk slow as weather. Peaceful, unless hurt.",
+      "title": "What Lives There"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A $(l)Dino Harness$() (research) buckled on a Titanosaur makes its back ground to build on. Whatever I build against the harness, and against what is already on, it carries: chests, organisms, a whole lab. Turning, it turns them; it will not walk where they would hit something.$(br2)Break the harness and it all falls at once.",
+      "title": "Building on a Giant"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "A $(l)Rider's Seat$() built into the cargo steers it: forward and back to walk, left and right to turn. Sneak to get up.",
+      "title": "Riding"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:riders_seat"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "title": {
+    "translate": "era.chronogenesis.jurassic_age"
+  },
+  "description": {
+    "translate": "era.chronogenesis.jurassic_age.desc"
+  },
+  "icon": "minecraft:bone_block",
+  "dimension": "chronogenesis:jurassic_age",
+  "stage": 2,
+  "routes": [
+    {
+      "memory": "chronogenesis:ice_age"
+    },
+    {
+      "memory": "chronogenesis:precursor_era",
+      "lesson": "chronogenesis:deep_time"
+    }
+  ],
+  "cost": 64,
+  "minutes": 10,
+  "clue": "chronogenesis:giants_walked",
+  "order": 2
+}

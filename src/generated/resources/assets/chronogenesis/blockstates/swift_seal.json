@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "broken=false": {
+      "model": "chronogenesis:block/swift_seal"
+    },
+    "broken=true": {
+      "model": "chronogenesis:block/seal_broken"
+    }
+  }
+}

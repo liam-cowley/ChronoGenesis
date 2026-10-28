@@ -280,6 +280,23 @@ Its roles:
      ruins of the present: desert and jungle temples, ancient cities, ocean ruins.
    - *The Ice Age:* the overworld's noise and seed with only frozen biomes. Needs the lesson of the cold and the
      memory of the Precursors.
+   - *The Jurassic Age* (`chronogenesis:jurassic_age`, stage 2): four hot, wet biomes (fernlands, jungle, swamp,
+     coast). Two routes in (eras can list alternative `routes`): the Ice Age's memory, or the Precursors' memory plus
+     the lesson **Deep Time** (a bone block). **Raptors** (hostile, leaping, in packs) and **Titanosaurs** (huge,
+     peaceful unless hurt).
+     - **Building on a Titanosaur** (`entity/DinoCargo`): a **Dino Harness** (research, needs a Jurassic clue) used on
+       one puts a harness block on its back. Blocks placed touching the harness or the cargo join the cargo; they are
+       real blocks (block entities and multiblocks keep working). When the harness's spot moves to another block, or
+       the beast turns past the next quarter, the whole cargo is lifted and set down there, rotated, block entities
+       moved with their data, standing entities carried; if a target is blocked, the beast cannot go there. Breaking
+       the harness (or killing the beast) drops the whole cargo at once. A **Rider's Seat** in the cargo steers it.
+     - **Sealed temples** (`jurassic_temple`, a 35x35 five-tier ziggurat): a **Temporal Core** at the centre holds a
+       barrier (18 blocks around it, `temple/TempleBarrier`): no placing, breaking, pouring or explosions inside. Five
+       **seals**, each needing a different power: Heavy (Iron Fists, or a Ground Slam), Narrow (at the end of a
+       one-high crawlspace; only turned while Shrunk), Swift (run into it faster than a sprint: Quickening), Veiled
+       (looks like the wall; Glowing Sight shows it, and is needed to open it), Stilled (only touchable in slowed or
+       stopped time). **Any three** still the core: the barrier falls, the clue *A temple's barrier, broken* is noted,
+       and the core can be taken as a **Stilled Core** (fills the Time pool). Raptors guard it; a chest holds loot.
    **Remnants:** blocks that outlast the ages (the `chronogenesis:remnant` block data map: stone, deepslate,
    sandstone, prismarine, bricks, terracotta, concrete, gold, copper, amethyst, obsidian...) placed in an era remain:
    they are recorded (`timetravel/Remnants`) and, as soon as the spot is loaded, stand at the same place in the

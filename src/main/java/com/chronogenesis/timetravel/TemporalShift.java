@@ -99,7 +99,8 @@ public final class TemporalShift {
         boolean hourglass = EternalHourglassItem.carried(player);
         return new Check(cortexStage >= era.stage(),
                 era.lesson().map(lessons::contains).orElse(true),
-                era.memory().map(memories::contains).orElse(true),
+                era.memory().map(memories::contains).orElse(true)
+                        && (era.routes().isEmpty() || era.routes().stream().anyMatch(route -> route.open(lessons, memories))),
                 hasTether(player),
                 hourglass || essence.getOrDefault(Aspect.TIME, 0) >= era.cost(),
                 !get(player).active() && player.level().dimension() != era.dimension());

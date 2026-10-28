@@ -4,6 +4,8 @@ import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlock;
 import com.chronogenesis.biocomputer.CortexLobeBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlock;
+import com.chronogenesis.entity.DinoHarnessBlock;
+import com.chronogenesis.entity.RidersSeatBlock;
 import com.chronogenesis.lens.FadedBlueprintBlock;
 import com.chronogenesis.lens.ObeliskCapstoneBlock;
 import com.chronogenesis.organism.EssenceJugBlock;
@@ -12,6 +14,8 @@ import com.chronogenesis.organism.GlandBlock;
 import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.GraftType;
 import com.chronogenesis.organism.OrganismCoreBlock;
+import com.chronogenesis.temple.SealBlock;
+import com.chronogenesis.temple.TemporalCoreBlock;
 import com.chronogenesis.time.TimeTearBlock;
 import com.chronogenesis.timetravel.CortexOffshootBlock;
 import com.chronogenesis.timetravel.FossilCortexBlock;
@@ -137,6 +141,51 @@ public final class ModBlocks {
                     .lightLevel(state -> state.getValue(FossilCortexBlock.AWAKE) ? 7 : 2)
                     .pushReaction(PushReaction.BLOCK)
                     .requiresCorrectToolForDrops());
+
+    /** A Dino Harness buckled on a Titanosaur's back: the anchor of its cargo. Only appears there. */
+    public static final DeferredBlock<DinoHarnessBlock> BUCKLED_HARNESS = BLOCKS.registerBlock("buckled_harness",
+            DinoHarnessBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BROWN)
+                    .strength(2.0f, 6.0f)
+                    .sound(SoundType.CHAIN)
+                    .pushReaction(PushReaction.BLOCK));
+
+    /** Sit in it; built into a beast's cargo, it steers the beast. */
+    public static final DeferredBlock<RidersSeatBlock> RIDERS_SEAT = BLOCKS.registerBlock("riders_seat", RidersSeatBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BROWN)
+                    .strength(1.0f)
+                    .sound(SoundType.WOOL)
+                    .noOcclusion());
+
+    /** A Jurassic temple's heart: while it runs, nothing in the temple can be placed or broken. */
+    public static final DeferredBlock<TemporalCoreBlock> TEMPORAL_CORE = BLOCKS.registerBlock("temporal_core", TemporalCoreBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PURPLE)
+                    .strength(6.0f, 3600000.0f)
+                    .sound(SoundType.AMETHYST)
+                    .noOcclusion()
+                    .lightLevel(state -> state.getValue(TemporalCoreBlock.ACTIVE) ? 12 : 4)
+                    .pushReaction(PushReaction.BLOCK));
+
+    public static final DeferredBlock<SealBlock> HEAVY_SEAL = seal("heavy_seal", SealBlock.Kind.HEAVY);
+    public static final DeferredBlock<SealBlock> NARROW_SEAL = seal("narrow_seal", SealBlock.Kind.NARROW);
+    public static final DeferredBlock<SealBlock> SWIFT_SEAL = seal("swift_seal", SealBlock.Kind.SWIFT);
+    public static final DeferredBlock<SealBlock> VEILED_SEAL = seal("veiled_seal", SealBlock.Kind.VEILED);
+    public static final DeferredBlock<SealBlock> STILLED_SEAL = seal("stilled_seal", SealBlock.Kind.STILLED);
+
+    /** Temple seals: unbreakable as blocks; each opens its own way. */
+    private static DeferredBlock<SealBlock> seal(String name, SealBlock.Kind kind) {
+        return BLOCKS.registerBlock(name, properties -> new SealBlock(kind, properties),
+                BlockBehaviour.Properties.of()
+                        .mapColor(MapColor.COLOR_BLACK)
+                        .strength(-1.0f, 3600000.0f)
+                        .noLootTable()
+                        .sound(SoundType.DEEPSLATE_TILES)
+                        .lightLevel(state -> state.getValue(SealBlock.BROKEN) ? 0 : 5)
+                        .pushReaction(PushReaction.BLOCK));
+    }
 
     public static final DeferredBlock<EssenceJugBlock> ESSENCE_JUG = BLOCKS.registerBlock("essence_jug", EssenceJugBlock::new,
             BlockBehaviour.Properties.of()

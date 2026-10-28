@@ -1,0 +1,18 @@
+{
+  "title": {
+    "translate": "lesson.chronogenesis.deep_time"
+  },
+  "description": {
+    "translate": "lesson.chronogenesis.deep_time.desc"
+  },
+  "item": {
+    "item": "minecraft:bone_block"
+  },
+  "stage": 2,
+  "capacity": 48,
+  "awareness": 1,
+  "learned": {
+    "translate": "lesson.chronogenesis.deep_time.learned"
+  },
+  "order": 10
+}

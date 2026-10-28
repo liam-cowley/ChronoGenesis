@@ -336,6 +336,27 @@ public class ChronocortexScreen extends Screen {
             line = requirement(graphics, dx, line, check.memory(), Component.translatable("screen.chronogenesis.chronocortex.need_memory",
                     before == null ? Component.literal(era.memory().get().toString()) : before.title()));
         }
+        if (!era.routes().isEmpty()) {
+            graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.routes"), dx, line, DIM, false);
+            line += 10;
+            for (Era.Route route : era.routes()) {
+                Component way = Component.empty();
+                if (route.memory().isPresent()) {
+                    Era before = Eras.get(minecraft.level.registryAccess(), route.memory().get());
+                    way = way.copy().append(Component.translatable("screen.chronogenesis.chronocortex.need_memory",
+                            before == null ? Component.literal(route.memory().get().getPath()) : before.title()));
+                }
+                if (route.lesson().isPresent()) {
+                    Lesson lesson = Lessons.get(minecraft.level.registryAccess(), route.lesson().get());
+                    if (route.memory().isPresent()) {
+                        way = way.copy().append(Component.literal(" + "));
+                    }
+                    way = way.copy().append(Component.translatable("screen.chronogenesis.chronocortex.need_lesson",
+                            lesson == null ? Component.literal(route.lesson().get().getPath()) : lesson.title()));
+                }
+                line = requirement(graphics, dx + 6, line, route.open(mind.lessons(), mind.memories()), way);
+            }
+        }
         line = requirement(graphics, dx, line, check.tether(), Component.translatable("screen.chronogenesis.chronocortex.need_tether"));
         line = requirement(graphics, dx, line, check.time(), EternalHourglassItem.carried(minecraft.player)
                 ? Component.translatable("screen.chronogenesis.chronocortex.essence_from_hourglass", Aspect.TIME.displayName(), era.cost())

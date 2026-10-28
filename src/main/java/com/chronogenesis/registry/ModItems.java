@@ -17,6 +17,7 @@ import com.chronogenesis.item.StasisAmpouleItem;
 import com.chronogenesis.item.UmbilicalLocketItem;
 import com.chronogenesis.lens.IntactBlueprintItem;
 import com.chronogenesis.lens.TemporalLensItem;
+import com.chronogenesis.temple.StilledCoreItem;
 import com.chronogenesis.timetravel.OffshootItem;
 
 import net.minecraft.world.item.BlockItem;
@@ -103,6 +104,35 @@ public final class ModItems {
             properties -> new DeferredSpawnEggItem(ModEntities.PRECURSOR, 0x2B3F7A, 0xD8B45A, properties), new Item.Properties());
 
     public static final DeferredItem<BlockItem> FOSSIL_CORTEX = ITEMS.registerSimpleBlockItem("fossil_cortex", ModBlocks.FOSSIL_CORTEX);
+
+    /** Buckled onto a Titanosaur (use it on one): its back becomes ground to build on. Grown by research. */
+    public static final DeferredItem<Item> DINO_HARNESS = ITEMS.registerItem("dino_harness",
+            properties -> new Item(properties) {
+                @Override
+                public void appendHoverText(net.minecraft.world.item.ItemStack stack, TooltipContext context,
+                        java.util.List<net.minecraft.network.chat.Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+                    tooltip.add(net.minecraft.network.chat.Component.translatable("tooltip.chronogenesis.dino_harness")
+                            .withStyle(net.minecraft.ChatFormatting.GRAY));
+                }
+            }, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    public static final DeferredItem<BlockItem> RIDERS_SEAT = ITEMS.registerSimpleBlockItem("riders_seat", ModBlocks.RIDERS_SEAT);
+
+    /** A temple's Temporal Core, stilled: all the time it held, packed tight. */
+    public static final DeferredItem<StilledCoreItem> STILLED_CORE = ITEMS.registerItem("stilled_core", StilledCoreItem::new,
+            new Item.Properties().stacksTo(16).rarity(Rarity.RARE));
+
+    public static final DeferredItem<BlockItem> TEMPORAL_CORE = ITEMS.registerSimpleBlockItem("temporal_core", ModBlocks.TEMPORAL_CORE);
+    public static final DeferredItem<BlockItem> HEAVY_SEAL = ITEMS.registerSimpleBlockItem("heavy_seal", ModBlocks.HEAVY_SEAL);
+    public static final DeferredItem<BlockItem> NARROW_SEAL = ITEMS.registerSimpleBlockItem("narrow_seal", ModBlocks.NARROW_SEAL);
+    public static final DeferredItem<BlockItem> SWIFT_SEAL = ITEMS.registerSimpleBlockItem("swift_seal", ModBlocks.SWIFT_SEAL);
+    public static final DeferredItem<BlockItem> VEILED_SEAL = ITEMS.registerSimpleBlockItem("veiled_seal", ModBlocks.VEILED_SEAL);
+    public static final DeferredItem<BlockItem> STILLED_SEAL = ITEMS.registerSimpleBlockItem("stilled_seal", ModBlocks.STILLED_SEAL);
+
+    public static final DeferredItem<DeferredSpawnEggItem> RAPTOR_SPAWN_EGG = ITEMS.registerItem("raptor_spawn_egg",
+            properties -> new DeferredSpawnEggItem(ModEntities.RAPTOR, 0x8A6A3A, 0x3A2A18, properties), new Item.Properties());
+    public static final DeferredItem<DeferredSpawnEggItem> TITANOSAUR_SPAWN_EGG = ITEMS.registerItem("titanosaur_spawn_egg",
+            properties -> new DeferredSpawnEggItem(ModEntities.TITANOSAUR, 0x6E7A58, 0xB8B088, properties), new Item.Properties());
 
     /** Creative only (no recipe; in play it is woken by the ritual): an already awake Chronocortex. */
     public static final DeferredItem<CreativeBlockItem> CHRONOCORTEX = ITEMS.registerItem("chronocortex",
