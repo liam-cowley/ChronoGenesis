@@ -709,6 +709,33 @@ public final class ChronoGameTests {
         helper.succeed();
     }
 
+    /** Once the cranium closes over the jar only lobes can be reached: a Nerve Spool used on a lobe still links. */
+    @GameTest(template = "floor7")
+    public static void spoolLinksThroughALobe(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ResourceLocation era = ChronoGenesis.id("precursor_era");
+        BlockPos fossilPos = new BlockPos(1, 1, 1);
+        Remnants.record(level.getServer(), era, helper.absolutePos(fossilPos),
+                Remnants.crumbled(ModBlocks.CORTEX_OFFSHOOT.get().defaultBlockState()));
+        Remnants.materialize(level);
+        BlockPos cortexPos = new BlockPos(5, 1, 5);
+        BlockPos lobePos = cortexPos.east();
+        helper.setBlock(cortexPos, ModBlocks.CHRONOCORTEX.get());
+        helper.setBlock(lobePos, ModBlocks.CORTEX_LOBE.get().defaultBlockState().setValue(CortexLobeBlock.PART, CortexLobeBlock.Part.CEREBRUM));
+        ServerPlayer player = fakePlayer(helper);
+        ItemStack spool = new ItemStack(ModItems.NERVE_SPOOL.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, spool);
+        BlockPos fossil = helper.absolutePos(fossilPos);
+        level.getBlockState(fossil).useItemOn(spool, level, player, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(fossil), Direction.UP, fossil, false));
+        BlockPos lobe = helper.absolutePos(lobePos);
+        level.getBlockState(lobe).useItemOn(spool, level, player, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(lobe), Direction.UP, lobe, false));
+        helper.assertTrue(helper.<ChronocortexBlockEntity>getBlockEntity(cortexPos).memories().contains(era),
+                "the spool used on a lobe did not link");
+        helper.succeed();
+    }
+
     /** A worn Umbilical Locket tied to an organism draws its essence into the wearer's pool, from a distance. */
     @GameTest(template = "floor7")
     public static void locketRefillsFromAfar(GameTestHelper helper) {

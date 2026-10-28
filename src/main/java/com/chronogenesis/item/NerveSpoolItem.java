@@ -33,7 +33,9 @@ public class NerveSpoolItem extends Item {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (!level.isClientSide()) {
-            if (fossil.linked()) {
+            if (fossil.era() == null) {
+                player.displayClientMessage(Component.translatable("message.chronogenesis.spool.nothing").withStyle(ChatFormatting.GRAY), false);
+            } else if (fossil.linked()) {
                 player.displayClientMessage(Component.translatable("message.chronogenesis.spool.already").withStyle(ChatFormatting.GRAY), true);
             } else {
                 stack.set(ModDataComponents.SPOOL_END.get(), GlobalPos.of(level.dimension(), pos));

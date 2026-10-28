@@ -34,7 +34,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * {@link #PART}: a fresh lobe is still a soft mass in its frame, and firms up with time. Once the lobes fill a
  * 5 x 5 x 5 cranium around the jar, the mind closes over it: the lobes become the Cerebrum, its final stage,
  * with an eye opening in the middle of every face.
- * Using any lobe is using the Chronocortex.
+ * Using any lobe (empty-handed or with an item) is using the Chronocortex.
  */
 public class CortexLobeBlock extends Block {
     public enum Part implements StringRepresentable {
@@ -118,6 +118,6 @@ public class CortexLobeBlock extends Block {
         if (cortex == null) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
-        return cortex.teach(stack, player);
+        return cortex.use(stack, player);
     }
 }

@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.item.NerveSpoolItem;
 import com.chronogenesis.organism.GraftBlockEntity;
 import com.chronogenesis.organism.GraftType;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
@@ -255,6 +256,17 @@ public class ChronocortexBlockEntity extends BlockEntity {
 
     // ---------------------------------------------------------------- teaching
 
+    /**
+     * Something used on it (the jar, or any of its lobes: once its cranium has closed, the jar cannot be reached):
+     * a Nerve Spool lays a nerve to a fossil; anything else may be a lesson.
+     */
+    public ItemInteractionResult use(ItemStack stack, Player player) {
+        if (stack.getItem() instanceof NerveSpoolItem) {
+            return link(stack, player);
+        }
+        return teach(stack, player);
+    }
+
     /** Shown something: if it is a lesson it can learn now, it learns it (and the thing is used up). */
     public ItemInteractionResult teach(ItemStack stack, Player player) {
         if (level == null || stack.isEmpty()) {
@@ -314,15 +326,15 @@ public class ChronocortexBlockEntity extends BlockEntity {
         }
         GlobalPos end = spool.get(ModDataComponents.SPOOL_END.get());
         if (end == null) {
-            player.displayClientMessage(Component.translatable("message.chronogenesis.spool.loose").withStyle(ChatFormatting.GRAY), true);
+            player.displayClientMessage(Component.translatable("message.chronogenesis.spool.loose").withStyle(ChatFormatting.GRAY), false);
             return ItemInteractionResult.CONSUME;
         }
         if (end.dimension() != serverLevel.dimension()) {
-            player.displayClientMessage(Component.translatable("message.chronogenesis.spool.other_world").withStyle(ChatFormatting.GRAY), true);
+            player.displayClientMessage(Component.translatable("message.chronogenesis.spool.other_world").withStyle(ChatFormatting.GRAY), false);
             return ItemInteractionResult.CONSUME;
         }
         if (!(serverLevel.getBlockEntity(end.pos()) instanceof FossilCortexBlockEntity fossil) || fossil.era() == null || fossil.linked()) {
-            player.displayClientMessage(Component.translatable("message.chronogenesis.spool.nothing").withStyle(ChatFormatting.GRAY), true);
+            player.displayClientMessage(Component.translatable("message.chronogenesis.spool.nothing").withStyle(ChatFormatting.GRAY), false);
             spool.remove(ModDataComponents.SPOOL_END.get());
             return ItemInteractionResult.CONSUME;
         }
