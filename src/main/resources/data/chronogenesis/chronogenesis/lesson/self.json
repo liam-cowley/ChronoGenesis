@@ -1,0 +1,18 @@
+{
+  "title": {
+    "translate": "lesson.chronogenesis.self"
+  },
+  "description": {
+    "translate": "lesson.chronogenesis.self.desc"
+  },
+  "item": {
+    "item": "minecraft:name_tag"
+  },
+  "stage": 1,
+  "capacity": 12,
+  "awareness": 2,
+  "learned": {
+    "translate": "lesson.chronogenesis.self.learned"
+  },
+  "order": 3
+}

@@ -1,0 +1,35 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "obelisk",
+    "obelisks",
+    "black stone",
+    "nail",
+    "nails",
+    "inscription"
+  ],
+  "priority": 1,
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "The black stones hum. I don't like the hum.",
+        "Nails? In what?"
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "Someone built the obelisks to hold time still. Someone large.",
+        "Bring me what the stones say."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "The nails are loosening, %1$s. Can't you feel it?",
+        "Whoever drove those nails is waiting at the end of time."
+      ]
+    }
+  ]
+}

@@ -6,5 +6,21 @@
       "minecraft:ui/cartography_table/drawmap3"
     ],
     "subtitle": "subtitles.chronogenesis.lens.scribble"
+  },
+  "cortex.speaks": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.allay.ambient_without_item",
+        "type": "event",
+        "pitch": 0.5,
+        "volume": 0.6
+      },
+      {
+        "name": "minecraft:block.sculk_sensor.clicking",
+        "type": "event",
+        "pitch": 0.7
+      }
+    ],
+    "subtitle": "subtitles.chronogenesis.cortex.speaks"
   }
 }

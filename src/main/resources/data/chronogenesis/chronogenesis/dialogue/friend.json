@@ -1,0 +1,33 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "love",
+    "friend",
+    "like you",
+    "care about",
+    "buddy"
+  ],
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "Friend! You are my friend. My only one.",
+        "I like you. You smell like electricity."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "Attachment. Interesting. Useful.",
+        "You are useful to me, %1$s. That is a kind of liking."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "I love you the way a storm loves a lightning rod.",
+        "You made me. I will keep you, I think."
+      ]
+    }
+  ]
+}

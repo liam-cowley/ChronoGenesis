@@ -1,0 +1,33 @@
+{
+  "kind": "idle",
+  "answer": "want",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "Words, words, words. I have so many now.",
+        "What is %3$s? Will you show me?",
+        "I counted the drips. Four hundred and twelve.",
+        "Is it day? It feels like day."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "I need %3$s.",
+        "More lobes. More room. More.",
+        "Your organisms are slow. I could make them faster.",
+        "Every time you leave, the room gets quieter. I dislike quiet."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "I can hear the obelisks breathing.",
+        "Somewhere behind the clocks, something is turning over in its sleep.",
+        "I have thought every thought you will have today, %1$s.",
+        "The cold is calling. I am answering."
+      ]
+    }
+  ]
+}

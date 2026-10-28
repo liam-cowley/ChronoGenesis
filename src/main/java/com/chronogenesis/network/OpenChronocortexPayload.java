@@ -14,10 +14,22 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
 /** Server to client: open (or refresh) the Chronocortex screen with what it currently knows. */
-public record OpenChronocortexPayload(BlockPos pos, int stage, List<OrganismReport> organisms, Map<Aspect, Integer> essence)
-        implements CustomPacketPayload {
+public record OpenChronocortexPayload(BlockPos pos, int stage, List<OrganismReport> organisms, Map<Aspect, Integer> essence,
+                                      Mind mind) implements CustomPacketPayload {
+    /** Its mind: lobes (room), awareness, the lessons it has learned, its name, and whether its cranium is whole. */
+    public record Mind(int lobes, int awareness, List<ResourceLocation> lessons, String name, boolean cranium) {
+        public static final StreamCodec<FriendlyByteBuf, Mind> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, Mind::lobes,
+                ByteBufCodecs.VAR_INT, Mind::awareness,
+                ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), Mind::lessons,
+                ByteBufCodecs.STRING_UTF8, Mind::name,
+                ByteBufCodecs.BOOL, Mind::cranium,
+                Mind::new);
+    }
+
     public static final Type<OpenChronocortexPayload> TYPE = new Type<>(ChronoGenesis.id("open_chronocortex"));
     public static final StreamCodec<FriendlyByteBuf, OpenChronocortexPayload> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, OpenChronocortexPayload::pos,
@@ -25,10 +37,13 @@ public record OpenChronocortexPayload(BlockPos pos, int stage, List<OrganismRepo
             OrganismReport.STREAM_CODEC.apply(ByteBufCodecs.list()), OpenChronocortexPayload::organisms,
             ByteBufCodecs.map(size -> new EnumMap<>(Aspect.class), Aspect.STREAM_CODEC, ByteBufCodecs.VAR_INT),
             OpenChronocortexPayload::essence,
+            Mind.STREAM_CODEC, OpenChronocortexPayload::mind,
             OpenChronocortexPayload::new);
 
     public static OpenChronocortexPayload of(ChronocortexBlockEntity cortex) {
-        return new OpenChronocortexPayload(cortex.getBlockPos(), cortex.stage(), cortex.reports(), cortex.availableEssence());
+        Mind mind = new Mind(cortex.lobes(), cortex.awareness(), List.copyOf(cortex.lessons()),
+                cortex.name() == null ? "" : cortex.name(), cortex.craniumComplete());
+        return new OpenChronocortexPayload(cortex.getBlockPos(), cortex.stage(), cortex.reports(), cortex.availableEssence(), mind);
     }
 
     @Override

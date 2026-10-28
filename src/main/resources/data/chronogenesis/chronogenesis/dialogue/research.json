@@ -1,0 +1,37 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "research",
+    "discover",
+    "what next",
+    "what should i do",
+    "study",
+    "invent",
+    "experiment"
+  ],
+  "priority": 1,
+  "answer": "research",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "We could think about %3$s together!",
+        "%3$s! Shall we? Shall we?"
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "%3$s is next. Bring what it costs.",
+        "You have not finished %3$s. Why not?"
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "%3$s. Trivial for me. Expensive for you.",
+        "There is %3$s, and after it, everything else."
+      ]
+    }
+  ]
+}

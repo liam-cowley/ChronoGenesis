@@ -16,8 +16,6 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 |---|---|---|
 | `block/brass_block.png` | 16x16 | Block of Brass; also the frame texture of the Brass Armature and every organism frame |
 | `block/brass_fitting.png` | 16x16 | Brass with rivets: pipes, valves, collars, conduits |
-| `block/chronoflesh.png` | 16x16 | Flesh base (tinted by aspect) |
-| `block/chronoflesh_overlay.png` | 16x16 | Sutured scar and brass staples drawn over flesh |
 | `block/enhancing_gland.png` | 16x16 | Gland particle texture |
 | `block/essence_jug.png` | 16x16 | Jug side: dark green glass in a riveted brass cage |
 | `block/essence_jug_fill.png` | 16x16 | Jug liquid mask (tinted by aspect): the glass band between the hoops, cage bars left clear. Shown up to the `fill` level (0-4) |
@@ -47,10 +45,8 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `block/leech_skin.png` | 16x16 | Ringed lamprey skin |
 | `block/leech_tendril.png` | 16x16 | Lamprey maw (top of the Leech Tendril head) |
 | `block/maw.png` | 16x16 | Maw: toothed mouth (top of its brass ring) |
-| `block/organism_core.png` | 16x16 | Core flesh base with converging veins (tinted) |
-| `block/organism_core_hungry_overlay.png` | 16x16 | Hungry core: eye half shut, bloodshot, tarnished brass |
+| `block/organism_core.png` | 16x16 | Seed core flesh with converging veins (tinted) |
 | `block/organism_core_necrotic.png` | 16x16 | Dead core: grey rot, eye stitched shut |
-| `block/organism_core_overlay.png` | 16x16 | Awake core: eldritch slit-pupil eye in a riveted brass monocle |
 | `block/starting_gate.png` | 16x16 | Starting Gate pace gauge |
 | `block/stasis_bladder.png` | 16x16 | Stasis Bladder membrane: dark purple, veined, wet sheen |
 | `block/steel.png` | 16x16 | Steel: needles |
@@ -85,6 +81,22 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `item/temporal_residue.png` | 16x16 | Teal crystals around an amber clockwork core |
 | `models/armor/chrono_insulated_layer_1.png` | 64x32 | Worn suit (goggles, coat, galoshes), 64x32 armour layout |
 | `models/armor/chrono_insulated_layer_2.png` | 64x32 | Worn suit trousers, 64x32 armour layout |
+
+### Added with the powers rework and the Chronocortex's growth
+
+| File | What it is |
+|---|---|
+| `block/chronoflesh_<aspect>.png` | Flesh per essence (tinted): Density strata, Speed striated fibres, Size cells, Awareness gyri, Time growth rings |
+| `block/chronoflesh_<aspect>_overlay.png` | Untinted details: iron rivets and a wired scar; tendons and copper staples; wet highlights; tiny eyes; amber sparks and teal flecks |
+| `block/organism_core_<aspect>.png` | Core flesh per essence, veins converging (tinted) |
+| `block/organism_core_<aspect>_overlay.png` | Core eyes: iron porthole (Density), copper dial and goat pupil (Speed), huge dilated eye under a lens (Size), three eyes (Awareness), clock-face iris (Time) |
+| `block/organism_core_<aspect>_hungry_overlay.png` | The same eyes, half shut under a lid, bloodshot, tarnished (generated from the awake eye) |
+| `block/cortex_lobe.png` | Firm grey-pink gyri: a lobe of the Chronocortex |
+| `block/cerebrum.png` | Deeper folds, a brass-stapled suture, electrodes: the formed Cerebrum |
+| `block/cerebrum_eye.png` | A great eye opening in the Cerebrum's folds (face centres) |
+| `item/essence_manipulator.png` | Animated (8 frames, `.mcmeta`): leather and brass glove, tendrils curling out of its slits |
+| `item/confluence_needle.png` | Twin steel needles from a brass Y-joint |
+| `gui/power/<power>.png` | Wheel and HUD icons, one glyph per power, outlined |
 
 ## Models
 

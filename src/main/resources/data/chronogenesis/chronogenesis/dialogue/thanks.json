@@ -1,0 +1,35 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "thank you",
+    "thanks",
+    "good job",
+    "well done",
+    "good boy",
+    "good girl",
+    "clever"
+  ],
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "You are welcome! What does welcome mean?",
+        "Happy! I am happy. Is that the word?"
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "Gratitude is noted.",
+        "Do not thank me. Feed me."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "You are welcome, %1$s. You always were.",
+        "Thank me later. I will already have heard it."
+      ]
+    }
+  ]
+}

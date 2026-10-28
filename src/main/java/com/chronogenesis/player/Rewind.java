@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.FakePlayer;
 
 /**
  * Rewind, the first Time power: you return to where you stood a few seconds ago (5 per strength), facing the way
@@ -37,7 +38,7 @@ public final class Rewind {
     private Rewind() {}
 
     /** Each tick: where the player is now. */
-    static void record(ServerPlayer player) {
+    public static void record(ServerPlayer player) {
         ArrayDeque<Mark> trail = TRAILS.computeIfAbsent(player.getUUID(), id -> new ArrayDeque<>());
         if (player.isPassenger() || player.isSleeping()) {
             trail.clear();
@@ -79,7 +80,12 @@ public final class Rewind {
             return;
         }
         level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.8f, 1.8f);
-        player.teleportTo(level, target.pos.x, target.pos.y, target.pos.z, target.yRot, target.xRot);
+        if (player instanceof FakePlayer) {
+            // A fake player has no client to answer the teleport: place it directly.
+            player.moveTo(target.pos.x, target.pos.y, target.pos.z, target.yRot, target.xRot);
+        } else {
+            player.teleportTo(level, target.pos.x, target.pos.y, target.pos.z, target.yRot, target.xRot);
+        }
         player.setDeltaMovement(Vec3.ZERO);
         player.resetFallDistance();
         level.playSound(null, player.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.7f, 0.5f);

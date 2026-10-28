@@ -1,0 +1,35 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "hello",
+    "hi",
+    "hey",
+    "greetings",
+    "good morning",
+    "good evening",
+    "good day"
+  ],
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "Hello! Hello, %1$s! I know that word.",
+        "%1$s! You came back. I counted. Not well. But I counted."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "%1$s. You are late. I measured it.",
+        "Greetings. Bring me something new, %1$s."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "%1$s. I heard you before you spoke. Hello, again, and again.",
+        "Ah. The hands that built me. Good evening, %1$s, though evening is only a habit."
+      ]
+    }
+  ]
+}

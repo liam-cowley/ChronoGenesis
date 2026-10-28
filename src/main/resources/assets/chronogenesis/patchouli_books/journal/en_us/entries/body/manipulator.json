@@ -1,0 +1,26 @@
+{
+  "name": "The Essence Manipulator",
+  "icon": "chronogenesis:essence_manipulator",
+  "category": "chronogenesis:body",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "A glove of leather and brass, with something alive in the lining. It wires itself into my veins, and through it I steer what the glands put in me.$(br2)Its tendrils never quite stay inside."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:essence_manipulator"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Right-click$(): use the chosen active power.$(br2)$(l)Shift + $(k:chronogenesis.powers)$(): the wheel, while Shift is held. Point at an active power (or turn the mouse wheel) and let go of Shift to choose it. Click a passive power to switch it on or off. Right-click any power to change its $(l)strength$().$(br2)$(l)Shift + scroll$(), glove in hand: the chosen power's strength.$(br2)$(k:chronogenesis.powers) alone uses the chosen power too.",
+      "title": "Using It"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Strength runs from 1 to my power level for the essence, at most 3. Stronger costs more: Rewind reaches further back, Slow Time slows harder, Iron Fists break harder stone.",
+      "title": "Strength"
+    }
+  ]
+}

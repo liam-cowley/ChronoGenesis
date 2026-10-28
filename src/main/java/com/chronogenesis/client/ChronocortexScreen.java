@@ -7,7 +7,10 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
 import com.chronogenesis.biocomputer.Clues;
+import com.chronogenesis.biocomputer.Lesson;
+import com.chronogenesis.biocomputer.Lessons;
 import com.chronogenesis.biocomputer.OrganismReport;
 import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
@@ -29,8 +32,9 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
- * The Chronocortex's view. Two pages: the organisms wired to it by Ganglions (store, hunger, stability),
- * and research (topics, what each costs, and which of those costs are already met).
+ * The Chronocortex's view. Three pages: the organisms wired to it by Ganglions (store, hunger, stability),
+ * research (topics, what each costs, and which of those costs are already met), and its mind (stage, lobes,
+ * awareness, the lessons it has learned and could learn, and what it needs to grow up).
  */
 public class ChronocortexScreen extends Screen {
     private static final int WIDTH = 300;
@@ -41,8 +45,12 @@ public class ChronocortexScreen extends Screen {
     private static final int TEXT = 0xFFE0D8C8;
     private static final int DIM = 0xFF9A9080;
 
+    private static final int ORGANISMS = 0;
+    private static final int RESEARCH = 1;
+    private static final int MIND = 2;
+
     private OpenChronocortexPayload data;
-    private boolean researchPage;
+    private int page;
     @Nullable
     private ResourceLocation selected;
     private Button researchButton;
@@ -76,11 +84,13 @@ public class ChronocortexScreen extends Screen {
         int x = left();
         int y = top();
         addRenderableWidget(Button.builder(Component.translatable("screen.chronogenesis.chronocortex.organisms"),
-                b -> { researchPage = false; rebuildWidgets(); }).bounds(x, y - 22, 80, 20).build()).active = researchPage;
+                b -> { page = ORGANISMS; rebuildWidgets(); }).bounds(x, y - 22, 70, 20).build()).active = page != ORGANISMS;
         addRenderableWidget(Button.builder(Component.translatable("screen.chronogenesis.chronocortex.research"),
-                b -> { researchPage = true; rebuildWidgets(); }).bounds(x + 84, y - 22, 80, 20).build()).active = !researchPage;
+                b -> { page = RESEARCH; rebuildWidgets(); }).bounds(x + 74, y - 22, 70, 20).build()).active = page != RESEARCH;
+        addRenderableWidget(Button.builder(Component.translatable("screen.chronogenesis.chronocortex.mind"),
+                b -> { page = MIND; rebuildWidgets(); }).bounds(x + 148, y - 22, 70, 20).build()).active = page != MIND;
 
-        if (researchPage) {
+        if (page == RESEARCH) {
             List<Map.Entry<ResourceLocation, ResearchTopic>> topics = topics();
             for (int i = 0; i < topics.size() && i < 8; i++) {
                 ResourceLocation id = topics.get(i).getKey();
@@ -123,10 +133,10 @@ public class ChronocortexScreen extends Screen {
         int y = top();
         graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.stage", data.stage()),
                 x + WIDTH - 70, y - 16, DIM, false);
-        if (researchPage) {
-            renderResearch(graphics, x, y);
-        } else {
-            renderOrganisms(graphics, x, y);
+        switch (page) {
+            case RESEARCH -> renderResearch(graphics, x, y);
+            case MIND -> renderMind(graphics, x, y);
+            default -> renderOrganisms(graphics, x, y);
         }
     }
 
@@ -170,6 +180,97 @@ public class ChronocortexScreen extends Screen {
             }
             row++;
         }
+    }
+
+    /** Its mind: who it is, how far it has grown, what it needs next, and its lessons. */
+    private void renderMind(GuiGraphics graphics, int x, int y) {
+        OpenChronocortexPayload.Mind mind = data.mind();
+        int stage = data.stage();
+        int line = y + 8;
+        Component who = mind.name().isEmpty() ? Component.translatable("screen.chronogenesis.chronocortex.unnamed")
+                : Component.literal(mind.name());
+        graphics.drawString(font, who.copy().withStyle(ChatFormatting.LIGHT_PURPLE), x + 8, line, TEXT, false);
+        graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.stage_name." + stage),
+                x + 8 + font.width(who) + 8, line, DIM, false);
+        line += 14;
+        graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.lobes", mind.lobes()), x + 8, line, TEXT, false);
+        graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.awareness", mind.awareness()),
+                x + 110, line, TEXT, false);
+        line += 12;
+
+        // What the next stage needs.
+        if (stage < ChronocortexBlockEntity.MAX_STAGE) {
+            int next = stage + 1;
+            graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.next", next), x + 8, line, DIM, false);
+            line += 10;
+            line = requirement(graphics, x + 14, line, mind.lobes() >= ChronocortexBlockEntity.STAGE_LOBES[next],
+                    Component.translatable("screen.chronogenesis.chronocortex.need_lobes", ChronocortexBlockEntity.STAGE_LOBES[next]));
+            line = requirement(graphics, x + 14, line, mind.awareness() >= ChronocortexBlockEntity.STAGE_AWARENESS[next],
+                    Component.translatable("screen.chronogenesis.chronocortex.need_awareness", ChronocortexBlockEntity.STAGE_AWARENESS[next]));
+            if (next == 1) {
+                line = requirement(graphics, x + 14, line, mind.lessons().contains(Lessons.WORDS),
+                        Component.translatable("screen.chronogenesis.chronocortex.need_words"));
+            } else if (next == 2) {
+                line = requirement(graphics, x + 14, line, mind.lessons().contains(Lessons.SELF),
+                        Component.translatable("screen.chronogenesis.chronocortex.need_name"));
+            } else {
+                line = requirement(graphics, x + 14, line, mind.cranium(),
+                        Component.translatable("screen.chronogenesis.chronocortex.need_cranium"));
+            }
+        } else {
+            graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.complete"), x + 8, line, OK, false);
+            line += 10;
+        }
+        line += 4;
+
+        // Lessons: learned, ready to learn (show it the item), or not yet.
+        graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.lessons"), x + 8, line, TEXT, false);
+        line += 11;
+        int column = 0;
+        int top = line;
+        for (Map.Entry<ResourceLocation, Lesson> entry : Lessons.all(minecraft.level.registryAccess())) {
+            Lesson lesson = entry.getValue();
+            boolean learned = mind.lessons().contains(entry.getKey());
+            boolean ready = !learned && stage >= lesson.stage() && mind.lobes() >= lesson.capacity();
+            int lx = x + 8 + column * (WIDTH / 2);
+            ItemStack[] items = lesson.item().getItems();
+            if (items.length > 0) {
+                graphics.pose().pushPose();
+                graphics.pose().translate(lx, line - 2, 0);
+                graphics.pose().scale(0.6f, 0.6f, 1.0f);
+                graphics.renderItem(items[0], 0, 0);
+                graphics.pose().popPose();
+            }
+            Component label;
+            int color;
+            if (learned) {
+                label = lesson.title();
+                color = OK;
+            } else if (ready) {
+                label = Component.translatable("screen.chronogenesis.chronocortex.lesson_ready", lesson.title());
+                color = TEXT;
+            } else if (stage < lesson.stage()) {
+                label = Component.translatable("screen.chronogenesis.chronocortex.lesson_stage", lesson.title(), lesson.stage());
+                color = DIM;
+            } else {
+                label = Component.translatable("screen.chronogenesis.chronocortex.lesson_room", lesson.title(), lesson.capacity());
+                color = DIM;
+            }
+            graphics.drawString(font, label, lx + 12, line, color, false);
+            line += 10;
+            if (line > y + HEIGHT - 12) {
+                if (column == 1) {
+                    break;
+                }
+                column = 1;
+                line = top;
+            }
+        }
+    }
+
+    private int requirement(GuiGraphics graphics, int x, int y, boolean met, Component text) {
+        graphics.drawString(font, Component.literal(met ? "+ " : "- ").append(text), x, y, met ? OK : MISSING, false);
+        return y + 10;
     }
 
     private void renderResearch(GuiGraphics graphics, int x, int y) {

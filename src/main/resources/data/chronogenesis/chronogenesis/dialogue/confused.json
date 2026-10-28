@@ -1,0 +1,27 @@
+{
+  "kind": "confused",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "I don't know that word yet.",
+        "Again? Slower?",
+        "Hm? Hmmm."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "That means nothing to me. Teach me, or be quiet.",
+        "Rephrase."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "You are speaking in circles, %1$s. I see all of them.",
+        "No."
+      ]
+    }
+  ]
+}

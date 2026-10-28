@@ -1,0 +1,426 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#overlay"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#overlay"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#overlay"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#overlay"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#overlay"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#overlay"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#crystal"
+        },
+        "east": {
+          "texture": "#crystal"
+        },
+        "north": {
+          "texture": "#crystal"
+        },
+        "south": {
+          "texture": "#crystal"
+        },
+        "up": {
+          "texture": "#crystal"
+        },
+        "west": {
+          "texture": "#crystal"
+        }
+      },
+      "from": [
+        2,
+        15,
+        3.5
+      ],
+      "rotation": {
+        "angle": 45.0,
+        "axis": "y",
+        "origin": [
+          4,
+          15,
+          4
+        ]
+      },
+      "to": [
+        6,
+        21,
+        4.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#crystal"
+        },
+        "east": {
+          "texture": "#crystal"
+        },
+        "north": {
+          "texture": "#crystal"
+        },
+        "south": {
+          "texture": "#crystal"
+        },
+        "up": {
+          "texture": "#crystal"
+        },
+        "west": {
+          "texture": "#crystal"
+        }
+      },
+      "from": [
+        2,
+        15,
+        3.5
+      ],
+      "rotation": {
+        "angle": -45.0,
+        "axis": "y",
+        "origin": [
+          4,
+          15,
+          4
+        ]
+      },
+      "to": [
+        6,
+        21,
+        4.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#crystal"
+        },
+        "east": {
+          "texture": "#crystal"
+        },
+        "north": {
+          "texture": "#crystal"
+        },
+        "south": {
+          "texture": "#crystal"
+        },
+        "up": {
+          "texture": "#crystal"
+        },
+        "west": {
+          "texture": "#crystal"
+        }
+      },
+      "from": [
+        9,
+        15,
+        9.5
+      ],
+      "rotation": {
+        "angle": 45.0,
+        "axis": "y",
+        "origin": [
+          11,
+          15,
+          10
+        ]
+      },
+      "to": [
+        13,
+        19,
+        10.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#crystal"
+        },
+        "east": {
+          "texture": "#crystal"
+        },
+        "north": {
+          "texture": "#crystal"
+        },
+        "south": {
+          "texture": "#crystal"
+        },
+        "up": {
+          "texture": "#crystal"
+        },
+        "west": {
+          "texture": "#crystal"
+        }
+      },
+      "from": [
+        9,
+        15,
+        9.5
+      ],
+      "rotation": {
+        "angle": -45.0,
+        "axis": "y",
+        "origin": [
+          11,
+          15,
+          10
+        ]
+      },
+      "to": [
+        13,
+        19,
+        10.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#crystal"
+        },
+        "east": {
+          "texture": "#crystal"
+        },
+        "north": {
+          "texture": "#crystal"
+        },
+        "south": {
+          "texture": "#crystal"
+        },
+        "up": {
+          "texture": "#crystal"
+        },
+        "west": {
+          "texture": "#crystal"
+        }
+      },
+      "from": [
+        6,
+        15,
+        12.5
+      ],
+      "rotation": {
+        "angle": 45.0,
+        "axis": "y",
+        "origin": [
+          8,
+          15,
+          13
+        ]
+      },
+      "to": [
+        10,
+        20,
+        13.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#crystal"
+        },
+        "east": {
+          "texture": "#crystal"
+        },
+        "north": {
+          "texture": "#crystal"
+        },
+        "south": {
+          "texture": "#crystal"
+        },
+        "up": {
+          "texture": "#crystal"
+        },
+        "west": {
+          "texture": "#crystal"
+        }
+      },
+      "from": [
+        6,
+        15,
+        12.5
+      ],
+      "rotation": {
+        "angle": -45.0,
+        "axis": "y",
+        "origin": [
+          8,
+          15,
+          13
+        ]
+      },
+      "to": [
+        10,
+        20,
+        13.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#crystal"
+        },
+        "east": {
+          "texture": "#crystal"
+        },
+        "north": {
+          "texture": "#crystal"
+        },
+        "south": {
+          "texture": "#crystal"
+        },
+        "up": {
+          "texture": "#crystal"
+        },
+        "west": {
+          "texture": "#crystal"
+        }
+      },
+      "from": [
+        11,
+        7,
+        2.5
+      ],
+      "rotation": {
+        "angle": 45.0,
+        "axis": "y",
+        "origin": [
+          13,
+          7,
+          3
+        ]
+      },
+      "to": [
+        15,
+        12,
+        3.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#crystal"
+        },
+        "east": {
+          "texture": "#crystal"
+        },
+        "north": {
+          "texture": "#crystal"
+        },
+        "south": {
+          "texture": "#crystal"
+        },
+        "up": {
+          "texture": "#crystal"
+        },
+        "west": {
+          "texture": "#crystal"
+        }
+      },
+      "from": [
+        11,
+        7,
+        2.5
+      ],
+      "rotation": {
+        "angle": -45.0,
+        "axis": "y",
+        "origin": [
+          13,
+          7,
+          3
+        ]
+      },
+      "to": [
+        15,
+        12,
+        3.5
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "crystal": "minecraft:block/amethyst_block",
+    "eye": "chronogenesis:block/eye",
+    "flesh": "chronogenesis:block/chronoflesh_time",
+    "frame": "chronogenesis:block/brass_block",
+    "overlay": "chronogenesis:block/chronoflesh_time_overlay",
+    "particle": "chronogenesis:block/chronoflesh_time",
+    "pustule": "chronogenesis:block/flesh_pustule",
+    "steel": "chronogenesis:block/steel"
+  }
+}

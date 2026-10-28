@@ -1,0 +1,18 @@
+{
+  "title": {
+    "translate": "lesson.chronogenesis.music"
+  },
+  "description": {
+    "translate": "lesson.chronogenesis.music.desc"
+  },
+  "item": {
+    "tag": "c:music_discs"
+  },
+  "stage": 1,
+  "capacity": 16,
+  "awareness": 1,
+  "learned": {
+    "translate": "lesson.chronogenesis.music.learned"
+  },
+  "order": 4
+}

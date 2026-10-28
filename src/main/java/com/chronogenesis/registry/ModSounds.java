@@ -16,5 +16,9 @@ public final class ModSounds {
     public static final Supplier<SoundEvent> LENS_SCRIBBLE = SOUND_EVENTS.register("lens.scribble",
             () -> SoundEvent.createVariableRangeEvent(ChronoGenesis.id("lens.scribble")));
 
+    /** The Chronocortex speaking: a wet click of thought and a hollow, wordless voice under the words. */
+    public static final Supplier<SoundEvent> CORTEX_SPEAKS = SOUND_EVENTS.register("cortex.speaks",
+            () -> SoundEvent.createVariableRangeEvent(ChronoGenesis.id("cortex.speaks")));
+
     private ModSounds() {}
 }

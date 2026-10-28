@@ -1,7 +1,16 @@
 {
   "variants": {
-    "": {
+    "stage=0": {
       "model": "chronogenesis:block/chronocortex"
+    },
+    "stage=1": {
+      "model": "chronogenesis:block/chronocortex_stage_1"
+    },
+    "stage=2": {
+      "model": "chronogenesis:block/chronocortex_stage_2"
+    },
+    "stage=3": {
+      "model": "chronogenesis:block/chronocortex_stage_3"
     }
   }
 }

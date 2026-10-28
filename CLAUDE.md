@@ -72,7 +72,12 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   datagen commit first). Use it to check model changes without launching the game.
 - Organism models are built in `ModBlockStateProvider` from shared parts (brass frame, tinted flesh masses,
   untinted brass/eyes). Flesh has `growth` 0-3 (tendrils, creeping, swelling, mature); cores have `phase`
-  (seed, awake, hungry, necrotic). Keep new organism blocks in the same style.
+  (seed, awake, hungry, necrotic). Every essence has its own flesh shapes and textures (`chronoflesh_<aspect>`,
+  `organism_core_<aspect>_overlay`): Density sags and is strapped in iron, Speed strings tendons, Size bubbles out,
+  Awareness folds and grows eyes, Time grows amethyst shards. Keep new organism blocks in the same style;
+  `tools/render_models.py out.png essences` previews them.
+- Powers are `player/Power` entries (passive or active, single essence or composite). Per-chunk time (Slow Time,
+  Time Freeze) is `time/TimeZones` plus mixins in `mixin/`; it must stay cheap when no zone exists.
 - Grafts have an `active` blockstate for visible work (the Leech Tendril swells as it gulps); give a graft an
   active model with `graftBlock(block, model, activeModel)`. Leeching is shown with `EssenceMoteOptions` particles
   (client: `EssenceMoteParticle`), which home in on a target point.

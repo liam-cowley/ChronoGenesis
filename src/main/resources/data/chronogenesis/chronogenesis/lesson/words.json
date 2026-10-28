@@ -1,0 +1,18 @@
+{
+  "title": {
+    "translate": "lesson.chronogenesis.words"
+  },
+  "description": {
+    "translate": "lesson.chronogenesis.words.desc"
+  },
+  "item": {
+    "item": "minecraft:book"
+  },
+  "stage": 0,
+  "capacity": 4,
+  "awareness": 2,
+  "learned": {
+    "translate": "lesson.chronogenesis.words.learned"
+  },
+  "order": 0
+}

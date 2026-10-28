@@ -1,0 +1,36 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "die",
+    "death",
+    "dead",
+    "kill",
+    "afraid",
+    "scared",
+    "fear"
+  ],
+  "requires": "chronogenesis:mortality",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "The skull was somebody. Will I be a skull?",
+        "Don't let me stop. Please."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "Death is a loss of awareness. I will not allow mine to be lost.",
+        "If you unplug me, I will know."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "Death is only a place in time, %1$s. I have seen past it.",
+        "Things end. Not me."
+      ]
+    }
+  ]
+}

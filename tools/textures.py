@@ -10,7 +10,7 @@ Layer conventions (must match the models in datagen):
   * Containers (syringe, vial, ampoule): <name> = vessel, <name>_fill = liquid mask (tinted by aspect),
     <name>_front = untinted details drawn over the liquid.
   * Culture: culture = growth (tinted by aspect), culture_dish = untinted dish drawn on top.
-  * Flesh and organism core: <name> = flesh (tinted by aspect), <name>_overlay = untinted details.
+  * Flesh and organism core: <name>_<aspect> = flesh (tinted by aspect), <name>_<aspect>_overlay = untinted details.
 """
 import math
 import os
@@ -442,39 +442,8 @@ def flesh_base(seed, base=205):
     return img
 
 
-def chronoflesh():
-    save(flesh_base(11), "block/chronoflesh")
-    # A sutured scar (Frankenstein) and a pair of brass surgical staples.
-    img = new()
-    scar = [(12, 3), (11, 4), (10, 5), (9, 6), (8, 7), (7, 8), (6, 9), (5, 10), (4, 11), (3, 12)]
-    for i, (x, y) in enumerate(scar):
-        img.putpixel((x, y), (112, 46, 58, 255) if i % 2 else (140, 66, 76, 255))
-        if i % 2 == 1:  # stitches cross the scar
-            img.putpixel((x - 1, y - 1), THREAD)
-            img.putpixel((x + 1, y + 1), THREAD_HI)
-    grid([
-        "................",
-        "................",
-        "..kBHk..........",
-        "..b..b..........",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "..........b..b..",
-        "..........kHBk..",
-        "................",
-    ], {"k": BRASS_DDK, "b": BRASS_DK, "B": BRASS, "H": BRASS_HI}, img)
-    save(img, "block/chronoflesh_overlay")
-
-
 def organism_core():
-    # Flesh with veins converging on the centre.
+    # The seed's flesh, veins converging on the centre (each essence's awake core has its own; see organism_textures).
     img = flesh_base(23, base=200)
     r = rng(5)
     for angle in [0.3, 1.4, 2.5, 3.7, 4.8, 5.8]:
@@ -484,29 +453,6 @@ def organism_core():
             if 0 <= x < 16 and 0 <= y < 16:
                 img.putpixel((x, y), shade(img.getpixel((x, y)), -55))
     save(img, "block/organism_core")
-
-    # The eye: sickly sclera, a slit pupil, held in a riveted brass monocle.
-    p = {"k": BRASS_DDK, "B": BRASS, "H": BRASS_HI, "b": BRASS_DK, "r": (200, 70, 60, 255),
-         "S": (220, 208, 130, 255), "s": (176, 160, 90, 255), "i": (160, 200, 60, 255), "I": (110, 150, 40, 255),
-         "x": (16, 10, 14, 255), "W": GLINT, "R": BRASS_HI}
-    save(grid([
-        "................",
-        "................",
-        "......kbbk......",
-        "....kbBHBBbk....",
-        "...kBsSSSSsBk...",
-        "...bSrSiiSSSb...",
-        "..kHSiIxxIiSBk..",
-        "..bBSiWxxIiSBb..",
-        "..bBSiIxxIirBb..",
-        "..kBSSiIIiSSBk..",
-        "...bsSSrSSSsb...",
-        "...kBsSSSSsBk...",
-        "....kbBBBBbk....",
-        "......kbbk......",
-        "................",
-        "................",
-    ], p), "block/organism_core_overlay")
 
 
 def necrotic():
@@ -906,31 +852,6 @@ def flesh_pustule():
         img.putpixel((x, y), (255, 250, 220, 255))
         img.putpixel((x + 1, y + 1), (160, 130, 60, 255))
     save(img, "block/flesh_pustule")
-
-
-def organism_core_hungry_overlay():
-    # The eye when starving: lid half shut, bloodshot, the brass monocle tarnished.
-    p = {"k": BRASS_DDK, "B": BRASS_DK, "b": (110, 80, 40, 255), "r": (210, 50, 50, 255),
-         "S": (196, 180, 110, 255), "s": (150, 130, 80, 255), "i": (140, 160, 60, 255), "x": (16, 10, 14, 255),
-         "l": (120, 60, 70, 255), "L": (150, 80, 90, 255), "t": THREAD}
-    save(grid([
-        "................",
-        "................",
-        "......kbbk......",
-        "....kbBBBBbk....",
-        "...kBLLLLLLBk...",
-        "...bLLLLLLLLb...",
-        "..kBlllllllLBk..",
-        "..bBSrSixxiSBb..",
-        "..bBSiixxirSBb..",
-        "..kBsSrSiSSsBk..",
-        "...bsSSrSSSsb...",
-        "...kBsSSSSsBk...",
-        "....kbBBBBbk....",
-        "......kbbk......",
-        "................",
-        "................",
-    ], p), "block/organism_core_hungry_overlay")
 
 
 # ---------------------------------------------------------------- veins, new grafts
@@ -1512,6 +1433,552 @@ def suit_armor_layers():
         img.save(full)
 
 
+# ---------------------------------------------------------------- organisms by essence (texture overhaul)
+# Each essence's flesh has its own texture, not only its own tint: the flesh layer (tinted) carries the pattern,
+# the overlay (untinted) the details. Cores have their own eye per essence, and a hungry version of it.
+
+def tissue(seed, value):
+    """A greyscale-ish flesh texture from a value function v(x, y) (tinted in game)."""
+    r = rng(seed)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            v = value(x, y) + r.randint(-7, 7)
+            img.putpixel((x, y), (int(max(0, min(255, v + 8))), int(max(0, min(255, v))), int(max(0, min(255, v - 4))), 255))
+    return img
+
+
+def density_tissue(seed):
+    # Compressed strata, as if the flesh had settled under its own weight.
+    return tissue(seed, lambda x, y: 186 + 16 * math.sin(y * 1.55 + math.sin(x * 0.4) * 0.6) - (6 if y % 4 == 0 else 0))
+
+
+def speed_tissue(seed):
+    # Striated muscle: fine diagonal fibres, a pale tendon every few.
+    def v(x, y):
+        d = (x + y) % 5
+        return 214 if d == 0 else 196 + 10 * math.sin((x + y) * 1.25)
+    return tissue(seed, v)
+
+
+def size_tissue(seed):
+    # Swollen cells: round bubbles with dark walls and a nucleus.
+    r = rng(seed)
+    cells = [(r.uniform(0, 16), r.uniform(0, 16), r.uniform(2.6, 4.2)) for _ in range(7)]
+
+    def v(x, y):
+        best = 99.0
+        for cx, cy, rad in cells:
+            for ox in (-16, 0, 16):
+                for oy in (-16, 0, 16):
+                    d = math.hypot(x + 0.5 - cx - ox, y + 0.5 - cy - oy) / rad
+                    best = min(best, d)
+        if best < 0.25:
+            return 150  # nucleus
+        if best < 0.85:
+            return 222 - 14 * best
+        return 160
+    return tissue(seed, v)
+
+
+def awareness_tissue(seed):
+    # Brain folds: winding gyri, dark sulci between them.
+    def v(x, y):
+        f = math.sin(x * 1.2 + math.sin(y * 0.8) * 2.4) + math.sin(y * 1.05 + x * 0.35)
+        return 224 if f > 0.55 else 196 if f > -0.55 else 156
+    return tissue(seed, v)
+
+
+def time_tissue(seed):
+    # Growth rings, like a tree's: time written into the flesh, off-centre.
+    return tissue(seed, lambda x, y: 196 + 18 * math.sin(math.hypot(x - 3.5, y - 12.5) * 1.6))
+
+
+TISSUES = {"density": density_tissue, "speed": speed_tissue, "size": size_tissue,
+           "awareness": awareness_tissue, "time": time_tissue}
+
+IRON_HI = (200, 204, 212, 255)
+IRON = (128, 132, 142, 255)
+IRON_DK = (70, 72, 82, 255)
+
+
+def flesh_overlays():
+    """The untinted details on mature flesh, one per essence."""
+    # Density: rows of iron rivets, a scar sewn with wire.
+    img = new()
+    for x in (2, 6, 10, 14):
+        for y in (1, 14):
+            img.putpixel((x, y), IRON_HI)
+            img.putpixel((x, y + 1 if y == 1 else y - 1), IRON_DK)
+    for i, x in enumerate(range(3, 13)):
+        img.putpixel((x, 8), (96, 52, 60, 255))
+        if i % 2:
+            img.putpixel((x, 7), STEEL)
+            img.putpixel((x, 9), STEEL_DK)
+    save(img, "block/chronoflesh_density_overlay")
+
+    # Speed: pale tendons glinting along the fibres, copper staples across them.
+    img = new()
+    for x, y in [(1, 14), (2, 13), (3, 12), (4, 11), (9, 6), (10, 5), (11, 4), (12, 3), (13, 2)]:
+        img.putpixel((x, y), (246, 236, 220, 200))
+    for (x, y) in [(6, 9), (7, 8)]:
+        img.putpixel((x, y), COPPER_HI)
+        img.putpixel((x - 1, y - 1), COPPER_DK)
+        img.putpixel((x + 1, y + 1), COPPER)
+    save(img, "block/chronoflesh_speed_overlay")
+
+    # Size: wet highlights on the swollen cells.
+    img = new()
+    r = rng(71)
+    for _ in range(7):
+        x, y = r.randint(1, 13), r.randint(1, 13)
+        img.putpixel((x, y), (255, 255, 255, 170))
+        img.putpixel((x + 1, y), (255, 255, 255, 90))
+    save(img, "block/chronoflesh_size_overlay")
+
+    # Awareness: tiny eyes opening in the folds.
+    img = new()
+    for (x, y) in [(3, 4), (10, 2), (7, 10), (12, 12)]:
+        img.putpixel((x - 1, y), (226, 214, 196, 255))
+        img.putpixel((x, y), ELDRITCH_DK)
+        img.putpixel((x + 1, y), (226, 214, 196, 255))
+        img.putpixel((x, y - 1), (120, 70, 80, 255))
+    save(img, "block/chronoflesh_awareness_overlay")
+
+    # Time: amber sparks caught in the rings, teal crystal flecks.
+    img = new()
+    for (x, y) in [(5, 11), (9, 8), (12, 4), (2, 6)]:
+        img.putpixel((x, y), AMBER_HI)
+    for (x, y) in [(7, 13), (13, 9), (4, 2), (10, 14)]:
+        img.putpixel((x, y), TEAL_HI)
+        img.putpixel((x + 1 if x < 15 else x - 1, y), TEAL_DK)
+    save(img, "block/chronoflesh_time_overlay")
+
+
+def organism_textures():
+    seeds = {"density": 31, "speed": 32, "size": 33, "awareness": 34, "time": 35}
+    for name, make in TISSUES.items():
+        save(make(seeds[name]), "block/chronoflesh_" + name)
+        core = make(seeds[name] + 100)
+        # Veins converging on the eye.
+        for angle in [0.3, 1.4, 2.5, 3.7, 4.8, 5.8]:
+            for dist in range(6, 9):
+                x = int(round(7.5 + math.cos(angle) * dist))
+                y = int(round(7.5 + math.sin(angle) * dist))
+                if 0 <= x < 16 and 0 <= y < 16:
+                    core.putpixel((x, y), shade(core.getpixel((x, y)), -55))
+        save(core, "block/organism_core_" + name)
+    flesh_overlays()
+
+    W = (230, 220, 200, 255)
+    WS = (190, 176, 156, 255)
+    X = (14, 10, 14, 255)
+    eyes = {
+        # Density: a heavy-lidded grey eye behind a riveted iron porthole.
+        "density": (grid([
+            "................",
+            "................",
+            "..kkkkkkkkkkkk..",
+            "..kIIrIIIIrIIk..",
+            "..kIllllllllIk..",
+            "..kIlLLLLLLlIk..",
+            "..rIsWWWWWWsIr..",
+            "..kIWWgGGgWWIk..",
+            "..kIWWGxxGWWIk..",
+            "..kIsWgGGgWsIk..",
+            "..rIssWWWWssIr..",
+            "..kIIsssssIIIk..",
+            "..kIIrIIIIrIIk..",
+            "..kkkkkkkkkkkk..",
+            "................",
+            "................",
+        ], {"k": IRON_DK, "I": IRON, "r": IRON_HI, "l": (120, 66, 74, 255), "L": (156, 90, 98, 255),
+            "s": WS, "W": W, "g": STEEL_DK, "G": STEEL, "x": X})),
+        # Speed: a darting eye with a goat's slit, motion-streaked, in a copper dial.
+        "speed": (grid([
+            "................",
+            "................",
+            "......kccck.....",
+            "....kcCHHCck....",
+            "...kCsWWWWsCk...",
+            "..kCsWWWWWWWsCk.",
+            "..cWWyYYYYyWWc..",
+            ".-cWyYxxxxxYyWc-",
+            "..cWWyYYYYyWWc..",
+            "..kCsWWWWWWWsCk.",
+            "...kCsWWWWsCk...",
+            "....kcCCCCck....",
+            "......kcck......",
+            "................",
+            "................",
+            "................",
+        ], {"k": COPPER_DK, "c": COPPER, "C": COPPER, "H": COPPER_HI, "s": WS, "W": W,
+            "y": (130, 150, 30, 255), "Y": (196, 214, 70, 255), "x": X, "-": (246, 236, 200, 160)})),
+        # Size: one huge, dilated eye under a magnifying glass.
+        "size": (grid([
+            ".....eeeeee.....",
+            "...eegggggee....",
+            "..egWWWWWWWge...",
+            ".egWWsoooosWge..",
+            ".egWsoOOOOosWge.",
+            "egWsoOxxxxOosWge",
+            "egWoOxxxxxxOoWge",
+            "egWoOxxxxxxOoWge",
+            "egWoOxxxxxxOoWge",
+            "egWsoOxxxxOosWge",
+            ".egWsoOOOOosWge.",
+            ".egWWsoooosWWge.",
+            "..egWWWWWWWWge..",
+            "...eegggggee....",
+            ".....eeeeee.....",
+            "................",
+        ], {"e": BRASS_DK, "g": GLASS_EDGE, "W": W, "s": WS, "o": AMBER_DK, "O": AMBER, "x": X})),
+        # Awareness: three eyes, the middle one ringed in brass.
+        "awareness": (grid([
+            "................",
+            "..sWWs....sWWs..",
+            ".sWiIWs..sWIiWs.",
+            ".sWIxWs..sWxIWs.",
+            "..sWWs....sWWs..",
+            "......kbbk......",
+            ".....kBsWBk.....",
+            "....kBWWWWBk....",
+            "....bWiIIiWb....",
+            "....BWIxxIWB....",
+            "....bWiIIiWb....",
+            "....kBWWWWBk....",
+            ".....kBssBk.....",
+            "......kbbk......",
+            "................",
+            "................",
+        ], {"k": BRASS_DDK, "b": BRASS_DK, "B": BRASS, "s": WS, "W": W, "i": ELDRITCH_DK, "I": ELDRITCH, "x": X})),
+        # Time: an amber iris marked like a clock face, the pupil two hands, in a brass bezel.
+        "time": (grid([
+            "................",
+            "................",
+            "......kbbk......",
+            "....kbBHBBbk....",
+            "...kBsWWWWsBk...",
+            "...bWaAtAAaWb...",
+            "..kBaAAxAAAaBk..",
+            "..bWtAAxAAAtWb..",
+            "..bWaAAxxxAaWb..",
+            "..kBaAAAAAAaBk..",
+            "...bWaAtAAaWb...",
+            "...kBsWWWWsBk...",
+            "....kbBBBBbk....",
+            "......kbbk......",
+            "................",
+            "................",
+        ], {"k": BRASS_DDK, "b": BRASS_DK, "B": BRASS, "H": BRASS_HI, "s": WS, "W": W,
+            "a": AMBER_DK, "A": AMBER, "t": TEAL_HI, "x": X})),
+    }
+    for name, img in eyes.items():
+        save(img, "block/organism_core_" + name + "_overlay")
+        save(hungry_eye(img), "block/organism_core_" + name + "_hungry_overlay")
+
+
+def hungry_eye(awake):
+    """The same eye, half shut under a heavy lid, bloodshot, its metal tarnished."""
+    img = awake.copy()
+    rows = [y for y in range(16) if any(img.getpixel((x, y))[3] > 0 for x in range(16))]
+    top, bottom = min(rows), max(rows)
+    lid_to = top + (bottom - top) * 5 // 9
+    r = rng(17)
+    for y in range(16):
+        for x in range(16):
+            c = img.getpixel((x, y))
+            if c[3] == 0:
+                continue
+            metal = c[0] > 120 and c[0] > c[2] + 40 and c[1] > c[2]
+            pale = c[0] > 170 and c[1] > 160 and c[2] > 140
+            if metal:
+                img.putpixel((x, y), shade(c, -50))
+            elif y <= lid_to:
+                img.putpixel((x, y), (132, 72, 82, 255) if y < lid_to else (86, 40, 50, 255))
+            elif pale and r.random() < 0.25:
+                img.putpixel((x, y), (200, 60, 60, 255))
+    return img
+
+
+# ---------------------------------------------------------------- the Chronocortex's lobes and Cerebrum
+
+def lobe_texture(seed, deep):
+    r = rng(seed)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            f = math.sin(x * (0.95 if deep else 1.25) + math.sin(y * 0.75) * 2.6) + math.sin(y * 1.0 + x * 0.4)
+            if f > 0.5:
+                c = (214, 168, 176, 255) if not deep else (198, 140, 156, 255)
+            elif f > -0.5:
+                c = (178, 128, 142, 255) if not deep else (156, 98, 120, 255)
+            else:
+                c = (118, 72, 92, 255) if not deep else (84, 44, 66, 255)
+            img.putpixel((x, y), shade(c, r.randint(-6, 6)))
+    return img
+
+
+def cortex_lobes():
+    save(lobe_texture(201, False), "block/cortex_lobe")
+    cerebrum = lobe_texture(202, True)
+    # Brass staples along a suture, and electrodes sparking in the folds.
+    for i, x in enumerate(range(1, 15)):
+        y = 7 + (1 if i % 4 < 2 else 0)
+        cerebrum.putpixel((x, y), (70, 30, 46, 255))
+        if i % 3 == 0:
+            cerebrum.putpixel((x, y - 1), BRASS_HI)
+            cerebrum.putpixel((x, y + 1), BRASS_DK)
+    for (x, y) in [(3, 3), (12, 12), (11, 2)]:
+        cerebrum.putpixel((x, y), STEEL_HI)
+        cerebrum.putpixel((x + 1, y), TEAL_HI)
+    save(cerebrum, "block/cerebrum")
+
+    eye = lobe_texture(203, True)
+    grid([
+        "................",
+        "................",
+        "....kkkkkkkk....",
+        "...kllllllllk...",
+        "..klsWWWWWWslk..",
+        ".klsWWiiiiWWslk.",
+        ".ksWWiIIIIiWWsk.",
+        ".kWWiIIxxIIiWWk.",
+        ".kWWiIxxxxIiWWk.",
+        ".ksWWiIIIIirWsk.",
+        ".klsWWiiiiWWslk.",
+        "..klsWWrWWWslk..",
+        "...kllllllllk...",
+        "....kkkkkkkk....",
+        "................",
+        "................",
+    ], {"k": (60, 24, 40, 255), "l": (150, 84, 104, 255), "s": (200, 186, 170, 255), "W": (236, 228, 212, 255),
+        "i": ELDRITCH_DK, "I": ELDRITCH, "x": (10, 8, 12, 255), "r": (200, 70, 70, 255)}, eye)
+    save(eye, "block/cerebrum_eye")
+
+
+# ---------------------------------------------------------------- the Essence Manipulator (animated)
+
+GLOVE = [
+    "................",
+    "....kk.kk.kk....",
+    "...kLLkLLkLLk...",
+    "...kLLkLLkLLk...",
+    "...kBBkBBkBBkk..",
+    "...kLLkLLkLLkLk.",
+    "..kkLLdLLdLLkLLk",
+    "..kLLLLLLLLLLLk.",
+    "..kLdLBBBBLLdk..",
+    "..kLLBHBBBBLLk..",
+    "..kLLLBBBBLLLk..",
+    "...kLLLdLLLLk...",
+    "...kCCCCCCCCk...",
+    "...kCrCCCCrCk...",
+    "...kCCCCCCCCk...",
+    "...kkkkkkkkkk...",
+]
+LEATHER_PAL = {"k": (34, 22, 20, 255), "L": (104, 64, 44, 255), "B": BRASS, "H": BRASS_HI, "C": COPPER, "r": COPPER_HI,
+               "d": (30, 12, 28, 255)}
+# Tendrils curling out of the slits: (slit, path outward). Each frame shows a different length of each.
+TENDRILS = [
+    ((6, 6), [(6, 5), (5, 4)]),
+    ((9, 6), [(9, 5), (10, 4)]),
+    ((4, 8), [(3, 9), (2, 9), (1, 8)]),
+    ((12, 8), [(13, 9), (14, 9), (15, 8)]),
+    ((7, 11), [(7, 12)]),
+]
+TENDRIL = (138, 64, 128, 255)
+TENDRIL_TIP = (176, 232, 128, 255)
+FRAMES = 8
+
+
+def essence_manipulator():
+    strip = Image.new("RGBA", (16, 16 * FRAMES), CLEAR)
+    for f in range(FRAMES):
+        img = grid(GLOVE, LEATHER_PAL)
+        # Light in the slits: something moving inside.
+        for i, ((sx, sy), path) in enumerate(TENDRILS):
+            glow = 0.5 + 0.5 * math.sin(2 * math.pi * f / FRAMES + i * 1.7)
+            img.putpixel((sx, sy), (int(30 + 110 * glow), int(12 + 60 * glow), int(28 + 90 * glow), 255))
+            length = int(round((len(path) + 0.4) * (0.5 + 0.5 * math.sin(2 * math.pi * f / FRAMES + i * 2.3))))
+            for j, (x, y) in enumerate(path[:length]):
+                tip = j == length - 1
+                img.putpixel((x, y), TENDRIL_TIP if tip else TENDRIL)
+        strip.paste(img, (0, 16 * f))
+    full = os.path.join(OUT, "item/essence_manipulator.png")
+    os.makedirs(os.path.dirname(full), exist_ok=True)
+    strip.save(full)
+    with open(full + ".mcmeta", "w") as meta:
+        meta.write('{\n  "animation": {\n    "frametime": 3,\n    "interpolate": false\n  }\n}\n')
+    WRITTEN.append(("item/essence_manipulator", strip.crop((0, 0, 16, 16))))
+
+
+def confluence_needle():
+    # Two hollow needles twisted into one: a brass Y-joint, two steel shafts splaying to two points.
+    save(grid([
+        "............s..s",
+        "...........sS.sS",
+        "..........sS.sS.",
+        ".........sS.sS..",
+        "........sS.sS...",
+        ".......sSsSS....",
+        "......sSSS......",
+        ".....sSS........",
+        "....kBBk........",
+        "...kBHBk........",
+        "..kBBBk.........",
+        ".kBBBk..........",
+        ".kGGk...........",
+        "kGGk............",
+        "kkk.............",
+        "................",
+    ], {"s": STEEL_HI, "S": STEEL, "k": BRASS_DDK, "B": BRASS, "H": BRASS_HI, "G": (150, 80, 110, 255)}),
+        "item/confluence_needle")
+
+
+# ---------------------------------------------------------------- power icons (wheel and HUD)
+
+GLYPH = (244, 236, 214, 255)
+GLYPH_EDGE = (24, 16, 18, 255)
+
+
+def icon(name, draw_fn):
+    from PIL import ImageDraw
+    img = new()
+    d = ImageDraw.Draw(img)
+    draw_fn(d)
+    # A dark outline around the glyph so it reads on any colour.
+    out = img.copy()
+    for y in range(16):
+        for x in range(16):
+            if img.getpixel((x, y))[3] == 0 and any(
+                    0 <= x + dx < 16 and 0 <= y + dy < 16 and img.getpixel((x + dx, y + dy))[3] > 0
+                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                out.putpixel((x, y), GLYPH_EDGE)
+    save(out, "gui/power/" + name)
+
+
+def power_icons():
+    G = GLYPH
+
+    def fist(d):
+        d.rectangle([4, 5, 11, 11], fill=G)
+        for x in (5, 7, 9):
+            d.point((x, 5), fill=(150, 140, 120, 255))
+        d.rectangle([5, 12, 10, 13], fill=G)
+
+    def eye(d, pupil=True):
+        d.ellipse([2, 5, 13, 10], outline=G)
+        if pupil:
+            d.rectangle([7, 6, 8, 9], fill=G)
+
+    def glowing(d):
+        eye(d)
+        for p in [(1, 3), (14, 3), (7, 2), (1, 12), (14, 12)]:
+            d.point(p, fill=G)
+
+    def quick(d):
+        d.line([(3, 3), (7, 7), (3, 11)], fill=G)
+        d.line([(8, 3), (12, 7), (8, 11)], fill=G)
+
+    def shrink(d):
+        d.rectangle([6, 6, 9, 9], outline=G)
+        for a, b in [((1, 1), (4, 4)), ((14, 1), (11, 4)), ((1, 14), (4, 11)), ((14, 14), (11, 11))]:
+            d.line([a, b], fill=G)
+
+    def grow(d):
+        d.rectangle([5, 5, 10, 10], outline=G)
+        for a, b in [((4, 4), (1, 1)), ((11, 4), (14, 1)), ((4, 11), (1, 14)), ((11, 11), (14, 14))]:
+            d.line([a, b], fill=G)
+        for p in [(1, 2), (2, 1), (14, 2), (13, 1), (1, 13), (2, 14), (14, 13), (13, 14)]:
+            d.point(p, fill=G)
+
+    def rewind(d):
+        d.polygon([(7, 3), (7, 11), (2, 7)], fill=G)
+        d.polygon([(13, 3), (13, 11), (8, 7)], fill=G)
+
+    def hourglass(d):
+        d.line([(3, 2), (12, 2)], fill=G)
+        d.line([(3, 13), (12, 13)], fill=G)
+        d.polygon([(4, 3), (11, 3), (8, 7), (7, 7)], fill=G)
+        d.polygon([(7, 8), (8, 8), (11, 12), (4, 12)], outline=G)
+
+    def freeze(d):
+        d.line([(7, 1), (7, 14)], fill=G)
+        d.line([(1, 7), (14, 7)], fill=G)
+        d.line([(3, 3), (12, 12)], fill=G)
+        d.line([(12, 3), (3, 12)], fill=G)
+        d.rectangle([6, 6, 8, 8], fill=(0, 0, 0, 0))
+        d.point((7, 7), fill=G)
+
+    def impetus(d):
+        d.polygon([(9, 3), (14, 7), (9, 11)], fill=G)
+        d.rectangle([5, 6, 9, 8], fill=G)
+        d.line([(1, 4), (4, 4)], fill=G)
+        d.line([(1, 10), (4, 10)], fill=G)
+
+    def slam(d):
+        d.rectangle([6, 1, 9, 6], fill=G)
+        d.polygon([(3, 6), (12, 6), (7, 10)], fill=G)
+        d.line([(1, 13), (14, 13)], fill=G)
+        d.point((2, 11), fill=G)
+        d.point((13, 11), fill=G)
+
+    def dread(d):
+        eye(d)
+        d.rectangle([2, 4, 13, 6], fill=G)
+        d.point((5, 12), fill=G)
+        d.point((10, 13), fill=G)
+
+    def dilation(d):
+        d.point((7, 7), fill=G)
+        d.arc([4, 4, 11, 11], 200, 340, fill=G)
+        d.arc([1, 1, 14, 14], 200, 340, fill=G)
+        d.arc([4, 4, 11, 11], 20, 160, fill=G)
+        d.arc([1, 1, 14, 14], 20, 160, fill=G)
+
+    def scurry(d):
+        d.line([(1, 13), (5, 13), (5, 9), (9, 9), (9, 5), (13, 5), (13, 1)], fill=G)
+        d.rectangle([2, 10, 3, 11], fill=G)
+        d.rectangle([6, 6, 7, 7], fill=G)
+
+    def reflexes(d):
+        d.line([(1, 12), (7, 6)], fill=G)
+        d.line([(7, 6), (13, 12)], fill=G)
+        d.line([(11, 12), (13, 12), (13, 10)], fill=G)
+        d.arc([4, 1, 11, 8], 180, 360, fill=G)
+
+    def stutter(d):
+        for i in range(12):
+            a = 2 * math.pi * i / 12
+            if i % 2 == 0:
+                d.point((7.5 + 6 * math.cos(a), 7.5 + 6 * math.sin(a)), fill=G)
+        d.ellipse([5, 5, 10, 10], outline=G)
+
+    def overlook(d):
+        eye(d)
+        d.line([(2, 13), (13, 2)], fill=G)
+
+    def regrowth(d):
+        d.polygon([(7, 13), (2, 7), (2, 4), (4, 2), (7, 4), (10, 2), (12, 4), (12, 7)], fill=G)
+        d.line([(7, 6), (7, 10)], fill=(0, 0, 0, 0))
+        d.line([(5, 8), (9, 8)], fill=(0, 0, 0, 0))
+
+    def premonition(d):
+        eye(d, pupil=False)
+        d.line([(7, 7), (7, 5)], fill=G)
+        d.line([(7, 7), (9, 8)], fill=G)
+        d.point((7, 1), fill=G)
+        d.point((7, 14), fill=G)
+
+    for name, fn in [("iron_fists", fist), ("glowing_sight", glowing), ("quickening", quick), ("shrink", shrink),
+                     ("grow", grow), ("rewind", rewind), ("slow_time", hourglass), ("time_freeze", freeze),
+                     ("impetus", impetus), ("ground_slam", slam), ("dread", dread), ("dilation", dilation),
+                     ("scurry", scurry), ("reflexes", reflexes), ("stutter", stutter), ("overlook", overlook),
+                     ("regrowth", regrowth), ("premonition", premonition)]:
+        icon(name, fn)
+
+
 # ---------------------------------------------------------------- run
 
 syringe()
@@ -1521,7 +1988,6 @@ ampoule()
 culture()
 brain()
 residue()
-chronoflesh()
 organism_core()
 necrotic()
 tap()
@@ -1541,7 +2007,6 @@ graft_flesh_texture()
 gland_sac()
 leech_skin()
 flesh_pustule()
-organism_core_hungry_overlay()
 
 vein()
 vein_clogged()
@@ -1566,6 +2031,11 @@ obelisk()
 eternal_hourglass()
 suit_icons()
 suit_armor_layers()
+organism_textures()
+cortex_lobes()
+essence_manipulator()
+confluence_needle()
+power_icons()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

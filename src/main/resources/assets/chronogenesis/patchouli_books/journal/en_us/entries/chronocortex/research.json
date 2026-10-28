@@ -16,8 +16,8 @@
     },
     {
       "type": "patchouli:text",
-      "title": "Deeper Infusion",
-      "text": "The first thing it offers to learn. Once understood, the $(l)Enhancing Gland$() fills me deeper: every power I hold grows to its $(l)second level$(). Diamond-hard fists; sight through sneaking; a wider, longer Stutter; more speed, more size, bigger pools."
+      "text": "The first thing it offers to learn: how to make an $(l)Enhancing Gland$() swell. A swollen gland fills me to the $(l)second level$(): stronger powers, diamond-hard fists, and for Time, $(l)Slow Time$().$(br2)Later, once it is older: $(l)Deepest Infusion$() (the third level, and Time Freeze), and $(l)Confluence$() (mixing two essences).",
+      "title": "Deeper Infusion"
     }
   ]
 }

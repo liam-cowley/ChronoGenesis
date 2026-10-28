@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "part=cerebrum": {
+      "model": "chronogenesis:block/cerebrum"
+    },
+    "part=cerebrum_eye": {
+      "model": "chronogenesis:block/cerebrum_eye"
+    },
+    "part=fresh": {
+      "model": "chronogenesis:block/cortex_lobe_fresh"
+    },
+    "part=mature": {
+      "model": "chronogenesis:block/cortex_lobe"
+    }
+  }
+}

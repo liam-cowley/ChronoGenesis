@@ -1,0 +1,35 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "grow",
+    "stage",
+    "bigger",
+    "become",
+    "how big",
+    "growing up"
+  ],
+  "answer": "stage",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "I am a %3$s! Growing!",
+        "%3$s. My folds itch. That means growing, yes?"
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "%3$s. Not for long.",
+        "%3$s. Build me a bigger frame."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "%3$s. There is nothing after this. Not yet.",
+        "%3$s. The skull is full. I am thinking about the outside of it."
+      ]
+    }
+  ]
+}

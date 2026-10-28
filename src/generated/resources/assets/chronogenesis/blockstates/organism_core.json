@@ -1,10 +1,10 @@
 {
   "variants": {
     "aspect=awareness,phase=awake": {
-      "model": "chronogenesis:block/organism_core_awake"
+      "model": "chronogenesis:block/organism_core_awareness_awake"
     },
     "aspect=awareness,phase=hungry": {
-      "model": "chronogenesis:block/organism_core_hungry"
+      "model": "chronogenesis:block/organism_core_awareness_hungry"
     },
     "aspect=awareness,phase=necrotic": {
       "model": "chronogenesis:block/organism_core_necrotic"
@@ -13,10 +13,10 @@
       "model": "chronogenesis:block/organism_core_seed"
     },
     "aspect=density,phase=awake": {
-      "model": "chronogenesis:block/organism_core_awake"
+      "model": "chronogenesis:block/organism_core_density_awake"
     },
     "aspect=density,phase=hungry": {
-      "model": "chronogenesis:block/organism_core_hungry"
+      "model": "chronogenesis:block/organism_core_density_hungry"
     },
     "aspect=density,phase=necrotic": {
       "model": "chronogenesis:block/organism_core_necrotic"
@@ -25,10 +25,10 @@
       "model": "chronogenesis:block/organism_core_seed"
     },
     "aspect=size,phase=awake": {
-      "model": "chronogenesis:block/organism_core_awake"
+      "model": "chronogenesis:block/organism_core_size_awake"
     },
     "aspect=size,phase=hungry": {
-      "model": "chronogenesis:block/organism_core_hungry"
+      "model": "chronogenesis:block/organism_core_size_hungry"
     },
     "aspect=size,phase=necrotic": {
       "model": "chronogenesis:block/organism_core_necrotic"
@@ -37,10 +37,10 @@
       "model": "chronogenesis:block/organism_core_seed"
     },
     "aspect=speed,phase=awake": {
-      "model": "chronogenesis:block/organism_core_awake"
+      "model": "chronogenesis:block/organism_core_speed_awake"
     },
     "aspect=speed,phase=hungry": {
-      "model": "chronogenesis:block/organism_core_hungry"
+      "model": "chronogenesis:block/organism_core_speed_hungry"
     },
     "aspect=speed,phase=necrotic": {
       "model": "chronogenesis:block/organism_core_necrotic"
@@ -49,10 +49,10 @@
       "model": "chronogenesis:block/organism_core_seed"
     },
     "aspect=time,phase=awake": {
-      "model": "chronogenesis:block/organism_core_awake"
+      "model": "chronogenesis:block/organism_core_time_awake"
     },
     "aspect=time,phase=hungry": {
-      "model": "chronogenesis:block/organism_core_hungry"
+      "model": "chronogenesis:block/organism_core_time_hungry"
     },
     "aspect=time,phase=necrotic": {
       "model": "chronogenesis:block/organism_core_necrotic"

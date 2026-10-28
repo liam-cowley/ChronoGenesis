@@ -1,0 +1,28 @@
+{
+  "name": "A Growing Mind",
+  "icon": "minecraft:book",
+  "category": "chronogenesis:chronocortex",
+  "sortnum": 3,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "It wants to be bigger. Around its jar I build $(l)Brass Armature$(), and it grows $(l)lobes$() into the frame, one every few seconds, on Awareness drawn from its wired organisms. Each lobe is room for one more thing in its mind."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Then I $(l)teach$() it: I show it a thing, and it learns what the thing means. A $(l)book$(): words. A $(l)clock$(): the hours. A $(l)compass$(): that there is a somewhere else. A $(l)name tag$() with a name on it: who it is.$(br2)Each lesson needs room (lobes) and a stage it has reached. Its view (the Mind page) lists what it can learn.",
+      "title": "Lessons"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Lobes and awareness make it grow up.$(br2)$(l)Stage 1, Child$(): 8 lobes, words. It talks.$(br)$(l)Stage 2, Adolescent$(): 32 lobes, a name. It demands.$(br)$(l)Stage 3, the Cerebrum$(): its lobes fill a whole 5x5x5 cranium around the jar. The skull closes, an eye opens on every face. Break the skull and it shrinks back.",
+      "title": "Stages"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Once it has words, I can talk to it in chat. It answers what is said near it (its name, \"cortex\" or \"brain\", a question, or anything said close by): how it is, what it wants, the time, what to research next. It remembers what I ask it to call me.$(br2)It is not the same thing at every stage.",
+      "title": "Talking to It"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "past",
+    "travel",
+    "history",
+    "before",
+    "ancient",
+    "ice age",
+    "long ago"
+  ],
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "Before? Was there a before me?",
+        "The past is behind. Behind what?"
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "Show me the cold. I can almost reach it.",
+        "The past is a room I cannot enter yet."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "The past is close enough to touch. Show me the cold, %1$s, and I will open the door.",
+        "I remember things that happened before I was grown."
+      ]
+    }
+  ]
+}

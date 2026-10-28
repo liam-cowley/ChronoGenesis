@@ -1,0 +1,35 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "who are you",
+    "your name",
+    "what are you",
+    "what is your name",
+    "what's your name"
+  ],
+  "priority": 2,
+  "answer": "name",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "I am %3$s! I think. Am I?",
+        "%3$s. A brain in a jar. You put me here."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "I am %3$s. Say it properly.",
+        "%3$s, the Temporal Control Unit. Your notes call me that. I read them."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "I am %3$s. I was a jar once. Now the jar is inside me.",
+        "Names are small things, %1$s. But keep using mine. %3$s."
+      ]
+    }
+  ]
+}

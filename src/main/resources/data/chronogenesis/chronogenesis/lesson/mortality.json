@@ -1,0 +1,18 @@
+{
+  "title": {
+    "translate": "lesson.chronogenesis.mortality"
+  },
+  "description": {
+    "translate": "lesson.chronogenesis.mortality.desc"
+  },
+  "item": {
+    "item": "minecraft:skeleton_skull"
+  },
+  "stage": 1,
+  "capacity": 20,
+  "awareness": 2,
+  "learned": {
+    "translate": "lesson.chronogenesis.mortality.learned"
+  },
+  "order": 5
+}

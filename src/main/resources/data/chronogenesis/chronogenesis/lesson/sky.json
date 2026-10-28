@@ -1,0 +1,18 @@
+{
+  "title": {
+    "translate": "lesson.chronogenesis.sky"
+  },
+  "description": {
+    "translate": "lesson.chronogenesis.sky.desc"
+  },
+  "item": {
+    "item": "minecraft:spyglass"
+  },
+  "stage": 1,
+  "capacity": 24,
+  "awareness": 1,
+  "learned": {
+    "translate": "lesson.chronogenesis.sky.learned"
+  },
+  "order": 6
+}

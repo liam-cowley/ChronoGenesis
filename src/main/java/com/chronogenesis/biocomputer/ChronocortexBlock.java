@@ -10,25 +10,33 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-/** The woken brain in its jar on the old Dissection Table. Use it to see its view: organisms and research. */
+/** The woken brain in its jar on the old Dissection Table. Use it to see its view: organisms, research, its mind. */
 public class ChronocortexBlock extends BaseEntityBlock {
     public static final MapCodec<ChronocortexBlock> CODEC = simpleCodec(ChronocortexBlock::new);
+    /** How far it has grown (0-3): the brain swells in its jar, then out of it. */
+    public static final IntegerProperty STAGE = IntegerProperty.create("stage", 0, ChronocortexBlockEntity.MAX_STAGE);
     private static final VoxelShape SHAPE = Shapes.or(
             box(0, 7, 0, 16, 9, 16),
             box(1, 0, 1, 3, 7, 3), box(13, 0, 1, 15, 7, 3), box(1, 0, 13, 3, 7, 15), box(13, 0, 13, 15, 7, 15),
@@ -36,6 +44,22 @@ public class ChronocortexBlock extends BaseEntityBlock {
 
     public ChronocortexBlock(Properties properties) {
         super(properties);
+        registerDefaultState(stateDefinition.any().setValue(STAGE, 0));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(STAGE);
+    }
+
+    /** Showing it something teaches it (if it is a lesson); anything else opens its view. */
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+            InteractionHand hand, BlockHitResult hit) {
+        if (level.getBlockEntity(pos) instanceof ChronocortexBlockEntity cortex) {
+            return cortex.teach(stack, player);
+        }
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override

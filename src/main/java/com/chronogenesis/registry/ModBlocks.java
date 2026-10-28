@@ -2,6 +2,7 @@ package com.chronogenesis.registry;
 
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlock;
+import com.chronogenesis.biocomputer.CortexLobeBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.lens.FadedBlueprintBlock;
 import com.chronogenesis.lens.ObeliskCapstoneBlock;
@@ -102,6 +103,15 @@ public final class ModBlocks {
                     .noOcclusion()
                     .lightLevel(state -> 7)
                     .requiresCorrectToolForDrops());
+
+    /** Brain matter the Chronocortex grows over Brass Armature around its jar: room in its mind. */
+    public static final DeferredBlock<CortexLobeBlock> CORTEX_LOBE = BLOCKS.registerBlock("cortex_lobe", CortexLobeBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PINK)
+                    .strength(1.5f, 6.0f)
+                    .sound(SoundType.HONEY_BLOCK)
+                    .lightLevel(state -> state.getValue(CortexLobeBlock.PART).formed() ? 5 : 0)
+                    .pushReaction(PushReaction.BLOCK));
 
     public static final DeferredBlock<EssenceJugBlock> ESSENCE_JUG = BLOCKS.registerBlock("essence_jug", EssenceJugBlock::new,
             BlockBehaviour.Properties.of()

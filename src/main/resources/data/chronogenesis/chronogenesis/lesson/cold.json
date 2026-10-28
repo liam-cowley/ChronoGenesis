@@ -1,0 +1,18 @@
+{
+  "title": {
+    "translate": "lesson.chronogenesis.cold"
+  },
+  "description": {
+    "translate": "lesson.chronogenesis.cold.desc"
+  },
+  "item": {
+    "item": "minecraft:blue_ice"
+  },
+  "stage": 2,
+  "capacity": 40,
+  "awareness": 1,
+  "learned": {
+    "translate": "lesson.chronogenesis.cold.learned"
+  },
+  "order": 7
+}

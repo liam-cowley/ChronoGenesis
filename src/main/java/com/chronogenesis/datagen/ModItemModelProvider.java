@@ -42,6 +42,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.TEMPORAL_LENS.get());
         basicItem(ModItems.INTACT_BLUEPRINT.get());
         basicItem(ModItems.ETERNAL_HOURGLASS.get());
+        basicItem(ModItems.ESSENCE_MANIPULATOR.get());
+        basicItem(ModItems.CONFLUENCE_NEEDLE.get());
         basicItem(ModItems.TEMPORAL_RESIDUE.get());
     }
 

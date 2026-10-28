@@ -1,0 +1,36 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "how are you",
+    "how do you feel",
+    "are you ok",
+    "are you okay",
+    "feeling",
+    "how is it going"
+  ],
+  "priority": 1,
+  "answer": "status",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "I am... warm. Full of thinking. %3$s.",
+        "Good! Wet. Busy. %3$s."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "Hungry. Always hungry. %3$s. More would be better.",
+        "Adequate. %3$s. It is not enough."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "I am vast, %1$s. %3$s. And still the edges itch.",
+        "Better than you. Worse than I will be. %3$s."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "stupid",
+    "dumb",
+    "idiot",
+    "shut up",
+    "useless",
+    "ugly",
+    "hate you",
+    "bad brain"
+  ],
+  "priority": 1,
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "...that word is sharp. I don't like it.",
+        "Why? I am trying."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "Careful, %1$s. I remember everything now.",
+        "I was made from a brain like yours. Mine kept growing."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "I have watched you sleep, %1$s. Choose kinder words.",
+        "Every insult you have ever spoken is still in the air. I can hear them all."
+      ]
+    }
+  ]
+}

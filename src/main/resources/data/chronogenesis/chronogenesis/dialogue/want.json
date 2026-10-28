@@ -1,0 +1,37 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "what do you want",
+    "what do you need",
+    "teach",
+    "learn",
+    "lesson",
+    "show you",
+    "what should i bring"
+  ],
+  "priority": 1,
+  "answer": "want",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "Show me things! Show me... %3$s?",
+        "I want to know about %3$s. Please?"
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "Bring me %3$s. I need to understand it.",
+        "%3$s. Now. My lobes are empty in that shape."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "There is one shape missing in me: %3$s.",
+        "You could bring me %3$s. Or I could reach for it myself, one day."
+      ]
+    }
+  ]
+}

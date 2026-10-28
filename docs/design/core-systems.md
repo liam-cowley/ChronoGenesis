@@ -121,6 +121,38 @@ pool while in use.
 | **Size** | Shrink (fit through 1-block gaps) or grow (more reach and health) by a small step | Bigger steps |
 | **Time** | **Stutter**: a 3-block bubble where everything moves at half speed for 3 s (projectiles too) | Area slow, area haste, time-stopped chunk, Time Loop (section 6) |
 
+### As built: powers, the Manipulator, gland levels, composites
+- **Passive and active.** Every power is one entry of `player/Power`. Passive powers (Iron Fists, Glowing Sight,
+  Quickening, Shrink, Grow, and the passive composites) are switched on and burn their pools slowly; several can
+  run at once. One active power is selected and used: Rewind (Time 1), Slow Time (Time 2), Time Freeze (Time 3),
+  and the active composites.
+- **Essence Manipulator** (a glove; tendrils move in its lining, animated texture): right-click uses the selected
+  active power; **Shift + R** opens the wheel while Shift is held (active powers on the outer ring: point or scroll,
+  let go of Shift to choose; passive powers on the inner ring: click to switch; right-click any power: strength);
+  **Shift + scroll** with the glove in hand sets the selected power's strength. R alone uses the selected power.
+  A hand in the glove is still a fist for Iron Fists.
+- **Strength** goes from 1 to the lowest power level of the power's essences (at most 3) and scales effect and cost.
+- **Gland levels.** The Enhancing Gland has a `gland_level` (1-3). Fed a culture of its own essence it swells a
+  level, paying 32 x level drams from its organism, once Deeper Infusion (level 2) or Deepest Infusion (level 3,
+  Chronocortex stage 2) is researched. Infusing raises the player's power level for the essence to the gland's.
+- **Composite powers.** A **Confluence Needle** (research: Confluence, Chronocortex stage 1) fitted into a gland
+  (`needle` blockstate) makes it draw on a second organism of another essence wired to its organism by veins (a
+  Tap or Maw of one, veins, a Tap or Maw of the other). If the player already holds both essences they are filled
+  with both and learn the pair's composite power:
+
+  | Pair | Power | Kind | Effect |
+  |---|---|---|---|
+  | Density + Speed | Impetus | active | A charge; what you hit is hurt and thrown aside (p = m v) |
+  | Density + Size | Ground Slam | active | Drop like a stone; a shockwave where you land (m = rho V) |
+  | Density + Awareness | Dread | passive | Hostile creatures hunting you are slowed and weakened |
+  | Density + Time | Dilation | passive | Projectiles near you crawl ("heavy things keep time still") |
+  | Speed + Size | Scurry | passive | Step up whole blocks, safe from longer falls |
+  | Speed + Awareness | Reflexes | passive | Projectiles often glance off (a dram of Speed each) |
+  | Speed + Time | Stutter | active | A bubble of half-speed time, projectiles too (was the old Time level 1 power) |
+  | Size + Awareness | Overlook | active | Invisible; creatures hunting you lose your trail |
+  | Size + Time | Regrowth | active | Heals and clears harmful effects: your body's time runs back |
+  | Awareness + Time | Premonition | passive | The next blow from a creature is foreseen and misses; then a cooldown |
+
 ### Temporal Exposure and protective gear
 Time essence inside a body is unnatural. Holding Time essence, using Time powers, or working near
 Time organisms builds **Temporal Exposure** (a player attachment):
@@ -236,6 +268,22 @@ Its roles:
 It talks. At first it whispers in chat and in the journal, curious and childlike. As it grows it
 becomes demanding, and by the final stage it is insane.
 
+**As built (growth, lessons, stages, speech):**
+- *Lobes:* it grows `cortex_lobe` blocks into Brass Armature touching it (within 4 blocks of the jar), one every
+  5 s for 4 drams of Awareness from its wired organisms. Lobes are its capacity. Using a lobe is using the cortex.
+- *Lessons* (`data/<ns>/chronogenesis/lesson/<name>.json`: item, stage, capacity, awareness, what it says): show it
+  the item to teach it. Words (book) lets it speak; A Name (a named name tag) names it; The Time of Day (clock) lets
+  it tell the time. Others: direction, music, mortality, the sky, the cold, the other scientist, eternity.
+- *Stages:* 1 (Child): 8 lobes, 4 awareness, words. 2 (Adolescent): 32 lobes, 9 awareness, a name. 3 (the
+  Cerebrum): 13 awareness and firm lobes filling the whole 5 x 5 x 5 cranium around the jar, a multiblock: the lobes
+  become Cerebrum with an eye in the middle of each face; break it and it drops to stage 2. Its wiring range grows
+  (32, 48, 64, 96) and its jar model changes with each stage. Research topics are gated by stage.
+- *Speech:* with words, it answers chat said to it (its name, "cortex"/"brain", a question, or anything said within
+  6 blocks) to everyone in hearing range (16-48 blocks by stage), after a moment. Replies are data
+  (`data/<ns>/chronogenesis/dialogue/<name>.json`: keywords, lines per stage, and answers it works out: its state,
+  what it wants to learn, the next research, the time, its name, its stage). It mutters unprompted, remembers what
+  players ask to be called, and before it has words only twitches.
+
 **As built (stage 0):**
 - *Ritual:* a Preserved Brain on a **Dissection Table** soaks up 16 drams each of Awareness (only from a
   Tap facing the table, since glass cannot hold it) and Time (Tap or Stasis Ampoule). Lightning striking
@@ -266,6 +314,19 @@ watch its sun crawl. A stopped chunk can stay at midnight forever. Implementatio
 per-chunk time offset and rate are stored in a chunk attachment. The client renders the sky and
 sky light from the local clock of the chunk the player stands in, and mob spawning checks use the
 local light.
+
+**As built (Slow Time, Time Freeze):** `time/TimeZones`. A zone is one chunk with its own rate (Slow Time: 1/2,
+1/4 or 1/8 by strength; Freeze: 0), held by its caster, who pays Time to keep it (more for a freeze) and must stay
+within 96 blocks. Inside, entities (except players), block entities, random ticks and scheduled ticks run at the
+chunk's rate (`mixin/BoundTickingBlockEntityMixin`, `ServerLevelMixin`, `LevelTicksMixin`; entities through
+`EntityTickEvent.Pre`); players without the full suit are slowed through their attributes, and stopped ones cannot
+act. The chunk keeps a lag behind the world's clock; whoever stands in it sees its sky (`mixin/ClientLevelMixin`
+overrides `dayTime()`). Let go, the zone accelerates past the world's rate and eases back, landing exactly on the
+world's time (and moon phase); extra ticks are run while it catches up. Zones are synced to clients every tick.
+**How it looks** (`shaders/program/time_zone.fsh`): light is slowed too. From outside, a slowed chunk is redshifted
+and dimmed; a stopped chunk lets no light out or through: a black, chunk-shaped column with a thin glow where light
+grazes it. An unshielded viewer inside sees the outside blueshifted and bright. Chrono Goggles let the stalled light
+through: a stopped chunk looks like a sepia photograph.
 
 ### Time Loop
 At the chunk's local dawn, it **resets to a snapshot** taken when the loop was made. Ores grow

@@ -1,0 +1,18 @@
+{
+  "title": {
+    "translate": "lesson.chronogenesis.time"
+  },
+  "description": {
+    "translate": "lesson.chronogenesis.time.desc"
+  },
+  "item": {
+    "item": "minecraft:clock"
+  },
+  "stage": 0,
+  "capacity": 2,
+  "awareness": 1,
+  "learned": {
+    "translate": "lesson.chronogenesis.time.learned"
+  },
+  "order": 1
+}

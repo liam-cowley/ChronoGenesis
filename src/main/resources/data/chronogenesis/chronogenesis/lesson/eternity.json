@@ -1,0 +1,18 @@
+{
+  "title": {
+    "translate": "lesson.chronogenesis.eternity"
+  },
+  "description": {
+    "translate": "lesson.chronogenesis.eternity.desc"
+  },
+  "item": {
+    "item": "chronogenesis:temporal_residue"
+  },
+  "stage": 2,
+  "capacity": 80,
+  "awareness": 2,
+  "learned": {
+    "translate": "lesson.chronogenesis.eternity.learned"
+  },
+  "order": 9
+}

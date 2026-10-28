@@ -123,7 +123,9 @@
    ✅ Heart graft (Taps pump faster), Eye graft (redstone + comparator), Twin Clocks (Law of the Heavy Heart).
 7. ✅ Chronocortex (stage 0) + Ganglion + data-driven research + reanimation ritual. Clues come from
    witnessed experiments until the Lens exists; the first topic is Level 2 powers (Deeper Infusion).
-   Still to do: flow control from the Chronocortex (redirecting, Tap limits), later stages.
+   ✅ Growth: lobes on armature (Awareness), lessons (data-driven), stages 1-3, the Cerebrum (5x5x5 multiblock),
+   speech in chat (data-driven dialogue). Still to do: flow control from the Chronocortex (redirecting, Tap limits),
+   time travel from stage 1.
 8. ✅ Umbilical Locket (Curios necklace; grown by research, re-growable). ✅ Temporal Field (graft on a Time
    organism; one creature per 5 s gets a dram back, for a dram of Time). ✅ Temporal Lens (Echo/Decades/
    Centuries; ghosts of past templates; reads faded blueprints into clues). ✅ Abandoned Laboratory (worldgen,
@@ -131,6 +133,11 @@
    through the Lens a black-hole distortion shader; past view swallowed by the horizon; two clues).
    Still to do: the other structures (castle, marketplace, observatory, drowned specimen house, intact lab),
    shrines, Echo visuals (recent events), player-placed blocks fading in the Lens, "Ages" (stage 1).
+
+9. ✅ Powers rework: passive and active powers, the Essence Manipulator (wheel, strength), gland levels
+   (cultures, Deeper/Deepest Infusion), the Confluence Needle and ten composite powers. ✅ Time 1-3: Rewind, Slow
+   Time, Time Freeze (per-chunk tick rate, local sky, catching up, the redshift/black-column look).
+   ✅ Every essence's organisms look different (flesh shapes and textures, core eyes).
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

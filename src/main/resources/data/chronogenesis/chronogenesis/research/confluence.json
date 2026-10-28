@@ -1,0 +1,49 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.confluence"
+  },
+  "description": {
+    "translate": "research.chronogenesis.confluence.desc"
+  },
+  "icon": "chronogenesis:confluence_needle",
+  "stage": 1,
+  "essence": {
+    "awareness": 16,
+    "density": 8,
+    "speed": 8
+  },
+  "materials": [
+    {
+      "item": "chronogenesis:iron_needle",
+      "count": 1
+    },
+    {
+      "item": "chronogenesis:gold_needle",
+      "count": 1
+    },
+    {
+      "tag": "c:ingots/brass",
+      "count": 2
+    }
+  ],
+  "clues": [
+    [
+      "chronogenesis:floating_creature",
+      "chronogenesis:the_long_road"
+    ],
+    [
+      "chronogenesis:vacant_mind",
+      "chronogenesis:dust_to_dust"
+    ],
+    [
+      "chronogenesis:its_alive"
+    ]
+  ],
+  "order": 8,
+  "rewards": [
+    {
+      "id": "chronogenesis:confluence_needle",
+      "count": 1
+    }
+  ]
+}

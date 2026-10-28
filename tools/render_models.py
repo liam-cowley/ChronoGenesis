@@ -7,7 +7,9 @@ draws them from above-front-right with simple face shading and a depth buffer.
 Usage:
   python3 tools/render_models.py <output.png> [scene]
 Scenes: "organisms" (default) renders every flesh growth stage, core phase and graft, plus a small
-organism mid-growth. "vessels" renders the Essence Jug at every fill level.
+organism mid-growth. "essences" renders each essence's flesh and core (each grows differently).
+"cortex" renders the gland's levels, the Chronocortex's stages and its lobes. "vessels" renders the
+Essence Jug at every fill level.
 """
 import json
 import math
@@ -37,7 +39,8 @@ def texture(ref):
     if key not in _tex_cache:
         if ns == "minecraft":
             # Vanilla textures are not in this repo: stand in a plain copper-coloured tile for previews.
-            img = Image.new("RGBA", (16, 16), (192, 108, 66, 255))
+            colour = (170, 110, 220, 255) if "amethyst" in path else (192, 108, 66, 255)
+            img = Image.new("RGBA", (16, 16), colour)
             for i in range(16):
                 img.putpixel((i, 0), (226, 150, 104, 255))
                 img.putpixel((0, i), (226, 150, 104, 255))
@@ -147,10 +150,10 @@ def draw_model(canvas, name, offset=(0, 0, 0), tint=None):
 def organisms_scene(out):
     tint = flesh_tint("density")
     cells = [
-        ("chronoflesh_growth_0", tint, "Flesh 0: tendrils"), ("chronoflesh_growth_1", tint, "1: creeping"),
-        ("chronoflesh_growth_2", tint, "2: swelling"), ("chronoflesh_growth_3", tint, "3: mature"),
-        ("organism_core_seed", tint, "Core: seed"), ("organism_core_awake", tint, "awake"),
-        ("organism_core_hungry", tint, "hungry"), ("organism_core_necrotic", None, "necrotic"),
+        ("chronoflesh_density_growth_0", tint, "Flesh 0: tendrils"), ("chronoflesh_density_growth_1", tint, "1: creeping"),
+        ("chronoflesh_density_growth_2", tint, "2: swelling"), ("chronoflesh_density_growth_3", tint, "3: mature"),
+        ("organism_core_seed", tint, "Core: seed"), ("organism_core_density_awake", tint, "awake"),
+        ("organism_core_density_hungry", tint, "hungry"), ("organism_core_necrotic", None, "necrotic"),
         ("tap", None, "Tap"), ("leech_tendril", None, "Leech Tendril"), ("enhancing_gland", None, "Enhancing Gland"),
         ("heart", None, "Heart"), ("eye", None, "Eye"), ("clock", None, "Clock"), ("ganglion", None, "Ganglion"),
         ("dissection_table", None, "Dissection Table"), ("dissection_table_brain", None, "with brain"),
@@ -167,10 +170,10 @@ def organisms_scene(out):
     # A small organism mid-growth: frame, flesh at every stage, the core awake, grafts on top.
     scene = Canvas(cols * cell, 330, 5.5, (cols * cell / 2, 190))
     layout = [
-        ("chronoflesh_growth_0", (-32, 0, 0)), ("chronoflesh_growth_1", (-16, 0, 0)),
-        ("organism_core_awake", (0, 0, 0)), ("chronoflesh_growth_2", (16, 0, 0)), ("chronoflesh_growth_3", (32, 0, 0)),
-        ("chronoflesh_growth_3", (0, 0, -16)), ("chronoflesh_growth_3", (16, 0, -16)), ("chronoflesh_growth_2", (-16, 0, -16)),
-        ("chronoflesh_growth_3", (0, 16, -16)), ("tap", (0, 32, -16)), ("enhancing_gland", (32, 16, 0)),
+        ("chronoflesh_density_growth_0", (-32, 0, 0)), ("chronoflesh_density_growth_1", (-16, 0, 0)),
+        ("organism_core_density_awake", (0, 0, 0)), ("chronoflesh_density_growth_2", (16, 0, 0)), ("chronoflesh_density_growth_3", (32, 0, 0)),
+        ("chronoflesh_density_growth_3", (0, 0, -16)), ("chronoflesh_density_growth_3", (16, 0, -16)), ("chronoflesh_density_growth_2", (-16, 0, -16)),
+        ("chronoflesh_density_growth_3", (0, 16, -16)), ("tap", (0, 32, -16)), ("enhancing_gland", (32, 16, 0)),
         ("leech_tendril", (16, 16, 0)),
     ]
     for name, off in sorted(layout, key=lambda e: e[1][0] + e[1][1] + e[1][2]):
@@ -194,7 +197,36 @@ def vessels_scene(out):
     sheet.save(out)
 
 
-SCENES = {"organisms": organisms_scene, "vessels": vessels_scene}
+def essences_scene(out):
+    # One row per essence: flesh at every growth stage, then the core awake and hungry. Each grows differently.
+    aspects = ["density", "speed", "size", "awareness", "time"]
+    cols, cell = 6, 170
+    sheet = Image.new("RGBA", (cols * cell, len(aspects) * cell), (46, 42, 52, 255))
+    for row, aspect in enumerate(aspects):
+        names = ["chronoflesh_%s_growth_%d" % (aspect, g) for g in range(4)] + [
+            "organism_core_%s_awake" % aspect, "organism_core_%s_hungry" % aspect]
+        for col, name in enumerate(names):
+            c = Canvas(cell, cell, 5.0, (cell / 2, cell / 2 + 20))
+            draw_model(c, name, tint=flesh_tint(aspect))
+            sheet.paste(c.img, (col * cell, row * cell))
+    sheet.save(out)
+
+
+def cortex_scene(out):
+    # The gland at each level (and with a Confluence Needle), the Chronocortex at each stage, and its lobes.
+    names = ["enhancing_gland", "enhancing_gland_2", "enhancing_gland_3", "enhancing_gland_3_needle",
+             "chronocortex", "chronocortex_stage_1", "chronocortex_stage_2", "chronocortex_stage_3",
+             "cortex_lobe_fresh", "cortex_lobe", "cerebrum", "cerebrum_eye"]
+    cols, cell = 4, 200
+    sheet = Image.new("RGBA", (cols * cell, 3 * cell), (46, 42, 52, 255))
+    for i, name in enumerate(names):
+        c = Canvas(cell, cell, 6.0, (cell / 2, cell / 2 + 22))
+        draw_model(c, name)
+        sheet.paste(c.img, ((i % cols) * cell, (i // cols) * cell))
+    sheet.save(out)
+
+
+SCENES = {"organisms": organisms_scene, "vessels": vessels_scene, "essences": essences_scene, "cortex": cortex_scene}
 
 if __name__ == "__main__":
     SCENES[sys.argv[2] if len(sys.argv) > 2 else "organisms"](sys.argv[1])

@@ -1,0 +1,37 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "organisms",
+    "organism",
+    "machines",
+    "essence",
+    "flesh",
+    "how much",
+    "stored",
+    "report"
+  ],
+  "answer": "status",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "I can feel them! %3$s.",
+        "My little organs: %3$s."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "Report: %3$s.",
+        "%3$s. Feed them. They are mine."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "%3$s. They pulse when I think of them.",
+        "%3$s. I could run them without you."
+      ]
+    }
+  ]
+}

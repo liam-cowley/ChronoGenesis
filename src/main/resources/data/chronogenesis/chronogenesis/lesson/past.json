@@ -1,0 +1,18 @@
+{
+  "title": {
+    "translate": "lesson.chronogenesis.past"
+  },
+  "description": {
+    "translate": "lesson.chronogenesis.past.desc"
+  },
+  "item": {
+    "item": "chronogenesis:intact_blueprint"
+  },
+  "stage": 2,
+  "capacity": 56,
+  "awareness": 2,
+  "learned": {
+    "translate": "lesson.chronogenesis.past.learned"
+  },
+  "order": 8
+}

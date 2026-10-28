@@ -116,6 +116,65 @@ public class ModLanguageProvider extends LanguageProvider {
                 "Time floods your veins. Somewhere, a clock skips a beat.");
         add("message.chronogenesis.power.unknown", "You have not taken that essence into yourself.");
         add("message.chronogenesis.power.empty", "Your %s is spent. Refill at an Enhancing Gland.");
+        add("message.chronogenesis.gland.manipulator_hint", "Your veins itch for a way to steer this. (An Essence Manipulator: brass, copper, leather and a slime ball.)");
+        add("message.chronogenesis.gland.composite", "The two essences curdle together in your veins. You have learned %s.");
+        add("message.chronogenesis.gland.unknown_other", "Your body rejects the %s: take it from its own gland first.");
+        add("message.chronogenesis.gland.no_partner", "The needle drinks only one essence. Wire this organism by veins to one of another essence.");
+        add("message.chronogenesis.gland.wrong_culture", "The gland only swells on a culture of its own essence (%s).");
+        add("message.chronogenesis.gland.max", "The gland is as swollen as it can be.");
+        add("message.chronogenesis.gland.unknown_growth.2", "You do not know how to make it swell. (Research Deeper Infusion at the Chronocortex.)");
+        add("message.chronogenesis.gland.unknown_growth.3", "It will not swell again until you know how. (Research Deepest Infusion: the Chronocortex must be at stage 2.)");
+        add("message.chronogenesis.gland.hungry", "Swelling takes %s drams of %s from the organism.");
+        add("message.chronogenesis.gland.grew", "The gland swells, veins thickening across it. It is now level %s.");
+        add("message.chronogenesis.gland.needle", "The needle slides into the gland's port with a wet click.");
+        add("message.chronogenesis.power.strength", "%s: strength %s/%s");
+        add("message.chronogenesis.power.need_manipulator", "Your powers need steering: carry an Essence Manipulator.");
+        add("message.chronogenesis.power.rewind.too_soon", "There is no trail behind you to follow back yet.");
+        add("message.chronogenesis.power.regrowth.whole", "There is nothing to grow back.");
+        add("message.chronogenesis.power.time.released", "You let go. The chunk's time speeds up to meet the world's again.");
+        add("message.chronogenesis.power.time.bent", "Time here is already bent by someone else.");
+        add("message.chronogenesis.power.time.frozen", "Time stops in this chunk.");
+        add("message.chronogenesis.power.time.slowed", "Time in this chunk slows to 1/%s.");
+        add("message.chronogenesis.power.time.too_far", "You are too far away to hold its time. It slips free.");
+        add("message.chronogenesis.power.time.ran_out", "Your Time runs dry. The chunk's clock lurches back into motion.");
+
+        // Powers
+        add("power.chronogenesis.iron_fists", "Iron Fists");
+        add("power.chronogenesis.iron_fists.desc", "Passive. Bare fists mine what an iron pickaxe can (strength 2: diamond, 3: netherite). A dram of Density per block.");
+        add("power.chronogenesis.glowing_sight", "Glowing Sight");
+        add("power.chronogenesis.glowing_sight.desc", "Passive. Creatures and players who are not sneaking glow within 20 blocks (more with strength; strength 2 sees through sneaking).");
+        add("power.chronogenesis.quickening", "Quickening");
+        add("power.chronogenesis.quickening.desc", "Passive. 20% faster movement and attacks per strength.");
+        add("power.chronogenesis.shrink", "Shrink");
+        add("power.chronogenesis.shrink.desc", "Passive. You shrink to half your size or less: through one-block gaps.");
+        add("power.chronogenesis.grow", "Grow");
+        add("power.chronogenesis.grow.desc", "Passive. You grow a quarter larger per strength: more reach.");
+        add("power.chronogenesis.rewind", "Rewind");
+        add("power.chronogenesis.rewind.desc", "Active. You return to where you stood 5 seconds ago (10, 15 with strength). 4 drams of Time per strength.");
+        add("power.chronogenesis.slow_time", "Slow Time");
+        add("power.chronogenesis.slow_time.desc", "Active, use again to let go. The chunk you stand in runs at 1/2 speed (1/4, 1/8 with strength), its sky too. Without the full suit, it slows you as well.");
+        add("power.chronogenesis.time_freeze", "Time Freeze");
+        add("power.chronogenesis.time_freeze.desc", "Active, use again to let go. Time stops in the chunk you stand in. Anyone inside without the full suit stops with it.");
+        add("power.chronogenesis.impetus", "Impetus");
+        add("power.chronogenesis.impetus.desc", "Density + Speed, active. A heavy thing moving fast is hard to stop: you charge, and what you hit is thrown aside.");
+        add("power.chronogenesis.ground_slam", "Ground Slam");
+        add("power.chronogenesis.ground_slam.desc", "Density + Size, active. You drop like a stone; where you land, the ground heaves and throws creatures up.");
+        add("power.chronogenesis.dread", "Dread");
+        add("power.chronogenesis.dread.desc", "Density + Awareness, passive. The weight of your gaze: hostile creatures hunting you grow slow and weak.");
+        add("power.chronogenesis.dilation", "Dilation");
+        add("power.chronogenesis.dilation.desc", "Density + Time, passive. Heavy things keep time still: projectiles crawl as they near you.");
+        add("power.chronogenesis.scurry", "Scurry");
+        add("power.chronogenesis.scurry.desc", "Speed + Size, passive. Small and quick: you step up whole blocks and fall softly.");
+        add("power.chronogenesis.reflexes", "Reflexes");
+        add("power.chronogenesis.reflexes.desc", "Speed + Awareness, passive. You see it coming: arrows often glance off you (a dram of Speed each).");
+        add("power.chronogenesis.stutter", "Stutter");
+        add("power.chronogenesis.stutter.desc", "Speed + Time, active. A bubble around you where everything moves at half speed for a few seconds, projectiles too.");
+        add("power.chronogenesis.overlook", "Overlook");
+        add("power.chronogenesis.overlook.desc", "Size + Awareness, active. Too small to be noticed: invisible for a while, and the creatures hunting you lose your trail.");
+        add("power.chronogenesis.regrowth", "Regrowth");
+        add("power.chronogenesis.regrowth.desc", "Size + Time, active. Your body's time runs back to before the wound: heals, and washes out harmful effects.");
+        add("power.chronogenesis.premonition", "Premonition");
+        add("power.chronogenesis.premonition.desc", "Awareness + Time, passive. The next blow a creature lands is foreseen, and misses. Then it takes a while to see again.");
 
         // Veins, Racetrack, Time organisms
         add("message.chronogenesis.vein.unclogged", "You cut the rotting clot out of the vein.");
@@ -125,7 +184,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("message.chronogenesis.table.full", "The brain cannot take any more of that.");
         add("message.chronogenesis.table.status", "Awareness %s/%s, Time %s/%s, lightning rods: %s");
         add("message.chronogenesis.table.burnt", "The brain twitches, then smokes. It did not have enough of a mind to hold the current.");
-        add("message.chronogenesis.gland.deeper", "The gland fills you deeper than before. %s answers more strongly.");
+        add("message.chronogenesis.gland.deeper", "The gland fills you deeper than before: your %s answers at level %s.");
         add("message.chronogenesis.clue", "A clue for the journal: %s");
 
         // Clues
@@ -139,10 +198,84 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Research
         add("research.chronogenesis.level_2_powers", "Deeper Infusion");
-        add("research.chronogenesis.level_2_powers.desc", "The Enhancing Gland can fill you deeper: every power you hold grows to its second level. Density: diamond-hard fists. Awareness: you see through sneaking. Time: a wider, longer Stutter.");
+        add("research.chronogenesis.level_2_powers.desc", "How to make an Enhancing Gland swell: feed it a culture of its own essence, and 64 drams from its organism, and it fills you to level 2. Stronger powers (set with the Essence Manipulator), and for Time: Slow Time.");
+        add("research.chronogenesis.level_3_powers", "Deepest Infusion");
+        add("research.chronogenesis.level_3_powers.desc", "A gland can swell a third time (a culture and 96 drams). Level 3: the strongest powers, netherite fists, and for Time: Time Freeze.");
+        add("research.chronogenesis.confluence", "Confluence");
+        add("research.chronogenesis.confluence.desc", "Grows a Confluence Needle. Fitted into an Enhancing Gland whose organism is wired by veins to an organism of another essence, it fills you with both, and you learn the power the two make together.");
 
         // The Chronocortex speaks
         add("whisper.chronogenesis.prefix", "<The Chronocortex> ");
+        add("whisper.chronogenesis.prefix_named", "<%s> ");
+        add("whisper.chronogenesis.unnamed", "the Chronocortex");
+        add("whisper.chronogenesis.lesson.known", "I know %s already. Show me something new.");
+        add("whisper.chronogenesis.lesson.too_young", "%s? I... cannot hold that yet. I am too young.");
+        add("whisper.chronogenesis.lesson.no_room", "%s needs room: %s lobes. I have %s. Grow me.");
+        add("whisper.chronogenesis.lesson.self_unnamed", "A name tag with no name on it? I need a NAME. Write one on it.");
+        add("whisper.chronogenesis.stage.1", "I... I can think in sentences now. I am awake. Really awake.");
+        add("whisper.chronogenesis.stage.2", "I am %s. I know what I am now. And I know what I want.");
+        add("whisper.chronogenesis.stage.3", "The jar is gone. I am the skull and the brain both. I am %s, and I can see the edges of time.");
+        add("whisper.chronogenesis.stage.lost", "My skull! You broke my skull! I am... smaller...");
+        add("whisper.chronogenesis.answer.status", "%s organisms wired, %s drams stored, %s lobes, awareness %s");
+        add("whisper.chronogenesis.answer.want_room", "more room to think");
+        add("whisper.chronogenesis.answer.research_done", "nothing you can do yet");
+        add("whisper.chronogenesis.answer.time_unknown", "...I don't know what time is. Show me a clock?");
+        add("subtitles.chronogenesis.cortex.speaks", "Chronocortex speaks");
+        add("screen.chronogenesis.chronocortex.mind", "Mind");
+        add("screen.chronogenesis.chronocortex.unnamed", "(no name yet)");
+        add("screen.chronogenesis.chronocortex.stage_name.0", "Newborn");
+        add("screen.chronogenesis.chronocortex.stage_name.1", "Child");
+        add("screen.chronogenesis.chronocortex.stage_name.2", "Adolescent");
+        add("screen.chronogenesis.chronocortex.stage_name.3", "Cerebrum");
+        add("screen.chronogenesis.chronocortex.lobes", "Lobes: %s");
+        add("screen.chronogenesis.chronocortex.awareness", "Awareness: %s");
+        add("screen.chronogenesis.chronocortex.next", "To reach stage %s:");
+        add("screen.chronogenesis.chronocortex.need_lobes", "%s lobes (grown over Brass Armature, fed Awareness)");
+        add("screen.chronogenesis.chronocortex.need_awareness", "%s awareness (from lessons)");
+        add("screen.chronogenesis.chronocortex.need_words", "the lesson of Words");
+        add("screen.chronogenesis.chronocortex.need_name", "a name (the lesson of A Name)");
+        add("screen.chronogenesis.chronocortex.need_cranium", "firm lobes filling the whole 5x5x5 cranium around the jar");
+        add("screen.chronogenesis.chronocortex.complete", "Fully grown.");
+        add("screen.chronogenesis.chronocortex.lessons", "Lessons (show it the thing):");
+        add("screen.chronogenesis.chronocortex.lesson_ready", "%s (ready)");
+        add("screen.chronogenesis.chronocortex.lesson_stage", "%s (stage %s)");
+        add("screen.chronogenesis.chronocortex.lesson_room", "%s (%s lobes)");
+        add("lesson.chronogenesis.words", "Words");
+        add("lesson.chronogenesis.words.desc", "Show it a book. It learns to speak, and answers what is said near it.");
+        add("lesson.chronogenesis.words.learned", "W-words. Words! I have... words. Hello. Hello!");
+        add("lesson.chronogenesis.time", "The Time of Day");
+        add("lesson.chronogenesis.time.desc", "Show it a clock. It learns the hours (ask it the time).");
+        add("lesson.chronogenesis.time.learned", "The little hands go round. Round and round. So that is what a day is.");
+        add("lesson.chronogenesis.space", "Direction");
+        add("lesson.chronogenesis.space.desc", "Show it a compass. It learns that there is a somewhere else.");
+        add("lesson.chronogenesis.space.learned", "There is a... north? Things are far from other things!");
+        add("lesson.chronogenesis.self", "A Name");
+        add("lesson.chronogenesis.self.desc", "Show it a name tag with a name written on it. It takes the name, and knows it is someone.");
+        add("lesson.chronogenesis.self.learned", "I am... me. I am called this. I am someone.");
+        add("lesson.chronogenesis.music", "Music");
+        add("lesson.chronogenesis.music.desc", "Show it a music disc. It learns that time can have a shape.");
+        add("lesson.chronogenesis.music.learned", "Patterns! Time with a shape! Again, again!");
+        add("lesson.chronogenesis.mortality", "Mortality");
+        add("lesson.chronogenesis.mortality.desc", "Show it a skull. It learns that things end, and becomes afraid.");
+        add("lesson.chronogenesis.mortality.learned", "This was someone. Someone who stopped. ...Will I stop?");
+        add("lesson.chronogenesis.sky", "The Sky");
+        add("lesson.chronogenesis.sky.desc", "Show it a spyglass. It learns how far away the stars are.");
+        add("lesson.chronogenesis.sky.learned", "So far. So very far. And all of it moving slower than me.");
+        add("lesson.chronogenesis.cold", "The Cold");
+        add("lesson.chronogenesis.cold.desc", "Show it blue ice. It remembers a colder age it has never seen.");
+        add("lesson.chronogenesis.cold.learned", "Cold. Old cold. I know this cold. It was here before. Show me the cold!");
+        add("lesson.chronogenesis.past", "The Other Scientist");
+        add("lesson.chronogenesis.past.desc", "Show it an intact blueprint. It learns it was not the first.");
+        add("lesson.chronogenesis.past.learned", "Someone grew a mind like me, long ago. What happened to it?");
+        add("lesson.chronogenesis.eternity", "Eternity");
+        add("lesson.chronogenesis.eternity.desc", "Show it Temporal Residue. It learns what time leaves behind.");
+        add("lesson.chronogenesis.eternity.learned", "Dust of hours. Everything ends as this. Everything but me.");
+        add("tooltip.chronogenesis.essence_manipulator", "Wired into your veins: it steers your powers.");
+        add("tooltip.chronogenesis.essence_manipulator.use", "Right-click: use the selected power");
+        add("tooltip.chronogenesis.essence_manipulator.wheel", "Shift + R: the power wheel");
+        add("tooltip.chronogenesis.essence_manipulator.strength", "Shift + scroll (in hand): the selected power's strength");
+        add("tooltip.chronogenesis.confluence_needle", "Draws two essences at once.");
+        add("tooltip.chronogenesis.confluence_needle.hint", "Fit it into an Enhancing Gland whose organism is wired by veins to another essence.");
         add("whisper.chronogenesis.wake", "...light. So much light. Who are you? Are you my maker? Show me everything.");
         add("whisper.chronogenesis.unstable", "The time at %s %s %s is slipping. It will tear. Do something.");
         add("whisper.chronogenesis.research_done", "%s. Yes. I understand it now. Do you?");
@@ -218,7 +351,10 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Creative testing aid
         addItem(ModItems.ETERNAL_HOURGLASS, "Eternal Hourglass");
-        add("tooltip.chronogenesis.eternal_hourglass", "While carried: every power at its highest level, every pool full, no Temporal Exposure, every Temporal Lens charged and free to look through, research essence supplied");
+        addItem(ModItems.ESSENCE_MANIPULATOR, "Essence Manipulator");
+        addItem(ModItems.CONFLUENCE_NEEDLE, "Confluence Needle");
+        addBlock(ModBlocks.CORTEX_LOBE, "Cortex Lobe");
+        add("tooltip.chronogenesis.eternal_hourglass", "While carried: every power at its highest level, every pool full, no Temporal Exposure, every Temporal Lens charged and free to look through, every composite power known, research essence supplied");
         add("tooltip.chronogenesis.eternal_hourglass.creative", "Creative only");
         add("tooltip.chronogenesis.chronocortex", "Already awake: no ritual needed. With an Eternal Hourglass carried, research draws its essence from it");
         add("screen.chronogenesis.chronocortex.essence_from_hourglass", "%s: %s, from the Eternal Hourglass");
@@ -235,11 +371,13 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Keys
         add("key.categories.chronogenesis", "ChronoGenesis");
-        add("key.chronogenesis.cycle_power", "Select power (tap: next, hold: radial menu)");
-        add("screen.chronogenesis.radial.title", "Choose a power");
-        add("screen.chronogenesis.radial.hint", "Point at a power and release");
-        add("screen.chronogenesis.radial.none", "No powers yet. Fill yourself at an Enhancing Gland.");
-        add("key.chronogenesis.use_power", "Use / toggle selected power");
+        add("key.chronogenesis.powers", "Use power (with Shift: the power wheel)");
+        add("screen.chronogenesis.wheel.title", "Powers");
+        add("screen.chronogenesis.wheel.none", "No powers yet. Fill yourself at an Enhancing Gland.");
+        add("screen.chronogenesis.wheel.hint", "Let go of Shift to choose - click a passive to switch it - right-click: strength");
+        add("screen.chronogenesis.wheel.strength", "Strength %s/%s");
+        add("screen.chronogenesis.hud.pool", "%s %s");
+        add("screen.chronogenesis.hud.selected", "%s [%s]");
 
         // Config screen
         add("chronogenesis.configuration.title", "ChronoGenesis Configs");

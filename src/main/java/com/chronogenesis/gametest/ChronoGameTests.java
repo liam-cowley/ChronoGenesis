@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
 import com.chronogenesis.biocomputer.Clues;
 import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
+import com.chronogenesis.biocomputer.Lessons;
 import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.essence.Aspect;
@@ -18,6 +20,7 @@ import com.chronogenesis.essence.DrainEffects;
 import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.essence.MobEssence;
+import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.item.EternalHourglassItem;
 import com.chronogenesis.item.UmbilicalLocketItem;
 import com.chronogenesis.lens.Blueprint;
@@ -31,15 +34,19 @@ import com.chronogenesis.network.PastSectionsPayload;
 import com.chronogenesis.organism.BrassConduitBlock;
 import com.chronogenesis.organism.CorePhase;
 import com.chronogenesis.organism.FleshBlock;
+import com.chronogenesis.organism.GlandBlock;
 import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.GraftBlockEntity;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
 import com.chronogenesis.player.PlayerEssence;
+import com.chronogenesis.player.Power;
 import com.chronogenesis.player.Powers;
+import com.chronogenesis.player.Rewind;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModItems;
+import com.chronogenesis.time.TimeZones;
 import com.chronogenesis.timetravel.PastDimension;
 import com.chronogenesis.timetravel.PastStamping;
 import com.google.gson.JsonParser;
@@ -59,9 +66,11 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LightLayer;
@@ -369,6 +378,137 @@ public final class ChronoGameTests {
         helper.assertTrue(Research.has(player, Research.LEVEL_2_POWERS), "research not recorded");
         helper.assertFalse(player.getInventory().contains(new ItemStack(Items.AMETHYST_SHARD)), "materials not taken");
         helper.succeed();
+    }
+
+    /** Rewind takes the player back to where they stood 5 seconds ago, for 4 drams of Time. */
+    @GameTest(template = "floor7")
+    public static void rewindReturnsToTheTrail(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        Vec3 start = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
+        Vec3 later = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 1, 5)));
+        Powers.set(player, PlayerEssence.EMPTY.withLevel(Aspect.TIME, 1).withPool(Aspect.TIME, 10));
+        player.moveTo(start.x, start.y, start.z);
+        for (int i = 0; i < 30; i++) {
+            Rewind.record(player);
+        }
+        player.moveTo(later.x, later.y, later.z);
+        for (int i = 0; i < 10; i++) {
+            Rewind.record(player);
+        }
+        Powers.use(player);
+        helper.assertTrue(player.position().distanceTo(start) < 0.01, "not rewound: " + player.position());
+        helper.assertTrue(Powers.get(player).pool(Aspect.TIME) == 6, "rewind should cost 4 drams");
+        helper.succeed();
+    }
+
+    /** Time Freeze stops the chunk: a dropped item hangs in the air. Released, the chunk catches back up. */
+    @GameTest(template = "floor7", timeoutTicks = 200)
+    public static void timeFreezeStopsTheChunk(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        Vec3 here = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(3, 1, 3)));
+        player.moveTo(here.x, here.y, here.z);
+        Powers.set(player, PlayerEssence.EMPTY.withLevel(Aspect.TIME, 3).withPool(Aspect.TIME, 150)
+                .withSelected(Power.TIME_FREEZE));
+        Powers.use(player);
+        ServerLevel level = helper.getLevel();
+        helper.assertTrue(TimeZones.at(level, BlockPos.containing(here)) != null, "no zone made");
+        ItemEntity item = new ItemEntity(level, here.x, here.y + 4, here.z, new ItemStack(Items.APPLE));
+        item.setNoGravity(false);
+        helper.runAfterDelay(30, () -> level.addFreshEntity(item));
+        double[] heldAt = new double[1];
+        helper.runAfterDelay(35, () -> heldAt[0] = item.getY());
+        helper.runAfterDelay(70, () -> {
+            helper.assertTrue(TimeZones.stoppedAt(level, BlockPos.containing(here)), "the chunk should be stopped");
+            helper.assertTrue(Math.abs(item.getY() - heldAt[0]) < 1.0e-6, "the item fell in stopped time: "
+                    + heldAt[0] + " -> " + item.getY());
+            Powers.use(player); // let go
+            helper.assertTrue(TimeZones.at(level, BlockPos.containing(here)).releasing, "not let go");
+            TimeZones.clear(level);
+            item.discard();
+            helper.succeed();
+        });
+    }
+
+    /**
+     * A culture of its own essence, research, and drams from an organism big enough to spare them make a gland
+     * swell; the next infusion raises the power level to the gland's.
+     */
+    @GameTest(template = "floor7", timeoutTicks = 100)
+    public static void glandGrowsALevel(GameTestHelper helper) {
+        BlockPos corePos = new BlockPos(3, 1, 3);
+        helper.setBlock(corePos, core(Aspect.DENSITY));
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            helper.setBlock(corePos.relative(side), ModBlocks.CHRONOFLESH.get());
+            helper.setBlock(corePos.relative(side).relative(side.getClockWise()), ModBlocks.CHRONOFLESH.get());
+        }
+        helper.setBlock(corePos.above(), graft(ModBlocks.ENHANCING_GLAND.get()));
+        ServerPlayer player = fakePlayer(helper);
+        Research.set(player, Research.get(player).withCompleted(Research.LEVEL_2_POWERS));
+        // Once the core has measured its body (8 flesh: room for 80 drams), fill it and feed the gland a culture.
+        helper.runAfterDelay(10, () -> {
+            OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+            core.feed(100);
+            helper.assertTrue(core.stored() >= 64, "the organism cannot hold enough: " + core.stored());
+            player.setItemInHand(InteractionHand.MAIN_HAND, CultureItem.of(Aspect.DENSITY));
+            GraftBlockEntity gland = helper.getBlockEntity(corePos.above());
+            gland.useItemOn(player.getMainHandItem(), player, InteractionHand.MAIN_HAND);
+            helper.assertBlockProperty(corePos.above(), GlandBlock.LEVEL, 2);
+            core.feed(100);
+            gland.useWithoutItem(player);
+            helper.assertTrue(Powers.get(player).level(Aspect.DENSITY) == 2, "infusion should reach level 2");
+            helper.succeed();
+        });
+    }
+
+    /**
+     * A gland with a Confluence Needle, on an organism wired by veins (Tap, vein, Maw) to one of another essence,
+     * mixes both into the player, who learns their composite power.
+     */
+    @GameTest(template = "floor7")
+    public static void confluenceTeachesAComposite(GameTestHelper helper) {
+        BlockPos densityCore = new BlockPos(1, 1, 1);
+        BlockPos speedCore = new BlockPos(5, 1, 1);
+        helper.setBlock(densityCore, core(Aspect.DENSITY));
+        helper.setBlock(speedCore, core(Aspect.SPEED));
+        helper.setBlock(new BlockPos(2, 1, 1), ModBlocks.TAP.get().defaultBlockState().setValue(GraftBlock.FACING, Direction.EAST));
+        helper.setBlock(new BlockPos(3, 1, 1), ModBlocks.BRASS_CONDUIT.get().defaultBlockState().setValue(BrassConduitBlock.VEIN, true));
+        helper.setBlock(new BlockPos(4, 1, 1), ModBlocks.MAW.get().defaultBlockState().setValue(GraftBlock.FACING, Direction.WEST));
+        helper.setBlock(densityCore.above(), graft(ModBlocks.ENHANCING_GLAND.get()).setValue(GlandBlock.NEEDLE, true));
+        helper.<OrganismCoreBlockEntity>getBlockEntity(densityCore).feed(20);
+        helper.<OrganismCoreBlockEntity>getBlockEntity(speedCore).feed(20);
+        ServerPlayer player = fakePlayer(helper);
+        Powers.set(player, PlayerEssence.EMPTY.withLevel(Aspect.DENSITY, 1).withLevel(Aspect.SPEED, 1));
+        helper.<GraftBlockEntity>getBlockEntity(densityCore.above()).useWithoutItem(player);
+        PlayerEssence essence = Powers.get(player);
+        helper.assertTrue(essence.composites().contains(Power.IMPETUS), "Impetus not learned");
+        helper.assertTrue(essence.knows(Power.IMPETUS), "Impetus not usable");
+        helper.assertTrue(essence.pool(Aspect.SPEED) > 0, "no Speed came through the veins");
+        helper.succeed();
+    }
+
+    /** The Chronocortex grows lobes into armature on wired Awareness, and learns a lesson it has room for. */
+    @GameTest(template = "floor7", timeoutTicks = 400)
+    public static void cortexGrowsAndLearns(GameTestHelper helper) {
+        BlockPos cortexPos = new BlockPos(3, 1, 3);
+        BlockPos corePos = new BlockPos(1, 1, 1);
+        helper.setBlock(cortexPos, ModBlocks.CHRONOCORTEX.get());
+        helper.setBlock(cortexPos.east(), ModBlocks.BRASS_ARMATURE.get());
+        helper.setBlock(cortexPos.east().east(), ModBlocks.BRASS_ARMATURE.get());
+        helper.setBlock(corePos, core(Aspect.AWARENESS));
+        helper.setBlock(corePos.above(), graft(ModBlocks.GANGLION.get()));
+        helper.<OrganismCoreBlockEntity>getBlockEntity(corePos).feed(16);
+        ChronocortexBlockEntity cortex = helper.getBlockEntity(cortexPos);
+        ServerPlayer player = fakePlayer(helper);
+        helper.succeedWhen(() -> {
+            helper.assertBlockPresent(ModBlocks.CORTEX_LOBE.get(), cortexPos.east());
+            helper.assertBlockPresent(ModBlocks.CORTEX_LOBE.get(), cortexPos.east().east());
+            helper.assertTrue(cortex.lobes() == 2, "lobes counted: " + cortex.lobes());
+            ItemStack clock = new ItemStack(Items.CLOCK);
+            cortex.teach(clock, player);
+            helper.assertTrue(cortex.knows(Lessons.TIME), "the clock was not learned");
+            helper.assertTrue(clock.isEmpty(), "the clock was not used up");
+            helper.assertFalse(cortex.knows(Lessons.WORDS), "words need more room");
+        });
     }
 
     /** A worn Umbilical Locket tied to an organism draws its essence into the wearer's pool, from a distance. */

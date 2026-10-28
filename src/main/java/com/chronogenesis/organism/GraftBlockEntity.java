@@ -6,8 +6,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.chronogenesis.Config;
 import com.chronogenesis.biocomputer.Clues;
-import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
+import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.essence.EssenceMoteOptions;

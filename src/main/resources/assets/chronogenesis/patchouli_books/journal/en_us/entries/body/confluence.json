@@ -1,0 +1,22 @@
+{
+  "name": "Confluence",
+  "icon": "chronogenesis:confluence_needle",
+  "category": "chronogenesis:body",
+  "sortnum": 2,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Two essences can be mixed in a body. A $(l)Confluence Needle$() (grown by the Chronocortex) fitted into a gland draws on two organisms at once: the gland's own, and one of $(l)another essence$() wired to it by veins (a Tap, veins, a Maw).$(br2)I must already hold both essences. Sneak-use the gland with an empty hand to take the needle back."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Impetus$() (Density, Speed): a charge that throws aside what it hits.$(br)$(l)Ground Slam$() (Density, Size): drop like a stone; a shockwave where I land.$(br)$(l)Dread$() (Density, Awareness): what hunts me grows slow and weak.$(br)$(l)Dilation$() (Density, Time): projectiles crawl near me.$(br)$(l)Scurry$() (Speed, Size): step up blocks, fall softly.",
+      "title": "What They Make"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Reflexes$() (Speed, Awareness): arrows glance off.$(br)$(l)Stutter$() (Speed, Time): a bubble of half-speed time.$(br)$(l)Overlook$() (Size, Awareness): invisible, forgotten.$(br)$(l)Regrowth$() (Size, Time): my body's time runs back to before the wound.$(br)$(l)Premonition$() (Awareness, Time): the next blow is foreseen, and misses."
+    }
+  ]
+}

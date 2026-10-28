@@ -3,9 +3,9 @@ package com.chronogenesis.item;
 import java.util.List;
 
 import com.chronogenesis.essence.Aspect;
-import com.chronogenesis.journal.JournalUnlock;
 import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.essence.EssenceItems;
+import com.chronogenesis.journal.JournalUnlock;
 import com.chronogenesis.lens.TemporalLensItem;
 import com.chronogenesis.player.PlayerEssence;
 import com.chronogenesis.player.Power;

@@ -1,0 +1,45 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.level_3_powers"
+  },
+  "description": {
+    "translate": "research.chronogenesis.level_3_powers.desc"
+  },
+  "icon": "chronogenesis:enhancing_gland",
+  "stage": 2,
+  "requires": [
+    "chronogenesis:level_2_powers"
+  ],
+  "essence": {
+    "awareness": 32,
+    "time": 24
+  },
+  "materials": [
+    {
+      "item": "minecraft:amethyst_shard",
+      "count": 16
+    },
+    {
+      "item": "chronogenesis:preserved_heart",
+      "count": 2
+    },
+    {
+      "item": "minecraft:ender_eye",
+      "count": 2
+    }
+  ],
+  "clues": [
+    [
+      "chronogenesis:nail_in_time",
+      "chronogenesis:heavy_heart"
+    ],
+    [
+      "chronogenesis:older_inscription"
+    ],
+    [
+      "chronogenesis:lab_in_its_prime",
+      "chronogenesis:torn_time"
+    ]
+  ],
+  "order": 10
+}

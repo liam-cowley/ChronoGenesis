@@ -1,0 +1,27 @@
+{
+  "name": "Bending Time",
+  "icon": "minecraft:clock",
+  "category": "chronogenesis:time",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "With Time in my veins I can bend it.$(br2)$(l)Rewind$() (level 1): I am back where I stood five seconds ago. Only my place: my wounds stay.$(br2)$(l)Slow Time$() (level 2): the chunk I stand in runs at half speed, or a quarter, or an eighth. Creatures, furnaces, crops, water, its very sun."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Time Freeze$() (level 3): the chunk stops. Arrows hang in the air, water stands mid-fall, the sun does not move.$(br2)Both last until I use the power again, run out of Time, or walk away. The chunk does not snap back: it races to catch up, then slows, landing exactly on the world's hour and the moon's phase.",
+      "title": "Stopping It"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Anyone in the chunk without the $(l)full Chrono-Insulated Suit$() is caught in it, me included. Suited, I keep the world's time: I walk through my own slowed chunk at my own pace.$(br2)Frozen, a body cannot move or act at all.",
+      "title": "Who It Holds"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Light is slowed with everything else. From outside, a slowed chunk looks $(l)red and dim$(): its light arrives tired. A stopped chunk lets no light out and none through: a $(l)black column$() shaped like the chunk, with a thin glow where light only grazes it. Caught inside, the world outside looks blue and racing.$(br2)Through the suit's goggles, a stopped chunk is an old photograph instead.",
+      "title": "How It Looks"
+    }
+  ]
+}

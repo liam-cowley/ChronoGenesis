@@ -53,6 +53,8 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
                                 .setProperties(StatePropertiesPredicate.Builder.properties()
                                         .hasProperty(DissectionTableBlock.BRAIN, true)))));
         dropOther(ModBlocks.CHRONOCORTEX.get(), ModItems.DISSECTION_TABLE.get());
+        // A lobe cut away dies; its brass frame is left.
+        dropOther(ModBlocks.CORTEX_LOBE.get(), ModItems.BRASS_ARMATURE.get());
         dropSelf(ModBlocks.LEECH_TENDRIL.get());
         dropSelf(ModBlocks.ENHANCING_GLAND.get());
         // The jug keeps its essence when broken.

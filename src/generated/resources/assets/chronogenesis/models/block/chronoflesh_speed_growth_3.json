@@ -1,0 +1,554 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#overlay"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#overlay"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#overlay"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#overlay"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#overlay"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#overlay"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        3,
+        0,
+        -0.75
+      ],
+      "to": [
+        4,
+        16,
+        0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        3,
+        0,
+        16
+      ],
+      "to": [
+        4,
+        16,
+        16.75
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        -0.75,
+        0,
+        3
+      ],
+      "to": [
+        0,
+        16,
+        4
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        16,
+        0,
+        3
+      ],
+      "to": [
+        16.75,
+        16,
+        4
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        7.5,
+        0,
+        -0.75
+      ],
+      "to": [
+        8.5,
+        16,
+        0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        7.5,
+        0,
+        16
+      ],
+      "to": [
+        8.5,
+        16,
+        16.75
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        -0.75,
+        0,
+        7.5
+      ],
+      "to": [
+        0,
+        16,
+        8.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        16,
+        0,
+        7.5
+      ],
+      "to": [
+        16.75,
+        16,
+        8.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        12,
+        0,
+        -0.75
+      ],
+      "to": [
+        13,
+        16,
+        0
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        12,
+        0,
+        16
+      ],
+      "to": [
+        13,
+        16,
+        16.75
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        -0.75,
+        0,
+        12
+      ],
+      "to": [
+        0,
+        16,
+        13
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#flesh",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#flesh",
+          "tintindex": 0
+        }
+      },
+      "from": [
+        16,
+        0,
+        12
+      ],
+      "to": [
+        16.75,
+        16,
+        13
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "crystal": "minecraft:block/amethyst_block",
+    "eye": "chronogenesis:block/eye",
+    "flesh": "chronogenesis:block/chronoflesh_speed",
+    "frame": "chronogenesis:block/brass_block",
+    "overlay": "chronogenesis:block/chronoflesh_speed_overlay",
+    "particle": "chronogenesis:block/chronoflesh_speed",
+    "pustule": "chronogenesis:block/flesh_pustule",
+    "steel": "chronogenesis:block/steel"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "remember my name"
+  ],
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "%3$s! I will remember. %3$s, %3$s, %3$s."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "%3$s. Filed."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "%3$s. I had already decided to call you that."
+      ]
+    }
+  ]
+}

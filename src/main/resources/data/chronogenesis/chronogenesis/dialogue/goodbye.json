@@ -1,0 +1,34 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "bye",
+    "goodbye",
+    "farewell",
+    "see you",
+    "good night",
+    "later"
+  ],
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "Don't go! ...come back soon?",
+        "Bye! I will count until you're back."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "Leave, then. Return with something.",
+        "Go. The organisms stay."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "Goodbye, %1$s. I will see where you go.",
+        "You never really leave my range anymore."
+      ]
+    }
+  ]
+}

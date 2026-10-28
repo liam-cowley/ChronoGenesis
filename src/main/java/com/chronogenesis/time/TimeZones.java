@@ -360,6 +360,10 @@ public final class TimeZones {
             return;
         }
         double rate = playerRate(player);
+        var speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (rate == 1.0 && (speed == null || speed.getModifier(SLOWED) == null)) {
+            return; // nothing to do, nothing to undo
+        }
         double factor = Math.min(rate, 2.0) - 1.0;
         var op = AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
         double f = Math.abs(factor) < 1.0e-3 ? 0.0 : factor;
@@ -430,6 +434,20 @@ public final class TimeZones {
         if (event.getEntity() instanceof ServerPlayer player) {
             PacketDistributor.sendToPlayer(player, payload(SERVER.getOrDefault(event.getTo(), Map.of())));
         }
+    }
+
+    /** Drops every zone in a level at once, with no catching up (game tests clean up with it). */
+    public static void clear(ServerLevel level) {
+        Map<Long, TimeZone> zones = SERVER.remove(level.dimension());
+        if (zones != null) {
+            zones.values().forEach(zone -> {
+                if (zone.owner != null) {
+                    OWNERS.remove(zone.owner);
+                }
+            });
+        }
+        TICK_LISTS.remove(level.getBlockTicks());
+        TICK_LISTS.remove(level.getFluidTicks());
     }
 
     @SubscribeEvent

@@ -1,10 +1,17 @@
 package com.chronogenesis.datagen;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import com.chronogenesis.ChronoGenesis;
+import com.chronogenesis.biocomputer.ChronocortexBlock;
+import com.chronogenesis.biocomputer.CortexLobeBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlock;
+import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.organism.CorePhase;
 import com.chronogenesis.organism.EssenceJugBlock;
 import com.chronogenesis.organism.FleshBlock;
+import com.chronogenesis.organism.GlandBlock;
 import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.registry.ModBlocks;
@@ -63,55 +70,220 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     // ---------------------------------------------------------------- flesh
 
+    /**
+     * Flesh looks different for every essence, not only in colour: each grows over its frame in its own way.
+     * <ul>
+     *   <li>Density: heavy, it sags to the bottom of the frame, cinched with iron straps.</li>
+     *   <li>Speed: taut tendons strung corner to corner, then a striated, ribbed muscle.</li>
+     *   <li>Size: bubbles that swell and spill out past the frame.</li>
+     *   <li>Awareness: folded like a brain, with eyes opening in it.</li>
+     *   <li>Time: amethyst shards grow through it; its skin shows growth rings, like a tree's.</li>
+     * </ul>
+     */
     private void fleshStages() {
-        ModelFile[] stages = new ModelFile[4];
-
-        // 0: tendrils: the bare frame with the first strands wrapped around its beams.
-        BlockModelBuilder tendrils = organismModel("chronoflesh_growth_0", "chronoflesh");
-        frame(tendrils);
-        box(tendrils, 3, 0, 0, 10, 3, 3, FLESH, true);       // sleeve on a bottom beam
-        box(tendrils, 0, 4, 0, 3, 12, 3, FLESH, true);       // sleeve on an upright
-        box(tendrils, 6, 13, 13, 14, 16, 16, FLESH, true);   // sleeve on a top beam
-        box(tendrils, 12, 0, 12, 16, 4, 16, FLESH, true);    // a knot in one corner
-        tendrils.element().from(7, 1, 0.5f).to(9, 15, 1.5f)  // a strand across the face
-                .rotation().angle(45).axis(Direction.Axis.Z).origin(8, 8, 1).end()
-                .allFaces((dir, face) -> face.texture(FLESH).tintindex(0)).end();
-        stages[0] = tendrils;
-
-        // 1: creeping: a soft inner mass, every upright sleeved, a membrane on the floor.
-        BlockModelBuilder creeping = organismModel("chronoflesh_growth_1", "chronoflesh");
-        frame(creeping);
-        box(creeping, 4, 3, 4, 12, 11, 12, FLESH, true);
-        box(creeping, 2, 0, 2, 14, 1, 14, FLESH, true);
-        box(creeping, 0, 0, 0, 3, 9, 3, FLESH, true);
-        box(creeping, 13, 0, 0, 16, 6, 3, FLESH, true);
-        box(creeping, 0, 0, 13, 3, 11, 16, FLESH, true);
-        box(creeping, 13, 0, 13, 16, 7, 16, FLESH, true);
-        stages[1] = creeping;
-
-        // 2: swelling: the mass fills the frame and bulges between the beams.
-        BlockModelBuilder swelling = organismModel("chronoflesh_growth_2", "chronoflesh");
-        frame(swelling);
-        box(swelling, 2, 1, 2, 14, 15, 14, FLESH, true);
-        box(swelling, 5, 6, 14, 10, 11, 15, FLESH, true);
-        box(swelling, 14, 4, 6, 15, 9, 11, FLESH, true);
-        box(swelling, 6, 15, 4, 11, 16, 9, FLESH, true);
-        stages[2] = swelling;
-
-        // 3: mature: the frame is swallowed. Scarred, stapled, and weeping pustules.
-        BlockModelBuilder mature = organismModel("chronoflesh_growth_3", "chronoflesh")
-                .texture("overlay", modLoc("block/chronoflesh_overlay"))
-                .texture("pustule", modLoc("block/flesh_pustule"));
-        mature.element().allFaces((dir, face) -> face.texture(FLESH).cullface(dir).tintindex(0)).end();
-        mature.element().allFaces((dir, face) -> face.texture("#overlay").cullface(dir)).end();
-        box(mature, 10, 16, 3, 13, 17, 6, "#pustule", false);
-        box(mature, 4, 9, -1, 7, 12, 0, "#pustule", false);
-        box(mature, 11, 3, 16, 13, 5, 17, "#pustule", false);
-        stages[3] = mature;
-
+        Map<Aspect, ModelFile[]> byAspect = new EnumMap<>(Aspect.class);
+        for (Aspect aspect : Aspect.values()) {
+            byAspect.put(aspect, fleshFor(aspect));
+        }
         getVariantBuilder(ModBlocks.CHRONOFLESH.get()).forAllStates(state -> ConfiguredModel.builder()
-                .modelFile(stages[state.getValue(FleshBlock.GROWTH)]).build());
-        itemModels().withExistingParent("chronoflesh", modLoc("block/chronoflesh_growth_3"));
+                .modelFile(byAspect.get(state.getValue(FleshBlock.ASPECT))[state.getValue(FleshBlock.GROWTH)]).build());
+        itemModels().withExistingParent("chronoflesh", modLoc("block/chronoflesh_density_growth_3"));
+    }
+
+    private ModelFile[] fleshFor(Aspect aspect) {
+        String a = aspect.getSerializedName();
+        ModelFile[] stages = new ModelFile[4];
+        for (int growth = 0; growth < 4; growth++) {
+            BlockModelBuilder model = organismModel("chronoflesh_" + a + "_growth_" + growth, "chronoflesh_" + a);
+            parts(model);
+            if (growth < FleshBlock.MATURE) {
+                frame(model);
+            } else {
+                model.texture("overlay", modLoc("block/chronoflesh_" + a + "_overlay"));
+                model.element().allFaces((dir, face) -> face.texture(FLESH).cullface(dir).tintindex(0)).end();
+                model.element().allFaces((dir, face) -> face.texture("#overlay").cullface(dir)).end();
+            }
+            switch (aspect) {
+                case DENSITY -> densityFlesh(model, growth);
+                case SPEED -> speedFlesh(model, growth);
+                case SIZE -> sizeFlesh(model, growth);
+                case AWARENESS -> awarenessFlesh(model, growth);
+                case TIME -> timeFlesh(model, growth);
+            }
+            stages[growth] = model;
+        }
+        return stages;
+    }
+
+    /** Textures for the parts some essences grow: iron straps, amethyst shards, small eyes, pustules. */
+    private BlockModelBuilder parts(BlockModelBuilder model) {
+        return model.texture("steel", modLoc("block/steel"))
+                .texture("crystal", mcLoc("block/amethyst_block"))
+                .texture("eye", modLoc("block/eye"))
+                .texture("pustule", modLoc("block/flesh_pustule"));
+    }
+
+    private static void densityFlesh(BlockModelBuilder m, int growth) {
+        switch (growth) {
+            case 0 -> {
+                box(m, 1, 0, 1, 15, 1.5f, 15, FLESH, true);         // a puddle, pooled on the floor
+                box(m, 0, 0, 0, 16, 3, 3, FLESH, true);
+                box(m, 0, 0, 13, 16, 3, 16, FLESH, true);
+            }
+            case 1 -> {
+                box(m, 1, 0, 1, 15, 6, 15, FLESH, true);            // a heavy slab
+                box(m, 3, 6, 3, 6, 7.5f, 6, FLESH, true);
+                box(m, 0.5f, 2, 0.5f, 15.5f, 3, 15.5f, "#steel", false);
+            }
+            case 2 -> {
+                box(m, 1, 0, 1, 15, 11, 15, FLESH, true);           // squat, straining sideways at its base
+                box(m, 0.5f, 0, 3, 1, 5, 13, FLESH, true);
+                box(m, 15, 0, 3, 15.5f, 5, 13, FLESH, true);
+                box(m, 0.5f, 4, 0.5f, 15.5f, 5, 15.5f, "#steel", false);
+                box(m, 0.5f, 8, 0.5f, 15.5f, 9, 15.5f, "#steel", false);
+            }
+            default -> {
+                box(m, -0.5f, 3, -0.5f, 16.5f, 4.5f, 16.5f, "#steel", false);   // iron straps round the block
+                box(m, -0.5f, 11, -0.5f, 16.5f, 12.5f, 16.5f, "#steel", false);
+            }
+        }
+    }
+
+    private static void speedFlesh(BlockModelBuilder m, int growth) {
+        switch (growth) {
+            case 0 -> {
+                strand(m, 8, 1, Direction.Axis.Z, 45);
+                strand(m, 8, 15, Direction.Axis.Z, -45);
+                strand(m, 1, 8, Direction.Axis.X, 45);
+            }
+            case 1 -> {
+                strand(m, 4, 4, Direction.Axis.Z, 45);
+                strand(m, 12, 12, Direction.Axis.Z, -45);
+                strand(m, 4, 12, Direction.Axis.X, 45);
+                strand(m, 12, 4, Direction.Axis.X, -45);
+                box(m, 6, 6, 6, 10, 10, 10, FLESH, true);           // where the tendons knot
+            }
+            case 2 -> {
+                box(m, 3, 1, 3, 13, 15, 13, FLESH, true);
+                for (float x : new float[] {4, 7.5f, 11}) {           // striated ribs down every side
+                    box(m, x, 1, 2, x + 1, 15, 3, FLESH, true);
+                    box(m, x, 1, 13, x + 1, 15, 14, FLESH, true);
+                    box(m, 2, 1, x, 3, 15, x + 1, FLESH, true);
+                    box(m, 13, 1, x, 14, 15, x + 1, FLESH, true);
+                }
+            }
+            default -> {
+                for (float x : new float[] {3, 7.5f, 12}) {           // raised tendons, taut, top to bottom
+                    box(m, x, 0, -0.75f, x + 1, 16, 0, FLESH, true);
+                    box(m, x, 0, 16, x + 1, 16, 16.75f, FLESH, true);
+                    box(m, -0.75f, 0, x, 0, 16, x + 1, FLESH, true);
+                    box(m, 16, 0, x, 16.75f, 16, x + 1, FLESH, true);
+                }
+            }
+        }
+    }
+
+    /** A thin tendon strung diagonally across the frame. */
+    private static void strand(BlockModelBuilder m, float a, float b, Direction.Axis axis, float angle) {
+        var element = axis == Direction.Axis.Z ? m.element().from(a - 0.75f, 0.5f, b - 0.75f).to(a + 0.75f, 15.5f, b + 0.75f)
+                : m.element().from(b - 0.75f, 0.5f, a - 0.75f).to(b + 0.75f, 15.5f, a + 0.75f);
+        element.rotation().angle(angle).axis(axis).origin(8, 8, 8).end()
+                .allFaces((dir, face) -> face.texture(FLESH).tintindex(0)).end();
+    }
+
+    private static void sizeFlesh(BlockModelBuilder m, int growth) {
+        switch (growth) {
+            case 0 -> {
+                box(m, 4, 0, 4, 10, 6, 10, FLESH, true);            // a few bubbles
+                box(m, 10, 1, 9, 13, 4, 12, FLESH, true);
+                box(m, 2, 13, 3, 6, 16, 7, FLESH, true);
+            }
+            case 1 -> {
+                box(m, 2, 1, 2, 14, 13, 14, FLESH, true);
+                box(m, 5, 13, 5, 10, 15.5f, 10, FLESH, true);
+                box(m, 9, 9, 13.5f, 13, 13, 15, FLESH, true);
+            }
+            case 2 -> {
+                box(m, 1, 0, 1, 15, 15, 15, FLESH, true);           // spilling out between the beams
+                box(m, 4, 4, -1.5f, 12, 12, 1, FLESH, true);
+                box(m, 15, 3, 4, 17.5f, 11, 12, FLESH, true);
+                box(m, 5, 15, 5, 11, 17, 11, FLESH, true);
+            }
+            default -> {
+                box(m, 3, 16, 3, 9, 18.5f, 9, FLESH, true);         // bulbs swelling out of the block
+                box(m, -2, 3, 8, 0, 8, 13, FLESH, true);
+                box(m, 10, 5, 16, 14, 9, 18, FLESH, true);
+                box(m, 16, 10, 2, 17.5f, 13, 5, FLESH, true);
+            }
+        }
+    }
+
+    private static void awarenessFlesh(BlockModelBuilder m, int growth) {
+        switch (growth) {
+            case 0 -> {
+                box(m, 0, 0, 0, 16, 2.5f, 2.5f, FLESH, true);       // nerve fibres along the beams
+                box(m, 0, 0, 0, 2.5f, 16, 2.5f, FLESH, true);
+                box(m, 13.5f, 13.5f, 0, 16, 16, 16, FLESH, true);
+                box(m, 7, 0, 7, 9, 2, 9, "#eye", false);
+            }
+            case 1 -> {
+                box(m, 3, 0, 3, 13, 4, 13, FLESH, true);            // folds stacked like gyri
+                box(m, 4, 4, 2, 12, 8, 14, FLESH, true);
+                box(m, 2, 8, 4, 14, 11, 12, FLESH, true);
+                box(m, 6, 11, 6, 10, 12.5f, 10, "#eye", false);
+            }
+            case 2 -> {
+                box(m, 2, 1, 2, 14, 14, 14, FLESH, true);
+                box(m, 3, 14, 5, 13, 15, 7, FLESH, true);
+                box(m, 3, 14, 9, 13, 15, 11, FLESH, true);
+                box(m, 5, 8, 13.5f, 8, 11, 15, "#eye", false);
+                box(m, 13.5f, 4, 7, 15, 7, 10, "#eye", false);
+            }
+            default -> {
+                box(m, 4, 9, -1, 7, 12, 0, "#eye", false);          // eyes opening on every side
+                box(m, 16, 4, 9, 17, 7, 12, "#eye", false);
+                box(m, 9, 16, 4, 12, 17, 7, "#eye", false);
+                box(m, 10, 3, 16, 13, 6, 17, "#eye", false);
+                box(m, -1, 10, 3, 0, 13, 6, "#eye", false);
+            }
+        }
+    }
+
+    private static void timeFlesh(BlockModelBuilder m, int growth) {
+        switch (growth) {
+            case 0 -> {
+                box(m, 3, 0, 3, 8, 3, 8, FLESH, true);
+                shard(m, 5, 0, 5, 7);
+                shard(m, 12, 0, 11, 5);
+            }
+            case 1 -> {
+                box(m, 4, 0, 4, 12, 7, 12, FLESH, true);
+                shard(m, 6, 7, 6, 6);
+                shard(m, 11, 4, 10, 7);
+                shard(m, 3, 0, 12, 6);
+            }
+            case 2 -> {
+                box(m, 2, 0, 2, 14, 13, 14, FLESH, true);
+                shard(m, 5, 13, 5, 5);
+                shard(m, 10, 13, 9, 4);
+                shard(m, 8, 10, 13, 6);
+            }
+            default -> {
+                shard(m, 4, 15, 4, 6);                              // shards breaking through the skin
+                shard(m, 11, 15, 10, 4);
+                shard(m, 8, 15, 13, 5);
+                shard(m, 13, 7, 3, 5);
+            }
+        }
+    }
+
+    /** An amethyst shard: two crossed crystal planes. */
+    private static void shard(BlockModelBuilder m, float x, float y, float z, float height) {
+        for (float angle : new float[] {45, -45}) {
+            m.element().from(x - 2, y, z - 0.5f).to(x + 2, y + height, z + 0.5f)
+                    .rotation().angle(angle).axis(Direction.Axis.Y).origin(x, y, z).end()
+                    .allFaces((dir, face) -> face.texture("#crystal")).end();
+        }
     }
 
     // ---------------------------------------------------------------- core
@@ -128,19 +300,28 @@ public class ModBlockStateProvider extends BlockStateProvider {
         box(seed, 11, 3, 7, 14, 5, 9, FLESH, true);
         box(seed, 7, 9, 7, 9, 13, 9, FLESH, true);
 
-        // Awake: a bloated mass inside the frame with an eye on every side.
-        BlockModelBuilder awake = organismModel("organism_core_awake", "organism_core")
-                .texture("eye", modLoc("block/organism_core_overlay"));
-        frame(awake);
-        box(awake, 1, 1, 1, 15, 15, 15, FLESH, true);
-        box(awake, 1, 1, 1, 15, 15, 15, "#eye", false);
-
+        // Awake: a bloated mass inside the frame, each essence with its own eye (and its own growths).
         // Hungry: shrunken, the eyes half shut and bloodshot.
-        BlockModelBuilder hungry = organismModel("organism_core_hungry", "organism_core")
-                .texture("eye", modLoc("block/organism_core_hungry_overlay"));
-        frame(hungry);
-        box(hungry, 2, 2, 2, 14, 14, 14, FLESH, true);
-        box(hungry, 2, 2, 2, 14, 14, 14, "#eye", false);
+        Map<Aspect, ModelFile> awake = new EnumMap<>(Aspect.class);
+        Map<Aspect, ModelFile> hungry = new EnumMap<>(Aspect.class);
+        for (Aspect aspect : Aspect.values()) {
+            String a = aspect.getSerializedName();
+            BlockModelBuilder full = parts(organismModel("organism_core_" + a + "_awake", "organism_core_" + a)
+                    .texture("core_eye", modLoc("block/organism_core_" + a + "_overlay")));
+            frame(full);
+            box(full, 1, 1, 1, 15, 15, 15, FLESH, true);
+            box(full, 1, 1, 1, 15, 15, 15, "#core_eye", false);
+            coreGrowths(full, aspect, 1);
+            awake.put(aspect, full);
+
+            BlockModelBuilder shrunk = parts(organismModel("organism_core_" + a + "_hungry", "organism_core_" + a)
+                    .texture("core_eye", modLoc("block/organism_core_" + a + "_hungry_overlay")));
+            frame(shrunk);
+            box(shrunk, 2, 2, 2, 14, 14, 14, FLESH, true);
+            box(shrunk, 2, 2, 2, 14, 14, 14, "#core_eye", false);
+            coreGrowths(shrunk, aspect, 2);
+            hungry.put(aspect, shrunk);
+        }
 
         // Necrotic: slumped, grey, stitched shut.
         BlockModelBuilder necrotic = organismModel("organism_core_necrotic", "organism_core_necrotic");
@@ -151,10 +332,38 @@ public class ModBlockStateProvider extends BlockStateProvider {
         getVariantBuilder(ModBlocks.ORGANISM_CORE.get()).forAllStates(state -> ConfiguredModel.builder()
                 .modelFile(switch (state.getValue(OrganismCoreBlock.PHASE)) {
                     case SEED -> seed;
-                    case AWAKE -> awake;
-                    case HUNGRY -> hungry;
+                    case AWAKE -> awake.get(state.getValue(FleshBlock.ASPECT));
+                    case HUNGRY -> hungry.get(state.getValue(FleshBlock.ASPECT));
                     case NECROTIC -> necrotic;
                 }).build());
+    }
+
+    /** What grows out of a core, by essence: the same language as its flesh. */
+    private static void coreGrowths(BlockModelBuilder m, Aspect aspect, float inset) {
+        float lo = inset;
+        float hi = 16 - inset;
+        switch (aspect) {
+            case DENSITY -> {
+                box(m, lo - 0.5f, 4, lo - 0.5f, hi + 0.5f, 5, hi + 0.5f, "#steel", false);
+                box(m, lo - 0.5f, 11, lo - 0.5f, hi + 0.5f, 12, hi + 0.5f, "#steel", false);
+            }
+            case SPEED -> {
+                strand(m, 2, 2, Direction.Axis.Z, 45);
+                strand(m, 14, 14, Direction.Axis.Z, -45);
+            }
+            case SIZE -> {
+                box(m, 9, hi, 4, 13, hi + 2.5f, 8, FLESH, true);
+                box(m, lo - 2, 4, 9, lo, 8, 13, FLESH, true);
+            }
+            case AWARENESS -> {
+                box(m, 6.5f, hi, 6.5f, 9.5f, hi + 1, 9.5f, "#eye", false);
+                box(m, 3, 3, lo - 1, 5.5f, 5.5f, lo, "#eye", false);
+            }
+            case TIME -> {
+                shard(m, 4, hi, 5, 4);
+                shard(m, 12, hi, 11, 3);
+            }
+        }
     }
 
     // ---------------------------------------------------------------- grafts
@@ -199,16 +408,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .allFaces((dir, face) -> face.texture(dir == Direction.UP ? "#maw" : FLESH)).end();
         graftBlock(ModBlocks.LEECH_TENDRIL.get(), leech, gulping);
 
-        // Enhancing Gland: a swollen sac on a mound, a brass port and a needle on top.
-        BlockModelBuilder gland = graftModel("enhancing_gland", "graft_flesh")
-                .texture("sac", modLoc("block/gland_sac"));
-        box(gland, 3, 0, 3, 13, 2, 13, FLESH, false);
-        box(gland, 4, 2, 4, 12, 4, 12, "#sac", false);
-        box(gland, 3, 4, 3, 13, 8, 13, "#sac", false);
-        box(gland, 4, 8, 4, 12, 10, 12, "#sac", false);
-        box(gland, 6.5f, 10, 6.5f, 9.5f, 11.5f, 9.5f, "#brass", false);
-        box(gland, 7.5f, 11.5f, 7.5f, 8.5f, 14, 8.5f, "#steel", false);
-        graftBlock(ModBlocks.ENHANCING_GLAND.get(), gland);
+        glands();
 
         // Maw: a puckered mouth on a mound, ringed with brass, open towards the vein it drinks from.
         BlockModelBuilder maw = graftModel("maw", "graft_flesh")
@@ -299,6 +499,78 @@ public class ModBlockStateProvider extends BlockStateProvider {
         graftBlock(ModBlocks.TEMPORAL_FIELD.get(), field);
     }
 
+    /**
+     * The Enhancing Gland: a sac on a mound with a brass port and a needle. It swells with each level (a second
+     * lobe, then a third, thick veins over it); a Confluence Needle in its port is a twin needle in a brass Y.
+     */
+    private void glands() {
+        ModelFile[][] models = new ModelFile[GlandBlock.MAX_LEVEL + 1][2];
+        for (int level = 1; level <= GlandBlock.MAX_LEVEL; level++) {
+            for (int needle = 0; needle < 2; needle++) {
+                String name = "enhancing_gland" + (level > 1 ? "_" + level : "") + (needle == 1 ? "_needle" : "");
+                BlockModelBuilder gland = graftModel(name, "graft_flesh", "enhancing_gland")
+                        .texture("sac", modLoc("block/gland_sac"))
+                        .texture("vein", modLoc("block/vein"));
+                float top = glandSac(gland, level);
+                box(gland, 6.5f, top, 6.5f, 9.5f, top + 1.5f, 9.5f, "#brass", false);
+                if (needle == 0) {
+                    box(gland, 7.5f, top + 1.5f, 7.5f, 8.5f, top + 4, 8.5f, "#steel", false);
+                } else {
+                    // The confluence: two needles splayed from a brass joint.
+                    box(gland, 7, top + 1.5f, 7, 9, top + 2.5f, 9, "#brass", false);
+                    for (float angle : new float[] {22.5f, -22.5f}) {
+                        gland.element().from(7.5f, top + 2.5f, 7.5f).to(8.5f, top + 6, 8.5f)
+                                .rotation().angle(angle).axis(Direction.Axis.X).origin(8, top + 2.5f, 8).end()
+                                .allFaces((dir, face) -> face.texture("#steel")).end();
+                    }
+                }
+                models[level][needle] = gland;
+            }
+        }
+        getVariantBuilder(ModBlocks.ENHANCING_GLAND.get()).forAllStates(state -> {
+            Direction dir = state.getValue(GraftBlock.FACING);
+            return ConfiguredModel.builder()
+                    .modelFile(models[state.getValue(GlandBlock.LEVEL)][state.getValue(GlandBlock.NEEDLE) ? 1 : 0])
+                    .rotationX(dir == Direction.DOWN ? 180 : dir.getAxis().isHorizontal() ? 90 : 0)
+                    .rotationY(dir.getAxis().isVertical() ? 0 : ((int) dir.toYRot() + 180) % 360)
+                    .build();
+        });
+        itemModels().withExistingParent("enhancing_gland", modLoc("block/enhancing_gland"));
+    }
+
+    /** The gland's sac at a level; returns the height of its top, where the port sits. */
+    private static float glandSac(BlockModelBuilder gland, int level) {
+        box(gland, 3, 0, 3, 13, 2, 13, FLESH, false);
+        switch (level) {
+            case 1 -> {
+                box(gland, 4, 2, 4, 12, 4, 12, "#sac", false);
+                box(gland, 3, 4, 3, 13, 8, 13, "#sac", false);
+                box(gland, 4, 8, 4, 12, 10, 12, "#sac", false);
+                return 10;
+            }
+            case 2 -> {
+                box(gland, 3, 2, 3, 13, 9, 13, "#sac", false);
+                box(gland, 2, 4, 5, 3, 8, 11, "#sac", false);        // a second lobe bulging out
+                box(gland, 9, 3, 12.5f, 14, 7, 14.5f, "#sac", false);
+                box(gland, 4, 9, 4, 12, 11, 12, "#sac", false);
+                box(gland, 7.5f, 2, 2.75f, 8.5f, 9, 3, "#vein", false);
+                return 11;
+            }
+            default -> {
+                box(gland, 2, 2, 2, 14, 10, 14, "#sac", false);
+                box(gland, 1, 4, 4, 2, 9, 12, "#sac", false);
+                box(gland, 14, 3, 4, 15, 9, 12, "#sac", false);
+                box(gland, 4, 3, 14, 12, 8, 15, "#sac", false);
+                box(gland, 3, 10, 3, 13, 12, 13, "#sac", false);
+                box(gland, 5, 12, 5, 11, 13, 11, "#sac", false);
+                box(gland, 7.5f, 2, 1.75f, 8.5f, 11, 2, "#vein", false);
+                box(gland, 13.75f, 2, 7.5f, 14, 10, 8.5f, "#vein", false);
+                box(gland, 1.75f, 3, 7.5f, 2, 10, 8.5f, "#vein", false);
+                return 13;
+            }
+        }
+    }
+
     // ---------------------------------------------------------------- the Chronocortex
 
     /** The Dissection Table (with or without its brain in a jar) and the woken Chronocortex built on it. */
@@ -310,12 +582,60 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .modelFile(state.getValue(DissectionTableBlock.BRAIN) ? withBrain : empty).build());
         simpleBlockItem(ModBlocks.DISSECTION_TABLE.get(), empty);
 
-        // Awake: a great jar, the brain swollen inside, electrodes through the brass lid.
+        // Stage 0: a great jar, the brain swollen inside, electrodes through the brass lid.
         BlockModelBuilder cortex = tableModel("chronocortex");
         jar(cortex, 3, 13, 16);
         box(cortex, 5, 16, 7.5f, 6, 19, 8.5f, "#steel", false);
         box(cortex, 10, 16, 7.5f, 11, 19, 8.5f, "#steel", false);
-        simpleBlockWithItem(ModBlocks.CHRONOCORTEX.get(), cortex);
+        // Stage 1: the brain fills the jar to the glass; more electrodes.
+        BlockModelBuilder child = tableModel("chronocortex_stage_1");
+        box(child, 3.4f, 9, 3.4f, 12.6f, 14.5f, 12.6f, "#brain", false);
+        box(child, 3.25f, 9, 3.25f, 12.75f, 14.5f, 12.75f, "#fluid", false);
+        box(child, 3, 9, 3, 13, 15, 13, "#glass", false);
+        box(child, 2.5f, 15, 2.5f, 13.5f, 16, 13.5f, "#brass", false);
+        for (float[] e : new float[][] {{5, 7.5f}, {10, 7.5f}, {7.5f, 5}, {7.5f, 10}}) {
+            box(child, e[0], 16, e[1], e[0] + 1, 19, e[1] + 1, "#steel", false);
+        }
+        // Stage 2 and 3: the lid is gone; the brain swells up out of the jar, wired every which way.
+        BlockModelBuilder[] grown = new BlockModelBuilder[2];
+        for (int i = 0; i < 2; i++) {
+            BlockModelBuilder model = tableModel("chronocortex_stage_" + (i + 2));
+            float crown = i == 0 ? 19 : 22;
+            box(model, 3, 9, 3, 13, 14, 13, "#glass", false);
+            box(model, 3.25f, 9, 3.25f, 12.75f, 14, 12.75f, "#brain", false);
+            box(model, 2, 14, 2, 14, crown - 2, 14, "#brain", false);
+            box(model, 4, crown - 2, 4, 12, crown, 12, "#brain", false);
+            box(model, 2.5f, 13, 2.5f, 13.5f, 14, 13.5f, "#brass", false);
+            for (float[] e : new float[][] {{1, 7.5f}, {14, 7.5f}, {7.5f, 1}, {7.5f, 14}}) {
+                box(model, e[0], 13, e[1], e[0] + 1, crown - 1, e[1] + 1, "#steel", false);
+            }
+            grown[i] = model;
+        }
+        ModelFile[] stages = {cortex, child, grown[0], grown[1]};
+        getVariantBuilder(ModBlocks.CHRONOCORTEX.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(stages[state.getValue(ChronocortexBlock.STAGE)]).build());
+        simpleBlockItem(ModBlocks.CHRONOCORTEX.get(), cortex);
+        lobes();
+    }
+
+    /**
+     * Cortex lobes: a soft fold of brain in its brass frame, then firm grey-pink gyri. Formed into the Cerebrum,
+     * the folds deepen and are stapled with brass, and an eye opens in the middle of each face of the cranium.
+     */
+    private void lobes() {
+        BlockModelBuilder fresh = organismModel("cortex_lobe_fresh", "cortex_lobe");
+        frame(fresh);
+        box(fresh, 1.5f, 1.5f, 1.5f, 14.5f, 14.5f, 14.5f, FLESH, false);
+        ModelFile mature = models().cubeAll("cortex_lobe", modLoc("block/cortex_lobe"));
+        ModelFile cerebrum = models().cubeAll("cerebrum", modLoc("block/cerebrum"));
+        ModelFile eye = models().cubeAll("cerebrum_eye", modLoc("block/cerebrum_eye"));
+        getVariantBuilder(ModBlocks.CORTEX_LOBE.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(switch (state.getValue(CortexLobeBlock.PART)) {
+                    case FRESH -> fresh;
+                    case MATURE -> mature;
+                    case CEREBRUM -> cerebrum;
+                    case CEREBRUM_EYE -> eye;
+                }).build());
     }
 
     /** Obelisk stone, the glowing inscription band, and the stepped capstone (the nail's head). */
