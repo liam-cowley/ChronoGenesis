@@ -56,8 +56,8 @@ public final class ModNetwork {
                     }
                 }));
 
-        registrar.playToClient(PastViewPayload.TYPE, PastViewPayload.STREAM_CODEC,
-                (payload, context) -> context.enqueueWork(() -> ClientPayloads.pastView(payload)));
+        registrar.playToClient(PastSectionsPayload.TYPE, PastSectionsPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientPayloads.pastSections(payload)));
 
         registrar.playToServer(SelectPowerPayload.TYPE, SelectPowerPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {

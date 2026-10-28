@@ -57,6 +57,10 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   client code with a `PostChain` (see `client/LensView`: render into a chain target during the world render at
   `AFTER_WEATHER`, composite from a HUD layer the way vanilla's blur does; `AFTER_LEVEL` has no camera matrices). They must compile under GL 3.2 core
   (`#version 150`); a shader that fails to load disables its effect instead of crashing.
+- The past is a real dimension (`chronogenesis:past`, `timetravel/PastDimension`): overworld generator and seed,
+  ruins stamped with their past templates. The Temporal Lens shows it by streaming its chunk sections to the
+  client (`lens/LensSync`, `client/PastSections`/`PastMesh`). The game-test server only builds the flat preset's
+  dimensions, so tests cannot load it; they check its files decode and run stamping on the test world.
 - The creative-only Eternal Hourglass keeps essences full and instruments charged while carried: use it to test.
   Using it in creative mode (or `/chronogenesis journal unlock`) grants every ChronoGenesis advancement, which
   unlocks the whole journal.

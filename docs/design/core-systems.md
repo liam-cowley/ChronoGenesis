@@ -320,21 +320,23 @@ than a pure replay.
 
 **As built:** the Lens is grown by research and burns Time (its own store, then the player's pool;
 1 dram per 2 s, 2 at Centuries). The past shows only inside a **round lens** in the middle of the
-screen (like Thaumcraft's), framed in brass; around it the present goes on, dimmed. While it is in
-use the server compares each nearby structure with its **past view**
-(`data/<ns>/chronogenesis/past_view/<name>.json`: structure, past template, depth, clue) and sends
-the whole past template, every present block standing where the past had air, and the structures'
-boxes. Through the lens the past is not an overlay, it is what the world looks like: the client
-rebuilds each structure's area (plus a 6-block margin) as world geometry through a "past world"
-(`client/PastWorld`: the past's blocks where known, **air where something is newer**, the present
-elsewhere), tessellated like a chunk section with culling, smooth lighting and fluids
-(`client/PastMesh`), and lit by the past's own light (`client/PastLight`: sky and block light propagated
-through the past's blocks, fed from the real world at the area's edges), so removed blocks cast no
-shadow and the past's own roofs and lanterns do. Each frame a stencil pass marks the pixels whose visible surface lies inside
-those areas, clears them, and draws the past geometry there; the copy is composited inside the lens
-by one post shader (`shaders/post/temporal_lens.json`, `client/LensView`). What the lens hides is still
-there: rubble still blocks, and a floor seen through it may be a hole now. Reading a blueprint
-scribbles (`chronogenesis:lens.scribble`).
+screen (like Thaumcraft's), framed in brass; around it the present goes on, dimmed.
+
+The past is a **real dimension**, `chronogenesis:past` (`data/chronogenesis/dimension/past.json`): the
+overworld's generator and seed, so its land is the land as it first generated, before anyone dug or
+built ("player-placed blocks fade out" for free). Where an overworld ruin has a **past view**
+(`data/<ns>/chronogenesis/past_view/<name>.json`: structure, past template, depth, clue), its past
+template is stamped into the past dimension once, at the same spot and rotation (`timetravel/PastStamping`).
+While the Lens is in use, the server keeps the past chunks around the viewer loaded but not ticking
+(generating them if new) and sends their sections once each, nearest first, with the past's own light
+(`lens/LensSync`). The client builds them into chunk-section meshes a few per frame (`client/PastMesh`,
+through `client/PastWorld`), and inside the lens draws only the past: everything the present drew is
+wiped (the sky is kept) and the past is drawn in its place, then composited by one post shader
+(`shaders/post/temporal_lens.json`, `client/LensView`). What the lens hides is still there: a floor
+seen through it may be a hole now, and what the past lacks may still block the way. The past is
+tangible: later eras of time travel can let players walk in it. Echo shows nothing yet; Centuries shows
+the same past as Decades for now. Holding the view on a Faded Blueprint for 2 s at Decades or deeper
+reads it into a `blueprint_<name>` clue, with a pen-scribble sound (`chronogenesis:lens.scribble`).
 Echo shows nothing yet. Holding the view on a Faded Blueprint for 2 s at Decades or deeper reads it
 into a `blueprint_<name>` clue.
 

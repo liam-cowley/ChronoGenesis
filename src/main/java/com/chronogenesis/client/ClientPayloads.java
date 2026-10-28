@@ -1,7 +1,7 @@
 package com.chronogenesis.client;
 
 import com.chronogenesis.network.OpenChronocortexPayload;
-import com.chronogenesis.network.PastViewPayload;
+import com.chronogenesis.network.PastSectionsPayload;
 
 import net.minecraft.client.Minecraft;
 
@@ -9,8 +9,8 @@ import net.minecraft.client.Minecraft;
 public final class ClientPayloads {
     private ClientPayloads() {}
 
-    public static void pastView(PastViewPayload payload) {
-        LensView.receive(payload);
+    public static void pastSections(PastSectionsPayload payload) {
+        PastSections.receive(payload);
     }
 
     public static void openChronocortex(OpenChronocortexPayload payload) {

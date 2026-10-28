@@ -11,11 +11,12 @@ import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.item.EssenceContainerItem;
 import com.chronogenesis.item.EternalHourglassItem;
-import com.chronogenesis.network.PastViewPayload;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModSounds;
+import com.chronogenesis.timetravel.PastDimension;
+import com.chronogenesis.timetravel.PastStamping;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -37,8 +38,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
  * The Temporal Lens (core-systems.md section 7): brass and glass with an amethyst lens. Hold use to look into the
@@ -48,8 +47,10 @@ import net.neoforged.neoforge.network.PacketDistributor;
  */
 public class TemporalLensItem extends EssenceContainerItem {
     public static final int CAPACITY = 16;
-    /** Ticks between Time payments and view refreshes. */
+    /** Ticks between Time payments (and stamping the past of ruins in view). */
     private static final int BEAT = 40;
+    /** Ticks between bursts of the past sent to the client. */
+    private static final int SYNC_INTERVAL = 5;
     public static final int SCAN_TICKS = 40;
     private static final double SCAN_REACH = 6.0;
 
@@ -119,9 +120,17 @@ public class TemporalLensItem extends EssenceContainerItem {
                 player.stopUsingItem();
                 return;
             }
-            PastViews.View view = PastViews.around(serverLevel, player.blockPosition(), depth(stack));
-            view.clues().forEach(clue -> Clues.grant(player, clue));
-            send(player, PastViewPayload.of(view.past()));
+            // The ruins in view stand whole in the past; seeing one for the first time is worth a note.
+            ServerLevel past = PastDimension.level(player.server);
+            if (past != null && PastDimension.hasPast(serverLevel)) {
+                for (PastViews.Found found : PastViews.nearby(serverLevel, player.blockPosition(), depth(stack))) {
+                    PastStamping.stamp(past, found.start(), found.view());
+                    found.view().clue().ifPresent(clue -> Clues.grant(player, clue));
+                }
+            }
+        }
+        if (used % SYNC_INTERVAL == 0 && depth(stack).reaches(LensDepth.DECADES)) {
+            LensSync.tick(player);
         }
         scanTick(player, depth(stack));
         obeliskTick(player);
@@ -142,7 +151,6 @@ public class TemporalLensItem extends EssenceContainerItem {
         if (entity instanceof ServerPlayer player) {
             SCANS.remove(player.getUUID());
             EDGE_READING.remove(player.getUUID());
-            send(player, PastViewPayload.CLOSED);
         }
         entity.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0f, 0.7f);
     }
@@ -247,11 +255,6 @@ public class TemporalLensItem extends EssenceContainerItem {
         return hit.getBlockPos();
     }
 
-    private static void send(ServerPlayer player, PastViewPayload payload) {
-        if (!(player instanceof FakePlayer) && player.connection != null && player.connection.hasChannel(payload)) {
-            PacketDistributor.sendToPlayer(player, payload);
-        }
-    }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {

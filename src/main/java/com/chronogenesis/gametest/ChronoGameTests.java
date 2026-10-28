@@ -13,8 +13,6 @@ import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
-import com.chronogenesis.client.PastLight;
-import com.chronogenesis.client.PastWorld;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.DrainEffects;
 import com.chronogenesis.essence.EssenceContents;
@@ -25,9 +23,11 @@ import com.chronogenesis.item.UmbilicalLocketItem;
 import com.chronogenesis.lens.Blueprint;
 import com.chronogenesis.lens.FadedBlueprintBlock;
 import com.chronogenesis.lens.LensDepth;
+import com.chronogenesis.lens.LensSync;
 import com.chronogenesis.lens.Obelisks;
 import com.chronogenesis.lens.PastViews;
 import com.chronogenesis.lens.TemporalLensItem;
+import com.chronogenesis.network.PastSectionsPayload;
 import com.chronogenesis.organism.BrassConduitBlock;
 import com.chronogenesis.organism.CorePhase;
 import com.chronogenesis.organism.FleshBlock;
@@ -40,17 +40,24 @@ import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModItems;
+import com.chronogenesis.timetravel.PastDimension;
+import com.chronogenesis.timetravel.PastStamping;
+import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.JsonOps;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
@@ -61,6 +68,9 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
@@ -401,83 +411,66 @@ public final class ChronoGameTests {
 
     // ---------------------------------------------------------------- the Temporal Lens and the past (build step 8)
 
-    /** The lab's past template loads and maps onto the world the way a rotated jigsaw piece would. */
+
+
+
+    /**
+     * The past dimension's files are valid: its type is registered (with a sky) and the dimension itself decodes
+     * with the game's own codec. (The game-test server builds only the flat preset's dimensions, so the past
+     * cannot be loaded here; real servers and worlds load it from the datapack.)
+     */
     @GameTest(template = "floor7")
-    public static void pastTemplateMapsWithRotation(GameTestHelper helper) {
-        StructureTemplate past = helper.getLevel().getStructureManager()
-                .get(ChronoGenesis.id("abandoned_laboratory_past")).orElseThrow();
-        // Somewhere empty above the arena, so every past block counts as different.
-        BlockPos origin = helper.absolutePos(new BlockPos(0, 40, 0));
+    public static void pastDimensionIsValid(GameTestHelper helper) throws Exception {
+        var server = helper.getLevel().getServer();
+        var types = server.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE);
+        var type = types.get(PastDimension.KEY.location());
+        helper.assertTrue(type != null && type.hasSkyLight(), "the past's dimension type is missing or has no sky");
+        var resource = server.getResourceManager().getResourceOrThrow(ChronoGenesis.id("dimension/past.json"));
+        try (var reader = resource.openAsReader()) {
+            var json = JsonParser.parseReader(reader);
+            var stem = LevelStem.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, server.registryAccess()), json);
+            helper.assertTrue(stem.result().isPresent(), "the past dimension does not decode: " + stem.error().map(Object::toString).orElse(""));
+        }
+        helper.succeed();
+    }
+
+    /**
+     * A ruin's past is stamped into the past dimension the way a jigsaw piece is placed: the lab stands whole,
+     * the brain on its table, where the rotation puts it; and a past section survives the trip to the client.
+     */
+    @GameTest(template = "floor7", timeoutTicks = 400)
+    public static void pastIsStampedAndSent(GameTestHelper helper) {
+        // Stamping and encoding work on any level; the test world stands in for the past dimension here.
+        ServerLevel past = helper.getLevel();
+        StructureTemplate template = past.getStructureManager().get(ChronoGenesis.id("abandoned_laboratory_past")).orElseThrow();
         BlockState brainTable = ModBlocks.DISSECTION_TABLE.get().defaultBlockState().setValue(DissectionTableBlock.BRAIN, true);
-
-        List<PastViews.PastBlock> plain = PastViews.pastOf(helper.getLevel(), past, origin, Rotation.NONE).blocks();
-        helper.assertTrue(plain.contains(new PastViews.PastBlock(origin.offset(5, 1, 6), brainTable)), "table not at (5,1,6)");
-
+        // Far from anything else, high above the past's ground.
+        BlockPos plain = new BlockPos(helper.absolutePos(BlockPos.ZERO).getX() + 100_000, 200, helper.absolutePos(BlockPos.ZERO).getZ());
+        BlockPos turned = plain.offset(64, 0, 0);
+        for (BlockPos origin : List.of(plain, turned)) {
+            for (int dx = -16; dx <= 16; dx += 16) {
+                for (int dz = -16; dz <= 16; dz += 16) {
+                    past.getChunk((origin.getX() + dx) >> 4, (origin.getZ() + dz) >> 4);
+                }
+            }
+        }
+        PastStamping.place(past, template, plain, Rotation.NONE);
+        PastStamping.place(past, template, turned, Rotation.CLOCKWISE_90);
+        helper.assertTrue(past.getBlockState(plain.offset(5, 1, 6)).equals(brainTable), "table not at (5,1,6)");
         // Clockwise: (x, y, z) -> (-z, y, x).
-        List<PastViews.PastBlock> turned = PastViews.pastOf(helper.getLevel(), past, origin, Rotation.CLOCKWISE_90).blocks();
-        helper.assertTrue(turned.contains(new PastViews.PastBlock(origin.offset(-6, 1, 5), brainTable)), "rotated table misplaced");
-        helper.assertTrue(plain.size() == turned.size(), "rotation changed the block count");
-        helper.succeed();
-    }
+        helper.assertTrue(past.getBlockState(turned.offset(-6, 1, 5)).equals(brainTable), "rotated table misplaced");
 
-    /**
-     * Inside the lens the past replaces the present: every block of it is drawn (even ones that still stand),
-     * and anything standing now where the past had air (rubble, cobwebs, a block placed since) is erased.
-     */
-    @GameTest(template = "floor7")
-    public static void pastReplacesThePresent(GameTestHelper helper) {
-        StructureTemplate pastTemplate = helper.getLevel().getStructureManager()
-                .get(ChronoGenesis.id("abandoned_laboratory_past")).orElseThrow();
-        BlockPos origin = helper.absolutePos(new BlockPos(0, 40, 0));
-        BlockPos rubble = origin.offset(5, 3, 4);   // open air in the middle of the past lab
-        BlockPos wall = origin.offset(1, 1, 0);     // a stone brick wall, then as now
-        helper.getLevel().setBlockAndUpdate(rubble, Blocks.COBBLESTONE.defaultBlockState());
-        helper.getLevel().setBlockAndUpdate(wall, Blocks.STONE_BRICKS.defaultBlockState());
-
-        PastViews.Past past = PastViews.pastOf(helper.getLevel(), pastTemplate, origin, Rotation.NONE);
-        helper.assertTrue(past.erased().contains(rubble), "the rubble should be erased in the past view");
-        helper.assertTrue(past.blocks().contains(new PastViews.PastBlock(wall, Blocks.STONE_BRICKS.defaultBlockState())),
-                "the past should be drawn whole, even where it still stands");
-        helper.assertFalse(past.erased().contains(wall), "a block that was there then is not erased");
-        helper.assertTrue(past.boxes().size() == 1 && past.boxes().get(0).isInside(rubble), "the past's area should cover the lab");
-
-        // Through the lens, the world is the past: its blocks where known, air where something is newer, else the present.
-        Map<BlockPos, BlockState> then = new HashMap<>();
-        past.blocks().forEach(block -> then.put(block.pos(), block.state()));
-        PastWorld world = new PastWorld(helper.getLevel(), then, new HashSet<>(past.erased()));
-        helper.assertTrue(world.getBlockState(rubble).isAir(), "newer blocks should be air in the past world");
-        helper.assertTrue(world.getBlockState(wall).is(Blocks.STONE_BRICKS), "the past's blocks stand in the past world");
-        helper.assertTrue(world.getBlockState(origin.offset(5, 1, 6)).is(ModBlocks.DISSECTION_TABLE.get()), "the past's table stands");
-        BlockPos outside = origin.offset(40, 0, 0);
-        helper.assertTrue(world.getBlockState(outside).equals(helper.getLevel().getBlockState(outside)), "outside, the present");
-
-        helper.getLevel().setBlockAndUpdate(rubble, Blocks.AIR.defaultBlockState());
-        helper.getLevel().setBlockAndUpdate(wall, Blocks.AIR.defaultBlockState());
-        helper.succeed();
-    }
-
-    /**
-     * The past is lit as it was: a block the Lens removes casts no shadow there, and a roof that only stood in
-     * the past does. Light comes in from an open sky around the area (the test world's arenas have none).
-     * (In test coordinates the arena's floor is at y=1, so the space above it starts at y=2.)
-     */
-    @GameTest(template = "floor7")
-    public static void pastIsLitAsItWas(GameTestHelper helper) {
-        BlockPos removedRoof = new BlockPos(3, 4, 3);
-        BlockPos pastRoof = new BlockPos(1, 4, 1);
-        helper.setBlock(removedRoof, Blocks.STONE);
-        var level = helper.getLevel();
-        PastWorld world = new PastWorld(level, Map.of(helper.absolutePos(pastRoof), Blocks.STONE.defaultBlockState()),
-                Set.of(helper.absolutePos(removedRoof)));
-        BoundingBox area = BoundingBox.fromCorners(helper.absolutePos(new BlockPos(0, 2, 0)), helper.absolutePos(new BlockPos(6, 5, 6)));
-        world.setLight(List.of(PastLight.compute(world, (layer, pos) -> layer == LightLayer.SKY ? 15 : 0, area)));
-
-        int underRemoved = world.getBrightness(LightLayer.SKY, helper.absolutePos(new BlockPos(3, 2, 3)));
-        int open = world.getBrightness(LightLayer.SKY, helper.absolutePos(new BlockPos(5, 2, 5)));
-        int underPastRoof = world.getBrightness(LightLayer.SKY, helper.absolutePos(new BlockPos(1, 2, 1)));
-        helper.assertTrue(open == 15, "open sky should be full light: " + open);
-        helper.assertTrue(underRemoved == 15, "a removed block should cast no shadow: " + underRemoved);
-        helper.assertTrue(underPastRoof < 15, "the past's own roof should shade: " + underPastRoof);
+        // The section holding the table, encoded for the client and read back, has the same blocks and light.
+        BlockPos table = plain.offset(5, 1, 6);
+        LevelChunk chunk = past.getChunk(table.getX() >> 4, table.getZ() >> 4);
+        int sectionY = SectionPos.blockToSectionCoord(table.getY());
+        long key = SectionPos.asLong(table.getX() >> 4, sectionY, table.getZ() >> 4);
+        PastSectionsPayload.Section section = LensSync.encode(past, chunk, sectionY, key);
+        LevelChunkSection decoded = section.decode(past.registryAccess().registryOrThrow(Registries.BIOME));
+        helper.assertTrue(decoded.getBlockState(table.getX() & 15, table.getY() & 15, table.getZ() & 15).equals(brainTable),
+                "the table did not survive encoding");
+        helper.assertTrue(section.skyLight().get(table.getX() & 15, table.getY() & 15, table.getZ() & 15)
+                == past.getBrightness(LightLayer.SKY, table), "sky light did not survive encoding");
         helper.succeed();
     }
 
