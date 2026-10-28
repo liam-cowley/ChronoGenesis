@@ -87,6 +87,7 @@ def new():
 
 
 def save(img, path):
+    img = finish(img, path)
     full = os.path.join(OUT, path + ".png")
     os.makedirs(os.path.dirname(full), exist_ok=True)
     img.save(full)
@@ -2127,6 +2128,8 @@ def precursor_entity():
             img.putpixel((9 + dx, y + dy), GLYPH + (255,))
     full = os.path.join(OUT, "entity/precursor.png")
     os.makedirs(os.path.dirname(full), exist_ok=True)
+    # Model sheets keep their per-face painting (the 3D model lights them), only the grain is smoothed out.
+    img = _smooth(img, wrap=False, passes=2, sigma=20.0)
     img.save(full)
     WRITTEN.append(("entity/precursor", img.crop((0, 0, 16, 16))))
 
@@ -2175,6 +2178,8 @@ def raptor_entity():
         paint_box(img, r, u, v, w, h, d, (130, 96, 56), tan, belly, stripes)
     eyes(img, 0, 18, 5, 5, 7, (236, 200, 40, 255))
     full = os.path.join(OUT, "entity/raptor.png")
+    # Model sheets keep their per-face painting (the 3D model lights them), only the grain is smoothed out.
+    img = _smooth(img, wrap=False, passes=2, sigma=20.0)
     img.save(full)
     WRITTEN.append(("entity/raptor", img.crop((0, 0, 16, 16))))
 
@@ -2189,6 +2194,8 @@ def titanosaur_entity():
         paint_box(img, r, u, v, w, h, d, top, hide, belly, mottle)
     eyes(img, 68, 70, 8, 7, 10, (40, 30, 20, 255))
     full = os.path.join(OUT, "entity/titanosaur.png")
+    # Model sheets keep their per-face painting (the 3D model lights them), only the grain is smoothed out.
+    img = _smooth(img, wrap=False, passes=2, sigma=20.0)
     img.save(full)
     WRITTEN.append(("entity/titanosaur", img.crop((0, 0, 16, 16))))
 
@@ -2366,8 +2373,250 @@ def gauntlet_texture():
         for y in range(32, 35):
             img.putpixel((x, y), shade((150, 220, 110, 255) if y == 32 else (138, 64, 128, 255), r.randint(-10, 10)))
     full = os.path.join(OUT, "item/essence_manipulator_gauntlet.png")
+    # Model sheets keep their per-face painting (the 3D model lights them), only the grain is smoothed out.
+    img = _smooth(img, wrap=False, passes=2, sigma=20.0)
     img.save(full)
     WRITTEN.append(("item/essence_manipulator_gauntlet", img.crop((0, 0, 16, 16))))
+
+
+# ---------------------------------------------------------------- the finishing pass (modern Minecraft shading)
+# Every texture goes through finish() as it is saved. The art above draws shapes and materials; this pass shades them
+# the way modern Minecraft textures are shaded: soft, lit from the top-left, each material on a short hue-shifted ramp
+# (five tones: shadows bluer and more saturated, highlights warmer and paler), no salt-and-pepper noise.
+#   1. An edge-preserving smooth takes the speckle out, keeping seams, cracks and glyphs.
+#   2. The texture is split into material regions (connected pixels of similar colour).
+#   3. Each pixel gets a light value: on sprites (items, overlays, icons) a form shadow across the whole object, a
+#      bevel per part and a bright inner edge top-left / dark inner edge bottom-right; on tiles (opaque, repeating) a
+#      relief from the surface plus soft, tiling patches. The drawn shading is kept as detail on top.
+#   4. Each region is recoloured from a five-tone ramp built from its own colour, by that light value.
+# Outlines (very dark), glints (near white) and tiny details (eyes, numerals: regions of a few pixels) keep the colours
+# they were drawn with. Tint masks, glass, particles and UV atlases skip the pass.
+
+import colorsys
+
+FINISH_SKIP = ("_fill", "particle/", "models/armor", "entity/", "gauntlet", "cortex_glass", "cortex_fluid", "time_tear",
+               "essence_manipulator")
+# Tiles that are pictures (dials, faces, glyphs): shaded part by part, like objects, not as a bumpy surface.
+PICTURE_TILES = ("block/clock", "block/finish", "block/starting_gate", "block/eye", "block/temporal_field",
+                 "block/faded_blueprint", "_seal", "block/obelisk_inscription", "block/cerebrum_eye", "block/riders_seat")
+# Pale and tinted organic tiles: a gentler contrast (tints multiply it, and pale materials show it most).
+SOFT_TILES = ("chronoflesh_", "organism_core", "cortex_lobe", "cerebrum", "fossil_cortex", "brain_tissue", "dissection_table",
+              "faded_blueprint", "harness", "graft_flesh", "gland_sac", "leech_skin", "ganglion")
+RAMP_STEPS = 5
+TINY_REGION = 4
+
+
+def _lum(c):
+    return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
+
+
+def _dist2(a, b):
+    return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2
+
+
+def _protected(c):
+    return _lum(c) < 42 or (c[0] > 245 and c[1] > 245 and c[2] > 245)
+
+
+def _smooth(img, wrap, passes=1, sigma=30.0):
+    """Edge-preserving smooth: each pixel moves towards neighbours of a similar colour (a tiny bilateral filter)."""
+    w, h = img.size
+    for _ in range(passes):
+        src = img.copy()
+        for y in range(h):
+            for x in range(w):
+                c = src.getpixel((x, y))
+                if c[3] == 0 or _protected(c):
+                    continue
+                total = [0.0, 0.0, 0.0]
+                weight = 0.0
+                for dy in (-1, 0, 1):
+                    for dx in (-1, 0, 1):
+                        nx, ny = x + dx, y + dy
+                        if wrap:
+                            nx, ny = nx % w, ny % h
+                        elif not (0 <= nx < w and 0 <= ny < h):
+                            continue
+                        n = src.getpixel((nx, ny))
+                        if n[3] == 0 or _protected(n):
+                            continue
+                        spatial = 1.0 if dx == dy == 0 else 0.6 if dx == 0 or dy == 0 else 0.4
+                        wgt = spatial * math.exp(-_dist2(c, n) / (2 * sigma * sigma))
+                        for i in range(3):
+                            total[i] += n[i] * wgt
+                        weight += wgt
+                img.putpixel((x, y), tuple(int(round(total[i] / weight)) for i in range(3)) + (c[3],))
+    return img
+
+
+def _regions(img, wrap, threshold=46):
+    """Connected material regions: neighbours join when their colours are close. Returns a region id per pixel."""
+    w, h = img.size
+    ids = [[-1] * w for _ in range(h)]
+    count = 0
+    for sy in range(h):
+        for sx in range(w):
+            c = img.getpixel((sx, sy))
+            if ids[sy][sx] != -1 or c[3] == 0 or _protected(c):
+                continue
+            stack = [(sx, sy)]
+            ids[sy][sx] = count
+            while stack:
+                x, y = stack.pop()
+                here = img.getpixel((x, y))
+                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    nx, ny = x + dx, y + dy
+                    if wrap:
+                        nx, ny = nx % w, ny % h
+                    elif not (0 <= nx < w and 0 <= ny < h):
+                        continue
+                    n = img.getpixel((nx, ny))
+                    if ids[ny][nx] == -1 and n[3] > 0 and not _protected(n) and _dist2(here, n) < threshold * threshold:
+                        ids[ny][nx] = count
+                        stack.append((nx, ny))
+            count += 1
+    return ids, count
+
+
+def _ramp(base):
+    """Five tones from a base colour: hue-shifted towards blue in the shadows and towards yellow in the light."""
+    r, g, b = (v / 255.0 for v in base[:3])
+    hue, sat, val = colorsys.rgb_to_hsv(r, g, b)
+    tones = []
+    for step, (dv, ds, dh) in enumerate([(0.66, 1.16, -0.035), (0.83, 1.07, -0.017), (1.0, 1.0, 0.0),
+                                         (1.11, 0.9, 0.012), (1.21, 0.76, 0.024)]):
+        h2 = hue
+        if sat > 0.06:
+            # Towards blue (about 0.62) in shadow, towards yellow (about 0.14) in light.
+            target = 0.62 if dh < 0 else 0.14
+            diff = ((target - hue + 0.5) % 1.0) - 0.5
+            h2 = (hue + max(-abs(dh), min(abs(dh), diff))) % 1.0
+        s2 = max(0.0, min(1.0, sat * ds + (0.03 if dh < 0 else 0.0)))
+        v2 = max(0.0, min(1.0, val * dv))
+        rr, gg, bb = colorsys.hsv_to_rgb(h2, s2, v2)
+        tones.append((int(rr * 255), int(gg * 255), int(bb * 255)))
+    return tones
+
+
+def _sprite_light(img):
+    """Light per pixel of a sprite, roughly -1..1: form shadow, bevel, inner edges."""
+    w, h = img.size
+
+    def opaque(x, y):
+        return 0 <= x < w and 0 <= y < h and img.getpixel((x, y))[3] > 0
+
+    big = 99
+    dist = [[0 if not opaque(x, y) else big for x in range(w)] for y in range(h)]
+    for y in range(h):
+        for x in range(w):
+            if dist[y][x] == 0:
+                continue
+            c = img.getpixel((x, y))
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nx, ny = x + dx, y + dy
+                if not opaque(nx, ny):
+                    dist[y][x] = 1
+                elif _dist2(c, img.getpixel((nx, ny))) > 70 * 70:
+                    dist[y][x] = min(dist[y][x], 1.5)
+    for _ in range(3):
+        for y in range(h):
+            for x in range(w):
+                if dist[y][x] != 0:
+                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < w and 0 <= ny < h:
+                            dist[y][x] = min(dist[y][x], dist[ny][nx] + 1)
+    height = [[min(3.0, d) for d in row] for row in dist]
+    xs = [x for y in range(h) for x in range(w) if opaque(x, y)]
+    ys = [y for y in range(h) for x in range(w) if opaque(x, y)]
+    if not xs:
+        return [[0.0] * w for _ in range(h)]
+    cx, cy = (min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0
+    span = max(4.0, (max(xs) - min(xs)) + (max(ys) - min(ys))) / 2.0
+
+    def at(x, y):
+        return height[y][x] if 0 <= x < w and 0 <= y < h else 0.0
+
+    light = [[0.0] * w for _ in range(h)]
+    for y in range(h):
+        for x in range(w):
+            if not opaque(x, y):
+                continue
+            v = (at(x + 1, y) - at(x - 1, y) + at(x, y + 1) - at(x, y - 1)) * 0.22
+            v += ((cx - x) + (cy - y)) / span * 0.55
+            if not opaque(x - 1, y) or not opaque(x, y - 1):
+                v += 0.35
+            if not opaque(x + 1, y) or not opaque(x, y + 1):
+                v -= 0.45
+            light[y][x] = v
+    return light
+
+
+def _tile_light(img, seed):
+    """Light per pixel of a tile, roughly -1..1: relief from the surface (lit top-left) and soft tiling patches."""
+    w, h = img.size
+    height = [[0.0] * w for _ in range(h)]
+    for y in range(h):
+        for x in range(w):
+            acc = 0.0
+            for dy in (-1, 0, 1):
+                for dx in (-1, 0, 1):
+                    acc += _lum(img.getpixel(((x + dx) % w, (y + dy) % h)))
+            height[y][x] = acc / 9.0
+    r = random.Random(seed)
+    patches = [[r.uniform(-1, 1) for _ in range(4)] for _ in range(4)]
+    light = [[0.0] * w for _ in range(h)]
+    for y in range(h):
+        for x in range(w):
+            slope = height[(y + 1) % h][(x + 1) % w] - height[(y - 1) % h][(x - 1) % w]
+            gx, gy = x / 4.0, y / 4.0
+            x0, y0 = int(gx) % 4, int(gy) % 4
+            fx, fy = gx - int(gx), gy - int(gy)
+            fx, fy = fx * fx * (3 - 2 * fx), fy * fy * (3 - 2 * fy)
+            p = ((patches[y0][x0] * (1 - fx) + patches[y0][(x0 + 1) % 4] * fx) * (1 - fy)
+                 + (patches[(y0 + 1) % 4][x0] * (1 - fx) + patches[(y0 + 1) % 4][(x0 + 1) % 4] * fx) * fy)
+            light[y][x] = -slope / 40.0 + p * 0.22
+    return light
+
+
+def _reramp(img, light, wrap, contrast=1.0, grain=2.2):
+    """Recolours each material region from its own five-tone ramp, by light plus the drawn shading."""
+    ids, count = _regions(img, wrap)
+    w, h = img.size
+    members = [[] for _ in range(count)]
+    for y in range(h):
+        for x in range(w):
+            if ids[y][x] >= 0:
+                members[ids[y][x]].append((x, y))
+    out = img.copy()
+    for region in members:
+        if len(region) <= TINY_REGION:
+            continue
+        colours = [img.getpixel(p) for p in region]
+        base = tuple(sum(c[i] for c in colours) // len(colours) for i in range(3))
+        lums = [_lum(c) for c in colours]
+        mean = sum(lums) / len(lums)
+        spread = max(18.0, (sum((v - mean) ** 2 for v in lums) / len(lums)) ** 0.5 * grain)
+        tones = _ramp(base)
+        for (x, y), c, v in zip(region, colours, lums):
+            t = light[y][x] + (v - mean) / spread
+            step = max(0, min(RAMP_STEPS - 1, int(round(2 + t * 1.8 * contrast))))
+            out.putpixel((x, y), tones[step] + (c[3],))
+    return out
+
+
+def finish(img, path):
+    if any(part in path for part in FINISH_SKIP) or img.size != (16, 16):
+        return img
+    alphas = [img.getpixel((x, y))[3] for y in range(16) for x in range(16)]
+    tile = all(a == 255 for a in alphas)
+    soft = tile and any(part in path for part in SOFT_TILES)
+    # Soft (patterned, tinted) tiles keep their pattern: it is what tells one essence's flesh from another's.
+    passes, sigma = (1, 12.0) if soft else (3, 26.0) if tile else (1, 20.0)
+    smooth = _smooth(img.copy(), wrap=tile, passes=passes, sigma=sigma)
+    picture = tile and any(part in path for part in PICTURE_TILES)
+    light = _sprite_light(smooth) if not tile or picture else _tile_light(smooth, sum(map(ord, path)))
+    return _reramp(smooth, light, wrap=tile, contrast=0.75 if soft else 1.0, grain=1.6 if soft else 3.0 if tile else 2.2)
 
 
 # ---------------------------------------------------------------- run

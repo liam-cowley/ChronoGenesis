@@ -53,6 +53,9 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   (16x16 pixel art, hand-placed grids). Art direction: Frankenstein (stitches, staples, electrodes, jars) +
   Call of Cthulhu (eyes, maws, tentacles, eldritch green) + steampunk (brass, copper, rivets, valves).
   Edit the script and re-run rather than hand-editing PNGs, unless replacing a texture with real art for good.
+  Every texture passes through `finish()` as it is saved (modern-Minecraft shading: smoothed, split into material
+  regions, each recoloured from a five-tone hue-shifted ramp by light from the top-left). Draw shapes and materials;
+  let the pass shade them. Pattern tiles that must keep their grain go in `SOFT_TILES`, pictures in `PICTURE_TILES`.
 - Post-processing shaders live in `assets/chronogenesis/shaders/` (post chain + program JSON + `.fsh`), run from
   client code with a `PostChain` (see `client/LensView`: render into a chain target during the world render at
   `AFTER_WEATHER`, composite from a HUD layer the way vanilla's blur does; `AFTER_LEVEL` has no camera matrices). They must compile under GL 3.2 core
