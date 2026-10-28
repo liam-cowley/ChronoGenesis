@@ -94,7 +94,8 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `block/cortex_lobe.png` | Firm grey-pink gyri: a lobe of the Chronocortex |
 | `block/cerebrum.png` | Deeper folds, a brass-stapled suture, electrodes: the formed Cerebrum |
 | `block/cerebrum_eye.png` | A great eye opening in the Cerebrum's folds (face centres) |
-| `item/essence_manipulator.png` | Animated (8 frames, `.mcmeta`): leather and brass glove, tendrils curling out of its slits |
+| `item/essence_manipulator.png` | Animated (8 frames, `.mcmeta`): leather and brass glove, tendrils curling out of its slits. Now only the particle texture: the item is drawn as a 3D gauntlet |
+| `item/essence_manipulator_gauntlet.png` | 64x64 for the 3D gauntlet (client/GauntletModel): leather glove, brass knuckle guard and back plate, copper cuff with verdigris, the eye, purple tendrils with green tips |
 | `item/confluence_needle.png` | Twin steel needles from a brass Y-joint |
 | `item/chrono_tether.png` | Brass pocket watch, cracked glass, on a cord of living vein |
 | `item/cortex_offshoot.png` | A bud of brain in a stoppered jar, roots through the glass |

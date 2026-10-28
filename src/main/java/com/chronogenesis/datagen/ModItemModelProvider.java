@@ -5,7 +5,9 @@ import com.chronogenesis.registry.ModItems;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 /** Flat item models. Block items get their models from {@link ModBlockStateProvider}. */
@@ -42,7 +44,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.TEMPORAL_LENS.get());
         basicItem(ModItems.INTACT_BLUEPRINT.get());
         basicItem(ModItems.ETERNAL_HOURGLASS.get());
-        basicItem(ModItems.ESSENCE_MANIPULATOR.get());
+        gauntlet();
         basicItem(ModItems.CONFLUENCE_NEEDLE.get());
         basicItem(ModItems.CHRONO_TETHER.get());
         basicItem(ModItems.CORTEX_OFFSHOOT.get());
@@ -53,6 +55,28 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.DINO_HARNESS.get());
         basicItem(ModItems.STILLED_CORE.get());
         basicItem(ModItems.TEMPORAL_RESIDUE.get());
+    }
+
+    /**
+     * The Essence Manipulator: drawn by its renderer as a 3D gauntlet (client/GauntletRenderer), so its model is
+     * {@code builtin/entity} with display transforms: worn over the hand in first and third person (fingers along
+     * the arm), upright and turned in the inventory, smaller on the ground.
+     */
+    private void gauntlet() {
+        // builtin/entity is not a file: it cannot be checked.
+        var model = getBuilder("essence_manipulator")
+                .parent(new ModelFile.UncheckedModelFile("builtin/entity"))
+                .texture("particle", modLoc("item/essence_manipulator"));
+        model.transforms()
+                .transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND).rotation(-80, 0, 0).translation(0, 3, 1).scale(0.55f).end()
+                .transform(ItemDisplayContext.THIRD_PERSON_LEFT_HAND).rotation(-80, 0, 0).translation(0, 3, 1).scale(0.55f).end()
+                .transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND).rotation(-25, -15, 0).translation(1, 2, 0).scale(0.6f).end()
+                .transform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND).rotation(-25, 15, 0).translation(-1, 2, 0).scale(0.6f).end()
+                .transform(ItemDisplayContext.GUI).rotation(20, -30, 0).translation(0, 0, 0).scale(0.85f).end()
+                .transform(ItemDisplayContext.GROUND).translation(0, 3, 0).scale(0.4f).end()
+                .transform(ItemDisplayContext.FIXED).rotation(0, 180, 0).scale(0.75f).end()
+                .transform(ItemDisplayContext.HEAD).translation(0, 13, 7).scale(1.0f).end()
+                .end();
     }
 
     /** Vessel (layer 0), liquid tinted by aspect (layer 1), untinted brass and glints on top (layer 2). */

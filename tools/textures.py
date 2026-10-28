@@ -2324,6 +2324,52 @@ def jurassic_items():
     ], {"k": (60, 50, 70, 255), "A": (140, 130, 150, 255), "a": (104, 96, 116, 255), "T": TEAL}), "item/stilled_core")
 
 
+# ---------------------------------------------------------------- the Essence Manipulator, as a 3D gauntlet
+
+def gauntlet_texture():
+    """64x64 for client/GauntletModel's boxes: leather glove, brass knuckles and rim, riveted copper cuff green at the
+    seams, an eldritch eye on the back of the hand, purple tendrils with sickly green tips."""
+    img = Image.new("RGBA", (64, 64), CLEAR)
+    r = rng(905)
+    leather, leather_top, leather_dk = (92, 58, 40), (112, 72, 50), (60, 36, 24)
+    copper, copper_top = (184, 104, 64), (206, 128, 84)
+    brass, brass_top, brass_dk = (214, 168, 80), (240, 206, 120), (150, 108, 46)
+    no_stripes = None
+    paint_box(img, r, 0, 0, 7, 6, 7, copper_top, copper, (150, 84, 52), lambda x, y: (x * 5 + y * 3) % 13 == 0)
+    paint_box(img, r, 28, 6, 8, 1, 8, brass_top, brass, brass_dk, no_stripes)
+    paint_box(img, r, 36, 15, 1, 1, 1, (255, 230, 150), brass_top, brass, no_stripes)
+    paint_box(img, r, 0, 13, 6, 5, 3, leather_top, leather, leather_dk, lambda x, y: x % 3 == 0 and y % 2 == 0)
+    paint_box(img, r, 28, 0, 7, 2, 4, brass_top, brass, brass_dk, lambda x, y: x % 2 == 0)
+    for u in (0, 8, 16):
+        paint_box(img, r, u, 21, 2, 3, 2, leather_top, leather, leather_dk, no_stripes)
+        for x in range(u, u + 8):
+            img.putpixel((x, 23), brass + (255,))  # a brass band round each joint
+    paint_box(img, r, 24, 21, 5, 2, 4, leather_top, leather_dk, leather_dk, no_stripes)
+    paint_box(img, r, 44, 21, 5, 4, 1, brass_top, brass, brass_dk, lambda x, y: (x + y) % 4 == 0)
+    # Verdigris along the cuff's seams.
+    for x in range(0, 28):
+        if r.random() < 0.45:
+            img.putpixel((x, 12), VERD + ())
+        if r.random() < 0.2:
+            img.putpixel((x, 7), VERD_DK)
+    # The eye: green iris, a slit, in a dark socket.
+    paint_box(img, r, 18, 13, 2, 2, 1, (40, 20, 30), (60, 30, 40), (40, 20, 30), no_stripes)
+    img.putpixel((19, 14), ELDRITCH)
+    img.putpixel((20, 14), ELDRITCH_DK)
+    img.putpixel((19, 15), ELDRITCH_DK)
+    img.putpixel((20, 15), (12, 8, 12, 255))
+    # Tendrils: purple flesh, the tip green.
+    for x in range(0, 4):
+        for y in range(32, 35):
+            img.putpixel((x, y), shade((138, 64, 128, 255), r.randint(-14, 14)))
+    for x in range(8, 12):
+        for y in range(32, 35):
+            img.putpixel((x, y), shade((150, 220, 110, 255) if y == 32 else (138, 64, 128, 255), r.randint(-10, 10)))
+    full = os.path.join(OUT, "item/essence_manipulator_gauntlet.png")
+    img.save(full)
+    WRITTEN.append(("item/essence_manipulator_gauntlet", img.crop((0, 0, 16, 16))))
+
+
 # ---------------------------------------------------------------- run
 
 syringe()
@@ -2391,6 +2437,7 @@ titanosaur_entity()
 harness_blocks()
 temple_blocks()
 jurassic_items()
+gauntlet_texture()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

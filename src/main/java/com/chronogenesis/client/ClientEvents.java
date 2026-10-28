@@ -20,6 +20,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
@@ -34,6 +35,8 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /** Client-only wiring: key bindings, the essence HUD, and aspect colour tints. */
@@ -50,6 +53,22 @@ public final class ClientEvents {
     @SubscribeEvent
     static void registerKeys(RegisterKeyMappingsEvent event) {
         event.register(POWERS);
+    }
+
+    /** The Essence Manipulator is drawn as its 3D gauntlet, tendrils and all. */
+    @SubscribeEvent
+    static void clientExtensions(RegisterClientExtensionsEvent event) {
+        event.registerItem(new IClientItemExtensions() {
+            private GauntletRenderer renderer;
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                if (renderer == null) {
+                    renderer = new GauntletRenderer();
+                }
+                return renderer;
+            }
+        }, ModItems.ESSENCE_MANIPULATOR.get());
     }
 
     @SubscribeEvent
