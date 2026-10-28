@@ -62,7 +62,8 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   client (`lens/LensSync`, `client/PastSections`/`PastMesh`). The game-test server only builds the flat preset's
   dimensions, so tests cannot load it; they check its files decode and run stamping on the test world.
 - The creative-only Eternal Hourglass keeps essences full and instruments charged while carried, and pays the essence
-  of Chronocortex research (no wired organisms needed): use it to test.
+  of Chronocortex research (no wired organisms needed): use it to test. Used on an organism, a jug, a Dissection
+  Table or the Chronocortex it fills them (the cortex: every wired organism, and firm lobes in all its armature).
   Using it in creative mode (or `/chronogenesis journal unlock`) grants every ChronoGenesis advancement, which
   unlocks the whole journal. A creative-only Chronocortex item places an awake cortex without the ritual.
 - `tools/make_structures.py` writes the worldgen structure templates. Each ruin is generated from its "past"

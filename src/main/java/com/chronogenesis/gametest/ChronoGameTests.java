@@ -10,6 +10,7 @@ import java.util.UUID;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
 import com.chronogenesis.biocomputer.Clues;
+import com.chronogenesis.biocomputer.CortexLobeBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.biocomputer.Lessons;
@@ -33,6 +34,7 @@ import com.chronogenesis.lens.TemporalLensItem;
 import com.chronogenesis.network.PastSectionsPayload;
 import com.chronogenesis.organism.BrassConduitBlock;
 import com.chronogenesis.organism.CorePhase;
+import com.chronogenesis.organism.EssenceJugBlockEntity;
 import com.chronogenesis.organism.FleshBlock;
 import com.chronogenesis.organism.GlandBlock;
 import com.chronogenesis.organism.GraftBlock;
@@ -73,6 +75,7 @@ import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
@@ -82,6 +85,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.gametest.GameTestHolder;
@@ -509,6 +513,46 @@ public final class ChronoGameTests {
             helper.assertTrue(clock.isEmpty(), "the clock was not used up");
             helper.assertFalse(cortex.knows(Lessons.WORDS), "words need more room");
         });
+    }
+
+    /** The Eternal Hourglass pours: an organism filled with its own essence, an empty jug with the chosen one, and the
+     *  Chronocortex's armature grown into firm lobes at once. */
+    @GameTest(template = "floor7")
+    public static void hourglassPoursIntoMachines(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        ItemStack hourglass = new ItemStack(ModItems.ETERNAL_HOURGLASS.get());
+        hourglass.set(ModDataComponents.ASPECT.get(), Aspect.SPEED);
+        player.setItemInHand(InteractionHand.MAIN_HAND, hourglass);
+
+        BlockPos corePos = new BlockPos(1, 1, 1);
+        helper.setBlock(corePos, core(Aspect.SIZE));
+        pourAt(helper, player, corePos);
+        OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+        helper.assertTrue(core.stored() == core.capacity(), "organism not filled: " + core.stored() + "/" + core.capacity());
+
+        BlockPos jugPos = new BlockPos(5, 1, 1);
+        helper.setBlock(jugPos, ModBlocks.ESSENCE_JUG.get());
+        pourAt(helper, player, jugPos);
+        EssenceJugBlockEntity jug = helper.getBlockEntity(jugPos);
+        helper.assertTrue(jug.contents() != null && jug.contents().aspect() == Aspect.SPEED
+                && jug.contents().amount() == EssenceJugBlockEntity.CAPACITY, "jug not filled with Speed");
+
+        BlockPos cortexPos = new BlockPos(3, 1, 4);
+        helper.setBlock(cortexPos, ModBlocks.CHRONOCORTEX.get());
+        helper.setBlock(cortexPos.east(), ModBlocks.BRASS_ARMATURE.get());
+        helper.setBlock(cortexPos.above(), ModBlocks.BRASS_ARMATURE.get());
+        pourAt(helper, player, cortexPos);
+        helper.assertBlockProperty(cortexPos.east(), CortexLobeBlock.PART, CortexLobeBlock.Part.MATURE);
+        helper.assertBlockProperty(cortexPos.above(), CortexLobeBlock.PART, CortexLobeBlock.Part.MATURE);
+        helper.assertTrue(helper.<ChronocortexBlockEntity>getBlockEntity(cortexPos).lobes() == 2, "lobes not counted");
+        helper.succeed();
+    }
+
+    private static void pourAt(GameTestHelper helper, ServerPlayer player, BlockPos relative) {
+        BlockPos pos = helper.absolutePos(relative);
+        ItemStack held = player.getMainHandItem();
+        held.getItem().onItemUseFirst(held, new UseOnContext(player, InteractionHand.MAIN_HAND,
+                new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false)));
     }
 
     /** A worn Umbilical Locket tied to an organism draws its essence into the wearer's pool, from a distance. */

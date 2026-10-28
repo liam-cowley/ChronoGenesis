@@ -298,7 +298,7 @@ public class ChronocortexBlockEntity extends BlockEntity {
             cortex.watch(serverLevel);
         }
         if (cortex.tick % GROW_INTERVAL == 50) {
-            cortex.grow(serverLevel);
+            cortex.grow(serverLevel, false);
             cortex.checkStage(serverLevel);
         }
         if (!cortex.heard.isEmpty()) {
@@ -381,10 +381,31 @@ public class ChronocortexBlockEntity extends BlockEntity {
     // ---------------------------------------------------------------- growing
 
     /**
-     * The lobes it has, found by walking from the jar through touching lobes (within reach); and one more grown
-     * into the nearest bare armature that touches them, if its organisms can spare the Awareness.
+     * The Eternal Hourglass poured into it: every wired organism filled, and a firm lobe grown into every bit of
+     * armature it can reach, at once and for nothing. Then it grows up as far as its lessons allow.
      */
-    private void grow(ServerLevel level) {
+    public Component saturate(ServerLevel level) {
+        rescan(level);
+        int fed = 0;
+        for (OrganismCoreBlockEntity core : wiredCores()) {
+            fed += core.feed(core.room());
+        }
+        int before = lobes;
+        for (int i = 0; i < 1000 && grow(level, true); i++) {
+            // one lobe per pass
+        }
+        for (int s = 0; s < MAX_STAGE; s++) {
+            checkStage(level);
+        }
+        return Component.translatable("message.chronogenesis.hourglass.cortex", fed, lobes - before);
+    }
+
+    /**
+     * The lobes it has, found by walking from the jar through touching lobes (within reach); and one more grown
+     * into the nearest bare armature that touches them, if its organisms can spare the Awareness ({@code free}:
+     * without asking, and already firm). Returns whether a lobe grew.
+     */
+    private boolean grow(ServerLevel level, boolean free) {
         Set<BlockPos> seen = new HashSet<>();
         ArrayDeque<BlockPos> queue = new ArrayDeque<>();
         queue.add(worldPosition);
@@ -407,9 +428,14 @@ public class ChronocortexBlockEntity extends BlockEntity {
                 }
             }
         }
-        if (frame != null && availableEssence().getOrDefault(Aspect.AWARENESS, 0) >= LOBE_COST) {
-            drawEssence(Aspect.AWARENESS, LOBE_COST);
-            level.setBlockAndUpdate(frame, ModBlocks.CORTEX_LOBE.get().defaultBlockState());
+        boolean grew = false;
+        if (frame != null && (free || availableEssence().getOrDefault(Aspect.AWARENESS, 0) >= LOBE_COST)) {
+            if (!free) {
+                drawEssence(Aspect.AWARENESS, LOBE_COST);
+            }
+            level.setBlockAndUpdate(frame, ModBlocks.CORTEX_LOBE.get().defaultBlockState()
+                    .setValue(CortexLobeBlock.PART, free ? CortexLobeBlock.Part.MATURE : CortexLobeBlock.Part.FRESH));
+            grew = true;
             level.playSound(null, frame, SoundEvents.SLIME_BLOCK_PLACE, SoundSource.BLOCKS, 0.7f, 0.6f);
             level.sendParticles(ParticleTypes.ELECTRIC_SPARK, frame.getX() + 0.5, frame.getY() + 0.5, frame.getZ() + 0.5,
                     10, 0.3, 0.3, 0.3, 0.05);
@@ -419,6 +445,7 @@ public class ChronocortexBlockEntity extends BlockEntity {
             lobes = count;
             setChanged();
         }
+        return grew;
     }
 
     private boolean withinReach(BlockPos pos) {

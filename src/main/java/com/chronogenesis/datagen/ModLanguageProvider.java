@@ -356,6 +356,14 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.CORTEX_LOBE, "Cortex Lobe");
         add("tooltip.chronogenesis.eternal_hourglass", "While carried: every power at its highest level, every pool full, no Temporal Exposure, every Temporal Lens charged and free to look through, every composite power known, research essence supplied");
         add("tooltip.chronogenesis.eternal_hourglass.creative", "Creative only");
+        add("tooltip.chronogenesis.eternal_hourglass.pour", "Use it on an organism, a jug, a Dissection Table or the Chronocortex to fill it");
+        add("tooltip.chronogenesis.eternal_hourglass.chosen", "Pours %s into empty jugs (sneak-use in the air to change)");
+        add("message.chronogenesis.hourglass.poured", "The hourglass pours %s drams of %s.");
+        add("message.chronogenesis.hourglass.full", "It is already full.");
+        add("message.chronogenesis.hourglass.not_glass", "%s will not stay in glass.");
+        add("message.chronogenesis.hourglass.table", "The brain soaks up %s drams of Awareness and Time.");
+        add("message.chronogenesis.hourglass.cortex", "%s drams into its organisms; %s lobes grown at once.");
+        add("message.chronogenesis.hourglass.chosen", "The sand runs %s.");
         add("tooltip.chronogenesis.chronocortex", "Already awake: no ritual needed. With an Eternal Hourglass carried, research draws its essence from it");
         add("screen.chronogenesis.chronocortex.essence_from_hourglass", "%s: %s, from the Eternal Hourglass");
         add("tooltip.chronogenesis.eternal_hourglass.journal", "Use it in creative mode to unlock the whole journal");
