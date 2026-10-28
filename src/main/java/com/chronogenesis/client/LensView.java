@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -19,26 +20,20 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexSorting;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -46,20 +41,23 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.model.data.ModelData;
 
 /**
  * What the Temporal Lens shows. A round lens in the middle of the screen looks into the past; around it, the
- * present goes on, dimmed.
+ * present goes on, dimmed. Through the lens the past is not laid over the present: it is what the world
+ * looks like.
  * <ol>
- *   <li>During the world render, the frame (colour and depth) is copied into the {@code past} target of the
- *       {@code temporal_lens} post chain. In that copy, every present block that was not there in the past is
- *       erased (its depth pushed to the far plane, so nothing it hid stays hidden), and then the past's own
- *       blocks are drawn over it, solid, overriding whatever stands there now. A floor seen through the lens
- *       may be a hole in the present, and rubble the lens hides is still there to trip over.</li>
- *   <li>During HUD rendering (where vanilla runs its own screen blur), one shader pass composites the two:
- *       the past inside the lens in sepia, the present outside, a brass rim between. Near an obelisk the same
- *       pass bends everything into an event horizon, strongest through the glass.</li>
+ *   <li>The past is rebuilt as world geometry ({@link PastMesh}): each structure's area tessellated through a
+ *       {@link PastWorld}, where the past's blocks stand and what is newer is air. Built when the server sends
+ *       a view, kept on the GPU.</li>
+ *   <li>Each frame, during the world render, the frame (colour, depth) is copied into the {@code past} target
+ *       of the {@code temporal_lens} post chain. A stencil pass marks every pixel whose visible surface lies
+ *       inside one of those areas; those pixels are cleared, and the past geometry is drawn there, depth
+ *       tested. Things in front of an area (a tree before the ruin) stay; inside it, only the past remains.
+ *       What the lens hides is still there: rubble still blocks, a floor seen through it may be a hole.</li>
+ *   <li>During HUD rendering (where vanilla runs its own screen blur), one shader pass composites the copy
+ *       inside the lens (in sepia) over the present, with a brass rim. Near an obelisk the same pass bends
+ *       everything into an event horizon, strongest through the glass.</li>
  * </ol>
  * If the shader cannot be loaded, the Lens just shows the present and says so in the log, once.
  */
@@ -69,16 +67,16 @@ public final class LensView {
     /** The lens's radius, as a fraction of the screen's height. */
     private static final float LENS_RADIUS = 0.36f;
     private static final float ZOOM = 0.6f;
-    /** Past blocks are drawn this much larger, so they win over the present block in the same place. */
-    private static final float OVERRIDE_SCALE = 1.003f;
     /** Obelisk distortion: full within this distance of the heart, gone by the next. */
     private static final double OBELISK_FULL = 16.0;
     private static final double OBELISK_FADE = 64.0;
     private static final int OBELISK_RESCAN_TICKS = 10;
 
-    private static List<BlockPos> positions = List.of();
-    private static List<BlockState> states = List.of();
-    private static List<BlockPos> erased = List.of();
+    @Nullable
+    private static PastViewPayload view;
+    @Nullable
+    private static PastMesh mesh;
+    private static boolean meshDirty;
 
     @Nullable
     private static PostChain chain;
@@ -100,9 +98,8 @@ public final class LensView {
     private LensView() {}
 
     public static void receive(PastViewPayload payload) {
-        positions = payload.positions();
-        states = payload.states();
-        erased = payload.erased();
+        view = payload.boxes().isEmpty() ? null : payload;
+        meshDirty = true;
     }
 
     public static boolean looking() {
@@ -112,13 +109,14 @@ public final class LensView {
 
     @SubscribeEvent
     static void registerReload(RegisterClientReloadListenersEvent event) {
-        // Shaders are resources: drop the chain on reload and build it again on next use.
+        // Shaders and models are resources: drop what was built from them, and build again on next use.
         event.registerReloadListener((ResourceManagerReloadListener) manager -> {
             if (chain != null) {
                 chain.close();
                 chain = null;
             }
             broken = false;
+            meshDirty = true;
         });
     }
 
@@ -142,31 +140,53 @@ public final class LensView {
             return;
         }
         pastReady = false;
+        Minecraft minecraft = Minecraft.getInstance();
         if (!looking()) {
             loggedObelisk = false;
+            if (mesh != null) {
+                mesh.close();
+                mesh = null;
+            }
             return;
         }
-        Minecraft minecraft = Minecraft.getInstance();
         PostChain effect = chain(minecraft);
         if (effect == null || minecraft.level == null) {
             return;
         }
+        if (meshDirty) {
+            meshDirty = false;
+            if (mesh != null) {
+                mesh.close();
+            }
+            mesh = view == null ? null
+                    : PastMesh.build(minecraft.level, view.positions(), view.states(), view.erased(), view.boxes());
+        }
+
         RenderTarget main = minecraft.getMainRenderTarget();
         RenderTarget past = effect.getTempTarget("past");
+        // Both need stencil bits (and so the same depth format, or the depth copy fails).
+        main.enableStencil();
+        past.enableStencil();
         copyFrame(main, past);
         past.bindWrite(false);
 
-        Vec3 camera = event.getCamera().getPosition();
-        PoseStack poses = event.getPoseStack();
-        eraseNewerBlocks(poses, camera);
-        drawPast(minecraft, poses, camera);
+        if (mesh != null) {
+            Vec3 camera = event.getCamera().getPosition();
+            GL11.glClearStencil(0);
+            GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+            GL11.glEnable(GL11.GL_STENCIL_TEST);
+            markPastVolumes(mesh.volumes(), camera);
+            clearMarked();
+            GL11.glDisable(GL11.GL_STENCIL_TEST);
+            mesh.draw(event.getModelViewMatrix(), event.getProjectionMatrix(), camera);
+        }
 
         main.bindWrite(false);
-        locateObelisk(minecraft, event, camera);
+        locateObelisk(minecraft, event, event.getCamera().getPosition());
         pastReady = true;
     }
 
-    /** Colour and depth of the present into the past target, which the past is then drawn over. */
+    /** Colour and depth of the present into the past target. */
     private static void copyFrame(RenderTarget from, RenderTarget to) {
         GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, from.frameBufferId);
         GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, to.frameBufferId);
@@ -176,75 +196,100 @@ public final class LensView {
     }
 
     /**
-     * Blocks that stand now but did not then: their cube is drawn with its depth forced to the far plane, so in
-     * the past target they no longer hide anything, and the past's own floor and walls behind them show through.
+     * Stencil marks every pixel whose visible surface lies inside one of the past's volumes. From outside a box:
+     * its front faces count up and its back faces count down where they are in front of the surface, leaving 1
+     * only where the surface is between them. From inside: its back faces mark wherever the surface is nearer.
      */
-    private static void eraseNewerBlocks(PoseStack poses, Vec3 camera) {
-        if (erased.isEmpty()) {
-            return;
+    private static void markPastVolumes(List<AABB> volumes, Vec3 camera) {
+        RenderSystem.setShader(GameRenderer::getPositionShader);
+        RenderSystem.colorMask(false, false, false, false);
+        RenderSystem.depthMask(false);
+        RenderSystem.enableDepthTest();
+        RenderSystem.enableCull();
+        GL11.glStencilMask(0xFF);
+        for (AABB volume : volumes) {
+            AABB box = volume.inflate(0.01);
+            if (box.inflate(0.3).contains(camera)) {
+                GL11.glCullFace(GL11.GL_FRONT);
+                RenderSystem.depthFunc(GL11.GL_GEQUAL);
+                GL11.glStencilFunc(GL11.GL_ALWAYS, 1, 0xFF);
+                GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
+                drawBox(box, camera);
+            } else {
+                GL11.glStencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+                RenderSystem.depthFunc(GL11.GL_LEQUAL);
+                GL11.glCullFace(GL11.GL_BACK);
+                GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INCR);
+                drawBox(box, camera);
+                GL11.glCullFace(GL11.GL_FRONT);
+                GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_DECR);
+                drawBox(box, camera);
+            }
         }
-        float[] fog = RenderSystem.getShaderFogColor();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableCull();
-        RenderSystem.depthFunc(GL11.GL_ALWAYS);
+        GL11.glCullFace(GL11.GL_BACK);
+        RenderSystem.depthFunc(GL11.GL_LEQUAL);
         RenderSystem.depthMask(true);
-        GL11.glDepthRange(1.0, 1.0);
-        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f pose = poses.last().pose();
-        for (BlockPos pos : erased) {
-            float x0 = (float) (pos.getX() - camera.x) - 0.002f;
-            float y0 = (float) (pos.getY() - camera.y) - 0.002f;
-            float z0 = (float) (pos.getZ() - camera.z) - 0.002f;
-            cube(buffer, pose, x0, y0, z0, 1.004f, fog[0], fog[1], fog[2]);
+        RenderSystem.colorMask(true, true, true, true);
+    }
+
+    /** A box's six faces, wound counter-clockwise seen from outside, relative to the camera. */
+    private static void drawBox(AABB box, Vec3 camera) {
+        float x0 = (float) (box.minX - camera.x);
+        float y0 = (float) (box.minY - camera.y);
+        float z0 = (float) (box.minZ - camera.z);
+        float x1 = (float) (box.maxX - camera.x);
+        float y1 = (float) (box.maxY - camera.y);
+        float z1 = (float) (box.maxZ - camera.z);
+        float[][] faces = {
+                {x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1},   // down
+                {x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0},   // up
+                {x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0},   // north
+                {x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1},   // south
+                {x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0},   // west
+                {x1, y0, z0, x1, y1, z0, x1, y1, z1, x1, y0, z1},   // east
+        };
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        for (float[] face : faces) {
+            for (int i = 0; i < 12; i += 3) {
+                buffer.addVertex(face[i], face[i + 1], face[i + 2]);
+            }
         }
         BufferUploader.drawWithShader(buffer.buildOrThrow());
+    }
+
+    /**
+     * Where the stencil is marked, the present is wiped: colour to the fog's (what lies beyond the past's area
+     * fades into haze), depth to the far plane, so the past geometry drawn next is all that stands there.
+     */
+    private static void clearMarked() {
+        float[] fog = RenderSystem.getShaderFogColor();
+        GL11.glStencilFunc(GL11.GL_NOTEQUAL, 0, 0xFF);
+        GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+        RenderSystem.depthFunc(GL11.GL_ALWAYS);
+        RenderSystem.depthMask(true);
+        RenderSystem.disableCull();
+        GL11.glDepthRange(1.0, 1.0);
+        RenderSystem.backupProjectionMatrix();
+        RenderSystem.setProjectionMatrix(new Matrix4f(), VertexSorting.ORTHOGRAPHIC_Z);
+        Matrix4fStack modelView = RenderSystem.getModelViewStack();
+        modelView.pushMatrix();
+        modelView.identity();
+        RenderSystem.applyModelViewMatrix();
+
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        buffer.addVertex(-1, -1, 0).setColor(fog[0], fog[1], fog[2], 1.0f);
+        buffer.addVertex(1, -1, 0).setColor(fog[0], fog[1], fog[2], 1.0f);
+        buffer.addVertex(1, 1, 0).setColor(fog[0], fog[1], fog[2], 1.0f);
+        buffer.addVertex(-1, 1, 0).setColor(fog[0], fog[1], fog[2], 1.0f);
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+
+        modelView.popMatrix();
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.restoreProjectionMatrix();
         GL11.glDepthRange(0.0, 1.0);
         RenderSystem.depthFunc(GL11.GL_LEQUAL);
         RenderSystem.enableCull();
-    }
-
-    private static void cube(BufferBuilder b, Matrix4f m, float x, float y, float z, float s, float r, float g, float bl) {
-        float x1 = x + s;
-        float y1 = y + s;
-        float z1 = z + s;
-        float[][] faces = {
-                {x, y, z, x1, y, z, x1, y, z1, x, y, z1},       // down
-                {x, y1, z, x, y1, z1, x1, y1, z1, x1, y1, z},   // up
-                {x, y, z, x, y1, z, x1, y1, z, x1, y, z},       // north
-                {x, y, z1, x1, y, z1, x1, y1, z1, x, y1, z1},   // south
-                {x, y, z, x, y, z1, x, y1, z1, x, y1, z},       // west
-                {x1, y, z, x1, y1, z, x1, y1, z1, x1, y, z1},   // east
-        };
-        for (float[] face : faces) {
-            for (int i = 0; i < 12; i += 3) {
-                b.addVertex(m, face[i], face[i + 1], face[i + 2]).setColor(r, g, bl, 1.0f);
-            }
-        }
-    }
-
-    /** The past's blocks, solid and a touch larger than a block, so they override whatever is there now. */
-    private static void drawPast(Minecraft minecraft, PoseStack poses, Vec3 camera) {
-        if (positions.isEmpty()) {
-            return;
-        }
-        BlockRenderDispatcher blocks = minecraft.getBlockRenderer();
-        MultiBufferSource.BufferSource buffers = minecraft.renderBuffers().bufferSource();
-        var consumer = buffers.getBuffer(RenderType.cutout());
-        for (int i = 0; i < positions.size(); i++) {
-            BlockState state = states.get(i);
-            if (state.getRenderShape() != RenderShape.MODEL) {
-                continue;
-            }
-            BlockPos pos = positions.get(i);
-            poses.pushPose();
-            poses.translate(pos.getX() - camera.x + 0.5, pos.getY() - camera.y + 0.5, pos.getZ() - camera.z + 0.5);
-            poses.scale(OVERRIDE_SCALE, OVERRIDE_SCALE, OVERRIDE_SCALE);
-            poses.translate(-0.5, -0.5, -0.5);
-            blocks.getModelRenderer().renderModel(poses.last(), consumer, state, blocks.getBlockModel(state), 1.0f, 1.0f, 1.0f,
-                    LevelRenderer.getLightColor(minecraft.level, pos), OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.cutout());
-            poses.popPose();
-        }
-        buffers.endBatch(RenderType.cutout());
     }
 
     /** Where the nearest obelisk's heart is on screen, how big its horizon looks, and how strongly it pulls. */

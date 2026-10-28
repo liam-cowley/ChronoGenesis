@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
@@ -45,12 +46,12 @@ public final class PastViews {
     public record PastBlock(BlockPos pos, BlockState state) {}
 
     /**
-     * What the Lens sees of the past: every block of it that stood within the structures in view, and where
-     * something stands now that did not then (rubble, cobwebs, blocks placed since). Inside the lens the past
-     * replaces the present entirely, so the client draws the first and erases the second.
+     * What the Lens sees of the past: every block of it that stood within the structures in view, where
+     * something stands now that did not then (rubble, cobwebs, blocks placed since: air in the past), and the
+     * boxes the structures occupy. Inside the lens, within those boxes, the world is rebuilt as it was.
      */
-    public record Past(List<PastBlock> blocks, List<BlockPos> erased) {
-        public static final Past EMPTY = new Past(List.of(), List.of());
+    public record Past(List<PastBlock> blocks, List<BlockPos> erased, List<BoundingBox> boxes) {
+        public static final Past EMPTY = new Past(List.of(), List.of(), List.of());
     }
 
     /** What the Lens sees: the past, and any clues seeing it gives. */
@@ -73,6 +74,7 @@ public final class PastViews {
         Registry<Structure> structures = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
         List<PastBlock> blocks = new ArrayList<>();
         List<BlockPos> erased = new ArrayList<>();
+        List<BoundingBox> boxes = new ArrayList<>();
         List<ResourceLocation> clues = new ArrayList<>();
         int cx = center.getX() >> 4;
         int cz = center.getZ() >> 4;
@@ -89,7 +91,7 @@ public final class PastViews {
                     }
                     for (PastView view : views.get()) {
                         if (view.structure().equals(key.get()) && depth.reaches(view.depth())) {
-                            addStart(level, start.getValue(), view, blocks, erased);
+                            addStart(level, start.getValue(), view, blocks, erased, boxes);
                             view.clue().ifPresent(clues::add);
                         }
                     }
@@ -102,14 +104,15 @@ public final class PastViews {
             blocks.removeIf(block -> Obelisks.swallowed(obelisks, Vec3.atCenterOf(block.pos())));
             erased.removeIf(pos -> Obelisks.swallowed(obelisks, Vec3.atCenterOf(pos)));
         }
-        return new View(new Past(cap(blocks), cap(erased)), clues);
+        return new View(new Past(cap(blocks), cap(erased), boxes), clues);
     }
 
     private static <T> List<T> cap(List<T> list) {
         return list.size() > MAX_BLOCKS ? list.subList(0, MAX_BLOCKS) : list;
     }
 
-    private static void addStart(ServerLevel level, StructureStart start, PastView view, List<PastBlock> blocks, List<BlockPos> erased) {
+    private static void addStart(ServerLevel level, StructureStart start, PastView view, List<PastBlock> blocks,
+                                 List<BlockPos> erased, List<BoundingBox> boxes) {
         Optional<StructureTemplate> template = level.getStructureManager().get(view.template());
         if (template.isEmpty()) {
             ChronoGenesis.LOGGER.warn("Past view template {} is missing", view.template());
@@ -120,6 +123,7 @@ public final class PastViews {
                 Past past = pastOf(level, template.get(), pooled.getPosition(), pooled.getRotation());
                 blocks.addAll(past.blocks());
                 erased.addAll(past.erased());
+                boxes.add(pooled.getBoundingBox());
             }
         }
     }
@@ -149,6 +153,6 @@ public final class PastViews {
                 blocks.add(new PastBlock(pos, info.state().rotate(level, pos, rotation)));
             }
         }
-        return new Past(blocks, erased);
+        return new Past(blocks, erased, List.of(template.getBoundingBox(settings, origin)));
     }
 }

@@ -3,6 +3,7 @@ package com.chronogenesis.item;
 import java.util.List;
 
 import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.journal.JournalUnlock;
 import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.lens.TemporalLensItem;
@@ -13,6 +14,8 @@ import com.chronogenesis.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -74,9 +77,25 @@ public class EternalHourglassItem extends Item {
         }
     }
 
+    /** In creative mode, using it unlocks the whole journal. */
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player instanceof ServerPlayer serverPlayer) {
+            if (serverPlayer.isCreative()) {
+                JournalUnlock.unlockAll(serverPlayer);
+            } else {
+                player.displayClientMessage(Component.translatable("message.chronogenesis.journal.creative_only")
+                        .withStyle(ChatFormatting.GRAY), true);
+            }
+        }
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.chronogenesis.eternal_hourglass").withStyle(ChatFormatting.LIGHT_PURPLE));
+        tooltip.add(Component.translatable("tooltip.chronogenesis.eternal_hourglass.journal").withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("tooltip.chronogenesis.eternal_hourglass.creative").withStyle(ChatFormatting.DARK_GRAY));
     }
 

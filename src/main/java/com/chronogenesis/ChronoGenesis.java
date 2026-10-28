@@ -10,6 +10,7 @@ import com.chronogenesis.registry.ModCreativeTabs;
 import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModItems;
 import com.chronogenesis.registry.ModParticles;
+import com.chronogenesis.registry.ModSounds;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.resources.ResourceLocation;
@@ -38,6 +39,7 @@ public class ChronoGenesis {
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ModParticles.PARTICLE_TYPES.register(modEventBus);
+        ModSounds.SOUND_EVENTS.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }

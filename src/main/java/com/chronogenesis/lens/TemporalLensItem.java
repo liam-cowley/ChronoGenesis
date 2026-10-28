@@ -15,6 +15,7 @@ import com.chronogenesis.network.PastViewPayload;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
+import com.chronogenesis.registry.ModSounds;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -230,7 +231,8 @@ public class TemporalLensItem extends EssenceContainerItem {
         SCANS.remove(player.getUUID());
         BlockState state = player.level().getBlockState(looked);
         Clues.grant(player, state.getValue(FadedBlueprintBlock.DESIGN).clue());
-        player.level().playSound(null, looked, SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 0.6f);
+        // The pen scratches the lines into the journal as the Lens makes them out.
+        player.level().playSound(null, player.blockPosition(), ModSounds.LENS_SCRIBBLE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
         player.displayClientMessage(Component.translatable("message.chronogenesis.lens.scanned").withStyle(ChatFormatting.DARK_AQUA), true);
         return true;
     }

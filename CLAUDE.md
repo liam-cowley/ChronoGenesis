@@ -58,6 +58,8 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   `AFTER_WEATHER`, composite from a HUD layer the way vanilla's blur does; `AFTER_LEVEL` has no camera matrices). They must compile under GL 3.2 core
   (`#version 150`); a shader that fails to load disables its effect instead of crashing.
 - The creative-only Eternal Hourglass keeps essences full and instruments charged while carried: use it to test.
+  Using it in creative mode (or `/chronogenesis journal unlock`) grants every ChronoGenesis advancement, which
+  unlocks the whole journal.
 - `tools/make_structures.py` writes the worldgen structure templates. Each ruin is generated from its "past"
   template by seeded decay, so the Temporal Lens's past view lines up with it block for block. Edit the layout
   there and re-run; never hand-edit the NBT.

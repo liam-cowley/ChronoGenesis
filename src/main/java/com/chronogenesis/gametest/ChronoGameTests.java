@@ -1,6 +1,9 @@
 package com.chronogenesis.gametest;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
@@ -9,6 +12,7 @@ import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
+import com.chronogenesis.client.PastWorld;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.DrainEffects;
 import com.chronogenesis.essence.EssenceContents;
@@ -41,6 +45,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -427,9 +432,45 @@ public final class ChronoGameTests {
         helper.assertTrue(past.blocks().contains(new PastViews.PastBlock(wall, Blocks.STONE_BRICKS.defaultBlockState())),
                 "the past should be drawn whole, even where it still stands");
         helper.assertFalse(past.erased().contains(wall), "a block that was there then is not erased");
+        helper.assertTrue(past.boxes().size() == 1 && past.boxes().get(0).isInside(rubble), "the past's area should cover the lab");
+
+        // Through the lens, the world is the past: its blocks where known, air where something is newer, else the present.
+        Map<BlockPos, BlockState> then = new HashMap<>();
+        past.blocks().forEach(block -> then.put(block.pos(), block.state()));
+        PastWorld world = new PastWorld(helper.getLevel(), then, new HashSet<>(past.erased()));
+        helper.assertTrue(world.getBlockState(rubble).isAir(), "newer blocks should be air in the past world");
+        helper.assertTrue(world.getBlockState(wall).is(Blocks.STONE_BRICKS), "the past's blocks stand in the past world");
+        helper.assertTrue(world.getBlockState(origin.offset(5, 1, 6)).is(ModBlocks.DISSECTION_TABLE.get()), "the past's table stands");
+        BlockPos outside = origin.offset(40, 0, 0);
+        helper.assertTrue(world.getBlockState(outside).equals(helper.getLevel().getBlockState(outside)), "outside, the present");
 
         helper.getLevel().setBlockAndUpdate(rubble, Blocks.AIR.defaultBlockState());
         helper.getLevel().setBlockAndUpdate(wall, Blocks.AIR.defaultBlockState());
+        helper.succeed();
+    }
+
+    /** Reading a blueprint scribbles: the sound event exists and plays its pen-on-paper sounds. */
+    @GameTest(template = "floor7")
+    public static void scribbleSoundRegistered(GameTestHelper helper) {
+        helper.assertTrue(BuiltInRegistries.SOUND_EVENT.containsKey(ChronoGenesis.id("lens.scribble")), "scribble sound missing");
+        helper.succeed();
+    }
+
+    /**
+     * Creative players can unlock the whole journal: the command exists, and there are ChronoGenesis
+     * advancements (which gate the journal's entries) for it to grant. FakePlayers ignore advancements, so the
+     * granting itself is left to a real player.
+     */
+    @GameTest(template = "floor7")
+    public static void journalUnlockAvailable(GameTestHelper helper) {
+        var root = helper.getLevel().getServer().getCommands().getDispatcher().getRoot();
+        var unlock = root.getChild(ChronoGenesis.MODID) == null ? null
+                : root.getChild(ChronoGenesis.MODID).getChild("journal") == null ? null
+                : root.getChild(ChronoGenesis.MODID).getChild("journal").getChild("unlock");
+        helper.assertTrue(unlock != null, "/chronogenesis journal unlock is not registered");
+        long advancements = helper.getLevel().getServer().getAdvancements().getAllAdvancements().stream()
+                .filter(advancement -> advancement.id().getNamespace().equals(ChronoGenesis.MODID)).count();
+        helper.assertTrue(advancements >= 7, "expected the journal's advancements, found " + advancements);
         helper.succeed();
     }
 

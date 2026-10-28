@@ -196,6 +196,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("lens.chronogenesis.depth.centuries", "Centuries");
         add("message.chronogenesis.lens.depth", "The Lens now looks back: %s");
         add("message.chronogenesis.lens.no_time", "The Lens needs Time to see through. Pour a Stasis Ampoule onto it.");
+        add("subtitles.chronogenesis.lens.scribble", "Pen scribbles");
         add("message.chronogenesis.lens.scanned", "You trace the faded lines into your journal.");
         add("message.chronogenesis.blueprint.faded", "The lines have faded past reading. Perhaps they were clearer once.");
         add("tooltip.chronogenesis.lens.depth", "Looks back: %s");
@@ -219,6 +220,9 @@ public class ModLanguageProvider extends LanguageProvider {
         addItem(ModItems.ETERNAL_HOURGLASS, "Eternal Hourglass");
         add("tooltip.chronogenesis.eternal_hourglass", "While carried: every power at its highest level, every pool full, no Temporal Exposure, every Temporal Lens charged and free to look through");
         add("tooltip.chronogenesis.eternal_hourglass.creative", "Creative only");
+        add("tooltip.chronogenesis.eternal_hourglass.journal", "Use it in creative mode to unlock the whole journal");
+        add("message.chronogenesis.journal.unlocked", "Every page of the journal lies open (%s advancements granted).");
+        add("message.chronogenesis.journal.creative_only", "Only in creative mode.");
 
         add("message.chronogenesis.gate.pace", "Pace %s: %s ticks per block of track. Slower pulses make more Time, but stall past 600 ticks.");
         add("message.chronogenesis.organism.stability", " | stability %s/%s, instability %s/%s");
