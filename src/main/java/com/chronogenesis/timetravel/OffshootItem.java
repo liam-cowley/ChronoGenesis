@@ -19,7 +19,7 @@ public class OffshootItem extends BlockItem {
 
     @Override
     public InteractionResult place(BlockPlaceContext context) {
-        if (Offshoots.eraOf(context.getLevel()) == null) {
+        if (Remnants.eraOf(context.getLevel()) == null) {
             if (context.getPlayer() != null && !context.getLevel().isClientSide()) {
                 context.getPlayer().displayClientMessage(Component.translatable("message.chronogenesis.offshoot.present")
                         .withStyle(ChatFormatting.GRAY), true);

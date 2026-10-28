@@ -69,6 +69,8 @@ Docs (read the relevant one before implementing a feature, and keep names consis
 - Eras are dimensions sharing the overworld's seed (`data/chronogenesis/dimension/`), listed as data in
   `chronogenesis/era/`. The Precursor era has its own biomes (`worldgen/biome/precursor_*`, derived from vanilla ones)
   so its cities (`precursor_city`) and nothing else of the overworld's generate there.
+- Lasting blocks placed in an era become remnants (`timetravel/Remnants`, data map `data_maps/block/remnant.json`):
+  crumbled copies appear in the present and in the Lens's past dimension when the spot loads.
 - `tools/make_structures.py` writes the worldgen structure templates (including the Precursor cities, with their
   Precursors as template entities). Each ruin is generated from its "past"
   template by seeded decay, so the Temporal Lens's past view lines up with it block for block. Edit the layout

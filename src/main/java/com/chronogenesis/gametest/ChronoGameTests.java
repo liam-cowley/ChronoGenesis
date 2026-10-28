@@ -57,9 +57,9 @@ import com.chronogenesis.timetravel.Era;
 import com.chronogenesis.timetravel.Eras;
 import com.chronogenesis.timetravel.FossilCortexBlock;
 import com.chronogenesis.timetravel.FossilCortexBlockEntity;
-import com.chronogenesis.timetravel.Offshoots;
 import com.chronogenesis.timetravel.PastDimension;
 import com.chronogenesis.timetravel.PastStamping;
+import com.chronogenesis.timetravel.Remnants;
 import com.chronogenesis.timetravel.TemporalShift;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
@@ -90,7 +90,9 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.dimension.LevelStem;
@@ -652,8 +654,9 @@ public final class ChronoGameTests {
         ServerLevel level = helper.getLevel();
         ResourceLocation era = ChronoGenesis.id("precursor_era");
         BlockPos fossilPos = new BlockPos(1, 1, 1);
-        Offshoots.plant(level.getServer(), era, helper.absolutePos(fossilPos));
-        helper.assertTrue(Offshoots.grow(level) >= 1, "nothing grew");
+        Remnants.record(level.getServer(), era, helper.absolutePos(fossilPos),
+                Remnants.crumbled(ModBlocks.CORTEX_OFFSHOOT.get().defaultBlockState()));
+        helper.assertTrue(Remnants.materialize(level) >= 1, "nothing grew");
         helper.assertBlockPresent(ModBlocks.FOSSIL_CORTEX.get(), fossilPos);
         FossilCortexBlockEntity fossil = helper.getBlockEntity(fossilPos);
         helper.assertTrue(era.equals(fossil.era()), "the fossil should remember the Precursors");
@@ -673,6 +676,36 @@ public final class ChronoGameTests {
         Era iceAge = Eras.get(level.registryAccess(), ChronoGenesis.id("ice_age"));
         helper.assertTrue(TemporalShift.check(player, iceAge, 1, Set.of(Lessons.COLD), cortex.memories(), Map.of()).memory(),
                 "the Ice Age should now be within memory");
+        helper.succeed();
+    }
+
+    /** Lasting blocks crumble into their remnant forms, keeping their shape; gold stays gold; wood does not last. */
+    @GameTest(template = "floor7")
+    public static void lastingBlocksCrumble(GameTestHelper helper) {
+        BlockState stairs = Blocks.STONE_BRICK_STAIRS.defaultBlockState()
+                .setValue(StairBlock.FACING, Direction.EAST).setValue(StairBlock.HALF, Half.TOP);
+        BlockState crumbled = Remnants.crumbled(stairs);
+        helper.assertTrue(crumbled != null && crumbled.is(Blocks.MOSSY_STONE_BRICK_STAIRS)
+                && crumbled.getValue(StairBlock.FACING) == Direction.EAST && crumbled.getValue(StairBlock.HALF) == Half.TOP,
+                "stairs should crumble into mossy stairs, the same way round: " + crumbled);
+        helper.assertTrue(Remnants.crumbled(Blocks.GOLD_BLOCK.defaultBlockState()).is(Blocks.GOLD_BLOCK), "gold should not tarnish");
+        helper.assertTrue(Remnants.crumbled(Blocks.OAK_PLANKS.defaultBlockState()) == null, "wood should not last");
+        helper.assertTrue(Remnants.crumbled(ModBlocks.CORTEX_OFFSHOOT.get().defaultBlockState()).is(ModBlocks.FOSSIL_CORTEX.get()),
+                "an offshoot should last as a Fossil Cortex");
+        helper.succeed();
+    }
+
+    /** A remnant appears in the present where it was placed in its era, and is taken back if it never lasted. */
+    @GameTest(template = "floor7")
+    public static void remnantsAppearAndVanish(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ResourceLocation era = ChronoGenesis.id("precursor_era");
+        BlockPos pos = new BlockPos(2, 1, 2);
+        Remnants.record(level.getServer(), era, helper.absolutePos(pos), Remnants.crumbled(Blocks.STONE_BRICKS.defaultBlockState()));
+        Remnants.materialize(level);
+        helper.assertBlockPresent(Blocks.CRACKED_STONE_BRICKS, pos);
+        Remnants.forget(level.getServer(), era, helper.absolutePos(pos));
+        helper.assertBlockPresent(Blocks.AIR, pos);
         helper.succeed();
     }
 

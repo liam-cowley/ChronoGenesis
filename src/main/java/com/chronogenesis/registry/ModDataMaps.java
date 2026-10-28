@@ -2,9 +2,11 @@ package com.chronogenesis.registry;
 
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.essence.EssenceProfile;
+import com.chronogenesis.timetravel.RemnantForm;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
@@ -18,9 +20,15 @@ public final class ModDataMaps {
             .builder(ChronoGenesis.id("essence_profile"), Registries.ENTITY_TYPE, EssenceProfile.CODEC)
             .build();
 
+    /** {@code data/<ns>/data_maps/block/remnant.json}: blocks that outlast the ages, and what they crumble into. */
+    public static final DataMapType<Block, RemnantForm> REMNANT = DataMapType
+            .builder(ChronoGenesis.id("remnant"), Registries.BLOCK, RemnantForm.CODEC)
+            .build();
+
     @SubscribeEvent
     static void register(RegisterDataMapTypesEvent event) {
         event.register(ESSENCE_PROFILE);
+        event.register(REMNANT);
     }
 
     private ModDataMaps() {}

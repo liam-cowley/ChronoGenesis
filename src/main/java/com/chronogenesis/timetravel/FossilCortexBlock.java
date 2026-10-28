@@ -31,7 +31,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * A Fossil Cortex: an offshoot planted in a past era, grown through all the ages since, and petrified (see
- * {@link Offshoots}). It still dreams the era it grew in. Bind a {@link NerveSpoolItem} to it and lay the nerve to
+ * {@link Remnants}). It still dreams the era it grew in. Bind a {@link NerveSpoolItem} to it and lay the nerve to
  * your Chronocortex, at any distance, and it gives those memories up ({@code awake}: linked, its veins lit).
  */
 public class FossilCortexBlock extends BaseEntityBlock {

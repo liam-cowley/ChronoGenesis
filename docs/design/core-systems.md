@@ -280,9 +280,16 @@ Its roles:
      ruins of the present: desert and jungle temples, ancient cities, ocean ruins.
    - *The Ice Age:* the overworld's noise and seed with only frozen biomes. Needs the lesson of the cold and the
      memory of the Precursors.
-   **Offshoots and memories:** research grows a **Cortex Offshoot**, which can only be planted in an era. It is
-   recorded (`timetravel/Offshoots`); having ages to grow, it waits at the same spot in the present as a **Fossil
-   Cortex** (placed when that spot is loaded). A **Nerve Spool** bound to the fossil and used on the Chronocortex (any
+   **Remnants:** blocks that outlast the ages (the `chronogenesis:remnant` block data map: stone, deepslate,
+   sandstone, prismarine, bricks, terracotta, concrete, gold, copper, amethyst, obsidian...) placed in an era remain:
+   they are recorded (`timetravel/Remnants`) and, as soon as the spot is loaded, stand at the same place in the
+   present and in the Temporal Lens's past, crumbled (stone bricks cracked, cobblestone and stone-brick stairs mossy,
+   cut sandstone worn plain, prismarine bricks back to prismarine, copper oxidized; gold and amethyst unchanged),
+   keeping their shape (facing, half). So the Lens shows them too. Breaking one again in its era before leaving
+   undoes it. Wood, glass, wool and the like do not last.
+   **Offshoots and memories:** research grows a **Cortex Offshoot**, which can only be planted in an era. It is a
+   remnant: having ages to grow, it waits at the same spot in the present (and in the Lens's past) as a **Fossil
+   Cortex**. A **Nerve Spool** bound to the fossil and used on the Chronocortex (any
    distance) gives it the era as a **memory**: +3 awareness, the next era (eras can require a memory), dialogue that
    needs it, and the linking player understands that era's people.
 

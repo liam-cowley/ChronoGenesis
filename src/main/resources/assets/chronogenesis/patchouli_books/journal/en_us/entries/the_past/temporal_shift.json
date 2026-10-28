@@ -18,6 +18,11 @@
       "type": "patchouli:text",
       "title": "Where It Can Send Me",
       "text": "$(l)The Age of the Precursors$(): before the villagers, a taller people built cities of gold and stone. Every ruin I know was new then. Their cities are alive.$(br2)$(l)The Ice Age$(): the same hills under ice. It must be taught $(l)the cold$() (blue ice) and remember the Precursors first.$(br2)Shifting is hard on an unprotected body."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What Lasts",
+      "text": "What I build in another era is still there when I come home, if it is made to last: stone, deepslate, sandstone, prismarine, brick, terracotta, gold, copper, amethyst. It has stood all the ages between, so I find it crumbled (cracked, mossed, worn, green with verdigris; gold just as it was), and the Lens sees it too.$(br2)Wood, glass and wool rot away. What I break again before I leave never stood at all."
     }
   ]
 }
