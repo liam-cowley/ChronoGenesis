@@ -25,8 +25,9 @@ import net.minecraft.world.level.Level;
 
 /**
  * Creative-only testing aid (no recipe; found only in the creative tab). While it is anywhere in a player's
- * inventory, every power is at its highest level with a full pool, Temporal Exposure stays at zero, and
- * instruments stay charged: every Temporal Lens carried is kept full of Time and costs nothing to look through.
+ * inventory, every power is at its highest level with a full pool, Temporal Exposure stays at zero,
+ * instruments stay charged (every Temporal Lens carried is kept full of Time and costs nothing to look through),
+ * and research at a Chronocortex draws its essence from the hourglass instead of wired organisms.
  */
 public class EternalHourglassItem extends Item {
     private static final int INTERVAL = 10;

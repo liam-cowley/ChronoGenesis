@@ -3,6 +3,7 @@ package com.chronogenesis.registry;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.item.ChronoSyringeItem;
+import com.chronogenesis.item.CreativeBlockItem;
 import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.item.EssenceContainerItem;
 import com.chronogenesis.item.EssenceJugItem;
@@ -71,6 +72,11 @@ public final class ModItems {
             IntactBlueprintItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     /** Creative only (no recipe): keeps essences full and instruments charged while carried. For testing. */
+    /** Creative only (no recipe; in play it is woken by the ritual): an already awake Chronocortex. */
+    public static final DeferredItem<CreativeBlockItem> CHRONOCORTEX = ITEMS.registerItem("chronocortex",
+            properties -> new CreativeBlockItem(ModBlocks.CHRONOCORTEX.get(), properties, "tooltip.chronogenesis.chronocortex"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
     public static final DeferredItem<EternalHourglassItem> ETERNAL_HOURGLASS = ITEMS.registerItem("eternal_hourglass",
             EternalHourglassItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 

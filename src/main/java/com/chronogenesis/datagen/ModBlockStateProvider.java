@@ -315,7 +315,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         jar(cortex, 3, 13, 16);
         box(cortex, 5, 16, 7.5f, 6, 19, 8.5f, "#steel", false);
         box(cortex, 10, 16, 7.5f, 11, 19, 8.5f, "#steel", false);
-        simpleBlock(ModBlocks.CHRONOCORTEX.get(), cortex);
+        simpleBlockWithItem(ModBlocks.CHRONOCORTEX.get(), cortex);
     }
 
     /** Obelisk stone, the glowing inscription band, and the stepped capstone (the nail's head). */

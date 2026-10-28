@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.item.EternalHourglassItem;
 import com.chronogenesis.network.SyncResearchPayload;
 import com.chronogenesis.registry.ModAttachments;
 
@@ -106,7 +107,8 @@ public final class Research {
                               Map<Aspect, Integer> availableEssence) {
         PlayerResearch research = get(player);
         boolean prerequisites = topic.requires().stream().allMatch(research::isCompleted);
-        boolean essence = topic.essence().entrySet().stream()
+        // A creative Eternal Hourglass supplies any essence; otherwise it comes from the wired organisms.
+        boolean essence = EternalHourglassItem.carried(player) || topic.essence().entrySet().stream()
                 .allMatch(cost -> availableEssence.getOrDefault(cost.getKey(), 0) >= cost.getValue());
         boolean materials = topic.materials().stream().allMatch(material -> count(player.getInventory(), material) >= material.count());
         boolean completed = research.isCompleted(id);
@@ -149,7 +151,9 @@ public final class Research {
         if (!check.ok()) {
             return false;
         }
-        topic.essence().forEach(cortex::drawEssence);
+        if (!EternalHourglassItem.carried(player)) {
+            topic.essence().forEach(cortex::drawEssence);
+        }
         for (SizedIngredient material : topic.materials()) {
             take(player.getInventory(), material);
         }

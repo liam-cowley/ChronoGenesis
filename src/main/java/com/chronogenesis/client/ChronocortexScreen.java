@@ -13,6 +13,7 @@ import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.biocomputer.ResearchTopic;
 import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.item.EternalHourglassItem;
 import com.chronogenesis.network.OpenChronocortexPayload;
 import com.chronogenesis.network.ResearchPayload;
 import com.chronogenesis.registry.ModAttachments;
@@ -208,10 +209,16 @@ public class ChronocortexScreen extends Screen {
             graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.needs_first"), dx, line, MISSING, false);
             line += 10;
         }
+        boolean hourglass = EternalHourglassItem.carried(minecraft.player);
         for (Map.Entry<Aspect, Integer> cost : topic.essence().entrySet()) {
-            int have = data.essence().getOrDefault(cost.getKey(), 0);
-            graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.essence_cost",
-                    cost.getKey().displayName(), have, cost.getValue()), dx, line, have >= cost.getValue() ? OK : MISSING, false);
+            if (hourglass) {
+                graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.essence_from_hourglass",
+                        cost.getKey().displayName(), cost.getValue()), dx, line, OK, false);
+            } else {
+                int have = data.essence().getOrDefault(cost.getKey(), 0);
+                graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.essence_cost",
+                        cost.getKey().displayName(), have, cost.getValue()), dx, line, have >= cost.getValue() ? OK : MISSING, false);
+            }
             line += 10;
         }
         for (SizedIngredient material : topic.materials()) {

@@ -218,8 +218,10 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Creative testing aid
         addItem(ModItems.ETERNAL_HOURGLASS, "Eternal Hourglass");
-        add("tooltip.chronogenesis.eternal_hourglass", "While carried: every power at its highest level, every pool full, no Temporal Exposure, every Temporal Lens charged and free to look through");
+        add("tooltip.chronogenesis.eternal_hourglass", "While carried: every power at its highest level, every pool full, no Temporal Exposure, every Temporal Lens charged and free to look through, research essence supplied");
         add("tooltip.chronogenesis.eternal_hourglass.creative", "Creative only");
+        add("tooltip.chronogenesis.chronocortex", "Already awake: no ritual needed. With an Eternal Hourglass carried, research draws its essence from it");
+        add("screen.chronogenesis.chronocortex.essence_from_hourglass", "%s: %s, from the Eternal Hourglass");
         add("tooltip.chronogenesis.eternal_hourglass.journal", "Use it in creative mode to unlock the whole journal");
         add("message.chronogenesis.journal.unlocked", "Every page of the journal lies open (%s advancements granted).");
         add("message.chronogenesis.journal.creative_only", "Only in creative mode.");

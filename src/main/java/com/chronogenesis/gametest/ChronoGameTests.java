@@ -350,6 +350,27 @@ public final class ChronoGameTests {
         });
     }
 
+    /** With an Eternal Hourglass carried, a lone Chronocortex (no organisms wired) researches on the hourglass's essence. */
+    @GameTest(template = "floor7")
+    public static void hourglassSuppliesResearchEssence(GameTestHelper helper) {
+        BlockPos cortexPos = new BlockPos(3, 1, 3);
+        helper.setBlock(cortexPos, ModBlocks.CHRONOCORTEX.get());
+        ChronocortexBlockEntity cortex = helper.getBlockEntity(cortexPos);
+        helper.assertTrue(ModItems.CHRONOCORTEX.get().getBlock() == ModBlocks.CHRONOCORTEX.get(), "the creative item should place the cortex");
+
+        ServerPlayer player = fakePlayer(helper);
+        player.getInventory().add(new ItemStack(ModItems.ETERNAL_HOURGLASS.get()));
+        player.getInventory().add(new ItemStack(Items.AMETHYST_SHARD, 8));
+        player.getInventory().add(new ItemStack(ModItems.PRESERVED_HEART.get()));
+        Research.set(player, Research.get(player).withKnown(Clues.FLOATING).withKnown(Clues.VACANT));
+
+        helper.assertTrue(cortex.wiredCores().isEmpty(), "no organisms should be wired");
+        helper.assertTrue(Research.perform(player, cortex, Research.LEVEL_2_POWERS), "research should succeed on the hourglass");
+        helper.assertTrue(Research.has(player, Research.LEVEL_2_POWERS), "research not recorded");
+        helper.assertFalse(player.getInventory().contains(new ItemStack(Items.AMETHYST_SHARD)), "materials not taken");
+        helper.succeed();
+    }
+
     /** A worn Umbilical Locket tied to an organism draws its essence into the wearer's pool, from a distance. */
     @GameTest(template = "floor7")
     public static void locketRefillsFromAfar(GameTestHelper helper) {
