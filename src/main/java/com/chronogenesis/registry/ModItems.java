@@ -12,14 +12,17 @@ import com.chronogenesis.item.EssenceJugItem;
 import com.chronogenesis.item.EssenceManipulatorItem;
 import com.chronogenesis.item.EternalHourglassItem;
 import com.chronogenesis.item.NeedleItem;
+import com.chronogenesis.item.NerveSpoolItem;
 import com.chronogenesis.item.StasisAmpouleItem;
 import com.chronogenesis.item.UmbilicalLocketItem;
 import com.chronogenesis.lens.IntactBlueprintItem;
 import com.chronogenesis.lens.TemporalLensItem;
+import com.chronogenesis.timetravel.OffshootItem;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -86,6 +89,20 @@ public final class ModItems {
     /** Needed to be shifted into another era; pull it there to come home early. Grown by research. */
     public static final DeferredItem<ChronoTetherItem> CHRONO_TETHER = ITEMS.registerItem("chrono_tether",
             ChronoTetherItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+
+    /** A bud of the Chronocortex, planted in a past era to grow through the ages. Grown by research. */
+    public static final DeferredItem<OffshootItem> CORTEX_OFFSHOOT = ITEMS.registerItem("cortex_offshoot",
+            properties -> new OffshootItem(ModBlocks.CORTEX_OFFSHOOT.get(), properties),
+            new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+
+    /** Lays a nerve from a Fossil Cortex to the Chronocortex, over any distance. */
+    public static final DeferredItem<NerveSpoolItem> NERVE_SPOOL = ITEMS.registerItem("nerve_spool", NerveSpoolItem::new,
+            new Item.Properties().stacksTo(1));
+
+    public static final DeferredItem<DeferredSpawnEggItem> PRECURSOR_SPAWN_EGG = ITEMS.registerItem("precursor_spawn_egg",
+            properties -> new DeferredSpawnEggItem(ModEntities.PRECURSOR, 0x2B3F7A, 0xD8B45A, properties), new Item.Properties());
+
+    public static final DeferredItem<BlockItem> FOSSIL_CORTEX = ITEMS.registerSimpleBlockItem("fossil_cortex", ModBlocks.FOSSIL_CORTEX);
 
     /** Creative only (no recipe; in play it is woken by the ritual): an already awake Chronocortex. */
     public static final DeferredItem<CreativeBlockItem> CHRONOCORTEX = ITEMS.registerItem("chronocortex",

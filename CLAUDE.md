@@ -66,7 +66,11 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   Table or the Chronocortex it fills them (the cortex: every wired organism, and firm lobes in all its armature).
   Using it in creative mode (or `/chronogenesis journal unlock`) grants every ChronoGenesis advancement, which
   unlocks the whole journal. A creative-only Chronocortex item places an awake cortex without the ritual.
-- `tools/make_structures.py` writes the worldgen structure templates. Each ruin is generated from its "past"
+- Eras are dimensions sharing the overworld's seed (`data/chronogenesis/dimension/`), listed as data in
+  `chronogenesis/era/`. The Precursor era has its own biomes (`worldgen/biome/precursor_*`, derived from vanilla ones)
+  so its cities (`precursor_city`) and nothing else of the overworld's generate there.
+- `tools/make_structures.py` writes the worldgen structure templates (including the Precursor cities, with their
+  Precursors as template entities). Each ruin is generated from its "past"
   template by seeded decay, so the Temporal Lens's past view lines up with it block for block. Edit the layout
   there and re-run; never hand-edit the NBT.
 - `tools/render_models.py <out.png>` renders isometric previews of the generated block models (pull the

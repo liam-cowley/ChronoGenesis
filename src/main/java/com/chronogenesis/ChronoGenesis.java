@@ -8,6 +8,7 @@ import com.chronogenesis.registry.ModBlockEntities;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModCreativeTabs;
 import com.chronogenesis.registry.ModDataComponents;
+import com.chronogenesis.registry.ModEntities;
 import com.chronogenesis.registry.ModItems;
 import com.chronogenesis.registry.ModParticles;
 import com.chronogenesis.registry.ModSounds;
@@ -36,6 +37,7 @@ public class ChronoGenesis {
         ModArmorMaterials.ARMOR_MATERIALS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
+        ModEntities.ENTITY_TYPES.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
         ModParticles.PARTICLE_TYPES.register(modEventBus);

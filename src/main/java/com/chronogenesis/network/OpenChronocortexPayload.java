@@ -19,14 +19,16 @@ import net.minecraft.resources.ResourceLocation;
 /** Server to client: open (or refresh) the Chronocortex screen with what it currently knows. */
 public record OpenChronocortexPayload(BlockPos pos, int stage, List<OrganismReport> organisms, Map<Aspect, Integer> essence,
                                       Mind mind) implements CustomPacketPayload {
-    /** Its mind: lobes (room), awareness, the lessons it has learned, its name, and whether its cranium is whole. */
-    public record Mind(int lobes, int awareness, List<ResourceLocation> lessons, String name, boolean cranium) {
+    /** Its mind: lobes (room), awareness, lessons learned, its name, whether its cranium is whole, eras remembered. */
+    public record Mind(int lobes, int awareness, List<ResourceLocation> lessons, String name, boolean cranium,
+                       List<ResourceLocation> memories) {
         public static final StreamCodec<FriendlyByteBuf, Mind> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, Mind::lobes,
                 ByteBufCodecs.VAR_INT, Mind::awareness,
                 ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), Mind::lessons,
                 ByteBufCodecs.STRING_UTF8, Mind::name,
                 ByteBufCodecs.BOOL, Mind::cranium,
+                ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), Mind::memories,
                 Mind::new);
     }
 
@@ -42,7 +44,7 @@ public record OpenChronocortexPayload(BlockPos pos, int stage, List<OrganismRepo
 
     public static OpenChronocortexPayload of(ChronocortexBlockEntity cortex) {
         Mind mind = new Mind(cortex.lobes(), cortex.awareness(), List.copyOf(cortex.lessons()),
-                cortex.name() == null ? "" : cortex.name(), cortex.craniumComplete());
+                cortex.name() == null ? "" : cortex.name(), cortex.craniumComplete(), List.copyOf(cortex.memories()));
         return new OpenChronocortexPayload(cortex.getBlockPos(), cortex.stage(), cortex.reports(), cortex.availableEssence(), mind);
     }
 

@@ -2002,6 +2002,135 @@ def power_icons():
         icon(name, fn)
 
 
+# ---------------------------------------------------------------- the Precursor era: offshoots, fossils, Precursors
+
+def fossil_cortex():
+    # A brain turned to stone over the ages: grey folds, dark veins of old amethyst; awake, the veins glow teal.
+    for awake in (False, True):
+        r = rng(311)
+        img = new()
+        for y in range(16):
+            for x in range(16):
+                f = math.sin(x * 1.1 + math.sin(y * 0.8) * 2.3) + math.sin(y * 1.05 + x * 0.3)
+                v = 150 if f > 0.5 else 122 if f > -0.5 else 86
+                img.putpixel((x, y), gray(v + r.randint(-8, 8)))
+                if -0.62 < f < -0.38:
+                    img.putpixel((x, y), TEAL_HI if awake and (x + y) % 3 else TEAL if awake else (88, 60, 104, 255))
+        save(img, "block/fossil_cortex_awake" if awake else "block/fossil_cortex")
+
+
+def cortex_offshoot_item():
+    # A bud of brain in a small stoppered jar, roots curling out through the glass.
+    save(grid([
+        "................",
+        "......kbbk......",
+        ".....kBHHBk.....",
+        "......gggg......",
+        ".....g.vv.g.....",
+        ".....gfpPfg.....",
+        "....gfpPPpfg....",
+        "....gfPPpPfg....",
+        "....gfpPPpfg....",
+        "....gffpPffg....",
+        "....gfffffwg....",
+        ".....gggggg.....",
+        "...v..v..v..v...",
+        "..v...v..v...v..",
+        ".v....v...v...v.",
+        "................",
+    ], {"k": BRASS_DDK, "b": BRASS_DK, "B": BRASS, "H": BRASS_HI, "g": GLASS_EDGE, "f": (110, 170, 110, 160),
+        "p": (186, 98, 114, 255), "P": (226, 142, 152, 255), "v": (150, 50, 66, 255), "w": GLINT}), "item/cortex_offshoot")
+
+
+def nerve_spool():
+    # A brass bobbin wound thick with pale pink nerve, its loose end dangling.
+    save(grid([
+        "................",
+        "...kBBBBBBBBk...",
+        "...kHHHHHHHHk...",
+        "....nNnNnNnN....",
+        "....NnNnNnNn....",
+        "....nNnNnNnN....",
+        "....NnNnNnNn....",
+        "....nNnNnNnN....",
+        "....NnNnNnNn....",
+        "....nNnNnNnN....",
+        "...kBBBBBBBBk...",
+        "...kbbbbbbbbk...",
+        "............N...",
+        ".............n..",
+        "............N...",
+        "...........n....",
+    ], {"k": BRASS_DDK, "b": BRASS_DK, "B": BRASS, "H": BRASS_HI, "n": (200, 120, 132, 255),
+        "N": (232, 164, 170, 255)}), "item/nerve_spool")
+
+
+def precursor_entity():
+    """64x64, the villager layout: grey-teal skin, amethyst eyes, a gold circlet and nose guard, deep blue robes
+    edged in gold, teal glyphs embroidered down the front."""
+    img = Image.new("RGBA", (64, 64), CLEAR)
+    r = rng(613)
+    SKIN = (128, 150, 146)
+    ROBE = (36, 52, 104)
+    ROBE_DK = (24, 34, 72)
+    GOLD = (224, 182, 72)
+    GOLD_DK = (160, 120, 40)
+    GLYPH = (96, 220, 200)
+
+    def rect(x0, y0, x1, y1, colour, jitter=6):
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                c = tuple(max(0, min(255, v + r.randint(-jitter, jitter))) for v in colour)
+                img.putpixel((x, y), c + (255,))
+
+    # Head (0-32, 0-18): skin; a gold circlet round the brow; a teal glyph on the crown.
+    rect(0, 0, 32, 18, SKIN)
+    rect(8, 0, 16, 8, (112, 132, 128))
+    for (x, y) in [(10, 2), (11, 3), (12, 4), (13, 3), (14, 2), (12, 5), (12, 6)]:
+        img.putpixel((x, y), GLYPH + (255,))
+    rect(0, 8, 32, 10, GOLD, 4)
+    for x in range(0, 32, 4):
+        img.putpixel((x, 9), GOLD_DK + (255,))
+    img.putpixel((12, 8), (174, 112, 224, 255))  # a gem on the brow
+    # Face (8-16, 10-18): deep-set amethyst eyes that glow, a thin mouth.
+    for x in (9, 10, 13, 14):
+        img.putpixel((x, 12), (40, 30, 50, 255))
+    img.putpixel((10, 13), (236, 200, 255, 255))
+    img.putpixel((9, 13), (174, 112, 224, 255))
+    img.putpixel((13, 13), (236, 200, 255, 255))
+    img.putpixel((14, 13), (174, 112, 224, 255))
+    for x in range(10, 14):
+        img.putpixel((x, 16), (86, 100, 98, 255))
+    # Hat layer (32-64, 0-18): only the circlet, standing a little proud of the head.
+    for x in range(32, 64):
+        for y in (8, 9):
+            img.putpixel((x, y), GOLD + (255,) if (x + y) % 5 else GOLD_DK + (255,))
+    # Nose (24-32, 0-6): a gold guard.
+    rect(24, 0, 32, 6, GOLD, 4)
+    # Body (16-44, 20-38) and legs (0-16, 22-38): robe.
+    rect(16, 20, 44, 38, ROBE)
+    rect(0, 22, 16, 38, ROBE_DK)
+    for y in range(26, 38):
+        img.putpixel((25, y), GOLD + (255,))
+        img.putpixel((26, y), GOLD + (255,))
+    # Arms (44-60, 22-34; 40-64, 38-46): sleeves, gold cuffs, the folded hands bare.
+    rect(44, 22, 60, 34, ROBE)
+    rect(44, 32, 60, 34, GOLD, 4)
+    rect(40, 38, 64, 46, SKIN)
+    # Outer robe (0-28, 38-64): long, gold hem, glyphs down the front.
+    rect(0, 38, 28, 64, ROBE)
+    rect(0, 61, 28, 64, GOLD, 4)
+    rect(6, 44, 7, 61, GOLD, 2)
+    rect(13, 44, 14, 61, GOLD, 2)
+    for y in range(46, 60, 4):
+        for (dx, dy) in [(0, 0), (1, 1), (2, 0), (1, 2)]:
+            img.putpixel((9 + dx, y + dy), GLYPH + (255,))
+    full = os.path.join(OUT, "entity/precursor.png")
+    os.makedirs(os.path.dirname(full), exist_ok=True)
+    img.save(full)
+    WRITTEN.append(("entity/precursor", img.crop((0, 0, 16, 16))))
+
+
 # ---------------------------------------------------------------- run
 
 syringe()
@@ -2060,6 +2189,10 @@ essence_manipulator()
 confluence_needle()
 power_icons()
 chrono_tether()
+fossil_cortex()
+cortex_offshoot_item()
+nerve_spool()
+precursor_entity()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

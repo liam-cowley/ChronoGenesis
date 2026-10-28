@@ -10,6 +10,7 @@ import com.chronogenesis.organism.EssenceJugBlockEntity;
 import com.chronogenesis.organism.GraftBlockEntity;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
 import com.chronogenesis.time.TimeTearBlockEntity;
+import com.chronogenesis.timetravel.FossilCortexBlockEntity;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -36,6 +37,9 @@ public final class ModBlockEntities {
             () -> BlockEntityType.Builder.of(EssenceJugBlockEntity::new, ModBlocks.ESSENCE_JUG.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
+    public static final Supplier<BlockEntityType<FossilCortexBlockEntity>> FOSSIL_CORTEX = BLOCK_ENTITY_TYPES.register("fossil_cortex",
+            () -> BlockEntityType.Builder.of(FossilCortexBlockEntity::new, ModBlocks.FOSSIL_CORTEX.get()).build(null));
+
     public static final Supplier<BlockEntityType<TimeTearBlockEntity>> TIME_TEAR = BLOCK_ENTITY_TYPES.register("time_tear",
             () -> BlockEntityType.Builder.of(TimeTearBlockEntity::new, ModBlocks.TIME_TEAR.get()).build(null));
 

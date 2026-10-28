@@ -97,6 +97,11 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `item/essence_manipulator.png` | Animated (8 frames, `.mcmeta`): leather and brass glove, tendrils curling out of its slits |
 | `item/confluence_needle.png` | Twin steel needles from a brass Y-joint |
 | `item/chrono_tether.png` | Brass pocket watch, cracked glass, on a cord of living vein |
+| `item/cortex_offshoot.png` | A bud of brain in a stoppered jar, roots through the glass |
+| `item/nerve_spool.png` | A brass bobbin wound with pale nerve, its end dangling |
+| `block/fossil_cortex.png` | Brain folds turned to grey stone, dark amethyst veins |
+| `block/fossil_cortex_awake.png` | The same, its veins lit teal: linked to the Chronocortex |
+| `entity/precursor.png` | 64x64, villager layout: grey-teal skin, amethyst eyes, gold circlet and nose guard, blue and gold robes with teal glyphs |
 | `gui/power/<power>.png` | Wheel and HUD icons, one glyph per power, outlined |
 
 ## Models

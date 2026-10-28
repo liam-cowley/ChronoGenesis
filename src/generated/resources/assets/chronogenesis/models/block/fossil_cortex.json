@@ -1,0 +1,139 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#slab"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#slab"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        6,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#brain"
+        },
+        "east": {
+          "texture": "#brain"
+        },
+        "north": {
+          "texture": "#brain"
+        },
+        "south": {
+          "texture": "#brain"
+        },
+        "up": {
+          "texture": "#brain"
+        },
+        "west": {
+          "texture": "#brain"
+        }
+      },
+      "from": [
+        2,
+        6,
+        2
+      ],
+      "to": [
+        14,
+        13,
+        14
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#brain"
+        },
+        "east": {
+          "texture": "#brain"
+        },
+        "north": {
+          "texture": "#brain"
+        },
+        "south": {
+          "texture": "#brain"
+        },
+        "up": {
+          "texture": "#brain"
+        },
+        "west": {
+          "texture": "#brain"
+        }
+      },
+      "from": [
+        4,
+        13,
+        3
+      ],
+      "to": [
+        12,
+        15,
+        13
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#brain"
+        },
+        "east": {
+          "texture": "#brain"
+        },
+        "north": {
+          "texture": "#brain"
+        },
+        "south": {
+          "texture": "#brain"
+        },
+        "up": {
+          "texture": "#brain"
+        },
+        "west": {
+          "texture": "#brain"
+        }
+      },
+      "from": [
+        6.5,
+        15,
+        6
+      ],
+      "to": [
+        9.5,
+        16,
+        10
+      ]
+    }
+  ],
+  "textures": {
+    "brain": "chronogenesis:block/fossil_cortex",
+    "particle": "chronogenesis:block/fossil_cortex",
+    "side": "minecraft:block/polished_deepslate",
+    "slab": "minecraft:block/chiseled_deepslate"
+  }
+}

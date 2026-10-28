@@ -12,6 +12,7 @@ import com.chronogenesis.organism.EssenceJugBlockEntity;
 import com.chronogenesis.organism.FleshBlock;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlocks;
+import com.chronogenesis.registry.ModEntities;
 import com.chronogenesis.registry.ModItems;
 import com.chronogenesis.registry.ModParticles;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -27,6 +28,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -48,6 +50,11 @@ public final class ClientEvents {
     @SubscribeEvent
     static void registerKeys(RegisterKeyMappingsEvent event) {
         event.register(POWERS);
+    }
+
+    @SubscribeEvent
+    static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.PRECURSOR.get(), PrecursorRenderer::new);
     }
 
     @SubscribeEvent

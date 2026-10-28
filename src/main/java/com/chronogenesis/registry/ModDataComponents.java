@@ -30,6 +30,10 @@ public final class ModDataComponents {
     public static final Supplier<DataComponentType<GlobalPos>> LOCKET_LINK = DATA_COMPONENTS.registerComponentType("locket_link",
             builder -> builder.persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC));
 
+    /** A Nerve Spool's loose end: the Fossil Cortex it took root in. */
+    public static final Supplier<DataComponentType<GlobalPos>> SPOOL_END = DATA_COMPONENTS.registerComponentType("spool_end",
+            builder -> builder.persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC));
+
     /** How far back a Temporal Lens looks. */
     public static final Supplier<DataComponentType<LensDepth>> LENS_DEPTH = DATA_COMPONENTS.registerComponentType("lens_depth",
             builder -> builder.persistent(LensDepth.CODEC).networkSynchronized(LensDepth.STREAM_CODEC));

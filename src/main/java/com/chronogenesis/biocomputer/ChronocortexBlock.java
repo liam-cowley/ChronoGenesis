@@ -2,6 +2,7 @@ package com.chronogenesis.biocomputer;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.chronogenesis.item.NerveSpoolItem;
 import com.chronogenesis.network.OpenChronocortexPayload;
 import com.chronogenesis.registry.ModBlockEntities;
 import com.mojang.serialization.MapCodec;
@@ -57,6 +58,9 @@ public class ChronocortexBlock extends BaseEntityBlock {
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
             InteractionHand hand, BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof ChronocortexBlockEntity cortex) {
+            if (stack.getItem() instanceof NerveSpoolItem) {
+                return cortex.link(stack, player);
+            }
             return cortex.teach(stack, player);
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

@@ -19,10 +19,17 @@ import com.chronogenesis.organism.GraftType;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
 import com.chronogenesis.registry.ModBlockEntities;
 import com.chronogenesis.registry.ModBlocks;
+import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModSounds;
+import com.chronogenesis.timetravel.Era;
+import com.chronogenesis.timetravel.Eras;
+import com.chronogenesis.timetravel.FossilCortexBlock;
+import com.chronogenesis.timetravel.FossilCortexBlockEntity;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -71,6 +78,8 @@ public class ChronocortexBlockEntity extends BlockEntity {
     /** The cranium: lobes within this many blocks of the jar, all around it, make the Cerebrum. */
     public static final int CRANIUM_RADIUS = 2;
     public static final int LOBE_COST = 4;
+    /** Awareness each remembered era gives it. */
+    public static final int MEMORY_AWARENESS = 3;
     private static final int GROW_INTERVAL = 100;
     private static final int RESCAN_INTERVAL = 40;
     private static final int WATCH_INTERVAL = 100;
@@ -87,6 +96,8 @@ public class ChronocortexBlockEntity extends BlockEntity {
     private int tick;
     private int lobes;
     private final Set<ResourceLocation> lessons = new LinkedHashSet<>();
+    /** Eras it remembers: an offshoot it budded grew through each, and was linked back. */
+    private final Set<ResourceLocation> memories = new LinkedHashSet<>();
     @Nullable
     private String name;
     private final Map<UUID, String> nicknames = new HashMap<>();
@@ -110,8 +121,13 @@ public class ChronocortexBlockEntity extends BlockEntity {
         return lessons;
     }
 
+    /** A lesson learned, or an era remembered (dialogue and eras check both the same way). */
     public boolean knows(ResourceLocation lesson) {
-        return lessons.contains(lesson);
+        return lessons.contains(lesson) || memories.contains(lesson);
+    }
+
+    public Set<ResourceLocation> memories() {
+        return memories;
     }
 
     public boolean canSpeak() {
@@ -147,7 +163,7 @@ public class ChronocortexBlockEntity extends BlockEntity {
         if (level == null) {
             return 0;
         }
-        int total = 0;
+        int total = MEMORY_AWARENESS * memories.size();
         for (ResourceLocation id : lessons) {
             Lesson lesson = Lessons.get(level.registryAccess(), id);
             if (lesson != null) {
@@ -284,6 +300,59 @@ public class ChronocortexBlockEntity extends BlockEntity {
         say(lesson.learned());
         checkStage(serverLevel);
         return ItemInteractionResult.SUCCESS;
+    }
+
+    // ---------------------------------------------------------------- memories of other eras
+
+    /**
+     * A Nerve Spool bound to a Fossil Cortex is used on it: the nerve is laid between them, however far, and the
+     * fossil's era becomes a memory. Whoever laid it can understand the people of that era from then on.
+     */
+    public ItemInteractionResult link(ItemStack spool, Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return ItemInteractionResult.SUCCESS;
+        }
+        GlobalPos end = spool.get(ModDataComponents.SPOOL_END.get());
+        if (end == null) {
+            player.displayClientMessage(Component.translatable("message.chronogenesis.spool.loose").withStyle(ChatFormatting.GRAY), true);
+            return ItemInteractionResult.CONSUME;
+        }
+        if (end.dimension() != serverLevel.dimension()) {
+            player.displayClientMessage(Component.translatable("message.chronogenesis.spool.other_world").withStyle(ChatFormatting.GRAY), true);
+            return ItemInteractionResult.CONSUME;
+        }
+        if (!(serverLevel.getBlockEntity(end.pos()) instanceof FossilCortexBlockEntity fossil) || fossil.era() == null || fossil.linked()) {
+            player.displayClientMessage(Component.translatable("message.chronogenesis.spool.nothing").withStyle(ChatFormatting.GRAY), true);
+            spool.remove(ModDataComponents.SPOOL_END.get());
+            return ItemInteractionResult.CONSUME;
+        }
+        ResourceLocation era = fossil.era();
+        memories.add(era);
+        setChanged();
+        serverLevel.setBlockAndUpdate(end.pos(), fossil.getBlockState().setValue(FossilCortexBlock.AWAKE, true));
+        spool.consume(1, player);
+        // The nerve pulses along its length, both ends crackling.
+        net.minecraft.world.phys.Vec3 from = worldPosition.getCenter();
+        net.minecraft.world.phys.Vec3 to = end.pos().getCenter();
+        int points = (int) Math.min(64, from.distanceTo(to));
+        for (int i = 0; i <= points; i++) {
+            net.minecraft.world.phys.Vec3 at = from.lerp(to, points == 0 ? 0 : (double) i / points);
+            serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y + 0.5, at.z, 2, 0.1, 0.1, 0.1, 0.0);
+        }
+        serverLevel.playSound(null, worldPosition, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0f, 0.4f);
+        serverLevel.playSound(null, end.pos(), SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0f, 0.4f);
+        Era known = Eras.get(serverLevel.registryAccess(), era);
+        say("memory", known == null ? Component.literal(era.toString()) : known.title());
+        if (player instanceof ServerPlayer serverPlayer) {
+            Research.set(serverPlayer, Research.get(serverPlayer).withCompleted(memoryOf(era)));
+        }
+        checkStage(serverLevel);
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    /** The topic marking that a player linked the memory of an era (and so understands its people). */
+    public static ResourceLocation memoryOf(ResourceLocation era) {
+        return ResourceLocation.fromNamespaceAndPath(era.getNamespace(), "memory/" + era.getPath());
     }
 
     // ---------------------------------------------------------------- ticking
@@ -558,6 +627,9 @@ public class ChronocortexBlockEntity extends BlockEntity {
         if (name != null) {
             tag.putString("name", name);
         }
+        ListTag remembered = new ListTag();
+        memories.forEach(id -> remembered.add(StringTag.valueOf(id.toString())));
+        tag.put("memories", remembered);
         CompoundTag nicks = new CompoundTag();
         nicknames.forEach((id, nickname) -> nicks.putString(id.toString(), nickname));
         tag.put("nicknames", nicks);
@@ -576,6 +648,13 @@ public class ChronocortexBlockEntity extends BlockEntity {
             }
         }
         name = tag.contains("name") ? tag.getString("name") : null;
+        memories.clear();
+        for (Tag entry : tag.getList("memories", Tag.TAG_STRING)) {
+            ResourceLocation id = ResourceLocation.tryParse(entry.getAsString());
+            if (id != null) {
+                memories.add(id);
+            }
+        }
         nicknames.clear();
         CompoundTag nicks = tag.getCompound("nicknames");
         for (String key : nicks.getAllKeys()) {

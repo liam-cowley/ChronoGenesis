@@ -1,0 +1,37 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "precursor",
+    "precursors",
+    "cities",
+    "city",
+    "ancient",
+    "ziggurat",
+    "the first people"
+  ],
+  "priority": 2,
+  "requires": "chronogenesis:precursor_era",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "The tall ones! They sang while they built. I remember the songs. Do you want one?",
+        "I grew in their city. They watered me with amethyst water. They were kind."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "The Precursors built down, %1$s, deep under the slate. They were hiding something. Or from something.",
+        "Their cities are your ruins. Their children are your villagers. Diminished. Forgetful."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "They built the temples to keep something asleep at the end of time. I know what. I will not say it yet.",
+        "I remember every street of every city they had. You walk over them every day."
+      ]
+    }
+  ]
+}

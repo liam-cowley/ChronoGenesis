@@ -13,6 +13,8 @@ import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.GraftType;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.time.TimeTearBlock;
+import com.chronogenesis.timetravel.CortexOffshootBlock;
+import com.chronogenesis.timetravel.FossilCortexBlock;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -112,6 +114,29 @@ public final class ModBlocks {
                     .sound(SoundType.HONEY_BLOCK)
                     .lightLevel(state -> state.getValue(CortexLobeBlock.PART).formed() ? 5 : 0)
                     .pushReaction(PushReaction.BLOCK));
+
+    /** A bud of the Chronocortex in a jar, to be planted in a past era. */
+    public static final DeferredBlock<CortexOffshootBlock> CORTEX_OFFSHOOT = BLOCKS.registerBlock("cortex_offshoot",
+            CortexOffshootBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PINK)
+                    .strength(0.5f)
+                    .sound(SoundType.GLASS)
+                    .noOcclusion()
+                    .lightLevel(state -> 3)
+                    .pushReaction(PushReaction.DESTROY));
+
+    /** An offshoot grown through the ages and petrified: the old Chronocortex waiting in the present. */
+    public static final DeferredBlock<FossilCortexBlock> FOSSIL_CORTEX = BLOCKS.registerBlock("fossil_cortex",
+            FossilCortexBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.STONE)
+                    .strength(50.0f, 1200.0f)
+                    .sound(SoundType.DEEPSLATE)
+                    .noOcclusion()
+                    .lightLevel(state -> state.getValue(FossilCortexBlock.AWAKE) ? 7 : 2)
+                    .pushReaction(PushReaction.BLOCK)
+                    .requiresCorrectToolForDrops());
 
     public static final DeferredBlock<EssenceJugBlock> ESSENCE_JUG = BLOCKS.registerBlock("essence_jug", EssenceJugBlock::new,
             BlockBehaviour.Properties.of()

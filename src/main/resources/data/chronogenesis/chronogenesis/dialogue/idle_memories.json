@@ -1,0 +1,24 @@
+{
+  "kind": "idle",
+  "requires": "chronogenesis:precursor_era",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "Ka rhu ten ish. That is how they said good morning. I miss them."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "I can hear their markets, under your floor. Gold and amethyst and laughter."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "The Precursors knew how this ends. That is why they built so deep."
+      ]
+    }
+  ]
+}

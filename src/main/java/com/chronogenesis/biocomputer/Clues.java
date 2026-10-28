@@ -41,14 +41,14 @@ public final class Clues {
     /** Fragments of the much older inscription, read at the edge of an obelisk's event horizon. */
     public static final ResourceLocation OLDER_INSCRIPTION = ChronoGenesis.id("older_inscription");
 
-    /** Walking in the time before the ruins: a temporal shift into it. */
-    public static final ResourceLocation OLD_WORLD = ChronoGenesis.id("old_world");
+    /** Walking in the cities of the Precursors: a temporal shift into their age. */
+    public static final ResourceLocation FIRST_CITIES = ChronoGenesis.id("first_cities");
     /** Walking on the ice of the Ice Age. */
     public static final ResourceLocation ICE_AGE = ChronoGenesis.id("ice_age");
 
     /** Clues from witnessing things. Blueprints add one each: see {@link com.chronogenesis.lens.Blueprint#clue()}. */
     public static final List<ResourceLocation> ALL = List.of(FLOATING, VACANT, DUST, TORN, LONG_ROAD, HEAVY_HEART, ALIVE, LAB_PRIME,
-            NAIL_IN_TIME, OLDER_INSCRIPTION, OLD_WORLD, ICE_AGE);
+            NAIL_IN_TIME, OLDER_INSCRIPTION, FIRST_CITIES, ICE_AGE);
 
     /** How close a player must be to notice something. */
     public static final double WITNESS_RANGE = 16.0;

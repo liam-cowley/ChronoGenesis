@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "Where It Can Send Me",
-      "text": "$(l)Before the Ruin$(): the land before anyone dug or built. Ruins stand whole.$(br2)$(l)The Ice Age$(): the same hills under ice. It must first be taught $(l)the cold$() (show it blue ice).$(br2)Shifting is hard on an unprotected body. The suit helps."
+      "text": "$(l)The Age of the Precursors$(): before the villagers, a taller people built cities of gold and stone. Every ruin I know was new then. Their cities are alive.$(br2)$(l)The Ice Age$(): the same hills under ice. It must be taught $(l)the cold$() (blue ice) and remember the Precursors first.$(br2)Shifting is hard on an unprotected body."
     }
   ]
 }

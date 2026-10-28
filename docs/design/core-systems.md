@@ -266,11 +266,25 @@ Its roles:
 3. **Temporal shifts.** Time travel, from stage 1 onward.
    **As built:** eras are data (`data/<ns>/chronogenesis/era/<name>.json`: dimension, stage, lesson, Time cost,
    minutes, clue). Its **Eras** page sends a player within 8 blocks (`timetravel/TemporalShift`): it needs the era's
-   stage and lesson, the Time from wired organisms, and a **Chrono Tether** (research: Temporal Shift). They arrive at
+   stage, lesson and remembered era, the Time from wired organisms, and a **Chrono Tether** (research: Temporal Shift). They arrive at
    the same x/z on the ground of the era's dimension (same seed, so the land lines up) and are snapped back where
-   they left when the minutes run out; using the tether returns them early; dying ends it. Eras: *Before the Ruin*
-   (`chronogenesis:past`, stage 1) and *The Ice Age* (`chronogenesis:ice_age`: the overworld's noise and seed with
-   only frozen biomes, stage 1 after the lesson of the cold).
+   they left when the minutes run out; using the tether returns them early; dying ends it.
+   **Eras, in the order they are discovered:** *The Age of the Precursors* (`chronogenesis:precursor_era`), *The Ice Age*
+   (`chronogenesis:ice_age`), then (not built yet) the Jurassic age, the world's creation (bare rock, poisonous air,
+   magma), and the time before time, where the Elder God waits.
+   - *The Age of the Precursors:* the overworld's terrain and seed with four golden-age biomes of its own (meadow,
+     jungle, desert, coast: warm sky, teal water, no monsters). **Precursor cities** (`precursor_city`, three palettes:
+     sandstone and gold, deepslate, clean stone brick; a stepped ziggurat with a shrine, houses with prismarine roofs,
+     market stalls, lamps) stand close together, full of **Precursors**: a people before the villagers, villager-boned
+     but taller, grey, amethyst-eyed, robed in blue and gold, busy, speaking their own tongue. Their cities are the
+     ruins of the present: desert and jungle temples, ancient cities, ocean ruins.
+   - *The Ice Age:* the overworld's noise and seed with only frozen biomes. Needs the lesson of the cold and the
+     memory of the Precursors.
+   **Offshoots and memories:** research grows a **Cortex Offshoot**, which can only be planted in an era. It is
+   recorded (`timetravel/Offshoots`); having ages to grow, it waits at the same spot in the present as a **Fossil
+   Cortex** (placed when that spot is loaded). A **Nerve Spool** bound to the fossil and used on the Chronocortex (any
+   distance) gives it the era as a **memory**: +3 awareness, the next era (eras can require a memory), dialogue that
+   needs it, and the linking player understands that era's people.
 
 It talks. At first it whispers in chat and in the journal, curious and childlike. As it grows it
 becomes demanding, and by the final stage it is insane.

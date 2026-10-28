@@ -1,0 +1,22 @@
+{
+  "name": "Offshoots and Memories",
+  "icon": "chronogenesis:cortex_offshoot",
+  "category": "chronogenesis:chronocortex",
+  "sortnum": 4,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "It wants to know more than it can see. It buds a $(l)Cortex Offshoot$() (research), which I plant in a past era. There it has ages to grow, so when I am home again, an old, petrified $(l)Fossil Cortex$() is waiting at the very spot."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Nerve",
+      "text": "A $(l)Nerve Spool$() (string, rotten flesh, brass) carries the memory home. Use it on the fossil, then on the Chronocortex, however far apart.$(br2)Each era it remembers makes it more aware, opens the next era, and gives it new things to say. Remembering the Precursors, I understand their tongue."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:nerve_spool"
+    }
+  ]
+}

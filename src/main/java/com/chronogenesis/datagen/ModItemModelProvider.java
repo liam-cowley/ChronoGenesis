@@ -45,6 +45,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.ESSENCE_MANIPULATOR.get());
         basicItem(ModItems.CONFLUENCE_NEEDLE.get());
         basicItem(ModItems.CHRONO_TETHER.get());
+        basicItem(ModItems.CORTEX_OFFSHOOT.get());
+        basicItem(ModItems.NERVE_SPOOL.get());
+        withExistingParent("precursor_spawn_egg", mcLoc("item/template_spawn_egg"));
         basicItem(ModItems.TEMPORAL_RESIDUE.get());
     }
 

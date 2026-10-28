@@ -53,6 +53,9 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
                                 .setProperties(StatePropertiesPredicate.Builder.properties()
                                         .hasProperty(DissectionTableBlock.BRAIN, true)))));
         dropOther(ModBlocks.CHRONOCORTEX.get(), ModItems.DISSECTION_TABLE.get());
+        dropSelf(ModBlocks.CORTEX_OFFSHOOT.get());
+        // A fossil cut out of the ages crumbles: its memories go with it.
+        add(ModBlocks.FOSSIL_CORTEX.get(), noDrop());
         // A lobe cut away dies; its brass frame is left.
         dropOther(ModBlocks.CORTEX_LOBE.get(), ModItems.BRASS_ARMATURE.get());
         dropSelf(ModBlocks.LEECH_TENDRIL.get());

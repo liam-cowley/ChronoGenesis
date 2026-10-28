@@ -77,9 +77,9 @@ public final class TemporalShift {
     }
 
     /** What a shift into an era still needs. */
-    public record Check(boolean stage, boolean lesson, boolean tether, boolean time, boolean here) {
+    public record Check(boolean stage, boolean lesson, boolean memory, boolean tether, boolean time, boolean here) {
         public boolean ok() {
-            return stage && lesson && tether && time && here;
+            return stage && lesson && memory && tether && time && here;
         }
     }
 
@@ -95,10 +95,11 @@ public final class TemporalShift {
 
     /** Works on both sides: the screen uses the essence and lessons it was sent. */
     public static Check check(Player player, Era era, int cortexStage, java.util.Collection<ResourceLocation> lessons,
-            Map<Aspect, Integer> essence) {
+            java.util.Collection<ResourceLocation> memories, Map<Aspect, Integer> essence) {
         boolean hourglass = EternalHourglassItem.carried(player);
         return new Check(cortexStage >= era.stage(),
                 era.lesson().map(lessons::contains).orElse(true),
+                era.memory().map(memories::contains).orElse(true),
                 hasTether(player),
                 hourglass || essence.getOrDefault(Aspect.TIME, 0) >= era.cost(),
                 !get(player).active() && player.level().dimension() != era.dimension());
@@ -110,7 +111,7 @@ public final class TemporalShift {
         if (era == null) {
             return false;
         }
-        Check check = check(player, era, cortex.stage(), cortex.lessons(), cortex.availableEssence());
+        Check check = check(player, era, cortex.stage(), cortex.lessons(), cortex.memories(), cortex.availableEssence());
         if (!check.ok()) {
             tell(player, !check.tether() ? "message.chronogenesis.shift.no_tether"
                     : !check.time() ? "message.chronogenesis.shift.no_time" : "message.chronogenesis.shift.cannot");

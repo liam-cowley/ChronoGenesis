@@ -138,9 +138,11 @@
    (cultures, Deeper/Deepest Infusion), the Confluence Needle and ten composite powers. ✅ Time 1-3: Rewind, Slow
    Time, Time Freeze (per-chunk tick rate, local sky, catching up, the redshift/black-column look).
    ✅ Every essence's organisms look different (flesh shapes and textures, core eyes).
-10. ✅ Temporal shifts (bridge to mid-game): eras as data, the Eras page, the Chrono Tether, Before the Ruin and the
-    Ice Age (a frozen copy of the overworld's land). Next: things to find and bring back from the eras, the Lens's
-    "Ages" setting, and the Ice Age's own creatures.
+10. ✅ Temporal shifts (bridge to mid-game): eras as data, the Eras page, the Chrono Tether, the Ice Age (a frozen
+    copy of the overworld's land).
+11. ✅ The Age of the Precursors (first era): its own biomes, Precursor cities and Precursors. ✅ Cortex Offshoots,
+    Fossil Cortexes, Nerve Spools: memories of eras, each leading to the next. Next: the Jurassic age, the world's
+    creation, the time before time (the Elder God); things to bring back from the eras; the Lens's "Ages" setting.
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

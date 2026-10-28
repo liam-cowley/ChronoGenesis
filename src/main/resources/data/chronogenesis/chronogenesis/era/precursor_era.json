@@ -1,0 +1,15 @@
+{
+  "title": {
+    "translate": "era.chronogenesis.precursor_era"
+  },
+  "description": {
+    "translate": "era.chronogenesis.precursor_era.desc"
+  },
+  "icon": "minecraft:chiseled_sandstone",
+  "dimension": "chronogenesis:precursor_era",
+  "stage": 1,
+  "cost": 24,
+  "minutes": 8,
+  "clue": "chronogenesis:first_cities",
+  "order": 0
+}

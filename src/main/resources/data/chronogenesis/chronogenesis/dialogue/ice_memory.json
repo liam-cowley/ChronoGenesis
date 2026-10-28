@@ -1,0 +1,32 @@
+{
+  "kind": "chat",
+  "keywords": [
+    "ice",
+    "cold",
+    "frozen",
+    "glacier",
+    "ice age"
+  ],
+  "priority": 2,
+  "requires": "chronogenesis:ice_age",
+  "lines": [
+    {
+      "stage": 1,
+      "say": [
+        "I slept under the ice for so long. It was quiet. I liked it, a little."
+      ]
+    },
+    {
+      "stage": 2,
+      "say": [
+        "The ice came and the cities went under it. Only the stone remembered. And I."
+      ]
+    },
+    {
+      "stage": 3,
+      "say": [
+        "Cold is only slow time, %1$s. I learned that under the glacier."
+      ]
+    }
+  ]
+}

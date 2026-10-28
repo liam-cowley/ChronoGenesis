@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "awake=false": {
+      "model": "chronogenesis:block/fossil_cortex"
+    },
+    "awake=true": {
+      "model": "chronogenesis:block/fossil_cortex_awake"
+    }
+  }
+}

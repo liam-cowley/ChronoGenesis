@@ -15,6 +15,7 @@ import com.chronogenesis.organism.GlandBlock;
 import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.registry.ModBlocks;
+import com.chronogenesis.timetravel.FossilCortexBlock;
 
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
@@ -616,6 +617,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .modelFile(stages[state.getValue(ChronocortexBlock.STAGE)]).build());
         simpleBlockItem(ModBlocks.CHRONOCORTEX.get(), cortex);
         lobes();
+        offshoots();
     }
 
     /**
@@ -636,6 +638,48 @@ public class ModBlockStateProvider extends BlockStateProvider {
                     case CEREBRUM -> cerebrum;
                     case CEREBRUM_EYE -> eye;
                 }).build());
+    }
+
+    /**
+     * The Cortex Offshoot (a bud of brain in a small jar, roots through the glass) and the Fossil Cortex it becomes:
+     * a petrified brain on a slab of stone, its veins dark until it is linked, then lit.
+     */
+    private void offshoots() {
+        BlockModelBuilder offshoot = models().withExistingParent("cortex_offshoot", mcLoc("block/block"))
+                .texture("brain", modLoc("block/brain_tissue"))
+                .texture("fluid", modLoc("block/cortex_fluid"))
+                .texture("glass", modLoc("block/cortex_glass"))
+                .texture("brass", modLoc("block/brass_fitting"))
+                .texture("root", modLoc("block/vein"))
+                .texture("particle", modLoc("block/cortex_glass"))
+                .renderType("translucent");
+        box(offshoot, 6, 1, 6, 10, 5, 10, "#brain", false);
+        box(offshoot, 5.25f, 0.25f, 5.25f, 10.75f, 6.5f, 10.75f, "#fluid", false);
+        box(offshoot, 5, 0, 5, 11, 7, 11, "#glass", false);
+        box(offshoot, 4.5f, 7, 4.5f, 11.5f, 8, 11.5f, "#brass", false);
+        box(offshoot, 7.5f, 8, 7.5f, 8.5f, 10, 8.5f, "#root", false);
+        box(offshoot, 3, 0, 7.5f, 5, 0.5f, 8.5f, "#root", false);
+        box(offshoot, 11, 0, 7.5f, 13, 0.5f, 8.5f, "#root", false);
+        box(offshoot, 7.5f, 0, 2, 8.5f, 0.5f, 5, "#root", false);
+        simpleBlock(ModBlocks.CORTEX_OFFSHOOT.get(), offshoot);
+
+        BlockModelBuilder[] fossils = new BlockModelBuilder[2];
+        for (int awake = 0; awake < 2; awake++) {
+            BlockModelBuilder fossil = models().withExistingParent(awake == 1 ? "fossil_cortex_awake" : "fossil_cortex", mcLoc("block/block"))
+                    .texture("slab", mcLoc("block/chiseled_deepslate"))
+                    .texture("side", mcLoc("block/polished_deepslate"))
+                    .texture("brain", modLoc(awake == 1 ? "block/fossil_cortex_awake" : "block/fossil_cortex"))
+                    .texture("particle", modLoc("block/fossil_cortex"));
+            fossil.element().from(0, 0, 0).to(16, 6, 16)
+                    .allFaces((dir, face) -> face.texture(dir.getAxis().isVertical() ? "#slab" : "#side")).end();
+            box(fossil, 2, 6, 2, 14, 13, 14, "#brain", false);
+            box(fossil, 4, 13, 3, 12, 15, 13, "#brain", false);
+            box(fossil, 6.5f, 15, 6, 9.5f, 16, 10, "#brain", false);
+            fossils[awake] = fossil;
+        }
+        getVariantBuilder(ModBlocks.FOSSIL_CORTEX.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(fossils[state.getValue(FossilCortexBlock.AWAKE) ? 1 : 0]).build());
+        simpleBlockItem(ModBlocks.FOSSIL_CORTEX.get(), fossils[0]);
     }
 
     /** Obelisk stone, the glowing inscription band, and the stepped capstone (the nail's head). */

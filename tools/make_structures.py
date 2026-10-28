@@ -8,6 +8,7 @@ line up block for block.
   abandoned_laboratory       the ruin that generates in the world
   abandoned_laboratory_past  the same lab in its prime, as the Lens shows it at Decades
   obelisk                    an obelisk: untouched by time, so it has no past template of its own
+  precursor_city_<palette>   a city of the Precursors (the Precursor era only): sun, deep, verdant
 
 Usage: python3 tools/make_structures.py
 """
@@ -20,7 +21,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "src/main/resources/data/chronogenesis/structure")
 DATA_VERSION = 3955  # Minecraft 1.21.1
 
-TAG_END, TAG_INT, TAG_STRING, TAG_LIST, TAG_COMPOUND = 0, 3, 8, 9, 10
+TAG_END, TAG_BYTE, TAG_INT, TAG_DOUBLE, TAG_STRING, TAG_LIST, TAG_COMPOUND = 0, 1, 3, 6, 8, 9, 10
 
 
 # ---------------------------------------------------------------- NBT
@@ -31,8 +32,12 @@ def name(n):
 
 
 def payload(tag, value):
+    if tag == TAG_BYTE:
+        return struct.pack(">b", value)
     if tag == TAG_INT:
         return struct.pack(">i", value)
+    if tag == TAG_DOUBLE:
+        return struct.pack(">d", value)
     if tag == TAG_STRING:
         return name(value)
     if tag == TAG_LIST:
@@ -59,8 +64,9 @@ def parse_state(state):
     return block, dict(p.split("=", 1) for p in props.split(","))
 
 
-def structure(size, blocks, block_nbt):
-    """blocks: {(x, y, z): state string}; block_nbt: {(x, y, z): {key: string}} for block entities."""
+def structure(size, blocks, block_nbt, entities=()):
+    """blocks: {(x, y, z): state string}; block_nbt: {(x, y, z): {key: string}} for block entities;
+    entities: [((x, y, z) as floats, (x, y, z) block, entity id)], kept persistent."""
     palette = []
     index = {}
     entries = []
@@ -85,7 +91,11 @@ def structure(size, blocks, block_nbt):
         "size": ints(*size),
         "palette": (TAG_LIST, (TAG_COMPOUND, palette_tags)),
         "blocks": (TAG_LIST, (TAG_COMPOUND, entries)),
-        "entities": (TAG_LIST, (TAG_COMPOUND, [])),
+        "entities": (TAG_LIST, (TAG_COMPOUND, [{
+            "pos": (TAG_LIST, (TAG_DOUBLE, list(pos))),
+            "blockPos": ints(*block),
+            "nbt": (TAG_COMPOUND, {"id": (TAG_STRING, entity), "PersistenceRequired": (TAG_BYTE, 1)}),
+        } for pos, block, entity in entities])),
     }
     return struct.pack(">b", TAG_COMPOUND) + name("") + payload(TAG_COMPOUND, root)
 
@@ -232,6 +242,142 @@ def obelisk():
     return b
 
 
+# ---------------------------------------------------------------- Precursor cities (the Age of the Precursors)
+# Cities of the people who came before: a stepped ziggurat with a shrine, houses with prismarine roofs, market
+# stalls, lamp posts, and Precursors in the streets. Three palettes, each the ancestor of a ruin that survives
+# in the present: sandstone and gold (desert temples), deepslate (ancient cities), clean stone brick (jungle
+# temples). Their roofs are prismarine: the ocean ruins are what is left of their harbours.
+
+CITY = 41          # footprint, x and z
+CITY_H = 12        # height: ground (y=0), six steps of ziggurat, a shrine
+CENTER = 20
+
+PALETTES = {
+    "sun": {"pave": "minecraft:smooth_sandstone", "street": "minecraft:cut_red_sandstone",
+            "wall": "minecraft:cut_sandstone", "trim": "minecraft:gold_block", "pillar": "minecraft:chiseled_sandstone",
+            "house": ["minecraft:white_terracotta", "minecraft:orange_terracotta", "minecraft:smooth_sandstone"],
+            "roof": "minecraft:prismarine_bricks", "roof_top": "minecraft:dark_prismarine",
+            "stair": "minecraft:sandstone_stairs", "canopy": ["minecraft:orange_wool", "minecraft:cyan_wool", "minecraft:yellow_wool"]},
+    "deep": {"pave": "minecraft:polished_deepslate", "street": "minecraft:deepslate_tiles",
+             "wall": "minecraft:deepslate_bricks", "trim": "minecraft:gold_block", "pillar": "minecraft:chiseled_deepslate",
+             "house": ["minecraft:deepslate_bricks", "minecraft:polished_blackstone_bricks", "minecraft:polished_deepslate"],
+             "roof": "minecraft:dark_prismarine", "roof_top": "minecraft:prismarine_bricks",
+             "stair": "minecraft:deepslate_brick_stairs", "canopy": ["minecraft:cyan_wool", "minecraft:light_blue_wool", "minecraft:purple_wool"]},
+    "verdant": {"pave": "minecraft:stone_bricks", "street": "minecraft:polished_andesite",
+                "wall": "minecraft:stone_bricks", "trim": "minecraft:chiseled_stone_bricks", "pillar": "minecraft:chiseled_stone_bricks",
+                "house": ["minecraft:polished_andesite", "minecraft:stone_bricks", "minecraft:smooth_stone"],
+                "roof": "minecraft:prismarine", "roof_top": "minecraft:prismarine_bricks",
+                "stair": "minecraft:stone_brick_stairs", "canopy": ["minecraft:lime_wool", "minecraft:green_wool", "minecraft:yellow_wool"]},
+}
+
+HOUSES = [(5, 12), (5, 28), (35, 12), (35, 28), (12, 5), (28, 5), (12, 35), (28, 35)]
+STALLS = [(17, 3), (23, 3), (17, 37), (23, 37), (3, 17), (3, 23), (37, 17), (37, 23)]
+PRECURSORS = [(20, 9), (20, 31), (9, 20), (31, 20), (17, 5), (23, 35), (5, 23), (35, 17), (13, 13), (27, 27),
+              (13, 27), (27, 13)]
+
+
+def precursor_city(palette, seed):
+    p = PALETTES[palette]
+    r = random.Random(seed)
+    b = {}
+    for x in range(CITY):
+        for z in range(CITY):
+            avenue = abs(x - CENTER) <= 1 or abs(z - CENTER) <= 1 or x in (0, CITY - 1) or z in (0, CITY - 1)
+            b[(x, 0, z)] = p["street"] if avenue else p["pave"]
+            for y in range(1, CITY_H):
+                b[(x, y, z)] = AIR
+
+    # The ziggurat: six one-block steps, gold trim on every other, stairs up the middle of each side.
+    for y in range(1, 7):
+        half = 7 - y
+        for x in range(CENTER - half, CENTER + half + 1):
+            for z in range(CENTER - half, CENTER + half + 1):
+                edge = max(abs(x - CENTER), abs(z - CENTER)) == half
+                b[(x, y, z)] = p["trim"] if edge and y % 2 == 0 else p["wall"]
+        for offset in (-1, 0, 1):
+            b[(CENTER + offset, y, CENTER - half)] = p["stair"] + "[facing=south,half=bottom,shape=straight]"
+            b[(CENTER + offset, y, CENTER + half)] = p["stair"] + "[facing=north,half=bottom,shape=straight]"
+            b[(CENTER - half, y, CENTER + offset)] = p["stair"] + "[facing=east,half=bottom,shape=straight]"
+            b[(CENTER + half, y, CENTER + offset)] = p["stair"] + "[facing=west,half=bottom,shape=straight]"
+    # The shrine on top: four pillars, a roof, a gold altar with an amethyst growing on it, a lantern above.
+    for dx, dz in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+        for y in (7, 8):
+            b[(CENTER + dx, y, CENTER + dz)] = p["pillar"]
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            b[(CENTER + dx, 9, CENTER + dz)] = p["roof"]
+    b[(CENTER, 10, CENTER)] = p["roof_top"]
+    b[(CENTER, 6, CENTER)] = "minecraft:gold_block"
+    b[(CENTER, 7, CENTER)] = "minecraft:amethyst_cluster[facing=up,waterlogged=false]"
+    b[(CENTER, 8, CENTER)] = "minecraft:soul_lantern[hanging=true,waterlogged=false]"
+
+    # Houses: walls of the palette, a doorway towards the avenue, windows, a stepped prismarine roof.
+    for hx, hz in HOUSES:
+        material = r.choice(p["house"])
+        door_x = hx + (1 if hx < CENTER else -1) * 3 if abs(hz - CENTER) < abs(hx - CENTER) else hx
+        for x in range(hx - 3, hx + 4):
+            for z in range(hz - 3, hz + 4):
+                edge = max(abs(x - hx), abs(z - hz)) == 3
+                corner = abs(x - hx) == 3 and abs(z - hz) == 3
+                for y in range(1, 5):
+                    if corner:
+                        b[(x, y, z)] = p["pillar"]
+                    elif edge:
+                        window = y == 2 and (x - hx + z - hz) % 2 == 0
+                        b[(x, y, z)] = "minecraft:glass_pane" if window else material
+                b[(x, 5, z)] = p["roof"]
+                if max(abs(x - hx), abs(z - hz)) <= 2:
+                    b[(x, 6, z)] = p["roof"]
+                if max(abs(x - hx), abs(z - hz)) <= 1:
+                    b[(x, 7, z)] = p["roof_top"]
+        # The doorway faces the city's centre, on the longer axis.
+        if abs(hx - CENTER) >= abs(hz - CENTER):
+            dx = -3 if hx > CENTER else 3
+            door = [(hx + dx, 1, hz), (hx + dx, 2, hz)]
+        else:
+            dz = -3 if hz > CENTER else 3
+            door = [(hx, 1, hz + dz), (hx, 2, hz + dz)]
+        for pos in door:
+            b[pos] = AIR
+        b[(hx - 2, 1, hz - 2)] = "minecraft:barrel[facing=up,open=false]"
+        b[(hx + 2, 1, hz - 2)] = "minecraft:lectern[facing=south,has_book=false,powered=false]"
+        b[(hx + 2, 1, hz + 2)] = "minecraft:candle[candles=3,lit=true,waterlogged=false]"
+        b[(hx - 2, 1, hz + 2)] = "minecraft:flower_pot"
+        b[(hx, 4, hz)] = "minecraft:soul_lantern[hanging=true,waterlogged=false]"
+
+    # Market stalls at the ends of the avenues: fence posts, a woollen canopy, wares beneath.
+    for sx, sz in STALLS:
+        canopy = r.choice(p["canopy"])
+        for dx in (-1, 0, 1):
+            for dz in (-1, 0, 1):
+                b[(sx + dx, 3, sz + dz)] = canopy
+        for dx, dz in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            for y in (1, 2):
+                b[(sx + dx, y, sz + dz)] = "minecraft:oak_fence"
+        b[(sx, 1, sz)] = r.choice(["minecraft:barrel[facing=up,open=true]", "minecraft:composter[level=7]",
+                                   "minecraft:melon", "minecraft:pumpkin", "minecraft:hay_block[axis=y]"])
+
+    # Lamp posts along the avenues.
+    for d in (4, 10, 30, 36):
+        for x, z in [(d, CENTER - 2), (d, CENTER + 2), (CENTER - 2, d), (CENTER + 2, d)]:
+            if b.get((x, 1, z)) == AIR:
+                b[(x, 1, z)] = p["pillar"]
+                b[(x, 2, z)] = p["pillar"]
+                b[(x, 3, z)] = "minecraft:soul_lantern[hanging=false,waterlogged=false]"
+    return b
+
+
+def precursors_in(blocks):
+    """The townsfolk: standing in the streets, on the ziggurat's steps, by the stalls."""
+    entities = []
+    for x, z in PRECURSORS:
+        y = 1
+        while blocks.get((x, y, z), AIR) != AIR and y < CITY_H - 2:
+            y += 1
+        entities.append(((x + 0.5, float(y), z + 0.5), (x, y, z), "chronogenesis:precursor"))
+    return entities
+
+
 if __name__ == "__main__":
     past = laboratory_past()
     ruin = laboratory_ruin(past)
@@ -239,3 +385,6 @@ if __name__ == "__main__":
     write("abandoned_laboratory.nbt", structure((W, H, D), ruin, chest))
     write("abandoned_laboratory_past.nbt", structure((W, H, D), past, {}))
     write("obelisk.nbt", structure((3, 12, 3), obelisk(), {}))
+    for i, palette in enumerate(PALETTES):
+        city = precursor_city(palette, 4100 + i)
+        write("precursor_city_" + palette + ".nbt", structure((CITY, CITY_H, CITY), city, {}, precursors_in(city)))

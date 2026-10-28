@@ -10,7 +10,8 @@
   "stage": 1,
   "lesson": "chronogenesis:cold",
   "cost": 48,
-  "minutes": 5,
+  "minutes": 8,
   "clue": "chronogenesis:ice_age",
-  "order": 1
+  "order": 1,
+  "requires_memory": "chronogenesis:precursor_era"
 }

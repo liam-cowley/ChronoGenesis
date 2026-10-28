@@ -223,6 +223,16 @@ public class ChronocortexScreen extends Screen {
                 x + 8 + font.width(who) + 8, line, DIM, false);
         line += 14;
         graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.lobes", mind.lobes()), x + 8, line, TEXT, false);
+        if (!mind.memories().isEmpty()) {
+            Component remembered = Component.empty();
+            for (ResourceLocation id : mind.memories()) {
+                Era era = Eras.get(minecraft.level.registryAccess(), id);
+                remembered = remembered.copy().append(remembered.getString().isEmpty() ? Component.empty() : Component.literal(", "))
+                        .append(era == null ? Component.literal(id.getPath()) : era.title());
+            }
+            graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.memories", remembered),
+                    x + 8, line - 26, OK, false);
+        }
         graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.awareness", mind.awareness()),
                 x + 110, line, TEXT, false);
         line += 12;
@@ -306,7 +316,8 @@ public class ChronocortexScreen extends Screen {
             return;
         }
         OpenChronocortexPayload.Mind mind = data.mind();
-        TemporalShift.Check check = TemporalShift.check(minecraft.player, era, data.stage(), mind.lessons(), data.essence());
+        TemporalShift.Check check = TemporalShift.check(minecraft.player, era, data.stage(), mind.lessons(), mind.memories(),
+                data.essence());
         shiftButton.active = check.ok();
         int line = y + 8;
         graphics.renderItem(new ItemStack(era.icon()), dx, line - 2);
@@ -319,6 +330,11 @@ public class ChronocortexScreen extends Screen {
             Lesson lesson = Lessons.get(minecraft.level.registryAccess(), era.lesson().get());
             line = requirement(graphics, dx, line, check.lesson(), Component.translatable("screen.chronogenesis.chronocortex.need_lesson",
                     lesson == null ? Component.literal(era.lesson().get().toString()) : lesson.title()));
+        }
+        if (era.memory().isPresent()) {
+            Era before = Eras.get(minecraft.level.registryAccess(), era.memory().get());
+            line = requirement(graphics, dx, line, check.memory(), Component.translatable("screen.chronogenesis.chronocortex.need_memory",
+                    before == null ? Component.literal(era.memory().get().toString()) : before.title()));
         }
         line = requirement(graphics, dx, line, check.tether(), Component.translatable("screen.chronogenesis.chronocortex.need_tether"));
         line = requirement(graphics, dx, line, check.time(), EternalHourglassItem.carried(minecraft.player)

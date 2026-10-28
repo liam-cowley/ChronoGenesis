@@ -1,0 +1,34 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.cortex_offshoot"
+  },
+  "description": {
+    "translate": "research.chronogenesis.cortex_offshoot.desc"
+  },
+  "icon": "chronogenesis:cortex_offshoot",
+  "stage": 1,
+  "requires": [
+    "chronogenesis:temporal_shift"
+  ],
+  "essence": {
+    "awareness": 24,
+    "time": 8
+  },
+  "materials": [
+    {
+      "item": "chronogenesis:preserved_brain",
+      "count": 1
+    },
+    {
+      "item": "minecraft:glass_bottle",
+      "count": 1
+    }
+  ],
+  "order": 11,
+  "rewards": [
+    {
+      "id": "chronogenesis:cortex_offshoot",
+      "count": 1
+    }
+  ]
+}

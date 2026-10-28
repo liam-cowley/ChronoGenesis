@@ -16,6 +16,7 @@ import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.biocomputer.Lessons;
 import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
+import com.chronogenesis.entity.Precursor;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.DrainEffects;
 import com.chronogenesis.essence.EssenceContents;
@@ -23,6 +24,7 @@ import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.essence.MobEssence;
 import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.item.EternalHourglassItem;
+import com.chronogenesis.item.NerveSpoolItem;
 import com.chronogenesis.item.UmbilicalLocketItem;
 import com.chronogenesis.lens.Blueprint;
 import com.chronogenesis.lens.FadedBlueprintBlock;
@@ -48,10 +50,14 @@ import com.chronogenesis.player.Rewind;
 import com.chronogenesis.registry.ModAttachments;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
+import com.chronogenesis.registry.ModEntities;
 import com.chronogenesis.registry.ModItems;
 import com.chronogenesis.time.TimeZones;
 import com.chronogenesis.timetravel.Era;
 import com.chronogenesis.timetravel.Eras;
+import com.chronogenesis.timetravel.FossilCortexBlock;
+import com.chronogenesis.timetravel.FossilCortexBlockEntity;
+import com.chronogenesis.timetravel.Offshoots;
 import com.chronogenesis.timetravel.PastDimension;
 import com.chronogenesis.timetravel.PastStamping;
 import com.chronogenesis.timetravel.TemporalShift;
@@ -70,6 +76,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -571,17 +578,18 @@ public final class ChronoGameTests {
         helper.succeed();
     }
 
-    /** A shift into the Ice Age needs a stage 1 cortex, the lesson of the cold, a tether and the Time. */
+    /** A shift into the Ice Age needs a stage 1 cortex, the lesson of the cold, the memory of the Precursors' age,
+     *  a tether and the Time. */
     @GameTest(template = "floor7")
     public static void shiftNeedsItsCosts(GameTestHelper helper) {
         ServerPlayer player = fakePlayer(helper);
         Era era = Eras.get(helper.getLevel().registryAccess(), ChronoGenesis.id("ice_age"));
         helper.assertTrue(era != null, "the Ice Age era is missing");
         Map<Aspect, Integer> time = Map.of(Aspect.TIME, era.cost());
-        TemporalShift.Check bare = TemporalShift.check(player, era, 0, Set.of(), Map.of());
-        helper.assertFalse(bare.stage() || bare.lesson() || bare.tether() || bare.time(), "nothing should be met yet");
+        TemporalShift.Check bare = TemporalShift.check(player, era, 0, Set.of(), Set.of(), Map.of());
+        helper.assertFalse(bare.stage() || bare.lesson() || bare.memory() || bare.tether() || bare.time(), "nothing should be met yet");
         player.getInventory().add(new ItemStack(ModItems.CHRONO_TETHER.get()));
-        TemporalShift.Check ready = TemporalShift.check(player, era, 1, Set.of(Lessons.COLD), time);
+        TemporalShift.Check ready = TemporalShift.check(player, era, 1, Set.of(Lessons.COLD), Set.of(ChronoGenesis.id("precursor_era")), time);
         helper.assertTrue(ready.ok(), "everything is met: " + ready);
         helper.succeed();
     }
@@ -599,6 +607,72 @@ public final class ChronoGameTests {
         tether.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
         helper.assertTrue(player.position().distanceTo(home) < 0.01, "not home: " + player.position());
         helper.assertFalse(TemporalShift.get(player).active(), "still shifted");
+        helper.succeed();
+    }
+
+    /** The Precursor era decodes, its biomes are registered, and its cities' templates are there. */
+    @GameTest(template = "floor7")
+    public static void precursorEraIsValid(GameTestHelper helper) throws Exception {
+        var server = helper.getLevel().getServer();
+        var resource = server.getResourceManager().getResourceOrThrow(ChronoGenesis.id("dimension/precursor_era.json"));
+        try (var reader = resource.openAsReader()) {
+            var stem = LevelStem.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, server.registryAccess()), JsonParser.parseReader(reader));
+            helper.assertTrue(stem.result().isPresent(), "the Precursor era does not decode: " + stem.error().map(Object::toString).orElse(""));
+        }
+        var biomes = server.registryAccess().registryOrThrow(Registries.BIOME);
+        for (String biome : List.of("precursor_meadow", "precursor_jungle", "precursor_desert", "precursor_coast")) {
+            helper.assertTrue(biomes.containsKey(ChronoGenesis.id(biome)), biome + " is missing");
+        }
+        for (String palette : List.of("sun", "deep", "verdant")) {
+            StructureTemplate city = helper.getLevel().getStructureManager().get(ChronoGenesis.id("precursor_city_" + palette)).orElseThrow();
+            helper.assertTrue(city.getSize().getX() == 41 && city.getSize().getZ() == 41, palette + " city has the wrong size");
+        }
+        helper.succeed();
+    }
+
+    /** A Precursor stays (it is part of its city), keeps near home, and speaks the same sounds for the same meaning. */
+    @GameTest(template = "floor7")
+    public static void precursorsLiveInTheirCity(GameTestHelper helper) {
+        Precursor precursor = helper.spawn(ModEntities.PRECURSOR.get(), new BlockPos(3, 1, 3));
+        helper.assertFalse(precursor.removeWhenFarAway(1000), "Precursors should not despawn");
+        helper.assertTrue(Precursor.tongue(4).equals(Precursor.tongue(4)) && !Precursor.tongue(4).equals(Precursor.tongue(5)),
+                "their words should be fixed and different");
+        helper.runAfterDelay(5, () -> {
+            helper.assertTrue(precursor.hasRestriction(), "it should keep to its home");
+            helper.succeed();
+        });
+    }
+
+    /**
+     * An offshoot planted in an era waits in the present as a Fossil Cortex; a Nerve Spool from it to the Chronocortex
+     * gives the cortex the era's memory (and opens the next era), and its people's tongue to whoever laid it.
+     */
+    @GameTest(template = "floor7")
+    public static void offshootBecomesAMemory(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ResourceLocation era = ChronoGenesis.id("precursor_era");
+        BlockPos fossilPos = new BlockPos(1, 1, 1);
+        Offshoots.plant(level.getServer(), era, helper.absolutePos(fossilPos));
+        helper.assertTrue(Offshoots.grow(level) >= 1, "nothing grew");
+        helper.assertBlockPresent(ModBlocks.FOSSIL_CORTEX.get(), fossilPos);
+        FossilCortexBlockEntity fossil = helper.getBlockEntity(fossilPos);
+        helper.assertTrue(era.equals(fossil.era()), "the fossil should remember the Precursors");
+
+        BlockPos cortexPos = new BlockPos(5, 1, 5);
+        helper.setBlock(cortexPos, ModBlocks.CHRONOCORTEX.get());
+        ChronocortexBlockEntity cortex = helper.getBlockEntity(cortexPos);
+        ServerPlayer player = fakePlayer(helper);
+        ItemStack spool = new ItemStack(ModItems.NERVE_SPOOL.get());
+        NerveSpoolItem.bind(spool, level, helper.absolutePos(fossilPos), player);
+        cortex.link(spool, player);
+        helper.assertTrue(cortex.memories().contains(era), "no memory");
+        helper.assertTrue(cortex.awareness() >= ChronocortexBlockEntity.MEMORY_AWARENESS, "the memory should make it aware");
+        helper.assertBlockProperty(fossilPos, FossilCortexBlock.AWAKE, true);
+        helper.assertTrue(Research.has(player, Precursor.TONGUE), "the linker should understand the Precursors");
+        helper.assertTrue(spool.isEmpty(), "the spool should be laid");
+        Era iceAge = Eras.get(level.registryAccess(), ChronoGenesis.id("ice_age"));
+        helper.assertTrue(TemporalShift.check(player, iceAge, 1, Set.of(Lessons.COLD), cortex.memories(), Map.of()).memory(),
+                "the Ice Age should now be within memory");
         helper.succeed();
     }
 
