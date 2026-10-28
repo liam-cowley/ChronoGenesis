@@ -6,14 +6,17 @@ import org.jetbrains.annotations.Nullable;
 
 import com.chronogenesis.Config;
 import com.chronogenesis.biocomputer.Clues;
+import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.essence.EssenceMoteOptions;
 import com.chronogenesis.essence.MobEssence;
+import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlockEntities;
 import com.chronogenesis.registry.ModBlocks;
+import com.chronogenesis.registry.ModItems;
 import com.chronogenesis.time.TemporalStress;
 
 import net.minecraft.core.BlockPos;
@@ -36,6 +39,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -536,6 +540,14 @@ public class GraftBlockEntity extends BlockEntity {
         if (level == null) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
+        if (type() == GraftType.ENHANCING_GLAND) {
+            if (stack.is(ModItems.CONFLUENCE_NEEDLE.get())) {
+                return fitNeedle(stack, player);
+            }
+            if (stack.is(ModItems.CULTURE.get())) {
+                return growGland(stack, player);
+            }
+        }
         if (type() == GraftType.TAP && EssenceItems.isContainer(stack)) {
             if (level.isClientSide()) {
                 return ItemInteractionResult.SUCCESS;
@@ -571,11 +583,24 @@ public class GraftBlockEntity extends BlockEntity {
         switch (type()) {
             case ENHANCING_GLAND -> {
                 if (!level.isClientSide()) {
+                    BlockState state = getBlockState();
                     OrganismCoreBlockEntity core = core();
-                    if (core == null) {
+                    if (player.isShiftKeyDown() && state.getValue(GlandBlock.NEEDLE)) {
+                        // Sneak-use draws the needle back out.
+                        level.setBlockAndUpdate(worldPosition, state.setValue(GlandBlock.NEEDLE, false));
+                        player.getInventory().placeItemBackInInventory(new ItemStack(ModItems.CONFLUENCE_NEEDLE.get()));
+                        level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.7f, 1.4f);
+                    } else if (core == null) {
                         OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.organism.dead"));
                     } else {
-                        Powers.infuseFromGland(player, core, worldPosition);
+                        OrganismCoreBlockEntity partner = null;
+                        if (state.getValue(GlandBlock.NEEDLE)) {
+                            partner = mixingPartner(core);
+                            if (partner == null) {
+                                OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.no_partner"));
+                            }
+                        }
+                        Powers.infuseFromGland(player, core, worldPosition, state.getValue(GlandBlock.LEVEL), partner);
                     }
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide());
@@ -594,6 +619,106 @@ public class GraftBlockEntity extends BlockEntity {
                 return OrganismInteractions.inspect(level, GraftBlock.supportPos(getBlockState(), worldPosition), player);
             }
         }
+    }
+
+    // ---------------------------------------------------------------- Enhancing Gland
+
+    /** Drams per level the organism pays to swell its gland: 64 for level 2, 96 for level 3. */
+    public static final int GLAND_GROWTH_COST = 32;
+
+    /** A culture of the organism's own essence, and its drams, make the gland swell a level. */
+    private ItemInteractionResult growGland(ItemStack stack, Player player) {
+        if (level.isClientSide()) {
+            return ItemInteractionResult.SUCCESS;
+        }
+        BlockState state = getBlockState();
+        OrganismCoreBlockEntity core = core();
+        if (core == null) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.organism.dead"));
+            return ItemInteractionResult.FAIL;
+        }
+        if (CultureItem.aspect(stack) != core.aspect()) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.wrong_culture",
+                    core.aspect().displayName()));
+            return ItemInteractionResult.FAIL;
+        }
+        int next = state.getValue(GlandBlock.LEVEL) + 1;
+        if (next > GlandBlock.MAX_LEVEL) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.max"));
+            return ItemInteractionResult.FAIL;
+        }
+        if (!Research.has(player, next == 2 ? Research.LEVEL_2_POWERS : Research.LEVEL_3_POWERS)) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.unknown_growth." + next));
+            return ItemInteractionResult.FAIL;
+        }
+        int cost = GLAND_GROWTH_COST * next;
+        if (core.stored() < cost) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.hungry", cost,
+                    core.aspect().displayName()));
+            return ItemInteractionResult.FAIL;
+        }
+        core.extract(cost);
+        stack.consume(1, player);
+        level.setBlockAndUpdate(worldPosition, state.setValue(GlandBlock.LEVEL, next));
+        level.playSound(null, worldPosition, SoundEvents.SLIME_SQUISH, SoundSource.BLOCKS, 1.0f, 0.5f);
+        level.playSound(null, worldPosition, SoundEvents.HONEY_BLOCK_PLACE, SoundSource.BLOCKS, 1.0f, 0.4f);
+        ((ServerLevel) level).sendParticles(ParticleTypes.ITEM_SLIME, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5,
+                worldPosition.getZ() + 0.5, 16, 0.3, 0.3, 0.3, 0.05);
+        OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.grew", next));
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    private ItemInteractionResult fitNeedle(ItemStack stack, Player player) {
+        BlockState state = getBlockState();
+        if (state.getValue(GlandBlock.NEEDLE)) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+        if (!level.isClientSide()) {
+            level.setBlockAndUpdate(worldPosition, state.setValue(GlandBlock.NEEDLE, true));
+            stack.consume(1, player);
+            level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.8f, 0.6f);
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.needle"));
+        }
+        return ItemInteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    /**
+     * An organism of another essence that this one is wired to by veins: a vein network from one of this
+     * organism's Taps or Maws that reaches a Tap or Maw of the other. Null if there is none.
+     */
+    @Nullable
+    public OrganismCoreBlockEntity mixingPartner(OrganismCoreBlockEntity core) {
+        int reach = 2;
+        int cx = worldPosition.getX() >> 4;
+        int cz = worldPosition.getZ() >> 4;
+        for (int dx = -reach; dx <= reach; dx++) {
+            for (int dz = -reach; dz <= reach; dz++) {
+                LevelChunk chunk = ((ServerLevel) level).getChunkSource().getChunkNow(cx + dx, cz + dz);
+                if (chunk == null) {
+                    continue;
+                }
+                for (BlockEntity blockEntity : List.copyOf(chunk.getBlockEntities().values())) {
+                    if (!(blockEntity instanceof GraftBlockEntity port) || !port.isPort() || port.core() != core) {
+                        continue;
+                    }
+                    VeinNetwork network = VeinNetwork.walk(level, port.front(), port.getBlockPos());
+                    for (BlockPos other : network.grafts()) {
+                        if (level.getBlockEntity(other) instanceof GraftBlockEntity far && far.isPort()) {
+                            OrganismCoreBlockEntity partner = far.core();
+                            if (partner != null && partner != core && partner.aspect() != core.aspect()) {
+                                return partner;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Taps and Maws are where veins plug into an organism. */
+    private boolean isPort() {
+        return type() == GraftType.TAP || type() == GraftType.MAW;
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.lens.TemporalLensItem;
 import com.chronogenesis.player.PlayerEssence;
+import com.chronogenesis.player.Power;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModItems;
 
@@ -48,7 +49,7 @@ public class EternalHourglassItem extends Item {
         }
     }
 
-    /** Fills every pool at the highest power level, clears Exposure, and charges every Lens carried. */
+    /** Fills every pool at the highest power level, teaches every composite power, clears Exposure, and charges every Lens carried. */
     public static void saturate(ServerPlayer player) {
         PlayerEssence before = Powers.get(player);
         PlayerEssence essence = before;
@@ -57,6 +58,11 @@ public class EternalHourglassItem extends Item {
                 essence = essence.withLevel(aspect, Powers.MAX_LEVEL);
             }
             essence = essence.withPool(aspect, essence.max(aspect));
+        }
+        for (Power power : Power.values()) {
+            if (power.isComposite()) {
+                essence = essence.withComposite(power);
+            }
         }
         essence = essence.withExposure(0);
         if (!essence.equals(before)) {

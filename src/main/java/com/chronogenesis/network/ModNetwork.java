@@ -6,6 +6,7 @@ import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.client.ClientPayloads;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModAttachments;
+import com.chronogenesis.time.TimeZones;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -28,12 +29,15 @@ public final class ModNetwork {
                 (payload, context) -> context.enqueueWork(() ->
                         context.player().setData(ModAttachments.PLAYER_ESSENCE, payload.essence())));
 
-        registrar.playToServer(PowerKeyPayload.TYPE, PowerKeyPayload.STREAM_CODEC,
+        registrar.playToServer(PowerActionPayload.TYPE, PowerActionPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {
                         switch (payload.action()) {
-                            case CYCLE_SELECTED -> Powers.cycleSelected(player);
-                            case USE_SELECTED -> Powers.use(player);
+                            case USE -> Powers.use(player);
+                            case SELECT -> Powers.select(player, payload.power());
+                            case TOGGLE -> Powers.toggle(player, payload.power());
+                            case STRENGTH -> Powers.setStrength(player, payload.power(), payload.value());
+                            case NUDGE -> Powers.nudgeStrength(player, Integer.signum(payload.value()));
                         }
                     }
                 }));
@@ -59,11 +63,7 @@ public final class ModNetwork {
         registrar.playToClient(PastSectionsPayload.TYPE, PastSectionsPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientPayloads.pastSections(payload)));
 
-        registrar.playToServer(SelectPowerPayload.TYPE, SelectPowerPayload.STREAM_CODEC,
-                (payload, context) -> context.enqueueWork(() -> {
-                    if (context.player() instanceof ServerPlayer player) {
-                        Powers.select(player, payload.aspect());
-                    }
-                }));
+        registrar.playToClient(TimeZonesPayload.TYPE, TimeZonesPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> TimeZones.clientReceive(payload)));
     }
 }

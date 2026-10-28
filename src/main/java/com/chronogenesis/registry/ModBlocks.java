@@ -7,6 +7,7 @@ import com.chronogenesis.lens.FadedBlueprintBlock;
 import com.chronogenesis.lens.ObeliskCapstoneBlock;
 import com.chronogenesis.organism.EssenceJugBlock;
 import com.chronogenesis.organism.FleshBlock;
+import com.chronogenesis.organism.GlandBlock;
 import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.GraftType;
 import com.chronogenesis.organism.OrganismCoreBlock;
@@ -72,7 +73,9 @@ public final class ModBlocks {
     public static final DeferredBlock<GraftBlock> STARTING_GATE = graft("starting_gate", GraftType.STARTING_GATE);
     public static final DeferredBlock<GraftBlock> FINISH = graft("finish", GraftType.FINISH);
     public static final DeferredBlock<GraftBlock> LEECH_TENDRIL = graft("leech_tendril", GraftType.LEECH_TENDRIL);
-    public static final DeferredBlock<GraftBlock> ENHANCING_GLAND = graft("enhancing_gland", GraftType.ENHANCING_GLAND);
+    /** Grows in level when fed cultures; takes a Confluence Needle to mix two essences. */
+    public static final DeferredBlock<GlandBlock> ENHANCING_GLAND = BLOCKS.registerBlock("enhancing_gland", GlandBlock::new,
+            graftProperties());
     public static final DeferredBlock<GraftBlock> HEART = graft("heart", GraftType.HEART);
     public static final DeferredBlock<GraftBlock> EYE = graft("eye", GraftType.EYE);
     public static final DeferredBlock<GraftBlock> CLOCK = graft("clock", GraftType.CLOCK);
@@ -146,13 +149,16 @@ public final class ModBlocks {
                     .pushReaction(PushReaction.BLOCK));
 
     private static DeferredBlock<GraftBlock> graft(String name, GraftType type) {
-        return BLOCKS.registerBlock(name, properties -> new GraftBlock(type, properties),
-                BlockBehaviour.Properties.of()
-                        .mapColor(MapColor.COLOR_PINK)
-                        .strength(0.8f)
-                        .sound(SoundType.HONEY_BLOCK)
-                        .noOcclusion()
-                        .pushReaction(PushReaction.DESTROY));
+        return BLOCKS.registerBlock(name, properties -> new GraftBlock(type, properties), graftProperties());
+    }
+
+    private static BlockBehaviour.Properties graftProperties() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_PINK)
+                .strength(0.8f)
+                .sound(SoundType.HONEY_BLOCK)
+                .noOcclusion()
+                .pushReaction(PushReaction.DESTROY);
     }
 
     private ModBlocks() {}

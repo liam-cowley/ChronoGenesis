@@ -4,9 +4,15 @@
   "package": "com.chronogenesis.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "ClientLevelMixin",
     "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "BoundTickingBlockEntityMixin",
+    "LevelTicksMixin",
+    "ServerLevelMixin"
+  ]
 }

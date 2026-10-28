@@ -1,7 +1,7 @@
 package com.chronogenesis.client;
 
-import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.player.PlayerEssence;
+import com.chronogenesis.player.Power;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModAttachments;
 
@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
-/** Level 1 Awareness: creatures (and players who are not sneaking) within 20 blocks glow, for you only. */
+/** Glowing Sight (Awareness): creatures (and players who are not sneaking) within 20 blocks glow, for you only. */
 public final class AwarenessSight {
     private AwarenessSight() {}
 
@@ -21,14 +21,15 @@ public final class AwarenessSight {
             return false;
         }
         PlayerEssence essence = self.getData(ModAttachments.PLAYER_ESSENCE);
-        if (!essence.isActive(Aspect.AWARENESS)) {
+        if (!essence.isOn(Power.GLOWING_SIGHT)) {
             return false;
         }
-        // Level 2 sees through sneaking.
-        if (entity instanceof Player other && other.isShiftKeyDown() && essence.level(Aspect.AWARENESS) < 2) {
+        int strength = essence.strength(Power.GLOWING_SIGHT);
+        // Strength 2 sees through sneaking.
+        if (entity instanceof Player other && other.isShiftKeyDown() && strength < 2) {
             return false;
         }
-        double radius = Powers.AWARENESS_RADIUS + 10.0 * (essence.level(Aspect.AWARENESS) - 1);
+        double radius = Powers.AWARENESS_RADIUS + 10.0 * (strength - 1);
         return entity.distanceToSqr(self) <= radius * radius;
     }
 }

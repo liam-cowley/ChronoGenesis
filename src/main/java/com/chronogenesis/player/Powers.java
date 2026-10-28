@@ -1,40 +1,31 @@
 package com.chronogenesis.player;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import org.jetbrains.annotations.Nullable;
 
 import com.chronogenesis.ChronoGenesis;
-import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.network.SyncPlayerEssencePayload;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
 import com.chronogenesis.registry.ModAttachments;
+import com.chronogenesis.registry.ModItems;
+import com.chronogenesis.time.TimeZones;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -44,35 +35,28 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
- * Level 1 powers (core-systems.md section 3), fuelled by the player's essence pools.
+ * Player powers (core-systems.md section 3), fuelled by the player's essence pools. See {@link Power} for the list.
  * <ul>
- *   <li>Density, Iron Fists: bare hands mine what an iron pickaxe can, at stone-pickaxe speed.
- *       1 dram per block.</li>
- *   <li>Awareness: mobs and non-sneaking players within 20 blocks glow (rendered client-side).</li>
- *   <li>Speed: +20% movement and attack speed per level.</li>
- *   <li>Size: shrink or grow one step.</li>
- *   <li>Time, Stutter: a 3-block bubble where everything moves at half speed for 3 seconds.</li>
+ *   <li>Passive powers are switched on (on the Essence Manipulator's wheel) and burn their pools slowly while on.
+ *       Several can run at once; when a pool runs dry, the powers drinking from it switch off.</li>
+ *   <li>One active power is selected; using it (right-click with the Manipulator, or the power key) fires it.</li>
  * </ul>
- * Pools only refill at an Enhancing Gland (until the Umbilical Locket exists).
+ * Pools only refill at an Enhancing Gland (or through an Umbilical Locket). How deep a gland can fill you is its
+ * level ({@link com.chronogenesis.organism.GlandBlock}).
  */
 @EventBusSubscriber(modid = ChronoGenesis.MODID)
 public final class Powers {
     private static final ResourceLocation SPEED_MOD = ChronoGenesis.id("power_speed");
     private static final ResourceLocation ATTACK_SPEED_MOD = ChronoGenesis.id("power_attack_speed");
     private static final ResourceLocation SIZE_MOD = ChronoGenesis.id("power_size");
+    private static final ResourceLocation STEP_MOD = ChronoGenesis.id("power_step");
+    private static final ResourceLocation FALL_MOD = ChronoGenesis.id("power_safe_fall");
 
     public static final double AWARENESS_RADIUS = 20.0;
-    /** The highest power level there is so far (level 2 comes from the Deeper Infusion research). */
-    public static final int MAX_LEVEL = 2;
-    private static final float IRON_FIST_SPEED = 4.0f; // a stone pickaxe's mining speed
-    private static final float LEVEL_2_FIST_SPEED = 6.0f; // an iron pickaxe's
-    private static final int STUTTER_COST = 8;
-    private static final int STUTTER_TICKS = 60;
-    private static final double STUTTER_RADIUS = 3.0;
-    private static final String STUTTERED_TAG = "chronogenesis_stuttered";
-
-    /** Active Stutter bubbles: player id -> game time the bubble ends. */
-    private static final Map<UUID, Long> STUTTERS = new HashMap<>();
+    /** The highest power level there is: a gland grows to level 3 (Deepest Infusion). */
+    public static final int MAX_LEVEL = 3;
+    /** Mining speed of Iron Fists by level: a stone, an iron and a diamond pickaxe's. */
+    private static final float[] FIST_SPEED = {4.0f, 6.0f, 8.0f};
 
     private Powers() {}
 
@@ -100,40 +84,110 @@ public final class Powers {
         return true;
     }
 
+    /** Spends the same drams from every pool a power drinks from, all or nothing. Says so if a pool is short. */
+    public static boolean spend(Player player, Power power, int each) {
+        PlayerEssence essence = get(player);
+        for (Aspect aspect : power.aspects()) {
+            if (essence.pool(aspect) < each) {
+                empty(player, aspect);
+                return false;
+            }
+        }
+        for (Aspect aspect : power.aspects()) {
+            essence = essence.withPool(aspect, essence.pool(aspect) - each);
+        }
+        set(player, essence);
+        return true;
+    }
+
+    static void empty(Player player, Aspect aspect) {
+        player.displayClientMessage(Component.translatable("message.chronogenesis.power.empty", aspect.displayName())
+                .withStyle(ChatFormatting.GRAY), true);
+    }
+
+    /** Adds Temporal Exposure (reduced by the suit). */
+    static void expose(Player player, int amount) {
+        PlayerEssence essence = get(player);
+        int added = TemporalExposure.scaled(player, amount);
+        if (added > 0) {
+            set(player, essence.withExposure(essence.exposure() + added));
+        }
+    }
+
     // ---------------------------------------------------------------- filling up
 
-    /** Enhancing Gland: fill the player's pool for the organism's aspect. */
-    public static void infuseFromGland(Player player, OrganismCoreBlockEntity core, BlockPos glandPos) {
+    /**
+     * Enhancing Gland: fills the player's pool for the organism's aspect, and raises their power level to the
+     * gland's level. With a Confluence Needle and a {@code partner} organism (wired by veins, another essence), the
+     * other essence flows in too, and the player learns the composite power of the two.
+     */
+    public static void infuseFromGland(Player player, OrganismCoreBlockEntity core, BlockPos glandPos, int glandLevel,
+            @Nullable OrganismCoreBlockEntity partner) {
         Aspect aspect = core.aspect();
         PlayerEssence essence = get(player);
-        boolean first = essence.level(aspect) == 0;
-        boolean deeper = !first && essence.level(aspect) < 2 && Research.has(player, Research.LEVEL_2_POWERS);
-        if (first) {
-            essence = essence.withLevel(aspect, 1);
-        } else if (deeper) {
-            essence = essence.withLevel(aspect, 2);
+        int before = essence.level(aspect);
+        boolean first = before == 0;
+        boolean deeper = !first && before < glandLevel;
+        if (before < glandLevel) {
+            essence = essence.withLevel(aspect, glandLevel);
         }
         int room = essence.max(aspect) - essence.pool(aspect);
         int taken = core.extract(room);
-        essence = essence.withPool(aspect, essence.pool(aspect) + taken);
-        if (aspect == Aspect.TIME) {
-            essence = essence.withExposure(essence.exposure() + TemporalExposure.scaled(player, taken));
+        essence = fill(player, essence, aspect, taken);
+
+        Power learned = null;
+        boolean unknownOther = false;
+        if (partner != null && partner.aspect() != aspect) {
+            Aspect other = partner.aspect();
+            if (essence.level(other) == 0) {
+                unknownOther = true;
+            } else {
+                int otherTaken = partner.extract(essence.max(other) - essence.pool(other));
+                essence = fill(player, essence, other, otherTaken);
+                taken += otherTaken;
+                Power composite = Power.composite(aspect, other);
+                if (composite != null && !essence.composites().contains(composite)) {
+                    essence = essence.withComposite(composite);
+                    learned = composite;
+                }
+            }
         }
         set(player, essence);
 
         player.level().playSound(null, glandPos, SoundEvents.HONEY_DRINK, SoundSource.PLAYERS, 1.0f, 0.5f);
         if (first) {
-            player.displayClientMessage(Component.translatable("message.chronogenesis.gland.first." + aspect.getSerializedName())
-                    .withStyle(ChatFormatting.DARK_PURPLE), false);
+            say(player, Component.translatable("message.chronogenesis.gland.first." + aspect.getSerializedName()));
+            if (!hasManipulator(player)) {
+                say(player, Component.translatable("message.chronogenesis.gland.manipulator_hint"));
+            }
         } else if (deeper) {
-            player.displayClientMessage(Component.translatable("message.chronogenesis.gland.deeper", aspect.displayName())
-                    .withStyle(ChatFormatting.DARK_PURPLE), false);
+            say(player, Component.translatable("message.chronogenesis.gland.deeper", aspect.displayName(), glandLevel));
             applyModifiers(player);
-        } else if (taken == 0) {
+        }
+        if (learned != null) {
+            say(player, Component.translatable("message.chronogenesis.gland.composite", learned.displayName()));
+            player.level().playSound(null, glandPos, SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.0f, 0.6f);
+        } else if (unknownOther) {
+            player.displayClientMessage(Component.translatable("message.chronogenesis.gland.unknown_other",
+                    partner.aspect().displayName()).withStyle(ChatFormatting.GRAY), false);
+        }
+        if (!first && !deeper && learned == null && taken == 0) {
             player.displayClientMessage(Component.translatable(room <= 0
                     ? "message.chronogenesis.gland.full" : "message.chronogenesis.gland.empty")
                     .withStyle(ChatFormatting.GRAY), true);
         }
+    }
+
+    private static PlayerEssence fill(Player player, PlayerEssence essence, Aspect aspect, int amount) {
+        essence = essence.withPool(aspect, essence.pool(aspect) + amount);
+        if (aspect == Aspect.TIME) {
+            essence = essence.withExposure(essence.exposure() + TemporalExposure.scaled(player, amount));
+        }
+        return essence;
+    }
+
+    private static void say(Player player, Component message) {
+        player.displayClientMessage(message.copy().withStyle(ChatFormatting.DARK_PURPLE), false);
     }
 
     /** Self-injecting Time from a Stasis Ampoule: the only way to Time powers before Time organisms. */
@@ -141,8 +195,7 @@ public final class Powers {
         PlayerEssence essence = get(player);
         if (essence.level(Aspect.TIME) == 0) {
             essence = essence.withLevel(Aspect.TIME, 1);
-            player.displayClientMessage(Component.translatable("message.chronogenesis.gland.first.time")
-                    .withStyle(ChatFormatting.DARK_PURPLE), false);
+            say(player, Component.translatable("message.chronogenesis.gland.first.time"));
         }
         int taken = Math.min(amount, essence.max(Aspect.TIME) - essence.pool(Aspect.TIME));
         essence = essence.withPool(Aspect.TIME, essence.pool(Aspect.TIME) + taken)
@@ -151,67 +204,91 @@ public final class Powers {
         return taken;
     }
 
-    // ---------------------------------------------------------------- key actions (from the client)
+    /** Whether the player carries an Essence Manipulator (needed for the wheel). */
+    public static boolean hasManipulator(Player player) {
+        return player.getInventory().contains(stack -> stack.is(ModItems.ESSENCE_MANIPULATOR.get()));
+    }
 
-    public static void cycleSelected(ServerPlayer player) {
+    // ---------------------------------------------------------------- choosing (from the wheel)
+
+    /** The wheel picked an active power. Only powers the player has can be selected. */
+    public static void select(ServerPlayer player, Power power) {
         PlayerEssence essence = get(player);
-        Aspect[] aspects = Aspect.values();
-        for (int i = 1; i <= aspects.length; i++) {
-            Aspect next = aspects[(essence.selected().ordinal() + i) % aspects.length];
-            if (essence.level(next) > 0) {
-                set(player, essence.withSelected(next));
-                return;
+        if (!power.isPassive() && essence.knows(power) && essence.selected() != power) {
+            set(player, essence.withSelected(power));
+        }
+    }
+
+    /** Switches a passive power on or off. Shrink and Grow exclude each other. */
+    public static void toggle(ServerPlayer player, Power power) {
+        PlayerEssence essence = get(player);
+        if (!power.isPassive() || !essence.knows(power)) {
+            return;
+        }
+        boolean on = !essence.isOn(power);
+        if (on) {
+            for (Aspect aspect : power.aspects()) {
+                if (essence.pool(aspect) <= 0) {
+                    empty(player, aspect);
+                    return;
+                }
+            }
+            if (power == Power.SHRINK) {
+                essence = essence.withPassive(Power.GROW, false);
+            } else if (power == Power.GROW) {
+                essence = essence.withPassive(Power.SHRINK, false);
             }
         }
+        set(player, essence.withPassive(power, on));
+        applyModifiers(player);
+        player.level().playSound(null, player.blockPosition(), on ? SoundEvents.BEACON_POWER_SELECT : SoundEvents.BEACON_DEACTIVATE,
+                SoundSource.PLAYERS, 0.4f, on ? 1.6f : 1.2f);
     }
 
-    /** The radial menu picked a power. Only powers the player has unlocked can be selected. */
-    public static void select(ServerPlayer player, Aspect aspect) {
+    /** Sets a power's strength (1 to its maximum). */
+    public static void setStrength(ServerPlayer player, Power power, int strength) {
         PlayerEssence essence = get(player);
-        if (essence.level(aspect) > 0 && essence.selected() != aspect) {
-            set(player, essence.withSelected(aspect));
+        if (!essence.knows(power)) {
+            return;
+        }
+        int clamped = Math.max(1, Math.min(power.maxStrength(essence), strength));
+        set(player, essence.withStrength(power, clamped));
+        applyModifiers(player);
+        TimeZones.strengthChanged(player);
+        player.displayClientMessage(Component.translatable("message.chronogenesis.power.strength", power.displayName(),
+                clamped, power.maxStrength(essence)).withStyle(ChatFormatting.GOLD), true);
+    }
+
+    /** Nudges the selected active power's strength up or down (Shift + scroll with the Manipulator in hand). */
+    public static void nudgeStrength(ServerPlayer player, int delta) {
+        PlayerEssence essence = get(player);
+        Power power = essence.selected();
+        if (essence.knows(power)) {
+            setStrength(player, power, essence.strength(power) + delta);
         }
     }
 
-    /** The "use power" key: toggles the selected power, or triggers it (Time), or cycles it (Size). */
+    // ---------------------------------------------------------------- using the selected active power
+
     public static void use(ServerPlayer player) {
         PlayerEssence essence = get(player);
-        Aspect aspect = essence.selected();
-        if (essence.level(aspect) == 0) {
+        Power power = essence.selected();
+        if (!essence.knows(power)) {
             player.displayClientMessage(Component.translatable("message.chronogenesis.power.unknown")
                     .withStyle(ChatFormatting.GRAY), true);
             return;
         }
-        switch (aspect) {
-            case TIME -> stutter(player);
-            case SIZE -> {
-                int mode = essence.sizeMode() == 0 ? -1 : essence.sizeMode() == -1 ? 1 : 0;
-                set(player, essence.withSizeMode(mode).withActive(Aspect.SIZE, mode != 0));
-            }
-            default -> {
-                boolean on = !essence.isActive(aspect);
-                if (on && essence.pool(aspect) <= 0) {
-                    player.displayClientMessage(Component.translatable("message.chronogenesis.power.empty",
-                            aspect.displayName()).withStyle(ChatFormatting.GRAY), true);
-                    return;
-                }
-                set(player, essence.withActive(aspect, on));
-            }
+        int strength = essence.strength(power);
+        switch (power) {
+            case REWIND -> Rewind.use(player, strength);
+            case SLOW_TIME, TIME_FREEZE -> TimeZones.toggle(player, power, strength);
+            case IMPETUS -> CompositePowers.impetus(player, strength);
+            case GROUND_SLAM -> CompositePowers.groundSlam(player, strength);
+            case STUTTER -> CompositePowers.stutter(player, strength);
+            case OVERLOOK -> CompositePowers.overlook(player, strength);
+            case REGROWTH -> CompositePowers.regrowth(player, strength);
+            default -> { }
         }
-        applyModifiers(player);
-    }
-
-    private static void stutter(ServerPlayer player) {
-        if (!spend(player, Aspect.TIME, STUTTER_COST)) {
-            player.displayClientMessage(Component.translatable("message.chronogenesis.power.empty",
-                    Aspect.TIME.displayName()).withStyle(ChatFormatting.GRAY), true);
-            return;
-        }
-        PlayerEssence essence = get(player);
-        set(player, essence.withExposure(essence.exposure() + TemporalExposure.scaled(player, 10)));
-        // Level 2 holds time still for longer.
-        STUTTERS.put(player.getUUID(), player.level().getGameTime() + STUTTER_TICKS + 20L * (essence.level(Aspect.TIME) - 1));
-        player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.0f, 0.5f);
     }
 
     // ---------------------------------------------------------------- per-tick upkeep
@@ -224,13 +301,10 @@ public final class Powers {
         PlayerEssence essence = get(player);
         long time = player.level().getGameTime();
 
-        // Continuous powers burn their pool; when it runs dry they switch off.
+        // Passive powers burn their pools; when one runs dry, the powers drinking from it switch off.
         PlayerEssence updated = essence;
-        updated = upkeep(updated, Aspect.AWARENESS, time, 60);
-        updated = upkeep(updated, Aspect.SPEED, time, 40);
-        updated = upkeep(updated, Aspect.SIZE, time, 60);
-        if (updated.isActive(Aspect.SIZE) != essence.isActive(Aspect.SIZE) && !updated.isActive(Aspect.SIZE)) {
-            updated = updated.withSizeMode(0);
+        for (Power power : essence.passives()) {
+            updated = upkeep(updated, power, time);
         }
         // Exposure fades slowly.
         if (time % 200 == 0 && updated.exposure() > 0) {
@@ -242,69 +316,62 @@ public final class Powers {
         }
 
         TemporalExposure.tick(player, updated);
-        tickStutter(player, time);
+        Rewind.record(player);
+        CompositePowers.tick(player, updated, time);
     }
 
-    private static PlayerEssence upkeep(PlayerEssence essence, Aspect aspect, long time, int interval) {
-        if (!essence.isActive(aspect) || time % interval != 0) {
-            return essence;
-        }
-        if (essence.pool(aspect) <= 0) {
-            return essence.withActive(aspect, false);
-        }
-        return essence.withPool(aspect, essence.pool(aspect) - 1);
+    /** Ticks between drams burned by a passive power at strength 1; stronger burns faster. 0 = paid per use. */
+    private static int upkeepInterval(Power power) {
+        return switch (power) {
+            case IRON_FISTS, REFLEXES, PREMONITION -> 0;
+            case QUICKENING -> 40;
+            default -> 60;
+        };
     }
 
-    private static void tickStutter(ServerPlayer player, long time) {
-        Long end = STUTTERS.get(player.getUUID());
-        if (end == null) {
-            return;
+    private static PlayerEssence upkeep(PlayerEssence essence, Power power, long time) {
+        if (!essence.knows(power)) {
+            return essence.withPassive(power, false);
         }
-        if (time >= end) {
-            STUTTERS.remove(player.getUUID());
-            return;
-        }
-        ServerLevel level = player.serverLevel();
-        double radius = stutterRadius(player);
-        AABB area = player.getBoundingBox().inflate(radius);
-        for (Entity entity : level.getEntities(player, area)) {
-            if (entity instanceof LivingEntity living) {
-                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 5, 2, false, false));
-            } else if (entity instanceof Projectile projectile && !projectile.getPersistentData().getBoolean(STUTTERED_TAG)) {
-                projectile.getPersistentData().putBoolean(STUTTERED_TAG, true);
-                projectile.setDeltaMovement(projectile.getDeltaMovement().scale(0.5));
-                projectile.hurtMarked = true;
+        for (Aspect aspect : power.aspects()) {
+            if (essence.pool(aspect) <= 0) {
+                return essence.withPassive(power, false);
             }
         }
-        if (time % 4 == 0) {
-            Vec3 c = player.position();
-            level.sendParticles(ParticleTypes.REVERSE_PORTAL, c.x, c.y + 1, c.z, 12, radius / 2, 1.0, radius / 2, 0.0);
+        int interval = upkeepInterval(power);
+        if (interval == 0 || time % Math.max(10, interval / essence.strength(power)) != 0) {
+            return essence;
         }
-    }
-
-    /** Stutter's bubble: 3 blocks, half a block wider per level beyond the first. */
-    private static double stutterRadius(Player player) {
-        return STUTTER_RADIUS + 1.5 * Math.max(0, get(player).level(Aspect.TIME) - 1);
+        for (Aspect aspect : power.aspects()) {
+            essence = essence.withPool(aspect, essence.pool(aspect) - 1);
+        }
+        return essence;
     }
 
     // ---------------------------------------------------------------- attribute-based powers
 
-    /** Speed and Size are attribute modifiers, recomputed whenever the power state changes. */
+    /** Quickening, Shrink, Grow and Scurry are attribute modifiers, recomputed whenever the power state changes. */
     public static void applyModifiers(Player player) {
         PlayerEssence essence = get(player);
-        int speedLevel = essence.isActive(Aspect.SPEED) ? essence.level(Aspect.SPEED) : 0;
-        setModifier(player, Attributes.MOVEMENT_SPEED, SPEED_MOD, 0.2 * speedLevel, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-        setModifier(player, Attributes.ATTACK_SPEED, ATTACK_SPEED_MOD, 0.2 * speedLevel, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        int quick = essence.isOn(Power.QUICKENING) ? essence.strength(Power.QUICKENING) : 0;
+        setModifier(player, Attributes.MOVEMENT_SPEED, SPEED_MOD, 0.2 * quick, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        setModifier(player, Attributes.ATTACK_SPEED, ATTACK_SPEED_MOD, 0.2 * quick, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 
         double scale = 0.0;
-        if (essence.isActive(Aspect.SIZE)) {
-            int level = essence.level(Aspect.SIZE);
-            scale = essence.sizeMode() < 0 ? -Math.min(0.75, 0.5 + 0.1 * (level - 1)) : 0.25 * level;
+        if (essence.isOn(Power.SHRINK)) {
+            scale = -Math.min(0.75, 0.5 + 0.1 * (essence.strength(Power.SHRINK) - 1));
+        } else if (essence.isOn(Power.GROW)) {
+            scale = 0.25 * essence.strength(Power.GROW);
         }
         setModifier(player, Attributes.SCALE, SIZE_MOD, scale, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+
+        int scurry = essence.isOn(Power.SCURRY) ? essence.strength(Power.SCURRY) : 0;
+        setModifier(player, Attributes.STEP_HEIGHT, STEP_MOD, scurry > 0 ? 0.4 + 0.3 * scurry : 0.0,
+                AttributeModifier.Operation.ADD_VALUE);
+        setModifier(player, Attributes.SAFE_FALL_DISTANCE, FALL_MOD, 5.0 * scurry, AttributeModifier.Operation.ADD_VALUE);
     }
 
-    private static void setModifier(Player player, Holder<Attribute> attribute, ResourceLocation id, double amount,
+    static void setModifier(Player player, Holder<Attribute> attribute, ResourceLocation id, double amount,
             AttributeModifier.Operation operation) {
         AttributeInstance instance = player.getAttribute(attribute);
         if (instance == null) {
@@ -319,13 +386,23 @@ public final class Powers {
 
     // ---------------------------------------------------------------- Iron Fists
 
+    /** Fists count as bare hands, and so does a hand in an Essence Manipulator. */
+    private static boolean fist(ItemStack stack) {
+        return stack.isEmpty() || stack.is(ModItems.ESSENCE_MANIPULATOR.get());
+    }
+
     /** Whether Iron Fists apply to this block right now. Works on both sides (client uses the synced copy). */
     public static boolean ironFists(Player player, BlockState state) {
         PlayerEssence essence = get(player);
-        // Level 1: iron-tier fists. Level 2: diamond-tier.
-        var incorrect = essence.level(Aspect.DENSITY) >= 2 ? BlockTags.INCORRECT_FOR_DIAMOND_TOOL : BlockTags.INCORRECT_FOR_IRON_TOOL;
-        return player.getMainHandItem().isEmpty()
-                && essence.isActive(Aspect.DENSITY)
+        int tier = essence.strength(Power.IRON_FISTS);
+        // Strength 1: iron-tier fists. 2: diamond. 3: netherite.
+        var incorrect = switch (tier) {
+            case 1 -> BlockTags.INCORRECT_FOR_IRON_TOOL;
+            case 2 -> BlockTags.INCORRECT_FOR_DIAMOND_TOOL;
+            default -> BlockTags.INCORRECT_FOR_NETHERITE_TOOL;
+        };
+        return fist(player.getMainHandItem())
+                && essence.isOn(Power.IRON_FISTS)
                 && essence.pool(Aspect.DENSITY) > 0
                 && !state.is(incorrect)
                 && (state.is(BlockTags.MINEABLE_WITH_PICKAXE) || state.is(BlockTags.MINEABLE_WITH_SHOVEL)
@@ -342,8 +419,8 @@ public final class Powers {
     @SubscribeEvent
     static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         if (ironFists(event.getEntity(), event.getState())) {
-            float speed = get(event.getEntity()).level(Aspect.DENSITY) >= 2 ? LEVEL_2_FIST_SPEED : IRON_FIST_SPEED;
-            event.setNewSpeed(Math.max(event.getNewSpeed(), speed));
+            int tier = get(event.getEntity()).strength(Power.IRON_FISTS);
+            event.setNewSpeed(Math.max(event.getNewSpeed(), FIST_SPEED[Math.min(tier, FIST_SPEED.length) - 1]));
         }
     }
 
@@ -364,7 +441,8 @@ public final class Powers {
 
     @SubscribeEvent
     static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        STUTTERS.remove(event.getEntity().getUUID());
+        CompositePowers.forget(event.getEntity().getUUID());
+        Rewind.forget(event.getEntity().getUUID());
         TemporalExposure.forget(event.getEntity().getUUID());
     }
 
@@ -375,6 +453,7 @@ public final class Powers {
 
     @SubscribeEvent
     static void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        Rewind.forget(event.getEntity().getUUID());
         resync(event.getEntity());
     }
 

@@ -7,16 +7,19 @@ import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.essence.EssenceItems;
 import com.chronogenesis.item.ChronoSyringeItem;
 import com.chronogenesis.item.CultureItem;
-import com.chronogenesis.network.PowerKeyPayload;
+import com.chronogenesis.network.PowerActionPayload;
 import com.chronogenesis.organism.EssenceJugBlockEntity;
 import com.chronogenesis.organism.FleshBlock;
+import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModItems;
 import com.chronogenesis.registry.ModParticles;
 import com.mojang.blaze3d.platform.InputConstants;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,6 +27,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -35,21 +39,15 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public final class ClientEvents {
     private static final String CATEGORY = "key.categories.chronogenesis";
 
-    public static final KeyMapping CYCLE_POWER = new KeyMapping("key.chronogenesis.cycle_power",
-            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, CATEGORY);
-    public static final KeyMapping USE_POWER = new KeyMapping("key.chronogenesis.use_power",
-            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, CATEGORY);
-
-    /** Holding the power key this long opens the radial menu instead of cycling. */
-    private static final int RADIAL_HOLD_TICKS = 5;
-    private static int cycleHeldTicks;
+    /** Tap: use the selected active power. With Shift held: the Essence Manipulator's wheel. */
+    public static final KeyMapping POWERS = new KeyMapping("key.chronogenesis.powers",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, CATEGORY);
 
     private ClientEvents() {}
 
     @SubscribeEvent
     static void registerKeys(RegisterKeyMappingsEvent event) {
-        event.register(CYCLE_POWER);
-        event.register(USE_POWER);
+        event.register(POWERS);
     }
 
     @SubscribeEvent
@@ -61,6 +59,8 @@ public final class ClientEvents {
     static void registerGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAboveAll(ChronoGenesis.id("essence_hud"), EssenceHud::render);
         event.registerBelowAll(ChronoGenesis.id("temporal_lens"), LensView::composite);
+        // Below the lens: chunks with their own time are part of the world the lens looks out from.
+        event.registerBelowAll(ChronoGenesis.id("time_zones"), TimeZoneView::composite);
     }
 
     @SubscribeEvent
@@ -68,23 +68,37 @@ public final class ClientEvents {
         if (Minecraft.getInstance().player == null) {
             return;
         }
-        // Tap the power key to cycle; hold it to open the radial menu.
-        while (CYCLE_POWER.consumeClick()) {
-            // Presses are handled through isDown below; drain the queue so they don't pile up.
-        }
         Minecraft minecraft = Minecraft.getInstance();
-        if (CYCLE_POWER.isDown() && minecraft.screen == null) {
-            if (++cycleHeldTicks == RADIAL_HOLD_TICKS) {
-                minecraft.setScreen(new RadialPowerScreen(CYCLE_POWER));
+        while (POWERS.consumeClick()) {
+            if (minecraft.screen != null) {
+                continue;
             }
-        } else {
-            if (cycleHeldTicks > 0 && cycleHeldTicks < RADIAL_HOLD_TICKS) {
-                PacketDistributor.sendToServer(new PowerKeyPayload(PowerKeyPayload.Action.CYCLE_SELECTED));
+            if (minecraft.options.keyShift.isDown()) {
+                // Shift + R: the wheel, held open while Shift is down. It needs the Manipulator.
+                if (Powers.hasManipulator(minecraft.player)) {
+                    minecraft.setScreen(new PowerWheelScreen());
+                } else {
+                    minecraft.player.displayClientMessage(Component.translatable("message.chronogenesis.power.need_manipulator")
+                            .withStyle(ChatFormatting.GRAY), true);
+                }
+            } else {
+                PacketDistributor.sendToServer(PowerActionPayload.use());
             }
-            cycleHeldTicks = 0;
         }
-        while (USE_POWER.consumeClick()) {
-            PacketDistributor.sendToServer(new PowerKeyPayload(PowerKeyPayload.Action.USE_SELECTED));
+    }
+
+    /** Shift + scroll with the Essence Manipulator in hand: the selected power's strength, not the hotbar. */
+    @SubscribeEvent
+    static void onScroll(InputEvent.MouseScrollingEvent event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.screen != null || minecraft.player == null || event.getScrollDeltaY() == 0
+                || !minecraft.options.keyShift.isDown()) {
+            return;
+        }
+        if (minecraft.player.getMainHandItem().is(ModItems.ESSENCE_MANIPULATOR.get())
+                || minecraft.player.getOffhandItem().is(ModItems.ESSENCE_MANIPULATOR.get())) {
+            PacketDistributor.sendToServer(PowerActionPayload.nudge(event.getScrollDeltaY() > 0 ? 1 : -1));
+            event.setCanceled(true);
         }
     }
 

@@ -40,6 +40,10 @@ public final class Research {
 
     /** Level 2 powers: the Enhancing Gland can fill you deeper. */
     public static final ResourceLocation LEVEL_2_POWERS = ChronoGenesis.id("level_2_powers");
+    /** Level 3 powers: the gland can swell a third time (and Time Freeze). Needs a stage 2 Chronocortex. */
+    public static final ResourceLocation LEVEL_3_POWERS = ChronoGenesis.id("level_3_powers");
+    /** The Confluence Needle: mixing two essences at a gland. Needs a stage 1 Chronocortex. */
+    public static final ResourceLocation CONFLUENCE = ChronoGenesis.id("confluence");
 
     private Research() {}
 

@@ -3,7 +3,9 @@ package com.chronogenesis.registry;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.item.ChronoSyringeItem;
+import com.chronogenesis.item.ConfluenceNeedleItem;
 import com.chronogenesis.item.CreativeBlockItem;
+import com.chronogenesis.item.EssenceManipulatorItem;
 import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.item.EssenceContainerItem;
 import com.chronogenesis.item.EssenceJugItem;
@@ -72,6 +74,14 @@ public final class ModItems {
             IntactBlueprintItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     /** Creative only (no recipe): keeps essences full and instruments charged while carried. For testing. */
+    /** Steers the powers: right-click to use, Shift + R for the wheel, Shift + scroll for strength. */
+    public static final DeferredItem<EssenceManipulatorItem> ESSENCE_MANIPULATOR = ITEMS.registerItem("essence_manipulator",
+            EssenceManipulatorItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
+    /** Fitted into an Enhancing Gland: mixes two essences wired together by veins. Grown by research. */
+    public static final DeferredItem<ConfluenceNeedleItem> CONFLUENCE_NEEDLE = ITEMS.registerItem("confluence_needle",
+            ConfluenceNeedleItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
     /** Creative only (no recipe; in play it is woken by the ritual): an already awake Chronocortex. */
     public static final DeferredItem<CreativeBlockItem> CHRONOCORTEX = ITEMS.registerItem("chronocortex",
             properties -> new CreativeBlockItem(ModBlocks.CHRONOCORTEX.get(), properties, "tooltip.chronogenesis.chronocortex"),

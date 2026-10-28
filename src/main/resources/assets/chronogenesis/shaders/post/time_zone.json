@@ -1,0 +1,24 @@
+{
+  "targets": [
+    "swap",
+    "depth"
+  ],
+  "passes": [
+    {
+      "name": "chronogenesis:time_zone",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "auxtargets": [
+        {
+          "name": "DepthSampler",
+          "id": "depth:depth"
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}
