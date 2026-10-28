@@ -15,6 +15,8 @@ Docs (read the relevant one before implementing a feature, and keep names consis
 - `docs/design/core-systems.md`: source of truth for essences, grown organisms/grafts, veins, powers,
   time manipulation, the Chronocortex, the Temporal Lens and structures.
 - `docs/design/early-game.md`: pacing, and the build order with what is done (✅) and what is next (⬜).
+- `docs/design/player-fantasy.md`: why players play and build (identity, needs that shape bases);
+  blue-sky concepts, not adopted unless also in `core-systems.md`.
 - `docs/tech-stack.md`: versions, libraries, run configurations, CI, tools.
 - `docs/assets/texture-catalogue.md`: every texture, what it is, and how layered textures fit together.
 
