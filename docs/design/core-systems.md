@@ -328,7 +328,9 @@ boxes. Through the lens the past is not an overlay, it is what the world looks l
 rebuilds each structure's area (plus a 6-block margin) as world geometry through a "past world"
 (`client/PastWorld`: the past's blocks where known, **air where something is newer**, the present
 elsewhere), tessellated like a chunk section with culling, smooth lighting and fluids
-(`client/PastMesh`). Each frame a stencil pass marks the pixels whose visible surface lies inside
+(`client/PastMesh`), and lit by the past's own light (`client/PastLight`: sky and block light propagated
+through the past's blocks, fed from the real world at the area's edges), so removed blocks cast no
+shadow and the past's own roofs and lanterns do. Each frame a stencil pass marks the pixels whose visible surface lies inside
 those areas, clears them, and draws the past geometry there; the copy is composited inside the lens
 by one post shader (`shaders/post/temporal_lens.json`, `client/LensView`). What the lens hides is still
 there: rubble still blocks, and a floor seen through it may be a hole now. Reading a blueprint

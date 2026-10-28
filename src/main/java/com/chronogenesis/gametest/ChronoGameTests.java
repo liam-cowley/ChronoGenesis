@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
@@ -12,6 +13,7 @@ import com.chronogenesis.biocomputer.DissectionTableBlock;
 import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
+import com.chronogenesis.client.PastLight;
 import com.chronogenesis.client.PastWorld;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.DrainEffects;
@@ -55,9 +57,11 @@ import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
@@ -67,6 +71,9 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 /**
  * Automated in-world tests. Run with {@code gradlew runGameTestServer} (CI runs them on feature branches).
  * The {@code floor7} template is a 7x5x7 space with a stone floor; see tools/make_test_structures.py.
+ * In test coordinates ({@code helper.absolutePos}) that floor is at <b>y=1</b>, so open space starts at y=2.
+ * (Many older tests place blocks at y=1, replacing floor blocks; that is harmless for them, but matters for
+ * anything about light, line of sight or what stands on the floor.)
  */
 @GameTestHolder(ChronoGenesis.MODID)
 @PrefixGameTestTemplate(false)
@@ -446,6 +453,31 @@ public final class ChronoGameTests {
 
         helper.getLevel().setBlockAndUpdate(rubble, Blocks.AIR.defaultBlockState());
         helper.getLevel().setBlockAndUpdate(wall, Blocks.AIR.defaultBlockState());
+        helper.succeed();
+    }
+
+    /**
+     * The past is lit as it was: a block the Lens removes casts no shadow there, and a roof that only stood in
+     * the past does. Light comes in from an open sky around the area (the test world's arenas have none).
+     * (In test coordinates the arena's floor is at y=1, so the space above it starts at y=2.)
+     */
+    @GameTest(template = "floor7")
+    public static void pastIsLitAsItWas(GameTestHelper helper) {
+        BlockPos removedRoof = new BlockPos(3, 4, 3);
+        BlockPos pastRoof = new BlockPos(1, 4, 1);
+        helper.setBlock(removedRoof, Blocks.STONE);
+        var level = helper.getLevel();
+        PastWorld world = new PastWorld(level, Map.of(helper.absolutePos(pastRoof), Blocks.STONE.defaultBlockState()),
+                Set.of(helper.absolutePos(removedRoof)));
+        BoundingBox area = BoundingBox.fromCorners(helper.absolutePos(new BlockPos(0, 2, 0)), helper.absolutePos(new BlockPos(6, 5, 6)));
+        world.setLight(List.of(PastLight.compute(world, (layer, pos) -> layer == LightLayer.SKY ? 15 : 0, area)));
+
+        int underRemoved = world.getBrightness(LightLayer.SKY, helper.absolutePos(new BlockPos(3, 2, 3)));
+        int open = world.getBrightness(LightLayer.SKY, helper.absolutePos(new BlockPos(5, 2, 5)));
+        int underPastRoof = world.getBrightness(LightLayer.SKY, helper.absolutePos(new BlockPos(1, 2, 1)));
+        helper.assertTrue(open == 15, "open sky should be full light: " + open);
+        helper.assertTrue(underRemoved == 15, "a removed block should cast no shadow: " + underRemoved);
+        helper.assertTrue(underPastRoof < 15, "the past's own roof should shade: " + underPastRoof);
         helper.succeed();
     }
 

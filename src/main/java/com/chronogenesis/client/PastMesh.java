@@ -83,6 +83,12 @@ public final class PastMesh implements AutoCloseable {
             volumes.add(new AABB(area.minX(), area.minY(), area.minZ(), area.maxX() + 1, area.maxY() + 1, area.maxZ() + 1));
         }
         BlockPos origin = new BlockPos(areas.get(0).minX(), areas.get(0).minY(), areas.get(0).minZ());
+        // Light the past as it was: no shadows from what the Lens removes, shadows from what only stood then.
+        List<PastLight> light = new ArrayList<>();
+        for (BoundingBox area : areas) {
+            light.add(PastLight.compute(world, level::getBrightness, area));
+        }
+        world.setLight(light);
 
         BlockRenderDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
         Map<RenderType, ByteBufferBuilder> memory = new IdentityHashMap<>();
