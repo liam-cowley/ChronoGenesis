@@ -54,7 +54,8 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   Call of Cthulhu (eyes, maws, tentacles, eldritch green) + steampunk (brass, copper, rivets, valves).
   Edit the script and re-run rather than hand-editing PNGs, unless replacing a texture with real art for good.
 - Post-processing shaders live in `assets/chronogenesis/shaders/` (post chain + program JSON + `.fsh`), run from
-  client code with a `PostChain` (see `client/EventHorizonEffect`). They must compile under GL 3.2 core
+  client code with a `PostChain` (see `client/LensView`: render into a chain target during the world render at
+  `AFTER_WEATHER`, composite from a HUD layer the way vanilla's blur does; `AFTER_LEVEL` has no camera matrices). They must compile under GL 3.2 core
   (`#version 150`); a shader that fails to load disables its effect instead of crashing.
 - The creative-only Eternal Hourglass keeps essences full and instruments charged while carried: use it to test.
 - `tools/make_structures.py` writes the worldgen structure templates. Each ruin is generated from its "past"

@@ -398,13 +398,38 @@ public final class ChronoGameTests {
         BlockPos origin = helper.absolutePos(new BlockPos(0, 40, 0));
         BlockState brainTable = ModBlocks.DISSECTION_TABLE.get().defaultBlockState().setValue(DissectionTableBlock.BRAIN, true);
 
-        List<PastViews.PastBlock> plain = PastViews.diff(helper.getLevel(), past, origin, Rotation.NONE);
+        List<PastViews.PastBlock> plain = PastViews.pastOf(helper.getLevel(), past, origin, Rotation.NONE).blocks();
         helper.assertTrue(plain.contains(new PastViews.PastBlock(origin.offset(5, 1, 6), brainTable)), "table not at (5,1,6)");
 
         // Clockwise: (x, y, z) -> (-z, y, x).
-        List<PastViews.PastBlock> turned = PastViews.diff(helper.getLevel(), past, origin, Rotation.CLOCKWISE_90);
+        List<PastViews.PastBlock> turned = PastViews.pastOf(helper.getLevel(), past, origin, Rotation.CLOCKWISE_90).blocks();
         helper.assertTrue(turned.contains(new PastViews.PastBlock(origin.offset(-6, 1, 5), brainTable)), "rotated table misplaced");
         helper.assertTrue(plain.size() == turned.size(), "rotation changed the block count");
+        helper.succeed();
+    }
+
+    /**
+     * Inside the lens the past replaces the present: every block of it is drawn (even ones that still stand),
+     * and anything standing now where the past had air (rubble, cobwebs, a block placed since) is erased.
+     */
+    @GameTest(template = "floor7")
+    public static void pastReplacesThePresent(GameTestHelper helper) {
+        StructureTemplate pastTemplate = helper.getLevel().getStructureManager()
+                .get(ChronoGenesis.id("abandoned_laboratory_past")).orElseThrow();
+        BlockPos origin = helper.absolutePos(new BlockPos(0, 40, 0));
+        BlockPos rubble = origin.offset(5, 3, 4);   // open air in the middle of the past lab
+        BlockPos wall = origin.offset(1, 1, 0);     // a stone brick wall, then as now
+        helper.getLevel().setBlockAndUpdate(rubble, Blocks.COBBLESTONE.defaultBlockState());
+        helper.getLevel().setBlockAndUpdate(wall, Blocks.STONE_BRICKS.defaultBlockState());
+
+        PastViews.Past past = PastViews.pastOf(helper.getLevel(), pastTemplate, origin, Rotation.NONE);
+        helper.assertTrue(past.erased().contains(rubble), "the rubble should be erased in the past view");
+        helper.assertTrue(past.blocks().contains(new PastViews.PastBlock(wall, Blocks.STONE_BRICKS.defaultBlockState())),
+                "the past should be drawn whole, even where it still stands");
+        helper.assertFalse(past.erased().contains(wall), "a block that was there then is not erased");
+
+        helper.getLevel().setBlockAndUpdate(rubble, Blocks.AIR.defaultBlockState());
+        helper.getLevel().setBlockAndUpdate(wall, Blocks.AIR.defaultBlockState());
         helper.succeed();
     }
 

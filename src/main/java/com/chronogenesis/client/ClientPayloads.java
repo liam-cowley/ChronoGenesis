@@ -10,7 +10,7 @@ public final class ClientPayloads {
     private ClientPayloads() {}
 
     public static void pastView(PastViewPayload payload) {
-        PastViewRenderer.receive(payload);
+        LensView.receive(payload);
     }
 
     public static void openChronocortex(OpenChronocortexPayload payload) {

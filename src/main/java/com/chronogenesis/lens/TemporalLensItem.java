@@ -120,7 +120,7 @@ public class TemporalLensItem extends EssenceContainerItem {
             }
             PastViews.View view = PastViews.around(serverLevel, player.blockPosition(), depth(stack));
             view.clues().forEach(clue -> Clues.grant(player, clue));
-            send(player, PastViewPayload.of(view));
+            send(player, PastViewPayload.of(view.past()));
         }
         scanTick(player, depth(stack));
         obeliskTick(player);

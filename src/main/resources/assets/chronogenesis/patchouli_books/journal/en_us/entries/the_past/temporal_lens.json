@@ -7,7 +7,12 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "The Chronocortex can grow a spyglass that looks $(o)backwards$(). Hold it to my eye and the present fades; what stood here before shows through, a sepia ghost.$(br2)It burns $(l)Time$(): its own store first (pour a Stasis Ampoule onto it), then my pool. A dram every two seconds, more for deeper looks."
+      "text": "The Chronocortex can grow a spyglass that looks $(o)backwards$(). Hold it to my eye and, through the round glass, the past stands where the present was, in faded sepia; around the glass, the present goes on.$(br2)It burns $(l)Time$(): its own store first (pour a Stasis Ampoule onto it), then my pool. A dram every two seconds, more for deeper looks."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Careful",
+      "text": "What the glass shows is the past, $(l)not$() the present. A floor through the lens may be a hole now; rubble the lens wipes away is still there to trip over. Do not walk while looking."
     },
     {
       "type": "patchouli:text",

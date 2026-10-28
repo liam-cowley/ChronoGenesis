@@ -44,9 +44,18 @@ public final class PastViews {
     /** One block of the past, and where it stood. */
     public record PastBlock(BlockPos pos, BlockState state) {}
 
-    /** What the Lens sees: the past blocks, and any clues seeing them gives. */
-    public record View(List<PastBlock> blocks, List<ResourceLocation> clues) {
-        public static final View EMPTY = new View(List.of(), List.of());
+    /**
+     * What the Lens sees of the past: every block of it that stood within the structures in view, and where
+     * something stands now that did not then (rubble, cobwebs, blocks placed since). Inside the lens the past
+     * replaces the present entirely, so the client draws the first and erases the second.
+     */
+    public record Past(List<PastBlock> blocks, List<BlockPos> erased) {
+        public static final Past EMPTY = new Past(List.of(), List.of());
+    }
+
+    /** What the Lens sees: the past, and any clues seeing it gives. */
+    public record View(Past past, List<ResourceLocation> clues) {
+        public static final View EMPTY = new View(Past.EMPTY, List.of());
     }
 
     private PastViews() {}
@@ -63,6 +72,7 @@ public final class PastViews {
         }
         Registry<Structure> structures = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
         List<PastBlock> blocks = new ArrayList<>();
+        List<BlockPos> erased = new ArrayList<>();
         List<ResourceLocation> clues = new ArrayList<>();
         int cx = center.getX() >> 4;
         int cz = center.getZ() >> 4;
@@ -79,22 +89,27 @@ public final class PastViews {
                     }
                     for (PastView view : views.get()) {
                         if (view.structure().equals(key.get()) && depth.reaches(view.depth())) {
-                            addStart(level, start.getValue(), view, blocks);
+                            addStart(level, start.getValue(), view, blocks, erased);
                             view.clue().ifPresent(clues::add);
                         }
                     }
                 }
             }
         }
-        // Nothing of the past survives inside an obelisk's event horizon.
+        // Nothing of the past survives inside an obelisk's event horizon: the shader blacks it out instead.
         List<BlockPos> obelisks = Obelisks.near(level, Vec3.atCenterOf(center), (CHUNK_RADIUS + 1) * 16.0);
         if (!obelisks.isEmpty()) {
             blocks.removeIf(block -> Obelisks.swallowed(obelisks, Vec3.atCenterOf(block.pos())));
+            erased.removeIf(pos -> Obelisks.swallowed(obelisks, Vec3.atCenterOf(pos)));
         }
-        return new View(blocks.size() > MAX_BLOCKS ? blocks.subList(0, MAX_BLOCKS) : blocks, clues);
+        return new View(new Past(cap(blocks), cap(erased)), clues);
     }
 
-    private static void addStart(ServerLevel level, StructureStart start, PastView view, List<PastBlock> out) {
+    private static <T> List<T> cap(List<T> list) {
+        return list.size() > MAX_BLOCKS ? list.subList(0, MAX_BLOCKS) : list;
+    }
+
+    private static void addStart(ServerLevel level, StructureStart start, PastView view, List<PastBlock> blocks, List<BlockPos> erased) {
         Optional<StructureTemplate> template = level.getStructureManager().get(view.template());
         if (template.isEmpty()) {
             ChronoGenesis.LOGGER.warn("Past view template {} is missing", view.template());
@@ -102,31 +117,38 @@ public final class PastViews {
         }
         for (StructurePiece piece : start.getPieces()) {
             if (piece instanceof PoolElementStructurePiece pooled) {
-                out.addAll(diff(level, template.get(), pooled.getPosition(), pooled.getRotation()));
+                Past past = pastOf(level, template.get(), pooled.getPosition(), pooled.getRotation());
+                blocks.addAll(past.blocks());
+                erased.addAll(past.erased());
             }
         }
     }
 
     /**
-     * The blocks of {@code template}, placed at {@code origin} with {@code rotation} the way a jigsaw piece is,
-     * that are not already standing there. Air in the past is left out: the Lens adds, it cannot take away.
+     * The past of one piece: {@code template} placed at {@code origin} with {@code rotation} the way a jigsaw
+     * piece is. Every solid block of the template is part of it; wherever the template says air but something
+     * stands there now, that block is erased. Spots the template leaves out (structure void) keep the present.
      */
-    public static List<PastBlock> diff(Level level, StructureTemplate template, BlockPos origin, Rotation rotation) {
-        List<PastBlock> out = new ArrayList<>();
+    public static Past pastOf(Level level, StructureTemplate template, BlockPos origin, Rotation rotation) {
+        List<PastBlock> blocks = new ArrayList<>();
+        List<BlockPos> erased = new ArrayList<>();
         if (template.palettes.isEmpty()) {
-            return out;
+            return Past.EMPTY;
         }
         StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
         for (StructureTemplate.StructureBlockInfo info : template.palettes.get(0).blocks()) {
-            if (info.state().isAir() || info.state().is(Blocks.STRUCTURE_VOID)) {
+            if (info.state().is(Blocks.STRUCTURE_VOID)) {
                 continue;
             }
             BlockPos pos = origin.offset(StructureTemplate.calculateRelativePosition(settings, info.pos()));
-            BlockState state = info.state().rotate(level, pos, rotation);
-            if (!level.getBlockState(pos).equals(state)) {
-                out.add(new PastBlock(pos, state));
+            if (info.state().isAir()) {
+                if (!level.getBlockState(pos).isAir()) {
+                    erased.add(pos);
+                }
+            } else {
+                blocks.add(new PastBlock(pos, info.state().rotate(level, pos, rotation)));
             }
         }
-        return out;
+        return new Past(blocks, erased);
     }
 }

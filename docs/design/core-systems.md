@@ -319,13 +319,17 @@ The view is generated from the world seed plus these changes, so it is a plausib
 than a pure replay.
 
 **As built:** the Lens is grown by research and burns Time (its own store, then the player's pool;
-1 dram per 2 s, 2 at Centuries). While it is in use, the server compares each nearby structure with a
-**past view** (`data/<ns>/chronogenesis/past_view/<name>.json`: structure, past template, depth, clue)
-and sends the blocks of the past template that differ from what stands there now; the client draws
-them as translucent sepia ghosts under a vignette, zoomed like a spyglass. Air in the past is not
-shown (the Lens adds, it cannot take away), player-placed blocks do not fade yet, and Echo shows
-nothing yet. Holding the view on a Faded Blueprint for 2 s at Decades or deeper reads it into a
-`blueprint_<name>` clue.
+1 dram per 2 s, 2 at Centuries). The past shows only inside a **round lens** in the middle of the
+screen (like Thaumcraft's), framed in brass; around it the present goes on, dimmed. While it is in
+use the server compares each nearby structure with its **past view**
+(`data/<ns>/chronogenesis/past_view/<name>.json`: structure, past template, depth, clue) and sends
+the whole past template plus every present block standing where the past had air. The client copies
+the frame, erases those newer blocks (rubble, cobwebs, anything placed since), draws the past solid
+over the present, and composites the copy inside the lens with one post shader
+(`shaders/post/temporal_lens.json`, `client/LensView`). **The past overrides the present inside the
+lens**: a floor seen through it may be a hole now, and erased rubble is still there to walk into.
+Echo shows nothing yet. Holding the view on a Faded Blueprint for 2 s at Decades or deeper reads it
+into a `blueprint_<name>` clue.
 
 ### Clues and the journal
 Things you notice through the Lens become **Clues**, which are logged in the journal:
@@ -354,8 +358,8 @@ one through the Lens shows a distortion **like a black hole**:
 
 **As built:** obelisks generate across the overworld (a dark spire on a plinth, bands of glowing
 inscription, a capstone) and cannot be broken. The capstone's block entity marks them. Through the
-Lens, a full-screen post shader (`assets/chronogenesis/shaders/post/event_horizon.json`) centred on the
-obelisk's projected heart lenses and swirls the image, smears it along the orbit, splits its colours,
+Lens, the lens shader (`shaders/post/temporal_lens.json`), centred on the obelisk's projected heart,
+lenses and swirls the image (across the whole screen, overwhelmingly inside the lens), smears it along the orbit, splits its colours,
 tears scanlines, jumps blocks of the image, and burns a photon ring around a black horizon with static
 inside; strength fades from 16 to 64 blocks. Past-view ghosts inside the horizon (4.5 blocks) are
 dropped. Seeing one gives *A stone that time bends around*; holding the Lens on it from the edge
