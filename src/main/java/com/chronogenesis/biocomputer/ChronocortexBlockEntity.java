@@ -394,6 +394,17 @@ public class ChronocortexBlockEntity extends BlockEntity {
             return ItemInteractionResult.SUCCESS;
         }
         GlobalPos end = spool.get(ModDataComponents.SPOOL_END.get());
+        if (end == null && NerveSpoolItem.threaded(spool)) {
+            // A threaded nerve takes root in the cortex itself, to be carried back through time.
+            if (spool.has(ModDataComponents.SPOOL_CORTEX.get())) {
+                player.displayClientMessage(Component.translatable("message.chronogenesis.spool.cortex_already").withStyle(ChatFormatting.GRAY), true);
+                return ItemInteractionResult.CONSUME;
+            }
+            spool.set(ModDataComponents.SPOOL_CORTEX.get(), name == null ? "" : name);
+            serverLevel.playSound(null, worldPosition, SoundEvents.SLIME_BLOCK_PLACE, SoundSource.BLOCKS, 1.0f, 0.4f);
+            say("spool_rooted");
+            return ItemInteractionResult.SUCCESS;
+        }
         if (end == null) {
             player.displayClientMessage(Component.translatable("message.chronogenesis.spool.loose").withStyle(ChatFormatting.GRAY), false);
             return ItemInteractionResult.CONSUME;
@@ -425,6 +436,10 @@ public class ChronocortexBlockEntity extends BlockEntity {
         serverLevel.playSound(null, end.pos(), SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0f, 0.4f);
         Era known = Eras.get(serverLevel.registryAccess(), era);
         say("memory", known == null ? Component.literal(era.toString()) : known.title());
+        if (era.equals(com.chronogenesis.ChronoGenesis.id("hadean_eon"))) {
+            // It has seen the world unmade: it knows what is before it, and wants to go.
+            say("last_offshoot.prompt");
+        }
         if (player instanceof ServerPlayer serverPlayer) {
             Research.set(serverPlayer, Research.get(serverPlayer).withCompleted(memoryOf(era)));
         }

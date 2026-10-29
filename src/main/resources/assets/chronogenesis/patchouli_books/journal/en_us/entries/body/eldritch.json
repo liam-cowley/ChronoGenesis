@@ -1,0 +1,18 @@
+{
+  "name": "The Eldritch Depth",
+  "icon": "chronogenesis:unbegotten_pump",
+  "category": "chronogenesis:body",
+  "sortnum": 6,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "I gave the Chronocortex the heart. It knew it: it was its own. It made a $(l)pump$() of it in brass. Grafted onto a $(l)level 3 Enhancing Gland$(), it drives the essence deeper than any gland can swell, to a depth a body is not meant to hold. There, one power of each essence wakes."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What Wakes",
+      "text": "$(l)Collapse$() (Density): crushing weight where I look; all near falls in.$(br)$(l)Slip$() (Speed): step between moments to where I look.$(br)$(l)Writhe$() (Size): tentacles burst from the ground round me.$(br)$(l)Thousand Eyes$() (Awareness): all that lives near glows through stone; nothing blinds me.$(br)$(l)Aeon$() (Time): what I look at lives an aeon in a moment."
+    }
+  ]
+}

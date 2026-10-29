@@ -32,6 +32,7 @@ public class UnbegottenModel extends HierarchicalModel<Unbegotten> {
     private final ModelPart root;
     private final ModelPart body;
     private final ModelPart pupil;
+    private final ModelPart maw;
     private final List<List<ModelPart>> tentacles = new ArrayList<>();
     private final List<List<ModelPart>> stalks = new ArrayList<>();
 
@@ -39,6 +40,7 @@ public class UnbegottenModel extends HierarchicalModel<Unbegotten> {
         this.root = root;
         this.body = root.getChild("body");
         this.pupil = body.getChild("pupil");
+        this.maw = body.getChild("maw");
         for (int i = 0; i < TENTACLES; i++) {
             tentacles.add(chain(body.getChild("tentacle_" + i), SEGMENTS));
         }
@@ -107,6 +109,9 @@ public class UnbegottenModel extends HierarchicalModel<Unbegotten> {
     public void setupAnim(Unbegotten entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
             float headPitch) {
         body.y = Mth.sin(ageInTicks * 0.05f) * 1.2f;
+        // Once the maw has opened, it gapes; inhaling, it gapes wide.
+        float gape = entity.phase() >= Unbegotten.PHASE_MAW ? (entity.inhaling() ? 3.5f : 1.2f + 0.6f * Mth.sin(ageInTicks * 0.1f)) : 0;
+        maw.y = gape;
         // The pupil follows whoever it looks at.
         pupil.x = Mth.clamp(netHeadYaw / 18.0f, -3.0f, 3.0f);
         pupil.y = Mth.clamp(headPitch / 25.0f, -1.0f, 1.0f);

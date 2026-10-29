@@ -63,7 +63,19 @@ public enum Power implements StringRepresentable {
     /** Size + Time: your body's time runs back to before the wound. Heals, and washes out harmful effects. */
     REGROWTH(Kind.ACTIVE, 1, Aspect.SIZE, Aspect.TIME),
     /** Awareness + Time: you glimpse the next blow before it lands, and are not there when it does. */
-    PREMONITION(Kind.PASSIVE, 1, Aspect.AWARENESS, Aspect.TIME);
+    PREMONITION(Kind.PASSIVE, 1, Aspect.AWARENESS, Aspect.TIME),
+
+    // Eldritch: one for each essence, at the depth only a gland driven by the Unbegotten's heart reaches (level 4).
+    /** Density: a point of crushing weight where you look; creatures fall into it, and are crushed. */
+    COLLAPSE(Kind.ACTIVE, 4, Aspect.DENSITY),
+    /** Speed: you step through the gap between two moments, and are where you were looking. */
+    SLIP(Kind.ACTIVE, 4, Aspect.SPEED),
+    /** Size: tentacles burst out of the ground round you, flinging and holding what they catch. */
+    WRITHE(Kind.ACTIVE, 4, Aspect.SIZE),
+    /** Awareness: a thousand eyes open in you. Everything living near glows through stone; nothing blinds you. */
+    THOUSAND_EYES(Kind.PASSIVE, 4, Aspect.AWARENESS),
+    /** Time: you look at something and it lives an aeon: it withers, slows, and ages to nothing. */
+    AEON(Kind.ACTIVE, 4, Aspect.TIME);
 
     public enum Kind {
         /** Switched on and left running. */
@@ -106,6 +118,11 @@ public enum Power implements StringRepresentable {
 
     public boolean isComposite() {
         return aspects.size() > 1;
+    }
+
+    /** An Eldritch power: woken only by a gland with the Unbegotten's heart in it. */
+    public boolean isEldritch() {
+        return minLevel >= 4;
     }
 
     /** The composite power that mixes these two essences, or null if they are the same. */

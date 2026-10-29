@@ -147,7 +147,8 @@ public final class Remnants extends SavedData {
 
     @SubscribeEvent
     static void onPlace(BlockEvent.EntityPlaceEvent event) {
-        if (!(event.getLevel() instanceof ServerLevel level)) {
+        if (!(event.getLevel() instanceof ServerLevel level) || com.chronogenesis.entity.CargoHold.isHold(event.getPos())) {
+            // Blocks on a beast's back go where the beast goes: they stay nowhere.
             return;
         }
         ResourceLocation era = eraOf(level);

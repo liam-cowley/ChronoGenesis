@@ -56,11 +56,26 @@ public class RidersSeatBlock extends HorizontalDirectionalBlock {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
-        if (!level.getEntitiesOfClass(RiderSeat.class, new AABB(pos)).isEmpty() || player.isPassenger()) {
+        if (player.isPassenger()) {
             return InteractionResult.PASS;
         }
         RiderSeat seat = new RiderSeat(ModEntities.RIDER_SEAT.get(), level);
-        seat.moveTo(pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, state.getValue(FACING).toYRot(), 0);
+        Titanosaur beast = CargoHold.beastAt(level, pos);
+        if (beast != null) {
+            // On a beast: the seat rides where its block is on the beast's back.
+            BlockPos offset = pos.subtract(beast.cargo().harness());
+            if (!level.getEntitiesOfClass(RiderSeat.class, beast.getBoundingBox().inflate(32),
+                    other -> other.carrier() == beast && other.seatOffset().equals(offset)).isEmpty()) {
+                return InteractionResult.PASS;
+            }
+            seat.setYRot(beast.getYRot());
+            seat.carriedBy(beast, offset);
+        } else {
+            if (!level.getEntitiesOfClass(RiderSeat.class, new AABB(pos)).isEmpty()) {
+                return InteractionResult.PASS;
+            }
+            seat.moveTo(pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5, state.getValue(FACING).toYRot(), 0);
+        }
         level.addFreshEntity(seat);
         player.startRiding(seat);
         return InteractionResult.CONSUME;

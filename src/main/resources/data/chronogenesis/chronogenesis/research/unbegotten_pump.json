@@ -1,0 +1,39 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.unbegotten_pump"
+  },
+  "description": {
+    "translate": "research.chronogenesis.unbegotten_pump.desc"
+  },
+  "icon": "chronogenesis:unbegotten_pump",
+  "stage": 3,
+  "requires": [
+    "chronogenesis:last_offshoot"
+  ],
+  "essence": {
+    "density": 32,
+    "time": 48
+  },
+  "materials": [
+    {
+      "item": "chronogenesis:heart_of_the_unbegotten",
+      "count": 1
+    },
+    {
+      "tag": "c:ingots/brass",
+      "count": 4
+    }
+  ],
+  "clues": [
+    [
+      "chronogenesis:unbegotten_slain"
+    ]
+  ],
+  "order": 14,
+  "rewards": [
+    {
+      "id": "chronogenesis:unbegotten_pump",
+      "count": 1
+    }
+  ]
+}

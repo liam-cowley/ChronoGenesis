@@ -75,5 +75,12 @@ public final class ModAttachments {
                     .serialize(com.mojang.serialization.Codec.LONG, until -> until > 0)
                     .build());
 
+    /** On players: the Unbegotten's grafts grown into their body (player/PlayerGrafts). Kept through death. */
+    public static final Supplier<AttachmentType<List<com.chronogenesis.player.PlayerGraft>>> PLAYER_GRAFTS = ATTACHMENT_TYPES.register("player_grafts",
+            () -> AttachmentType.<List<com.chronogenesis.player.PlayerGraft>>builder(() -> List.of())
+                    .serialize(com.chronogenesis.player.PlayerGraft.CODEC.listOf(), list -> !list.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
     private ModAttachments() {}
 }

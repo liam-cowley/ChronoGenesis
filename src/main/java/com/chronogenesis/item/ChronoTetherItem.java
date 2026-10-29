@@ -29,7 +29,11 @@ public class ChronoTetherItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer) {
-            if (TemporalShift.get(serverPlayer).active()) {
+            if (TemporalShift.get(serverPlayer).active() && com.chronogenesis.timetravel.ElderArena.binds(serverPlayer)) {
+                // The Unbegotten holds its arena: the tether goes slack.
+                player.displayClientMessage(Component.translatable("message.chronogenesis.shift.bound")
+                        .withStyle(ChatFormatting.DARK_PURPLE), true);
+            } else if (TemporalShift.get(serverPlayer).active()) {
                 TemporalShift.returnHome(serverPlayer, "message.chronogenesis.shift.reeled_back");
             } else {
                 player.displayClientMessage(Component.translatable("message.chronogenesis.shift.slack")

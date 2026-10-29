@@ -115,6 +115,11 @@ public class DissectionTableBlock extends BaseEntityBlock {
         if (level.isClientSide() || !(level.getBlockEntity(pos) instanceof DissectionTableBlockEntity table)) {
             return InteractionResult.sidedSuccess(level.isClientSide());
         }
+        if (player.isSecondaryUseActive() && !table.hasBrain() && player instanceof net.minecraft.server.level.ServerPlayer patient
+                && com.chronogenesis.player.PlayerGrafts.excise(patient, pos)) {
+            // Lying on it, with nothing on it: a graft of the Unbegotten is cut out (core-systems.md section 5).
+            return InteractionResult.SUCCESS;
+        }
         if (player.isSecondaryUseActive() && table.hasBrain()) {
             level.setBlockAndUpdate(pos, state.setValue(BRAIN, false));
             table.clear();

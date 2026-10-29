@@ -82,6 +82,13 @@ public class GraftRenderer implements BlockEntityRenderer<GraftBlockEntity> {
             case ENHANCING_GLAND -> {
                 float throb = 0.75f + 0.12f * OrganParts.beat(time + (seed & 31), 26);
                 OrganParts.draw(OrganParts.SAC, pose, buffer, light, 0, 6.0f, 0, throb, flesh);
+                if (state.hasProperty(com.chronogenesis.organism.GlandBlock.PUMP) && state.getValue(com.chronogenesis.organism.GlandBlock.PUMP)) {
+                    // The Unbegotten's heart, strapped to its side in brass, beating slow and hard; an eye open in it.
+                    float beat = 0.55f + 0.2f * OrganParts.beat(time, 34);
+                    OrganParts.draw(OrganParts.FLESH, pose, buffer, light, 5.0f, 5.0f, 0, beat, OrganParts.tint(0x5A1E66, 1.0f));
+                    OrganParts.draw(OrganParts.STRAP, pose, buffer, light, 5.0f, 5.0f, 0, 0.5f, 0.6f, 0.5f, OrganParts.WHITE);
+                    OrganParts.draw(OrganParts.EYE, pose, buffer, light, 7.4f, 5.0f, 0, 0.5f, OrganParts.tint(0x9CFF80, 1.0f));
+                }
             }
             case STASIS_BLADDER -> {
                 float swell = 0.8f + 0.12f * Mth.sin(time * 0.03f + (seed & 7));

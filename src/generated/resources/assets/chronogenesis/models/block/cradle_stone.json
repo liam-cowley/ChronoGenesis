@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "chronogenesis:block/obelisk_stone",
+    "side": "chronogenesis:block/cradle_stone",
+    "top": "chronogenesis:block/cradle_stone_top"
+  }
+}

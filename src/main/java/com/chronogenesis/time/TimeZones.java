@@ -61,7 +61,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * The chunk keeps its own clock, and whoever stands in it sees its own sky (the sun crawls, or stands still).
  * Letting go (using the power again, running out of Time, or walking more than {@value #RANGE} blocks away) does
  * not snap it back: it speeds up past the world's pace and eases back down until it is exactly on the world's
- * time again, moon phase and all ({@link TimeZone#advance}).
+ * time again, moon phase and all ({@link TimeZone#advance}). Once let go, the power cannot be used again for a
+ * minute ({@link #COOLDOWN}). The Unbegotten tears any hold on time near it that lasts longer than five seconds
+ * ({@link #tear}).
  * <p>
  * The hooks into ticking are mixins ({@code com.chronogenesis.mixin}); this class decides how many ticks are due.
  */
@@ -74,7 +76,12 @@ public final class TimeZones {
     /** A frozen chunk burns a dram of Time every this many ticks; a slowed one, slower the gentler it is. */
     private static final int FREEZE_UPKEEP = 5;
 
+    /** Once a hold on time is let go, the same power cannot bend it again for this long (a minute). */
+    public static final int COOLDOWN = 60 * 20;
+
     private static final ResourceLocation SLOWED = ChronoGenesis.id("time_zone");
+    /** When each player's Slow Time and Time Freeze may next be used (game time). */
+    private static final Map<UUID, Map<Power, Long>> COOLDOWNS = new HashMap<>();
 
     private static final Map<ResourceKey<Level>, Map<Long, TimeZone>> SERVER = new HashMap<>();
     private static final Map<UUID, ServerPlayer> OWNERS = new HashMap<>();
@@ -177,6 +184,12 @@ public final class TimeZones {
             announce(player.serverLevel(), own, power);
             return;
         }
+        int wait = cooldown(player, power);
+        if (wait > 0) {
+            player.displayClientMessage(Component.translatable("message.chronogenesis.power.time.cooldown", power.displayName(),
+                    (wait + 19) / 20).withStyle(ChatFormatting.GRAY), true);
+            return;
+        }
         ServerLevel level = player.serverLevel();
         ChunkPos chunk = player.chunkPosition();
         Map<Long, TimeZone> zones = SERVER.computeIfAbsent(level.dimension(), key -> new HashMap<>());
@@ -196,6 +209,7 @@ public final class TimeZones {
         zone.power = power;
         zone.target = target;
         zone.releasing = false;
+        zone.held = 0;
         zones.put(chunk.toLong(), zone);
         OWNERS.put(player.getUUID(), player);
         TICK_LISTS.put(level.getBlockTicks(), level);
@@ -233,10 +247,39 @@ public final class TimeZones {
         }
     }
 
+    /** Ticks before a player's power can bend time again (0 if it can now). */
+    public static int cooldown(Player player, Power power) {
+        Long until = COOLDOWNS.getOrDefault(player.getUUID(), Map.of()).get(power);
+        return until == null ? 0 : (int) Math.max(0, until - player.level().getGameTime());
+    }
+
+    /**
+     * Something tears every hold on time near {@code centre} that has lasted longer than {@code ticks}: the zones are let
+     * go (and their powers wait out their cooldown). Returns how many were torn.
+     */
+    public static int tear(ServerLevel level, Vec3 centre, double radius, int ticks, String message) {
+        Map<Long, TimeZone> zones = SERVER.get(level.dimension());
+        if (zones == null) {
+            return 0;
+        }
+        int torn = 0;
+        for (TimeZone zone : zones.values()) {
+            BlockPos middle = zone.chunk.getMiddleBlockPosition((int) centre.y);
+            if (!zone.releasing && zone.held > ticks && Vec3.atCenterOf(middle).distanceToSqr(centre) <= radius * radius) {
+                release(zone, zone.owner == null ? null : OWNERS.get(zone.owner), message);
+                torn++;
+            }
+        }
+        return torn;
+    }
+
     private static void release(TimeZone zone, @Nullable ServerPlayer owner, @Nullable String message) {
         zone.releasing = true;
         if (zone.owner != null) {
             OWNERS.remove(zone.owner);
+            if (owner != null && zone.power != null) {
+                COOLDOWNS.computeIfAbsent(zone.owner, id -> new HashMap<>()).put(zone.power, owner.level().getGameTime() + COOLDOWN);
+            }
         }
         zone.owner = null;
         if (owner != null && message != null) {
@@ -288,6 +331,7 @@ public final class TimeZones {
             release(zone, owner, "message.chronogenesis.power.time.too_far");
             return;
         }
+        zone.held++;
         boolean freeze = zone.power == Power.TIME_FREEZE;
         int interval = freeze ? FREEZE_UPKEEP : Math.max(10, (int) Math.round(80 * zone.target));
         if (time % interval == 0) {
@@ -455,6 +499,7 @@ public final class TimeZones {
         SERVER.clear();
         OWNERS.clear();
         TICK_LISTS.clear();
+        COOLDOWNS.clear();
     }
 
     // ---------------------------------------------------------------- called from mixins

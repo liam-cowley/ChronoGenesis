@@ -21,6 +21,10 @@ import net.minecraft.world.level.Level;
 /**
  * A Nerve Spool: a long nerve wound on a brass bobbin. Its loose end takes root in a Fossil Cortex; carried to the
  * Chronocortex and used on it, the nerve is laid between them (however far), and the fossil's memories flow in.
+ * <p>
+ * <b>Threaded</b> through a swollen (level 3) Enhancing Gland, the nerve can reach through time: its loose end takes
+ * root in the Chronocortex itself, and laid into a Last Offshoot in the Cradle Before Time, it makes the offshoot the
+ * cortex, there.
  */
 public class NerveSpoolItem extends Item {
     public NerveSpoolItem(Properties properties) {
@@ -46,15 +50,26 @@ public class NerveSpoolItem extends Item {
         return ItemInteractionResult.sidedSuccess(level.isClientSide());
     }
 
+    public static boolean threaded(ItemStack stack) {
+        return Boolean.TRUE.equals(stack.get(ModDataComponents.SPOOL_THREADED.get()));
+    }
+
     @Override
     public boolean isFoil(ItemStack stack) {
-        return stack.has(ModDataComponents.SPOOL_END.get());
+        return stack.has(ModDataComponents.SPOOL_END.get()) || threaded(stack);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         GlobalPos end = stack.get(ModDataComponents.SPOOL_END.get());
-        if (end == null) {
+        String cortex = stack.get(ModDataComponents.SPOOL_CORTEX.get());
+        if (threaded(stack)) {
+            tooltip.add(Component.translatable("tooltip.chronogenesis.nerve_spool.threaded").withStyle(ChatFormatting.LIGHT_PURPLE));
+        }
+        if (cortex != null) {
+            tooltip.add(Component.translatable("tooltip.chronogenesis.nerve_spool.cortex", cortex.isEmpty()
+                    ? Component.translatable("whisper.chronogenesis.unnamed") : Component.literal(cortex)).withStyle(ChatFormatting.DARK_AQUA));
+        } else if (end == null) {
             tooltip.add(Component.translatable("tooltip.chronogenesis.nerve_spool").withStyle(ChatFormatting.GRAY));
         } else {
             tooltip.add(Component.translatable("tooltip.chronogenesis.nerve_spool.bound", end.pos().getX(), end.pos().getY(),

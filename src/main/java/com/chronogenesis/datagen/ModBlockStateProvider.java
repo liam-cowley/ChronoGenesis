@@ -617,6 +617,16 @@ public class ModBlockStateProvider extends BlockStateProvider {
         box(offshoot, 7.5f, 0, 2, 8.5f, 0.5f, 5, "#root", false);
         simpleBlock(ModBlocks.CORTEX_OFFSHOOT.get(), offshoot);
 
+        // The Last Offshoot: the same jar, the bud in it already gone strange (violet folds, an eye of green).
+        BlockModelBuilder last = models().withExistingParent("last_offshoot", modLoc("block/cortex_offshoot"))
+                .texture("brain", modLoc("block/last_offshoot"))
+                .texture("particle", modLoc("block/last_offshoot"));
+        simpleBlock(ModBlocks.LAST_OFFSHOOT.get(), last);
+        // The Cradle Stone: obelisk-black, a ring of eldritch runes on its top, its sides cut with channels.
+        simpleBlockWithItem(ModBlocks.CRADLE_STONE.get(), models().cubeBottomTop("cradle_stone", modLoc("block/cradle_stone"),
+                modLoc("block/obelisk_stone"), modLoc("block/cradle_stone_top")));
+        simpleBlockWithItem(ModBlocks.UNBEGOTTEN_FLESH.get(), models().cubeAll("unbegotten_flesh", modLoc("block/unbegotten_flesh")));
+
         BlockModelBuilder[] fossils = new BlockModelBuilder[2];
         for (int awake = 0; awake < 2; awake++) {
             BlockModelBuilder fossil = models().withExistingParent(awake == 1 ? "fossil_cortex_awake" : "fossil_cortex", mcLoc("block/block"))

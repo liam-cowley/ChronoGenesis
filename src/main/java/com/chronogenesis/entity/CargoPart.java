@@ -15,14 +15,16 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 
 /**
- * The solid shape of a Titanosaur's carried cargo ({@link DinoCargo}): the cargo's blocks merged into a few boxes, each
- * a part of the beast that other things collide with (you can stand on it; it carries you along). Boxes are kept
- * square to the world, so at a slant each covers a little more than its blocks. Unused parts are empty and pass
- * through everything.
+ * The solid shape of a Titanosaur's cargo ({@link DinoCargo}): the cargo's blocks merged into boxes of a few blocks
+ * across, each a part of the beast that other things collide with (you can stand on it; it carries you along). Boxes
+ * are kept square to the world, so at a slant each covers a little more than its blocks. Unused parts are empty and
+ * pass through everything.
  */
 public class CargoPart extends PartEntity<Titanosaur> {
     /** How many boxes a cargo's shape is merged into, at most. */
-    public static final int COUNT = 16;
+    public static final int COUNT = 32;
+    /** A box is at most this many blocks across, so that turned at a slant it covers little more than its blocks. */
+    private static final int SIDE = 5;
     private AABB box = new AABB(0, 0, 0, 0, 0, 0);
     private boolean active;
 
@@ -111,12 +113,12 @@ public class CargoPart extends PartEntity<Titanosaur> {
             }
             int y = start.getY();
             int x1 = start.getX();
-            while (left.contains(new BlockPos(x1 + 1, y, start.getZ()))) {
+            while (x1 - start.getX() + 1 < SIDE && left.contains(new BlockPos(x1 + 1, y, start.getZ()))) {
                 x1++;
             }
             int z1 = start.getZ();
             grow:
-            while (true) {
+            while (z1 - start.getZ() + 1 < SIDE) {
                 for (int x = start.getX(); x <= x1; x++) {
                     if (!left.contains(new BlockPos(x, y, z1 + 1))) {
                         break grow;

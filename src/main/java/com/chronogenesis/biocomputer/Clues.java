@@ -51,10 +51,13 @@ public final class Clues {
     /** A temple's barrier brought down: three of its seals broken. */
     public static final ResourceLocation SEALED_TEMPLE = ChronoGenesis.id("sealed_temple");
 
+    /** The Unbegotten slain: its heart is in your hands. */
+    public static final ResourceLocation UNBEGOTTEN_SLAIN = ChronoGenesis.id("unbegotten_slain");
+
     /** Clues from witnessing things. Blueprints add one each: see {@link com.chronogenesis.lens.Blueprint#clue()}. */
     public static final List<ResourceLocation> ALL = List.of(FLOATING, VACANT, DUST, TORN, LONG_ROAD, HEAVY_HEART, ALIVE, LAB_PRIME,
             NAIL_IN_TIME, OLDER_INSCRIPTION, FIRST_CITIES, ICE_AGE,
-            GIANTS_WALKED, SEALED_TEMPLE);
+            GIANTS_WALKED, SEALED_TEMPLE, UNBEGOTTEN_SLAIN);
 
     /** How close a player must be to notice something. */
     public static final double WITNESS_RANGE = 16.0;

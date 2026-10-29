@@ -9,6 +9,8 @@ import com.chronogenesis.registry.ModAttachments;
 import com.chronogenesis.registry.ModEntities;
 import com.chronogenesis.temple.SealBlock;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.SheetedDecalTextureGenerator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
 import net.minecraft.client.Minecraft;
@@ -19,6 +21,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -95,7 +98,7 @@ public final class DinoRenderers {
             poseStack.scale(scale, scale, scale);
         }
 
-        /** Its carried cargo, drawn block by block on its back, turning with it. */
+        /** Its cargo, drawn block by block on its back, turning with it (and cracking where it is being broken). */
         @Override
         public void render(Titanosaur entity, float yaw, float partialTick, PoseStack poseStack, MultiBufferSource buffers, int light) {
             super.render(entity, yaw, partialTick, poseStack, buffers, light);
@@ -103,7 +106,8 @@ public final class DinoRenderers {
             if (!cargo.carrying()) {
                 return;
             }
-            BlockRenderDispatcher blocks = Minecraft.getInstance().getBlockRenderer();
+            Minecraft mc = Minecraft.getInstance();
+            BlockRenderDispatcher blocks = mc.getBlockRenderer();
             float bodyYaw = Mth.rotLerp(partialTick, entity.yRotO, entity.getYRot());
             Vec3 at = entity.getPosition(partialTick);
             poseStack.pushPose();
@@ -115,6 +119,12 @@ public final class DinoRenderers {
                 poseStack.translate(local.x, local.y, local.z);
                 blocks.renderSingleBlock(block.state(), poseStack, buffers, LevelRenderer.getLightColor(entity.level(), lightAt),
                         OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
+                int cracks = CargoControls.cracks(entity, block.offset());
+                if (cracks >= 0 && mc.level != null) {
+                    VertexConsumer crumbling = new SheetedDecalTextureGenerator(
+                            buffers.getBuffer(ModelBakery.DESTROY_TYPES.get(cracks)), poseStack.last(), 1.0f);
+                    blocks.renderBreakingTexture(block.state(), lightAt, mc.level, poseStack, crumbling);
+                }
                 poseStack.popPose();
             }
             poseStack.popPose();

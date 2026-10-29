@@ -134,6 +134,31 @@ public final class ModItems {
     /** What the Unbegotten leaves: a heart that beat before time began. */
     public static final DeferredItem<Item> HEART_OF_THE_UNBEGOTTEN = ITEMS.registerSimpleItem("heart_of_the_unbegotten",
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant());
+    /** The Unbegotten's heart, made a pump by the Chronocortex: grafted onto a level 3 gland, it wakes the Eldritch powers. */
+    public static final DeferredItem<Item> UNBEGOTTEN_PUMP = ITEMS.registerItem("unbegotten_pump",
+            properties -> new Item(properties) {
+                @Override
+                public void appendHoverText(net.minecraft.world.item.ItemStack stack, TooltipContext context,
+                        java.util.List<net.minecraft.network.chat.Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+                    tooltip.add(net.minecraft.network.chat.Component.translatable("tooltip.chronogenesis.unbegotten_pump")
+                            .withStyle(net.minecraft.ChatFormatting.GRAY));
+                }
+            }, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant());
+    /** The Chronocortex's last bud: planted in the Cradle Stone Before Time. Grown by research. */
+    public static final DeferredItem<com.chronogenesis.eldritch.LastOffshootBlock.Item> LAST_OFFSHOOT = ITEMS.registerItem("last_offshoot",
+            properties -> new com.chronogenesis.eldritch.LastOffshootBlock.Item(ModBlocks.LAST_OFFSHOOT.get(), properties),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static final DeferredItem<BlockItem> CRADLE_STONE = ITEMS.registerSimpleBlockItem("cradle_stone", ModBlocks.CRADLE_STONE);
+    public static final DeferredItem<BlockItem> UNBEGOTTEN_FLESH = ITEMS.registerSimpleBlockItem("unbegotten_flesh", ModBlocks.UNBEGOTTEN_FLESH);
+    /** Grafts of the Unbegotten, for a body: left when it dies. */
+    public static final DeferredItem<com.chronogenesis.item.PlayerGraftItem> UNBLINKING_EYE = playerGraft("unblinking_eye",
+            com.chronogenesis.player.PlayerGraft.UNBLINKING_EYE);
+    public static final DeferredItem<com.chronogenesis.item.PlayerGraftItem> DORSAL_TENDRILS = playerGraft("dorsal_tendrils",
+            com.chronogenesis.player.PlayerGraft.DORSAL_TENDRILS);
+    public static final DeferredItem<com.chronogenesis.item.PlayerGraftItem> GRASPING_TENTACLE = playerGraft("grasping_tentacle",
+            com.chronogenesis.player.PlayerGraft.GRASPING_TENTACLE);
+    public static final DeferredItem<com.chronogenesis.item.PlayerGraftItem> UNBEGOTTEN_HIDE = playerGraft("unbegotten_hide",
+            com.chronogenesis.player.PlayerGraft.UNBEGOTTEN_HIDE);
     public static final DeferredItem<DeferredSpawnEggItem> UNBEGOTTEN_SPAWN_EGG = ITEMS.registerItem("unbegotten_spawn_egg",
             properties -> new DeferredSpawnEggItem(ModEntities.UNBEGOTTEN, 0x1A0A24, 0xA6FF80, properties));
     public static final DeferredItem<BlockItem> CORE_SINEW = ITEMS.registerSimpleBlockItem("core_sinew", ModBlocks.CORE_SINEW);
@@ -207,6 +232,11 @@ public final class ModItems {
 
     private static DeferredItem<NeedleItem> needle(String name, Aspect aspect) {
         return ITEMS.registerItem(name, properties -> new NeedleItem(properties, aspect), new Item.Properties().stacksTo(16));
+    }
+
+    private static DeferredItem<com.chronogenesis.item.PlayerGraftItem> playerGraft(String name, com.chronogenesis.player.PlayerGraft graft) {
+        return ITEMS.registerItem(name, properties -> new com.chronogenesis.item.PlayerGraftItem(graft, properties),
+                new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
     }
 
     private ModItems() {}

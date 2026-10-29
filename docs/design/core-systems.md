@@ -185,6 +185,14 @@ pool while in use.
   | Size + Time | Regrowth | active | Heals and clears harmful effects: your body's time runs back |
   | Awareness + Time | Premonition | passive | The next blow from a creature is foreseen and misses; then a cooldown |
 
+- **Eldritch powers** (power level 4, only from a gland with the Unbegotten's pump, `player/EldritchPowers`): one per
+  essence. **Collapse** (Density, active: a point of crushing weight where you look; creatures fall in, then are
+  crushed), **Slip** (Speed, active: step between moments to where you look), **Writhe** (Size, active: tentacles burst
+  from the ground round you, striking and flinging), **Thousand Eyes** (Awareness, passive: everything living within
+  48 blocks glows through walls; nothing blinds you), **Aeon** (Time, active: a cone of ages; creatures wither, slow
+  and weaken, the undead turn to dust, plants grow).
+- **Slow Time and Time Freeze rest a minute** once let go (or torn away): `TimeZones.COOLDOWN`.
+
 ### Temporal Exposure and protective gear
 Time essence inside a body is unnatural. Holding Time essence, using Time powers, or working near
 Time organisms builds **Temporal Exposure** (a player attachment):
@@ -385,15 +393,20 @@ Its roles:
      coast). Two routes in (eras can list alternative `routes`): the Ice Age's memory, or the Precursors' memory plus
      the lesson **Deep Time** (a bone block). **Raptors** (hostile, leaping, in packs) and **Titanosaurs** (huge,
      peaceful unless hurt).
-     - **Building on a Titanosaur** (`entity/DinoCargo`), as a moving structure (the way Create carries
-       contraptions): a **Dino Harness** (research, needs a Jurassic clue) used on a grown one puts a harness block on
-       its back. Standing, its cargo is blocks in the world: blocks placed touching the harness or the cargo join it,
-       and machines on it run. The moment it is steered (or moved), the cargo is **lifted** into the beast (block
-       entities with all their data), drawn on it turning smoothly with it, solid (merged into up to 16 boxes,
-       `entity/CargoPart`, part entities: you can stand on it and are carried along), and unable to pass through terrain
-       (the beast stops). Stood still a moment, it is **set down** where it stands, squared to the nearest quarter
-       turn (states rotated, block entities restored). A **Rider's Seat** in the cargo steers it, and rides with it
-       while it is carried. If the beast dies, the cargo drops (containers spill).
+     - **Building on a Titanosaur** (`entity/DinoCargo`), blocks fixed to its body (the way Valkyrien Skies or Create
+       Aeronautics carry a ship): a **Dino Harness** (research, needs a Jurassic clue) used on a grown one gives it a
+       **hold** (`entity/CargoHold`: a plot of its own level near the world border, high in the sky, force-loaded while
+       the beast is) with the harness in the middle. The cargo's real blocks stand there (block entities tick, chests
+       keep their contents, machines run); the beast mirrors them on its back, centred over it and turning with it at
+       any angle, never squared to the grid (synced as a palette, drawn by its renderer). The client finds the block
+       under the cursor in the beast's frame (`client/CargoControls`: outline, cracks while breaking) and the server
+       applies the click to the real block in the hold (`CargoActionPayload`, the player turned into the cargo's frame
+       so facings come out right): build against it, break it, open it, use it, as normal. Reach to a hold block is
+       measured on the beast (`mixin/PlayerMixin`), and anything dropped in a hold falls from the beast. Up to 384
+       blocks, 12 out from the harness, 6 down and 16 up. Solid through part entities (`entity/CargoPart`, boxes of a
+       few blocks: you can stand on it and are carried along); it cannot pass through terrain (the beast stops). A
+       **Rider's Seat** in it steers. If the beast dies or the harness breaks, every block drops. Older saves' cargo
+       (anchored or lifted) is moved into a hold on loading.
      - **Fossils and eggs**: draw the last of a dinosaur's Time out of it in the Jurassic (raptors hold 12 drams,
        titanosaurs 40) and it leaves a **Fossil** of its kind (`dino` component). Shown to the Chronocortex, it learns
        the creature and buds a **Dinosaur Egg** from its own matter (16 drams of Size from its organisms); a hen's egg
@@ -416,11 +429,46 @@ Its roles:
      obelisks already stand. Its air is **toxic** (era `toxic_air`): poison and nausea unless Time-warded goggles filter it.
    - *Before Time* (`chronogenesis:before_time`, stage 3, needs the Hadean's memory): a void under an eternal night. An
      arriving traveller is put on the nearest **arena** (`timetravel/ElderArena`, made where they arrive if there is
-     none within 160 blocks): an island of unmade stone with four pillars, each topped by an **Unmade Nail**. Over it
-     floats **the Unbegotten** (`entity/Unbegotten`, 600 health, boss bar): it lashes everyone near it, charges a gaze
-     that wounds and exposes, sends vexes below 60% and drags everyone in below 30%. While time has not begun its
-     wounds **unhappen** (every 5 s it is as whole as 5 s before), unless it is held in slowed or stopped time. Driving
-     all four nails (24 drams of Time each) begins time: then it can die. It leaves the **Heart of the Unbegotten**.
+     none within 160 blocks): a disc of unmade stone with a dais in its middle and the **Cradle Stone** on it (green
+     runes, channels of crying obsidian running out from it), four causeways to four outcrops, and on each a pillar
+     topped by an **Unmade Nail**. It is **empty**: nothing waits there. Each arena records its state (empty, waking,
+     fighting) and its body, so arriving never makes a second boss.
+     - **The Last Offshoot.** After linking the Hadean's memory the Chronocortex asks to be taken there; research
+       grows a **Last Offshoot** (stage 3), which takes root only in the Cradle Stone. A **Nerve Spool** drawn through
+       a **level 3 Enhancing Gland** (32 drams) comes out **threaded** (`spool_threaded`): used on the Chronocortex its
+       loose end roots in the cortex (`spool_cortex`, its name); laid into the planted offshoot, the offshoot *is* the
+       cortex, there, with its name. Used, it wakes (`eldritch/LastOffshootBlockEntity`, 26 s): it feels everything,
+       drinks the time out of the four nails in streams of motes, and grows (`client/LastOffshootRenderer`: swelling
+       folds, pink to violet to green, tendrils, a ring of eyes, a maw), saying it will not bow, until it bursts out of
+       its jar.
+     - **The Unbegotten** (`entity/Unbegotten`, the body, 900 health, named "<cortex name>, Unbegotten") rises past the
+       north rim, a raid boss of separate parts round the arena's edge: four **tentacles** from the void round the disc
+       and two **eyes** on stalks by the south outcrop (`entity/UnbegottenLimb`, 160 and 110 health, each killed on its
+       own; a second boss bar shows them). Every living tentacle shields the body from 15% of every wound. Area
+       attacks are marked on the floor first (`entity/UnbegottenBlast`: violet rings that go green, then burst).
+       Phases: (1) *Unborn*: its wounds unhappen (every 5 s it is as whole as 5 s before) unless held in slowed or
+       stopped time, but it **tears any hold on time lasting over 5 s** near it; Ripples of Unmaking (the outer ring and
+       the outcrops, then the middle) sweep the arena; tentacles **slam across a causeway** to keep a player from the
+       nail they are nearest, lying there 15 s as a wall of **Unbegotten Flesh** (unbreakable; hacking at it wounds the
+       tentacle, which takes double harm while it lies there), or slam where a player stands; they **sweep** anyone
+       close to their root towards the edge; eyes charge **gazes** (break line of sight behind a pillar). Driving the
+       four nails again (24 drams of Time each) begins time: (2) its wounds stay; it sheds vexes; dead limbs regrow
+       (sooner than in phase 1). (3) Below 35% its **maw** opens: it **inhales** (dragging everyone towards it), **stars
+       fall** (marked discs, one under every player), eyes **stare** (a disc under someone); limbs no longer regrow.
+       While it fights nothing can be placed, broken or poured on the arena (whatever was built there is torn out and
+       dropped when it rises, and the arena mends), the Chrono Tether goes slack and the shift does not count down.
+       Slain, it leaves the **Heart of the Unbegotten**, two of four **grafts for the body**, the clue *Its heart, still
+       beating*, and the arena is empty again (another offshoot can be woken there).
+     - **The heart** given to the Chronocortex (research *The Unbegotten Pump*, needs that clue) is made a **pump**:
+       grafted onto a level 3 Enhancing Gland (`pump` blockstate, a heart strapped to its side, beating) it fills the
+       player to **level 4**, where the **Eldritch power** of the gland's essence wakes (section 3).
+     - **Grafts for the body** (`player/PlayerGrafts`, attachment `player_grafts`, kept through death, drawn on the
+       player by `client/PlayerGraftLayer` and synced to everyone who sees them): the **Unblinking Eye** (a third eye in
+       the forehead: night vision, never blinded), **Dorsal Tendrils** (from the spine: climb walls, sneak to cling),
+       the **Grasping Tentacle** (round the right arm: +2 reach), **Unbegotten Hide** (plates over chest and shoulders:
+       +5 armour, +2 toughness). Held to the body (use, 3 s) a graft takes, painfully. Only an empty **Dissection Table**
+       (sneak-use it, empty-handed) cuts one out: 16 drams of Time from the player's own pool run the body back to
+       before the last graft, which comes away whole.
      The first nails ever driven are these: the obelisks of every later age.
    **Remnants:** blocks that outlast the ages (the `chronogenesis:remnant` block data map: stone, deepslate,
    sandstone, prismarine, bricks, terracotta, concrete, gold, copper, amethyst, obsidian...) placed in an era remain:

@@ -25,7 +25,14 @@ import com.chronogenesis.entity.Precursor;
 import com.chronogenesis.entity.PrecursorGuards;
 import com.chronogenesis.entity.Raptor;
 import com.chronogenesis.entity.Titanosaur;
+import com.chronogenesis.entity.CargoHold;
 import com.chronogenesis.entity.Unbegotten;
+import net.minecraft.world.phys.AABB;
+import com.chronogenesis.player.PlayerGrafts;
+import com.chronogenesis.player.PlayerGraft;
+import com.chronogenesis.item.PlayerGraftItem;
+import com.chronogenesis.entity.UnbegottenLimb;
+import com.chronogenesis.eldritch.LastOffshootBlockEntity;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.DrainEffects;
 import com.chronogenesis.essence.EssenceContents;
@@ -71,6 +78,7 @@ import com.chronogenesis.temple.SealBlock;
 import com.chronogenesis.temple.TempleBarrier;
 import com.chronogenesis.temple.TemporalCoreBlock;
 import com.chronogenesis.time.TimeZones;
+import com.chronogenesis.network.CargoActionPayload;
 import com.chronogenesis.timetravel.ElderArena;
 import com.chronogenesis.timetravel.Era;
 import com.chronogenesis.timetravel.Eras;
@@ -109,6 +117,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.item.ItemStack;
@@ -909,8 +918,9 @@ public final class ChronoGameTests {
     }
 
     /**
-     * A harnessed Titanosaur carries its cargo as a moving structure: standing, real blocks on its back; moved, lifted
-     * into the beast (a chest keeps its contents); stood still, set down again turned with it. Its death drops it all.
+     * A harnessed Titanosaur carries its cargo fixed to its body: the blocks stand in its hold (where a chest keeps its
+     * contents and can be built against with an ordinary click), mirrored onto the beast at whatever angle it stands,
+     * solid, and found under the cursor in the beast's frame. Breaking the harness drops it all where the beast is.
      */
     @GameTest(template = "floor7", timeoutTicks = 200)
     public static void titanosaurCarriesItsCargo(GameTestHelper helper) {
@@ -923,33 +933,40 @@ public final class ChronoGameTests {
             player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.DINO_HARNESS.get()));
             beast.interact(player, InteractionHand.MAIN_HAND);
             BlockPos harness = beast.cargo().harness();
-            helper.assertTrue(harness != null && level.getBlockState(harness).is(ModBlocks.BUCKLED_HARNESS.get()), "not harnessed");
+            helper.assertTrue(harness != null && CargoHold.isHold(harness) && level.getBlockState(harness).is(ModBlocks.BUCKLED_HARNESS.get()),
+                    "the harness should stand in the beast's hold");
+            helper.assertTrue(CargoHold.beastAt(level, harness) == beast, "the hold should know its beast");
             BlockPos chestPos = harness.east();
             level.setBlockAndUpdate(chestPos, Blocks.CHEST.defaultBlockState());
             ((ChestBlockEntity) level.getBlockEntity(chestPos)).setItem(0, new ItemStack(Items.DIAMOND, 3));
-            helper.assertTrue(beast.cargo().attach(chestPos), "the chest should join the cargo");
-            beast.cargo().tick(false);
-            helper.assertFalse(beast.cargo().carrying(), "standing still, the cargo stays in the world");
+            beast.cargo().rescan(level);
+            helper.assertTrue(beast.cargo().carrying() && beast.cargo().size() == 2, "the cargo should mirror its hold, size " + beast.cargo().size());
+            helper.assertFalse(beast.cargo().shape().isEmpty(), "the cargo has a solid shape");
 
-            // It moves: the cargo comes away from the world and goes with it.
-            beast.setPos(beast.getX() + 1, beast.getY(), beast.getZ());
-            beast.cargo().tick(false);
-            helper.assertTrue(beast.cargo().carrying() && beast.cargo().size() == 2, "the cargo should be lifted, size " + beast.cargo().size());
-            helper.assertTrue(level.getBlockState(harness).isAir() && level.getBlockState(chestPos).isAir(), "lifted out of the world");
-            helper.assertFalse(beast.cargo().shape().isEmpty(), "a carried cargo has a solid shape");
+            // Turned at a slant, the chest is still where it was on the beast's back, east of the harness in its frame.
+            beast.setYRot(30);
+            Vec3 chestWorld = beast.cargo().worldOf(Vec3.atCenterOf(chestPos));
+            Vec3 back = beast.cargo().toLocal(chestWorld, beast.position(), beast.getYRot());
+            helper.assertTrue(back.distanceTo(new Vec3(1.5, 0.5, 0.5)) < 1.0E-3, "the cargo frame does not round-trip: " + back);
+            helper.assertTrue(player.canInteractWithBlock(chestPos, 1.0) == player.getEyePosition().distanceTo(chestWorld) < player.blockInteractionRange() + 3,
+                    "reach to a hold block should be measured on the beast");
 
-            // A quarter turn clockwise, then it settles: east becomes south.
-            beast.setYRot(90);
-            helper.assertTrue(beast.cargo().setDown(level), "the cargo should be set down");
-            BlockPos down = beast.cargo().harness();
-            helper.assertTrue(down != null && level.getBlockState(down).is(ModBlocks.BUCKLED_HARNESS.get()), "the harness is back in the world");
-            helper.assertTrue(level.getBlockState(down.south()).is(Blocks.CHEST), "the chest did not turn with it");
-            helper.assertTrue(((ChestBlockEntity) level.getBlockEntity(down.south())).getItem(0).getCount() == 3, "the chest lost its contents");
+            // A block placed against the chest (sneaking, or the chest would open) from a click on the beast lands in the
+            // hold, on top of it.
+            player.moveTo(chestWorld.x, chestWorld.y - 1.0, chestWorld.z);
+            player.setShiftKeyDown(true);
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Blocks.OAK_PLANKS, 4));
+            CargoHold.act(player, new CargoActionPayload(beast.getId(), false, new BlockPos(1, 0, 0), Direction.UP, new Vec3(1.5, 1.0, 0.5)));
+            helper.assertTrue(level.getBlockState(chestPos.above()).is(Blocks.OAK_PLANKS), "the plank should have been placed on the chest");
+            helper.assertTrue(beast.cargo().size() == 3, "the plank should join the cargo");
 
-            // The harness breaks: everything falls.
-            level.destroyBlock(down, true);
+            // The harness breaks: everything falls, from the beast.
+            level.destroyBlock(harness, true);
             helper.assertFalse(beast.cargo().harnessed(), "still harnessed");
-            helper.assertTrue(level.getBlockState(down.south()).isAir(), "the cargo should have fallen");
+            helper.assertTrue(level.getBlockState(chestPos).isAir(), "the cargo should have fallen");
+            List<ItemEntity> fallen = level.getEntitiesOfClass(ItemEntity.class, beast.getBoundingBox().inflate(16));
+            helper.assertTrue(fallen.stream().anyMatch(item -> item.getItem().is(Items.DIAMOND)), "the chest's diamonds should fall by the beast");
+            fallen.forEach(Entity::discard);
             beast.discard();
             helper.succeed();
         });
@@ -1212,7 +1229,7 @@ public final class ChronoGameTests {
         EternalHourglassItem.saturate(player);
         PlayerEssence essence = Powers.get(player);
         for (Aspect aspect : Aspect.values()) {
-            helper.assertTrue(essence.level(aspect) == Powers.MAX_LEVEL, aspect + " not at max level");
+            helper.assertTrue(essence.level(aspect) == GlandBlock.PUMPED_LEVEL, aspect + " not at the Eldritch level");
             helper.assertTrue(essence.pool(aspect) == essence.max(aspect) && essence.max(aspect) > 0, aspect + " pool not full");
         }
         helper.assertTrue(EssenceItems.get(lens) != null && EssenceItems.get(lens).amount() == TemporalLensItem.CAPACITY, "lens not charged");
@@ -1320,17 +1337,45 @@ public final class ChronoGameTests {
     }
 
     /**
-     * Before Time: an arena with four Unmade Nails. The Unbegotten's wounds unhappen until all four are driven; then
-     * time has begun and it is mortal.
+     * Before Time: the arena is empty until a Last Offshoot, linked to the Chronocortex (and named as it was), is planted
+     * in the Cradle Stone and woken. It drinks the nails and bursts out as the Unbegotten: one body (named as the cortex),
+     * six limbs, and only ever one fight in an arena. Whatever was built on the arena is torn out. Its wounds unhappen
+     * until all four nails are driven again; slain, it leaves its heart and two grafts, and the arena is empty again.
      */
     @GameTest(template = "floor7", timeoutTicks = 200)
-    public static void drivingTheNailsBeginsTime(GameTestHelper helper) {
+    public static void theCradleWakesTheUnbegotten(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos centre = helper.absolutePos(new BlockPos(3, 120, 3));
-        ElderArena.build(level, centre, level.getRandom());
-        Unbegotten god = ModEntities.UNBEGOTTEN.get().create(level);
-        god.moveTo(centre.getX() + 0.5, centre.getY() + 10, centre.getZ() + 0.5, 0, 0);
-        god.setHome(centre);
+        ElderArena.build(level, centre);
+        ElderArena.arenas(level).add(centre);
+        helper.assertTrue(level.getBlockState(ElderArena.cradle(centre)).is(ModBlocks.CRADLE_STONE.get()), "the arena should have its Cradle");
+        helper.assertTrue(level.getEntitiesOfClass(Unbegotten.class, new AABB(centre).inflate(64)).isEmpty(), "the arena starts empty");
+        BlockPos stray = centre.offset(6, 1, 0);
+        level.setBlockAndUpdate(stray, Blocks.DIRT.defaultBlockState());
+
+        BlockPos planted = ElderArena.cradle(centre).above();
+        level.setBlockAndUpdate(planted, ModBlocks.LAST_OFFSHOOT.get().defaultBlockState());
+        LastOffshootBlockEntity offshoot = (LastOffshootBlockEntity) level.getBlockEntity(planted);
+        offshoot.link("Gerald");
+        offshoot.wake();
+        for (int t = 0; t <= LastOffshootBlockEntity.WAKING && level.getBlockState(planted).is(ModBlocks.LAST_OFFSHOOT.get()); t++) {
+            LastOffshootBlockEntity.serverTick(level, planted, level.getBlockState(planted), offshoot);
+        }
+        ElderArena.Arena arena = ElderArena.arenas(level).at(centre);
+        helper.assertTrue(arena.state == ElderArena.State.FIGHT, "the fight should have begun");
+        List<Unbegotten> bodies = level.getEntitiesOfClass(Unbegotten.class, new AABB(centre).inflate(64));
+        helper.assertTrue(bodies.size() == 1, "one body, not " + bodies.size());
+        Unbegotten god = bodies.get(0);
+        helper.assertTrue("Gerald".equals(god.cortexName()) && god.getDisplayName().getString().contains("Gerald"),
+                "it should keep the cortex's name: " + god.getDisplayName().getString());
+        helper.assertTrue(god.getUUID().equals(arena.boss), "the arena should know its body");
+        helper.assertTrue(level.getEntitiesOfClass(UnbegottenLimb.class, new AABB(centre).inflate(64)).size() == UnbegottenLimb.SLOTS,
+                "it should rise with all its limbs");
+        helper.assertTrue(level.getBlockState(stray).isAir(), "what was built on the arena should be torn out");
+
+        ElderArena.beginFight(level, centre, "Gerald");
+        helper.assertTrue(level.getEntitiesOfClass(Unbegotten.class, new AABB(centre).inflate(64)).size() == 1, "never a second body");
+
         helper.assertFalse(god.mortal(), "before time begins it should not die");
         ServerPlayer player = fakePlayer(helper);
         List<BlockPos> nails = ElderArena.nails(centre);
@@ -1341,7 +1386,57 @@ public final class ChronoGameTests {
         }
         helper.assertTrue(ElderArena.driven(level, centre) == 4, "all four nails should be driven");
         helper.assertTrue(god.mortal(), "with time begun its wounds should stay");
-        god.discard();
+
+        god.kill();
+        helper.assertTrue(arena.state == ElderArena.State.EMPTY && arena.defeats == 1, "slain, the arena is empty again");
+        List<ItemEntity> left = level.getEntitiesOfClass(ItemEntity.class, god.getBoundingBox().inflate(8));
+        helper.assertTrue(left.stream().anyMatch(item -> item.getItem().is(ModItems.HEART_OF_THE_UNBEGOTTEN.get())), "it should leave its heart");
+        helper.assertTrue(left.stream().filter(item -> item.getItem().getItem() instanceof PlayerGraftItem).count() == 2, "and two grafts");
+        left.forEach(Entity::discard);
+        level.getEntitiesOfClass(UnbegottenLimb.class, new AABB(centre).inflate(64)).forEach(Entity::discard);
+        helper.succeed();
+    }
+
+    /** Slow Time and Time Freeze wait a minute once let go; the Unbegotten tears holds that last over five seconds. */
+    @GameTest(template = "floor7", timeoutTicks = 100)
+    public static void timeHoldsCoolDownAndTear(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        player.moveTo(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(3, 1, 3))));
+        player.getInventory().add(new ItemStack(ModItems.ETERNAL_HOURGLASS.get()));
+        EternalHourglassItem.saturate(player);
+        TimeZones.toggle(player, Power.SLOW_TIME, 1);
+        helper.assertTrue(TimeZones.at(player.level(), player.blockPosition()) != null, "time should slow");
+        helper.assertTrue(TimeZones.tear(helper.getLevel(), player.position(), 32, 100, "message.chronogenesis.power.time.torn") == 0,
+                "a fresh hold should not tear");
+        TimeZones.toggle(player, Power.SLOW_TIME, 1);
+        helper.assertTrue(TimeZones.cooldown(player, Power.SLOW_TIME) > 0, "let go, Slow Time should wait");
+        helper.assertTrue(TimeZones.cooldown(player, Power.TIME_FREEZE) == 0, "but not Time Freeze");
+        TimeZones.toggle(player, Power.TIME_FREEZE, 1);
+        helper.runAfterDelay(1, () -> {
+            helper.assertTrue(TimeZones.tear(helper.getLevel(), player.position(), 32, 0, "message.chronogenesis.power.time.torn") == 1,
+                    "the freeze should be torn");
+            helper.assertTrue(TimeZones.cooldown(player, Power.TIME_FREEZE) > 0, "torn, it should wait too");
+            helper.succeed();
+        });
+    }
+
+    /** A graft of the Unbegotten grows into a body and changes it; on an empty Dissection Table, Time cuts it out whole. */
+    @GameTest(template = "floor7", timeoutTicks = 100)
+    public static void playerGraftsTakeAndComeOut(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        double reach = player.blockInteractionRange();
+        helper.assertTrue(PlayerGrafts.graft(player, PlayerGraft.GRASPING_TENTACLE), "the graft should take");
+        helper.assertTrue(player.blockInteractionRange() > reach + 1.5, "the tentacle should reach further");
+        helper.assertFalse(PlayerGrafts.graft(player, PlayerGraft.GRASPING_TENTACLE), "a body takes each graft once");
+        BlockPos table = helper.absolutePos(new BlockPos(3, 1, 3));
+        player.getInventory().add(new ItemStack(ModItems.ETERNAL_HOURGLASS.get()));
+        helper.assertTrue(PlayerGrafts.excise(player, table), "it should be cut out");
+        helper.assertTrue(PlayerGrafts.get(player).isEmpty(), "the body should be its own again");
+        helper.assertTrue(Math.abs(player.blockInteractionRange() - reach) < 1.0E-6, "and reach as far as before");
+        helper.assertTrue(player.getInventory().contains(new ItemStack(ModItems.GRASPING_TENTACLE.get())), "the graft comes away whole");
+        EternalHourglassItem.saturate(player);
+        helper.assertTrue(Powers.get(player).knows(Power.COLLAPSE) && Power.COLLAPSE.isEldritch(),
+                "the hourglass gives every power, the Eldritch ones too");
         helper.succeed();
     }
 

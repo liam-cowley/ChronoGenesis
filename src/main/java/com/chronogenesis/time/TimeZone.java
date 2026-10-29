@@ -39,6 +39,8 @@ public final class TimeZone {
     /** Fractional zone ticks carried over. */
     double carry;
     public int ticksNow = 1;
+    /** Game ticks it has been held, this time. */
+    public int held;
 
     public TimeZone(ChunkPos chunk, @Nullable UUID owner, double target) {
         this.chunk = chunk;

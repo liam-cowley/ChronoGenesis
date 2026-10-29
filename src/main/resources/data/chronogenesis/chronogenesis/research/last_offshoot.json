@@ -1,0 +1,44 @@
+{
+  "title": {
+    "translate": "research.chronogenesis.last_offshoot"
+  },
+  "description": {
+    "translate": "research.chronogenesis.last_offshoot.desc"
+  },
+  "icon": "chronogenesis:last_offshoot",
+  "stage": 3,
+  "requires": [
+    "chronogenesis:cortex_offshoot",
+    "chronogenesis:level_3_powers"
+  ],
+  "essence": {
+    "awareness": 48,
+    "time": 32
+  },
+  "materials": [
+    {
+      "item": "chronogenesis:preserved_brain",
+      "count": 1
+    },
+    {
+      "item": "minecraft:glass_bottle",
+      "count": 1
+    },
+    {
+      "item": "minecraft:echo_shard",
+      "count": 2
+    }
+  ],
+  "clues": [
+    [
+      "chronogenesis:unmade_world"
+    ]
+  ],
+  "order": 13,
+  "rewards": [
+    {
+      "id": "chronogenesis:last_offshoot",
+      "count": 1
+    }
+  ]
+}

@@ -74,6 +74,20 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `block/unmade_nail.png` | 16x16 | Dull cracked obelisk stone with a violet vein (an undriven nail) |
 | `entity/unbegotten.png` | 128x64 | The Unbegotten, for `client/UnbegottenModel`'s boxes |
 | `entity/unbegotten_eyes.png` | 128x64 | Its glowing parts (eye, tentacle tips, eye-stalks), drawn with `RenderType.eyes` |
+| `block/cradle_stone.png` | 16x16 | Obelisk-black with two green channels down it |
+| `block/cradle_stone_top.png` | 16x16 | A ring of eldritch-green runes round a dark violet-rimmed socket |
+| `block/unbegotten_flesh.png` | 16x16 | Bruise-violet flesh with pale suckers and one green eye |
+| `block/last_offshoot.png` | 16x16 | The offshoot's bud gone strange: violet folds, green eye-spots (the jar's brain texture) |
+| `item/last_offshoot.png` | 16x16 | The offshoot jar with a violet, eyed bud and green-tipped roots |
+| `item/unbegotten_pump.png` | 16x16 | The heart in brass bands with copper pipes, its green eye open |
+| `item/unblinking_eye.png` | 16x16 | An eyeball in a violet socket, a green iris, a dangling nerve |
+| `item/dorsal_tendrils.png` | 16x16 | Violet tendrils with green tips fanning from a piece of spine |
+| `item/grasping_tentacle.png` | 16x16 | A diagonal violet tentacle with pale suckers, green tip |
+| `item/unbegotten_hide.png` | 16x16 | A shield-shaped plate of dark ridged hide, a green fleck |
+| `gui/power/collapse.png`, `slip.png`, `writhe.png`, `thousand_eyes.png`, `aeon.png` | 16x16 | Eldritch power glyphs: a spiral, a dashed arrow, three tentacles, five eyes, a cracked hourglass |
+
+The Unbegotten's limbs, the waking Last Offshoot and the player's grafts have no textures of their own: they are drawn
+from the organ sheet (`entity/organ.png`, `client/OrganParts`), tinted.
 | `item/chrono_*_warded.png` | 16x16 | Each suit icon once Time-warded: tendrils curling out of its seams (item property `chronogenesis:warded`) |
 | `item/culture.png` | 16x16 | Tentacled growth (tinted by aspect) |
 | `item/culture_dish.png` | 16x16 | Brass-rimmed petri dish (drawn over the growth) |

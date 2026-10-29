@@ -54,6 +54,8 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
                                         .hasProperty(DissectionTableBlock.BRAIN, true)))));
         dropOther(ModBlocks.CHRONOCORTEX.get(), ModItems.DISSECTION_TABLE.get());
         dropSelf(ModBlocks.CORTEX_OFFSHOOT.get());
+        // Broken off its Cradle, the last bud survives; linked, its link is gone.
+        dropSelf(ModBlocks.LAST_OFFSHOOT.get());
         dropSelf(ModBlocks.RIDERS_SEAT.get());
         // The harness comes off whole; the core, stilled, is all the time it held.
         dropOther(ModBlocks.BUCKLED_HARNESS.get(), ModItems.DINO_HARNESS.get());

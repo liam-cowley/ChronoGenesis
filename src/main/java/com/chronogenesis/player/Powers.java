@@ -57,7 +57,7 @@ public final class Powers {
     private static final ResourceLocation FALL_DAMAGE_MOD = ChronoGenesis.id("power_fall_damage");
 
     public static final double AWARENESS_RADIUS = 20.0;
-    /** The highest power level there is: a gland grows to level 3 (Deepest Infusion). */
+    /** The highest level a gland swells to: 3 (Deepest Infusion). A pumped gland goes one deeper (Eldritch). */
     public static final int MAX_LEVEL = 3;
     /** Mining speed of Iron Fists by level: a stone, an iron and a diamond pickaxe's. */
     private static final float[] FIST_SPEED = {4.0f, 6.0f, 8.0f};
@@ -164,6 +164,10 @@ public final class Powers {
             if (!hasManipulator(player)) {
                 say(player, Component.translatable("message.chronogenesis.gland.manipulator_hint"));
             }
+        } else if (deeper && glandLevel >= com.chronogenesis.organism.GlandBlock.PUMPED_LEVEL) {
+            say(player, Component.translatable("message.chronogenesis.gland.eldritch", aspect.displayName(), EldritchPowers.of(aspect).displayName()));
+            player.level().playSound(null, glandPos, SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 1.5f, 0.5f);
+            applyModifiers(player);
         } else if (deeper) {
             say(player, Component.translatable("message.chronogenesis.gland.deeper", aspect.displayName(), glandLevel));
             applyModifiers(player);
@@ -291,6 +295,10 @@ public final class Powers {
             case STUTTER -> CompositePowers.stutter(player, strength);
             case OVERLOOK -> CompositePowers.overlook(player, strength);
             case REGROWTH -> CompositePowers.regrowth(player, strength);
+            case COLLAPSE -> EldritchPowers.collapse(player, strength);
+            case SLIP -> EldritchPowers.slip(player, strength);
+            case WRITHE -> EldritchPowers.writhe(player, strength);
+            case AEON -> EldritchPowers.aeon(player, strength);
             default -> { }
         }
     }
@@ -322,6 +330,7 @@ public final class Powers {
         TemporalExposure.tick(player, updated);
         Rewind.record(player);
         CompositePowers.tick(player, updated, time);
+        EldritchPowers.tick(player, updated, time);
     }
 
     /** Ticks between drams burned by a passive power at strength 1; stronger burns faster. 0 = paid per use. */
@@ -489,6 +498,7 @@ public final class Powers {
     @SubscribeEvent
     static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         CompositePowers.forget(event.getEntity().getUUID());
+        EldritchPowers.forget(event.getEntity().getUUID());
         Rewind.forget(event.getEntity().getUUID());
         TemporalExposure.forget(event.getEntity().getUUID());
     }

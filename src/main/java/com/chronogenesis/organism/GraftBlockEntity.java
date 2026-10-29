@@ -17,6 +17,7 @@ import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlockEntities;
 import com.chronogenesis.registry.ModBlocks;
+import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModItems;
 import com.chronogenesis.time.TemporalStress;
 
@@ -551,6 +552,12 @@ public class GraftBlockEntity extends BlockEntity {
             if (stack.getItem() instanceof ChronoSuitItem) {
                 return wardSuit(stack, player);
             }
+            if (stack.getItem() instanceof com.chronogenesis.item.NerveSpoolItem) {
+                return threadSpool(stack, player);
+            }
+            if (stack.is(ModItems.UNBEGOTTEN_PUMP.get())) {
+                return fitPump(stack, player);
+            }
         }
         if (type() == GraftType.TAP && EssenceItems.isContainer(stack)) {
             if (level.isClientSide()) {
@@ -604,7 +611,7 @@ public class GraftBlockEntity extends BlockEntity {
                                 OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.no_partner"));
                             }
                         }
-                        Powers.infuseFromGland(player, core, worldPosition, state.getValue(GlandBlock.LEVEL), partner);
+                        Powers.infuseFromGland(player, core, worldPosition, GlandBlock.depth(state), partner);
                     }
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide());
@@ -717,6 +724,67 @@ public class GraftBlockEntity extends BlockEntity {
         ((ServerLevel) level).sendParticles(ParticleTypes.REVERSE_PORTAL, worldPosition.getX() + 0.5, worldPosition.getY() + 0.7,
                 worldPosition.getZ() + 0.5, 30, 0.3, 0.3, 0.3, 0.05);
         OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.ward.done", stack.getHoverName()));
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    /** Drams a level 3 gland pays to thread a Nerve Spool. */
+    public static final int THREAD_COST = 32;
+
+    /**
+     * A Nerve Spool drawn through a swollen (level 3) gland comes out threaded with its essence: a nerve that can reach
+     * through time (to a Last Offshoot, Before Time).
+     */
+    private ItemInteractionResult threadSpool(ItemStack stack, Player player) {
+        if (level.isClientSide()) {
+            return ItemInteractionResult.SUCCESS;
+        }
+        OrganismCoreBlockEntity core = core();
+        if (core == null) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.organism.dead"));
+            return ItemInteractionResult.FAIL;
+        }
+        if (com.chronogenesis.item.NerveSpoolItem.threaded(stack)) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.thread.already"));
+            return ItemInteractionResult.FAIL;
+        }
+        if (getBlockState().getValue(GlandBlock.LEVEL) < GlandBlock.MAX_LEVEL) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.thread.small", GlandBlock.MAX_LEVEL));
+            return ItemInteractionResult.FAIL;
+        }
+        if (core.stored() < THREAD_COST) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.hungry", THREAD_COST, core.aspect().displayName()));
+            return ItemInteractionResult.FAIL;
+        }
+        core.extract(THREAD_COST);
+        stack.set(ModDataComponents.SPOOL_THREADED.get(), true);
+        level.playSound(null, worldPosition, SoundEvents.SLIME_SQUISH, SoundSource.BLOCKS, 1.0f, 0.4f);
+        level.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0f, 0.5f);
+        ((ServerLevel) level).sendParticles(ParticleTypes.REVERSE_PORTAL, worldPosition.getX() + 0.5, worldPosition.getY() + 0.7,
+                worldPosition.getZ() + 0.5, 30, 0.3, 0.3, 0.3, 0.05);
+        OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.thread.done"));
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    /** The Unbegotten's heart, made a pump, grafted onto a level 3 gland: it drives the essence to the Eldritch depth. */
+    private ItemInteractionResult fitPump(ItemStack stack, Player player) {
+        BlockState state = getBlockState();
+        if (state.getValue(GlandBlock.PUMP)) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+        if (level.isClientSide()) {
+            return ItemInteractionResult.SUCCESS;
+        }
+        if (state.getValue(GlandBlock.LEVEL) < GlandBlock.MAX_LEVEL) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.pump.small", GlandBlock.MAX_LEVEL));
+            return ItemInteractionResult.FAIL;
+        }
+        level.setBlockAndUpdate(worldPosition, state.setValue(GlandBlock.PUMP, true));
+        stack.consume(1, player);
+        level.playSound(null, worldPosition, SoundEvents.WARDEN_HEARTBEAT, SoundSource.BLOCKS, 1.5f, 0.6f);
+        level.playSound(null, worldPosition, SoundEvents.SLIME_BLOCK_PLACE, SoundSource.BLOCKS, 1.0f, 0.4f);
+        ((ServerLevel) level).sendParticles(ParticleTypes.REVERSE_PORTAL, worldPosition.getX() + 0.5, worldPosition.getY() + 0.7,
+                worldPosition.getZ() + 0.5, 40, 0.3, 0.3, 0.3, 0.08);
+        OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.pump.done"));
         return ItemInteractionResult.SUCCESS;
     }
 

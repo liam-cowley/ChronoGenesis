@@ -13,6 +13,7 @@
   "mixins": [
     "BoundTickingBlockEntityMixin",
     "LevelTicksMixin",
+    "PlayerMixin",
     "ServerLevelMixin",
     "WardenMixin"
   ]

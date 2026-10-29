@@ -163,6 +163,15 @@
     Mammoths, Woolly Rhinos and Smilodons; shifts held indefinitely when warded head to foot; Before Time out of the
     Lens. ✅ Featherweight (Density 2, double jump). ✅ Fossils, eggs and hatchlings. ✅ The harness as a moving
     structure. ✅ Organism shapes per essence; animated cores, grafts and the Chronocortex's brain.
+16. ✅ The end of the road: Before Time is empty until the player's own Chronocortex is carried there (the Last
+    Offshoot in the Cradle Stone, linked by a Nerve Spool threaded through a level 3 gland) and wakes, drinks the nails
+    and becomes the Unbegotten: a raid boss of separate parts (body, four tentacles, two eyes) round a redesigned
+    arena, three phases, marked area attacks, tentacles slamming across the causeways; one fight per arena (no more
+    duplicate bosses). The arena is sealed while it fights (no building, no tether home); it tears holds on time over
+    5 s, and Slow Time/Time Freeze now rest a minute. Its heart becomes a pump for a gland: level 4 and the five
+    Eldritch powers. Grafts for the player's body (eye, tendrils, tentacle, hide), shown on the model, cut out again on
+    a Dissection Table with Time. ✅ The harness fixed to the beast's body: real blocks in a hold, mirrored on its back
+    at any angle, used and built on as normal (Valkyrien Skies-style).
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

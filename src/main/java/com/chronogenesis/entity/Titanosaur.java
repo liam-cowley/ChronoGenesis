@@ -13,7 +13,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -40,8 +39,8 @@ import net.neoforged.neoforge.entity.PartEntity;
 
 /**
  * A Titanosaur (the Jurassic Age): a sauropod the size of a house, slow and peaceful until hurt. Buckle a Dino
- * Harness onto it and its back becomes ground to build on; walking, it carries what is built there as one moving
- * structure ({@link DinoCargo}, solid through its {@link CargoPart}s). From a Rider's Seat in the cargo, a player
+ * Harness onto it and its back becomes ground to build on: what is built there is fixed to its body and goes where
+ * it goes, turning with it ({@link DinoCargo}, solid through its {@link CargoPart}s). From a Rider's Seat in the cargo, a player
  * steers it (forward and back to walk, left and right to turn). Hatched from an egg ({@link Dinos}), it is a calf a
  * while first.
  */
@@ -184,10 +183,10 @@ public class Titanosaur extends PathfinderMob implements Dinos.Hatchling {
             }
             Dinos.tick(this, this);
             if (cargo.harnessed()) {
-                cargo.tick(steered());
+                cargo.tick();
             }
             if (cargo.carrying()) {
-                // A carried cargo cannot pass through the land: the beast stops where it would.
+                // The cargo cannot pass through the land: the beast stops where it would.
                 if (lastGood != null && cargo.blocked(level(), position(), getYRot())) {
                     setPos(lastGood);
                     setYRot(lastGoodYaw);
@@ -197,9 +196,9 @@ public class Titanosaur extends PathfinderMob implements Dinos.Hatchling {
                     lastGood = position();
                     lastGoodYaw = getYRot();
                 }
-                for (RiderSeat seat : seats) {
-                    seat.followCarrier(this);
-                }
+            }
+            for (RiderSeat seat : seats) {
+                seat.followCarrier(this);
             }
             seats.removeIf(seat -> seat.isRemoved() || seat.carrier() != this);
         }
@@ -209,7 +208,7 @@ public class Titanosaur extends PathfinderMob implements Dinos.Hatchling {
         lastYaw = getYRot();
     }
 
-    /** The carried cargo's boxes follow the beast. */
+    /** The cargo's boxes follow the beast. */
     private void placeParts() {
         List<AABB> boxes = cargo.carrying() ? CargoPart.boxes(cargo, position(), getYRot()) : List.of();
         for (int i = 0; i < parts.length; i++) {
@@ -222,7 +221,7 @@ public class Titanosaur extends PathfinderMob implements Dinos.Hatchling {
     }
 
     /**
-     * Whatever stands on the carried cargo is moved and turned with it (on the server, creatures; on a client, its own
+     * Whatever stands on the cargo is moved and turned with it (on the server, creatures; on a client, its own
      * player, who moves themselves).
      */
     private void carryRiders() {
@@ -281,9 +280,9 @@ public class Titanosaur extends PathfinderMob implements Dinos.Hatchling {
         return box;
     }
 
-    /** The cargo was lifted or set down: tell the clients what to draw. */
+    /** The cargo changed: tell the clients what to draw. */
     void cargoChanged() {
-        entityData.set(CARGO, cargo.writeCarried(false));
+        entityData.set(CARGO, cargo.writeCarried());
         if (!cargo.carrying()) {
             lastGood = null;
         }
@@ -378,9 +377,21 @@ public class Titanosaur extends PathfinderMob implements Dinos.Hatchling {
         cargo.load(tag.getCompound("Cargo"));
         setAge(tag.getInt("Age"));
         hatcher = tag.hasUUID("Hatcher") ? tag.getUUID("Hatcher") : null;
-        if (level() instanceof ServerLevel) {
-            entityData.set(CARGO, cargo.writeCarried(false));
+    }
+
+    /** Unloaded or gone: its hold need not stay loaded. */
+    @Override
+    public void onRemovedFromLevel() {
+        super.onRemovedFromLevel();
+        if (!level().isClientSide()) {
+            cargo.unload();
         }
+    }
+
+    /** Its cargo's hold is in this level: harnessed, it stays here. */
+    @Override
+    public boolean canUsePortal(boolean allowPassengers) {
+        return !cargo.harnessed() && super.canUsePortal(allowPassengers);
     }
 
     @Override

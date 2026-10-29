@@ -4,6 +4,7 @@ import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
 import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.client.ClientPayloads;
+import com.chronogenesis.entity.CargoHold;
 import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModAttachments;
 import com.chronogenesis.time.TimeZones;
@@ -76,6 +77,20 @@ public final class ModNetwork {
 
         registrar.playToClient(ShiftStatusPayload.TYPE, ShiftStatusPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientPayloads.shiftStatus(payload)));
+
+        registrar.playToServer(CargoActionPayload.TYPE, CargoActionPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        CargoHold.act(player, payload);
+                    }
+                }));
+
+        registrar.playToClient(PlayerGraftsPayload.TYPE, PlayerGraftsPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player().level().getEntity(payload.entity()) instanceof net.minecraft.world.entity.player.Player player) {
+                        player.setData(ModAttachments.PLAYER_GRAFTS, payload.grafts());
+                    }
+                }));
 
         registrar.playToClient(TimeZonesPayload.TYPE, TimeZonesPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> TimeZones.clientReceive(payload)));

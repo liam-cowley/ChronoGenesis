@@ -1,313 +1,625 @@
 {
   "variants": {
-    "active=false,facing=down,gland_level=1,needle=false": {
+    "active=false,facing=down,gland_level=1,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland",
       "x": 180
     },
-    "active=false,facing=down,gland_level=1,needle=true": {
+    "active=false,facing=down,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 180
+    },
+    "active=false,facing=down,gland_level=1,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_needle",
       "x": 180
     },
-    "active=false,facing=down,gland_level=2,needle=false": {
+    "active=false,facing=down,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 180
+    },
+    "active=false,facing=down,gland_level=2,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2",
       "x": 180
     },
-    "active=false,facing=down,gland_level=2,needle=true": {
+    "active=false,facing=down,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 180
+    },
+    "active=false,facing=down,gland_level=2,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2_needle",
       "x": 180
     },
-    "active=false,facing=down,gland_level=3,needle=false": {
+    "active=false,facing=down,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 180
+    },
+    "active=false,facing=down,gland_level=3,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3",
       "x": 180
     },
-    "active=false,facing=down,gland_level=3,needle=true": {
+    "active=false,facing=down,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 180
+    },
+    "active=false,facing=down,gland_level=3,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3_needle",
       "x": 180
     },
-    "active=false,facing=east,gland_level=1,needle=false": {
+    "active=false,facing=down,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 180
+    },
+    "active=false,facing=east,gland_level=1,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland",
       "x": 90,
       "y": 90
     },
-    "active=false,facing=east,gland_level=1,needle=true": {
+    "active=false,facing=east,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90,
+      "y": 90
+    },
+    "active=false,facing=east,gland_level=1,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_needle",
       "x": 90,
       "y": 90
     },
-    "active=false,facing=east,gland_level=2,needle=false": {
+    "active=false,facing=east,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90,
+      "y": 90
+    },
+    "active=false,facing=east,gland_level=2,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2",
       "x": 90,
       "y": 90
     },
-    "active=false,facing=east,gland_level=2,needle=true": {
+    "active=false,facing=east,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90,
+      "y": 90
+    },
+    "active=false,facing=east,gland_level=2,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2_needle",
       "x": 90,
       "y": 90
     },
-    "active=false,facing=east,gland_level=3,needle=false": {
+    "active=false,facing=east,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90,
+      "y": 90
+    },
+    "active=false,facing=east,gland_level=3,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3",
       "x": 90,
       "y": 90
     },
-    "active=false,facing=east,gland_level=3,needle=true": {
+    "active=false,facing=east,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90,
+      "y": 90
+    },
+    "active=false,facing=east,gland_level=3,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3_needle",
       "x": 90,
       "y": 90
     },
-    "active=false,facing=north,gland_level=1,needle=false": {
+    "active=false,facing=east,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90,
+      "y": 90
+    },
+    "active=false,facing=north,gland_level=1,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland",
       "x": 90
     },
-    "active=false,facing=north,gland_level=1,needle=true": {
+    "active=false,facing=north,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90
+    },
+    "active=false,facing=north,gland_level=1,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_needle",
       "x": 90
     },
-    "active=false,facing=north,gland_level=2,needle=false": {
+    "active=false,facing=north,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90
+    },
+    "active=false,facing=north,gland_level=2,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2",
       "x": 90
     },
-    "active=false,facing=north,gland_level=2,needle=true": {
+    "active=false,facing=north,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90
+    },
+    "active=false,facing=north,gland_level=2,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2_needle",
       "x": 90
     },
-    "active=false,facing=north,gland_level=3,needle=false": {
+    "active=false,facing=north,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90
+    },
+    "active=false,facing=north,gland_level=3,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3",
       "x": 90
     },
-    "active=false,facing=north,gland_level=3,needle=true": {
+    "active=false,facing=north,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90
+    },
+    "active=false,facing=north,gland_level=3,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3_needle",
       "x": 90
     },
-    "active=false,facing=south,gland_level=1,needle=false": {
+    "active=false,facing=north,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90
+    },
+    "active=false,facing=south,gland_level=1,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland",
       "x": 90,
       "y": 180
     },
-    "active=false,facing=south,gland_level=1,needle=true": {
+    "active=false,facing=south,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90,
+      "y": 180
+    },
+    "active=false,facing=south,gland_level=1,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_needle",
       "x": 90,
       "y": 180
     },
-    "active=false,facing=south,gland_level=2,needle=false": {
+    "active=false,facing=south,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90,
+      "y": 180
+    },
+    "active=false,facing=south,gland_level=2,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2",
       "x": 90,
       "y": 180
     },
-    "active=false,facing=south,gland_level=2,needle=true": {
+    "active=false,facing=south,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90,
+      "y": 180
+    },
+    "active=false,facing=south,gland_level=2,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2_needle",
       "x": 90,
       "y": 180
     },
-    "active=false,facing=south,gland_level=3,needle=false": {
+    "active=false,facing=south,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90,
+      "y": 180
+    },
+    "active=false,facing=south,gland_level=3,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3",
       "x": 90,
       "y": 180
     },
-    "active=false,facing=south,gland_level=3,needle=true": {
+    "active=false,facing=south,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90,
+      "y": 180
+    },
+    "active=false,facing=south,gland_level=3,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3_needle",
       "x": 90,
       "y": 180
     },
-    "active=false,facing=up,gland_level=1,needle=false": {
+    "active=false,facing=south,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90,
+      "y": 180
+    },
+    "active=false,facing=up,gland_level=1,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland"
     },
-    "active=false,facing=up,gland_level=1,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_needle"
-    },
-    "active=false,facing=up,gland_level=2,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_2"
-    },
-    "active=false,facing=up,gland_level=2,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_2_needle"
-    },
-    "active=false,facing=up,gland_level=3,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_3"
-    },
-    "active=false,facing=up,gland_level=3,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_3_needle"
-    },
-    "active=false,facing=west,gland_level=1,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland",
-      "x": 90,
-      "y": 270
-    },
-    "active=false,facing=west,gland_level=1,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_needle",
-      "x": 90,
-      "y": 270
-    },
-    "active=false,facing=west,gland_level=2,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_2",
-      "x": 90,
-      "y": 270
-    },
-    "active=false,facing=west,gland_level=2,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_2_needle",
-      "x": 90,
-      "y": 270
-    },
-    "active=false,facing=west,gland_level=3,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_3",
-      "x": 90,
-      "y": 270
-    },
-    "active=false,facing=west,gland_level=3,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_3_needle",
-      "x": 90,
-      "y": 270
-    },
-    "active=true,facing=down,gland_level=1,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland",
-      "x": 180
-    },
-    "active=true,facing=down,gland_level=1,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_needle",
-      "x": 180
-    },
-    "active=true,facing=down,gland_level=2,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_2",
-      "x": 180
-    },
-    "active=true,facing=down,gland_level=2,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_2_needle",
-      "x": 180
-    },
-    "active=true,facing=down,gland_level=3,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_3",
-      "x": 180
-    },
-    "active=true,facing=down,gland_level=3,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_3_needle",
-      "x": 180
-    },
-    "active=true,facing=east,gland_level=1,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland",
-      "x": 90,
-      "y": 90
-    },
-    "active=true,facing=east,gland_level=1,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_needle",
-      "x": 90,
-      "y": 90
-    },
-    "active=true,facing=east,gland_level=2,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_2",
-      "x": 90,
-      "y": 90
-    },
-    "active=true,facing=east,gland_level=2,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_2_needle",
-      "x": 90,
-      "y": 90
-    },
-    "active=true,facing=east,gland_level=3,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_3",
-      "x": 90,
-      "y": 90
-    },
-    "active=true,facing=east,gland_level=3,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_3_needle",
-      "x": 90,
-      "y": 90
-    },
-    "active=true,facing=north,gland_level=1,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland",
-      "x": 90
-    },
-    "active=true,facing=north,gland_level=1,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_needle",
-      "x": 90
-    },
-    "active=true,facing=north,gland_level=2,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_2",
-      "x": 90
-    },
-    "active=true,facing=north,gland_level=2,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_2_needle",
-      "x": 90
-    },
-    "active=true,facing=north,gland_level=3,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_3",
-      "x": 90
-    },
-    "active=true,facing=north,gland_level=3,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_3_needle",
-      "x": 90
-    },
-    "active=true,facing=south,gland_level=1,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland",
-      "x": 90,
-      "y": 180
-    },
-    "active=true,facing=south,gland_level=1,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_needle",
-      "x": 90,
-      "y": 180
-    },
-    "active=true,facing=south,gland_level=2,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_2",
-      "x": 90,
-      "y": 180
-    },
-    "active=true,facing=south,gland_level=2,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_2_needle",
-      "x": 90,
-      "y": 180
-    },
-    "active=true,facing=south,gland_level=3,needle=false": {
-      "model": "chronogenesis:block/enhancing_gland_3",
-      "x": 90,
-      "y": 180
-    },
-    "active=true,facing=south,gland_level=3,needle=true": {
-      "model": "chronogenesis:block/enhancing_gland_3_needle",
-      "x": 90,
-      "y": 180
-    },
-    "active=true,facing=up,gland_level=1,needle=false": {
+    "active=false,facing=up,gland_level=1,needle=false,pump=true": {
       "model": "chronogenesis:block/enhancing_gland"
     },
-    "active=true,facing=up,gland_level=1,needle=true": {
+    "active=false,facing=up,gland_level=1,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_needle"
     },
-    "active=true,facing=up,gland_level=2,needle=false": {
+    "active=false,facing=up,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle"
+    },
+    "active=false,facing=up,gland_level=2,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2"
     },
-    "active=true,facing=up,gland_level=2,needle=true": {
+    "active=false,facing=up,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2"
+    },
+    "active=false,facing=up,gland_level=2,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2_needle"
     },
-    "active=true,facing=up,gland_level=3,needle=false": {
+    "active=false,facing=up,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle"
+    },
+    "active=false,facing=up,gland_level=3,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3"
     },
-    "active=true,facing=up,gland_level=3,needle=true": {
+    "active=false,facing=up,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3"
+    },
+    "active=false,facing=up,gland_level=3,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3_needle"
     },
-    "active=true,facing=west,gland_level=1,needle=false": {
+    "active=false,facing=up,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle"
+    },
+    "active=false,facing=west,gland_level=1,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland",
       "x": 90,
       "y": 270
     },
-    "active=true,facing=west,gland_level=1,needle=true": {
+    "active=false,facing=west,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90,
+      "y": 270
+    },
+    "active=false,facing=west,gland_level=1,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_needle",
       "x": 90,
       "y": 270
     },
-    "active=true,facing=west,gland_level=2,needle=false": {
+    "active=false,facing=west,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90,
+      "y": 270
+    },
+    "active=false,facing=west,gland_level=2,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2",
       "x": 90,
       "y": 270
     },
-    "active=true,facing=west,gland_level=2,needle=true": {
+    "active=false,facing=west,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90,
+      "y": 270
+    },
+    "active=false,facing=west,gland_level=2,needle=true,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_2_needle",
       "x": 90,
       "y": 270
     },
-    "active=true,facing=west,gland_level=3,needle=false": {
+    "active=false,facing=west,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90,
+      "y": 270
+    },
+    "active=false,facing=west,gland_level=3,needle=false,pump=false": {
       "model": "chronogenesis:block/enhancing_gland_3",
       "x": 90,
       "y": 270
     },
-    "active=true,facing=west,gland_level=3,needle=true": {
+    "active=false,facing=west,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90,
+      "y": 270
+    },
+    "active=false,facing=west,gland_level=3,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90,
+      "y": 270
+    },
+    "active=false,facing=west,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=down,gland_level=1,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=1,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=2,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=2,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=3,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=3,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 180
+    },
+    "active=true,facing=down,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 180
+    },
+    "active=true,facing=east,gland_level=1,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=1,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=2,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=2,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=3,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=3,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=east,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=north,gland_level=1,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=1,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=2,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=2,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=3,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=3,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90
+    },
+    "active=true,facing=north,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90
+    },
+    "active=true,facing=south,gland_level=1,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=1,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=2,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=2,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=3,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=3,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=south,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=up,gland_level=1,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland"
+    },
+    "active=true,facing=up,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland"
+    },
+    "active=true,facing=up,gland_level=1,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_needle"
+    },
+    "active=true,facing=up,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle"
+    },
+    "active=true,facing=up,gland_level=2,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2"
+    },
+    "active=true,facing=up,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2"
+    },
+    "active=true,facing=up,gland_level=2,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle"
+    },
+    "active=true,facing=up,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle"
+    },
+    "active=true,facing=up,gland_level=3,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3"
+    },
+    "active=true,facing=up,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3"
+    },
+    "active=true,facing=up,gland_level=3,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle"
+    },
+    "active=true,facing=up,gland_level=3,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle"
+    },
+    "active=true,facing=west,gland_level=1,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=1,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=1,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=1,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_needle",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=2,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=2,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=2,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=2,needle=true,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_2_needle",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=3,needle=false,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=3,needle=false,pump=true": {
+      "model": "chronogenesis:block/enhancing_gland_3",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=3,needle=true,pump=false": {
+      "model": "chronogenesis:block/enhancing_gland_3_needle",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=west,gland_level=3,needle=true,pump=true": {
       "model": "chronogenesis:block/enhancing_gland_3_needle",
       "x": 90,
       "y": 270

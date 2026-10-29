@@ -73,13 +73,14 @@ public class EternalHourglassItem extends Item {
         }
     }
 
-    /** Fills every pool at the highest power level, teaches every composite power, clears Exposure, and charges every Lens carried. */
+    /** Fills every pool at the deepest power level (the Eldritch one), teaches every composite power, clears Exposure, and charges every Lens carried. */
     public static void saturate(ServerPlayer player) {
         PlayerEssence before = Powers.get(player);
         PlayerEssence essence = before;
         for (Aspect aspect : Aspect.values()) {
-            if (essence.level(aspect) < Powers.MAX_LEVEL) {
-                essence = essence.withLevel(aspect, Powers.MAX_LEVEL);
+            if (essence.level(aspect) < com.chronogenesis.organism.GlandBlock.PUMPED_LEVEL) {
+                // Every power, the Eldritch ones too.
+                essence = essence.withLevel(aspect, com.chronogenesis.organism.GlandBlock.PUMPED_LEVEL);
             }
             essence = essence.withPool(aspect, essence.max(aspect));
         }

@@ -286,6 +286,10 @@ public final class TemporalShift {
             tell(player, shift.held() ? "message.chronogenesis.shift.held" : "message.chronogenesis.shift.unheld");
             sync(player);
         }
+        if (ElderArena.binds(player)) {
+            // While the Unbegotten fights, its arena does not let go: the shift waits.
+            return;
+        }
         Shift next = shift.tick();
         player.setData(ModAttachments.TIME_SHIFT, next);
         if (next.ticksLeft() == 600 || next.ticksLeft() == 200) {

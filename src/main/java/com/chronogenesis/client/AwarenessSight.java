@@ -1,5 +1,6 @@
 package com.chronogenesis.client;
 
+import com.chronogenesis.player.EldritchPowers;
 import com.chronogenesis.player.PlayerEssence;
 import com.chronogenesis.player.Power;
 import com.chronogenesis.player.Powers;
@@ -11,7 +12,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
-/** Glowing Sight (Awareness): creatures (and players who are not sneaking) within 20 blocks glow, for you only. */
+/**
+ * Glowing Sight (Awareness): creatures (and players who are not sneaking) within 20 blocks glow, for you only. Thousand
+ * Eyes (Eldritch Awareness): everything living within {@value EldritchPowers#EYES_RADIUS} blocks.
+ */
 public final class AwarenessSight {
     private AwarenessSight() {}
 
@@ -21,6 +25,10 @@ public final class AwarenessSight {
             return false;
         }
         PlayerEssence essence = self.getData(ModAttachments.PLAYER_ESSENCE);
+        if (essence.isOn(Power.THOUSAND_EYES) && entity.distanceToSqr(self) <= EldritchPowers.EYES_RADIUS * EldritchPowers.EYES_RADIUS) {
+            // A thousand eyes: everything living, sneaking or not.
+            return true;
+        }
         if (!essence.isOn(Power.GLOWING_SIGHT)) {
             return false;
         }

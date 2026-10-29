@@ -2758,10 +2758,12 @@ FINISH_SKIP = ("_fill", "particle/", "models/armor", "entity/", "gauntlet", "cor
                "essence_manipulator")
 # Tiles that are pictures (dials, faces, glyphs): shaded part by part, like objects, not as a bumpy surface.
 PICTURE_TILES = ("block/clock", "block/finish", "block/starting_gate", "block/eye", "block/temporal_field",
-                 "block/faded_blueprint", "_seal", "block/obelisk_inscription", "block/cerebrum_eye", "block/riders_seat")
+                 "block/faded_blueprint", "_seal", "block/obelisk_inscription", "block/cerebrum_eye", "block/riders_seat",
+                 "block/cradle_stone")
 # Pale and tinted organic tiles: a gentler contrast (tints multiply it, and pale materials show it most).
 SOFT_TILES = ("chronoflesh_", "organism_core", "cortex_lobe", "cerebrum", "fossil_cortex", "brain_tissue", "dissection_table",
-              "faded_blueprint", "harness", "graft_flesh", "gland_sac", "leech_skin", "ganglion", "core_sinew")
+              "faded_blueprint", "harness", "graft_flesh", "gland_sac", "leech_skin", "ganglion", "core_sinew",
+              "unbegotten_flesh", "last_offshoot")
 RAMP_STEPS = 5
 TINY_REGION = 4
 
@@ -3366,6 +3368,236 @@ ice_age_entities()
 organ_sheet()
 ice_and_eggs()
 featherweight_icon()
+
+
+# ---------------------------------------------------------------- the end of the road: the Cradle, the Unbegotten's flesh, its gifts
+
+def eldritch_endgame():
+    """The Cradle Stone (obelisk-black, a ring of eldritch runes on top, channels down its sides), the Unbegotten's
+    flesh (bruise-violet, ringed with suckers, a green eye or two), the Last Offshoot's bud (gone strange), its heart made
+    a pump, the grafts for a body, and the Eldritch powers' icons."""
+    r = rng(1901)
+    side = new()
+    for y in range(16):
+        for x in range(16):
+            side.putpixel((x, y), shade((28, 22, 36, 255), r.randint(-3, 3) + (5 if (x + y) % 7 == 0 else 0)))
+    for y in range(2, 14):
+        for x in (3, 12):
+            side.putpixel((x, y), (60, 150, 70, 255) if y % 3 else (166, 255, 128, 255))
+    for x in range(16):
+        side.putpixel((x, 0), (44, 36, 56, 255))
+        side.putpixel((x, 15), (18, 14, 22, 255))
+    save(side, "block/cradle_stone")
+
+    top = new()
+    for y in range(16):
+        for x in range(16):
+            top.putpixel((x, y), shade((30, 24, 38, 255), r.randint(-3, 3)))
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, y - 7.5)
+            if 5.2 < d < 6.6 and (int(math.degrees(math.atan2(y - 7.5, x - 7.5)) + 360) // 30) % 2 == 0:
+                top.putpixel((x, y), ELDRITCH)
+            elif 5.0 < d < 6.8:
+                top.putpixel((x, y), (60, 120, 60, 255))
+            elif d < 2.2:
+                top.putpixel((x, y), (12, 8, 14, 255))
+            elif d < 3.0:
+                top.putpixel((x, y), (120, 70, 160, 255))
+    save(top, "block/cradle_stone_top")
+
+    flesh = new()
+    for y in range(16):
+        for x in range(16):
+            v = math.sin(x * 0.9 + y * 0.4) + math.sin(y * 1.3 - x * 0.2)
+            c = (122, 52, 132, 255) if v > 0.7 else (92, 38, 104, 255) if v > -0.7 else (62, 22, 72, 255)
+            flesh.putpixel((x, y), c)
+    for (cx, cy) in [(3, 3), (11, 5), (6, 11), (13, 12)]:
+        for (dx, dy) in [(0, 0), (1, 0), (0, 1), (1, 1)]:
+            flesh.putpixel((cx + dx, cy + dy), (170, 110, 170, 255))
+        flesh.putpixel((cx, cy), (40, 12, 46, 255))
+    for (x, y) in [(8, 2), (9, 2), (8, 3), (9, 3)]:
+        flesh.putpixel((x, y), ELDRITCH)
+    flesh.putpixel((9, 3), (10, 6, 10, 255))
+    save(flesh, "block/unbegotten_flesh")
+
+    bud = new()
+    for y in range(16):
+        for x in range(16):
+            v = math.sin(x * 1.3 + math.sin(y * 0.9) * 2.2) + math.sin(y * 1.1 + x * 0.3)
+            c = (150, 96, 186, 255) if v > 0.6 else (108, 58, 140, 255) if v > -0.6 else (70, 30, 92, 255)
+            bud.putpixel((x, y), c)
+    for (x, y) in [(6, 6), (7, 6), (6, 7), (7, 7), (11, 10), (12, 10)]:
+        bud.putpixel((x, y), ELDRITCH)
+    bud.putpixel((7, 7), (10, 6, 10, 255))
+    save(bud, "block/last_offshoot")
+
+    p = {"k": BRASS_DDK, "b": BRASS_DK, "B": BRASS, "H": BRASS_HI, "g": GLASS_EDGE, "f": (90, 150, 110, 160),
+         "p": (118, 60, 150, 255), "P": (160, 100, 196, 255), "e": ELDRITCH, "s": (10, 6, 10, 255), "v": (80, 140, 70, 255),
+         "w": GLINT}
+    save(grid([
+        "................",
+        "......kbbk......",
+        ".....kBHHBk.....",
+        "......gggg......",
+        ".....g.vv.g.....",
+        ".....gfpPfg.....",
+        "....gfpPePfg....",
+        "....gfPesPfg....",
+        "....gfpPPpfg....",
+        "....gffpPffg....",
+        "....gfffffwg....",
+        ".....gggggg.....",
+        "...v..v..v..v...",
+        "..e...v..v...e..",
+        ".v....v...v...v.",
+        "................",
+    ], p), "item/last_offshoot")
+
+    p = {"k": (24, 10, 28, 255), "d": (70, 26, 78, 255), "p": (118, 48, 120, 255), "h": (160, 82, 160, 255),
+         "e": ELDRITCH, "s": (10, 6, 10, 255), "B": BRASS, "H": BRASS_HI, "b": BRASS_DK, "c": COPPER, "C": COPPER_DK}
+    save(grid([
+        "................",
+        "......cC..cC....",
+        "......cC..cC....",
+        "...kkkBBkkBBk...",
+        "..kphhbHHbhppk..",
+        "..kphpEEppBBdk..".replace("E", "e"),
+        "..BBBBBBBBBBBB..",
+        "..kppeseppppdk..",
+        "..kdpeeepppddk..",
+        "..BBBBBBBBBBBB..",
+        "...kdpppppddk...",
+        "....kdddpddk....",
+        ".....kdddddk....",
+        "......kddk......",
+        ".......kk.......",
+        "................",
+    ], p), "item/unbegotten_pump")
+
+    p = {"k": (40, 14, 46, 255), "f": (122, 52, 132, 255), "F": (160, 90, 170, 255), "w": (236, 230, 210, 255),
+         "e": ELDRITCH, "E": ELDRITCH_DK, "s": (10, 6, 10, 255), "r": (150, 40, 60, 255)}
+    save(grid([
+        "................",
+        "................",
+        "......kkkk......",
+        "....kkffffkk....",
+        "...kfFwwwwFfk...",
+        "..kfwwwEEwwwfk..",
+        "..kfwwEeeEwwfk..",
+        "..kfwwEesEwwfk..",
+        "..kfwwEeeEwwfk..",
+        "..kfwwwEEwwwfk..",
+        "...kfFwwwwFfk...",
+        "....kkffffkk....",
+        "......kkkkr.....",
+        "..........r.....",
+        "...........r....",
+        "................",
+    ], p), "item/unblinking_eye")
+
+    p = {"k": (40, 14, 46, 255), "f": (122, 52, 132, 255), "F": (160, 90, 170, 255), "e": ELDRITCH, "b": BONE, "B": BONE_DK}
+    save(grid([
+        "................",
+        "..e.......e.....",
+        "..f..e...f...e..",
+        "...f..f.f...f...",
+        "...f..f.f..f....",
+        "....f.f.f.f.....",
+        "....F.f.F.f.....",
+        ".....fFfFf......",
+        "......bBb.......",
+        "......BbB.......",
+        "......bBb.......",
+        "......BbB.......",
+        "......bBb.......",
+        ".......B........",
+        "................",
+        "................",
+    ], p), "item/dorsal_tendrils")
+
+    p = {"k": (40, 14, 46, 255), "f": (122, 52, 132, 255), "F": (160, 90, 170, 255), "e": ELDRITCH, "s": (190, 140, 200, 255)}
+    save(grid([
+        "................",
+        "..........ee....",
+        ".........fe.....",
+        "........Ff......",
+        ".......fF.......",
+        "......Ffs.......",
+        ".....fFf........",
+        "....FfsF........",
+        "...fFf..........",
+        "..FfsF..........",
+        "..fFf...........",
+        ".FfFs...........",
+        ".fFf............",
+        ".Ff.............",
+        "................",
+        "................",
+    ], p), "item/grasping_tentacle")
+
+    p = {"k": (20, 12, 24, 255), "h": (58, 36, 64, 255), "H": (88, 60, 96, 255), "e": ELDRITCH}
+    save(grid([
+        "................",
+        "................",
+        "...kkkkkkkkkk...",
+        "..kHHhHHhHHhHk..",
+        "..khhhhhhhhhhk..",
+        "...kHHhHHhHHk...",
+        "...khhhhhhhhk...",
+        "....kHHheHHk....",
+        "....khhhhhhk....",
+        ".....kHHhHk.....",
+        ".....khhhhk.....",
+        "......kHHk......",
+        "......kkkk......",
+        "................",
+        "................",
+        "................",
+    ], p), "item/unbegotten_hide")
+
+    G = GLYPH
+
+    def collapse(d):
+        for i in range(36):
+            a = i * 0.5
+            rr = 7.0 - i * 0.18
+            d.point((int(round(7.5 + math.cos(a) * rr)), int(round(7.5 + math.sin(a) * rr))), fill=G)
+        d.rectangle([7, 7, 8, 8], fill=G)
+
+    def slip(d):
+        for x in (2, 5):
+            d.line([(x, 7), (x + 1, 7)], fill=G)
+        d.line([(8, 7), (13, 7)], fill=G)
+        d.line([(10, 4), (13, 7), (10, 10)], fill=G)
+
+    def writhe(d):
+        for x0 in (3, 7, 11):
+            for y in range(3, 14):
+                d.point((x0 + int(round(math.sin(y * 0.8 + x0) * 1.2)), y), fill=G)
+        d.line([(1, 14), (14, 14)], fill=G)
+
+    def thousand_eyes(d):
+        for (cx, cy) in [(4, 4), (11, 4), (7, 8), (3, 12), (12, 12)]:
+            d.ellipse([cx - 2, cy - 1, cx + 2, cy + 1], outline=G)
+            d.point((cx, cy), fill=G)
+
+    def aeon(d):
+        d.line([(4, 2), (11, 2)], fill=G)
+        d.line([(4, 13), (11, 13)], fill=G)
+        d.line([(5, 3), (10, 12)], fill=G)
+        d.line([(10, 3), (5, 12)], fill=G)
+        d.point((9, 6), fill=G)
+        d.point((8, 8), fill=G)
+
+    icon("collapse", collapse)
+    icon("slip", slip)
+    icon("writhe", writhe)
+    icon("thousand_eyes", thousand_eyes)
+    icon("aeon", aeon)
+
+
+eldritch_endgame()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

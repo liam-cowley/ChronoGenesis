@@ -37,6 +37,14 @@ public final class ModDataComponents {
     public static final Supplier<DataComponentType<GlobalPos>> SPOOL_END = DATA_COMPONENTS.registerComponentType("spool_end",
             builder -> builder.persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC));
 
+    /** A Nerve Spool threaded through a swollen (level 3) gland: its nerve can reach through time. */
+    public static final Supplier<DataComponentType<Boolean>> SPOOL_THREADED = DATA_COMPONENTS.registerComponentType("spool_threaded",
+            builder -> builder.persistent(com.mojang.serialization.Codec.BOOL).networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.BOOL));
+
+    /** A threaded spool's loose end, rooted in the Chronocortex: the cortex's name (empty if it has none). */
+    public static final Supplier<DataComponentType<String>> SPOOL_CORTEX = DATA_COMPONENTS.registerComponentType("spool_cortex",
+            builder -> builder.persistent(com.mojang.serialization.Codec.STRING).networkSynchronized(net.minecraft.network.codec.ByteBufCodecs.STRING_UTF8));
+
     /** How far back a Temporal Lens looks. */
     public static final Supplier<DataComponentType<LensDepth>> LENS_DEPTH = DATA_COMPONENTS.registerComponentType("lens_depth",
             builder -> builder.persistent(LensDepth.CODEC).networkSynchronized(LensDepth.STREAM_CODEC));

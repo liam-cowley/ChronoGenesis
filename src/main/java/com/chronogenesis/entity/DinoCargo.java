@@ -2,10 +2,8 @@ package com.chronogenesis.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.Nullable;
 
 import com.chronogenesis.registry.ModBlocks;
@@ -15,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -23,8 +22,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
-import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -37,72 +34,69 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * What a harnessed Titanosaur carries: real blocks, built onto its back, carried the way a contraption is (Create's
- * moving structures): while it stands, its cargo stands in the world and can be built on; when it walks, the cargo
- * comes away from the world and goes with it.
+ * What a harnessed Titanosaur carries: real blocks, fixed to its body and turning with it at any angle, the way a
+ * Valkyrien Skies ship or a Create contraption carries them. The blocks themselves stand in the beast's
+ * {@link CargoHold} (a plot far away, where they tick like any others); the beast mirrors them on its back:
  * <ul>
- *   <li><b>Anchored</b> (standing): the cargo is blocks in the world on its back. Every block placed touching the
- *       harness, or touching anything already attached, joins it; a block broken off leaves it. Machines run.</li>
- *   <li><b>Carried</b> (walking): the moment it is steered (or anything moves it), the whole cargo is lifted out of
- *       the world into the beast, block entities with all their data. It is drawn on the beast, turning smoothly
- *       with it ({@code client/DinoRenderers}); its shape is solid ({@link CargoPart}s: you can stand on it, and are
- *       carried along); it cannot pass through terrain (the beast stops). A Rider's Seat in it still steers.</li>
- *   <li>When it has stood still a moment, the cargo is set down again where it now stands, squared to the nearest
- *       quarter turn (states rotated), block entities restored: anchored again. If something is in the way it waits.</li>
+ *   <li>The harness is the cargo's origin. It sits above the middle of the back, and the cargo's frame turns with the
+ *       beast: the cargo is never squared to the world's grid.</li>
+ *   <li>The client finds the block under the cursor in that frame ({@code client/CargoControls}); placing against it,
+ *       breaking it, opening it or using it is done to the real block in the hold. Blocks may reach {@value #REACH}
+ *       blocks out from the harness, {@value #DOWN} down and {@value #UP} up, {@value #MAX_BLOCKS} at most.</li>
+ *   <li>Its shape is solid ({@link CargoPart}s: you can stand on it, and are carried along); it cannot pass through
+ *       terrain (the beast stops). A Rider's Seat in it steers.</li>
  * </ul>
- * If the beast dies, nothing holds the cargo on: every block of it drops (containers spill).
+ * If the beast dies, or the harness is broken, nothing holds the cargo on: every block of it drops.
  */
 public final class DinoCargo {
-    /** How many blocks one beast can carry. */
     public static final int MAX_BLOCKS = 384;
-    /** Ticks without being steered before a carried cargo is set down. */
-    public static final int SETTLE = 30;
-    /** Block flags for moving: tell clients, no shape updates, no drops, as a piston moves blocks. */
-    private static final int MOVE_FLAGS = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_SUPPRESS_DROPS
-            | Block.UPDATE_MOVE_BY_PISTON;
+    public static final int REACH = 12;
+    public static final int DOWN = 6;
+    public static final int UP = 16;
+    /** Ticks between looks at the hold for changes (machines growing, doors opening). */
+    private static final int RESCAN = 10;
+    /** Where the harness's corner sits relative to the beast's feet (it is centred over the back). */
+    private static final Vec3 ANCHOR = new Vec3(-0.5, Titanosaur.BACK, -0.5);
 
-    /** One carried block: where it sits (relative to the harness at lifting), what it is, its block entity's data. */
-    public record Carried(BlockPos offset, BlockState state, @Nullable CompoundTag data) {}
+    /** One block of the cargo as the clients see it: where it sits relative to the harness, and what it is. */
+    public record Carried(BlockPos offset, BlockState state) {}
 
     private final Titanosaur beast;
-    // Anchored: the harness in the world, and the cargo blocks relative to it.
-    @Nullable
-    private BlockPos harness;
-    private final List<BlockPos> offsets = new ArrayList<>();
-    @Nullable
-    private Vec3 anchoredAt;
-    private float anchoredYaw;
-    // Carried: the blocks themselves, where the harness corner was relative to the beast, and the quarter it faced.
+    /** The hold (server), or -1. */
+    private int plot = -1;
+    private boolean forced;
+    private boolean collapsing;
     private final List<Carried> carried = new ArrayList<>();
-    private Vec3 anchor = Vec3.ZERO;
     private List<AABB> shape = List.of();
-    private int quarter;
-    private boolean moving;
-    private int still;
+    private int scan;
+    /** A cargo saved by an older version (lifted blocks, or blocks standing in the world), moved into a hold on loading. */
+    @Nullable
+    private CompoundTag legacy;
 
     DinoCargo(Titanosaur beast) {
         this.beast = beast;
     }
 
     public boolean harnessed() {
-        return harness != null || !carried.isEmpty();
+        return plot >= 0 || !carried.isEmpty() || legacy != null;
     }
 
     public boolean carrying() {
         return !carried.isEmpty();
     }
 
-    @Nullable
-    public BlockPos harness() {
-        return harness;
+    public int plot() {
+        return plot;
     }
 
-    public boolean moving() {
-        return moving;
+    /** The harness in the hold (server). */
+    @Nullable
+    public BlockPos harness() {
+        return plot < 0 ? null : CargoHold.harnessOf(beast.level(), plot);
     }
 
     public int size() {
-        return carrying() ? carried.size() : offsets.size();
+        return carried.size();
     }
 
     public List<Carried> carried() {
@@ -110,10 +104,10 @@ public final class DinoCargo {
     }
 
     public Vec3 anchor() {
-        return anchor;
+        return ANCHOR;
     }
 
-    /** The carried cargo's solid shape, a few boxes in its own frame (see {@link CargoPart#merge}). */
+    /** The cargo's solid shape, a few boxes in its own frame (see {@link CargoPart#merge}). */
     public List<AABB> shape() {
         return shape;
     }
@@ -122,29 +116,25 @@ public final class DinoCargo {
         shape = carried.isEmpty() ? List.of() : CargoPart.merge(carried.stream().map(Carried::offset).toList());
     }
 
-    /** Whether a block in the world is part of the (anchored) cargo. */
-    public boolean contains(BlockPos pos) {
-        return harness != null && offsets.contains(pos.subtract(harness));
-    }
-
-    /** Where the harness should be: above the middle of its back. */
-    public BlockPos harnessSpot() {
-        return BlockPos.containing(beast.getX(), beast.getY() + Titanosaur.BACK, beast.getZ());
-    }
-
-    /** Which quarter it faces: its yaw, rounded to the nearest 90 degrees. */
-    int quarterNow() {
-        return Mth.positiveModulo(Math.round(beast.getYRot() / 90.0f), 4);
-    }
-
-    /** How far a carried cargo has turned since it was lifted (degrees, yaw sense). */
+    /** How far the cargo has turned from the world's axes: as far as the beast. */
     public float turn(float yaw) {
-        return yaw - quarter * 90.0f;
+        return yaw;
     }
 
-    /** A point of the carried cargo (relative to the harness corner at lifting) in the world now. */
+    /** A point of the cargo's frame (relative to the harness corner) in the world, with the beast at {@code beastPos}. */
     public Vec3 toWorld(Vec3 local, Vec3 beastPos, float yaw) {
-        return beastPos.add(rotate(anchor.add(local), turn(yaw)));
+        return beastPos.add(rotate(ANCHOR.add(local), turn(yaw)));
+    }
+
+    /** A point of the world in the cargo's frame. */
+    public Vec3 toLocal(Vec3 world, Vec3 beastPos, float yaw) {
+        return rotate(world.subtract(beastPos), -turn(yaw)).subtract(ANCHOR);
+    }
+
+    /** Where a point of the hold is in the world now. */
+    public Vec3 worldOf(Vec3 inHold) {
+        BlockPos harness = harness();
+        return harness == null ? beast.position() : toWorld(inHold.subtract(Vec3.atLowerCornerOf(harness)), beast.position(), beast.getYRot());
     }
 
     /** Turns a vector about the vertical by {@code degrees} of yaw (Minecraft's sense: +90 takes south to west). */
@@ -155,187 +145,113 @@ public final class DinoCargo {
         return new Vec3(v.x * cos - v.z * sin, v.y, v.x * sin + v.z * cos);
     }
 
-    /** A harness is buckled on: its block appears on the beast's back. */
+    /** Whether an offset from the harness is inside what a cargo may fill. */
+    public static boolean within(BlockPos offset) {
+        return Math.abs(offset.getX()) <= REACH && Math.abs(offset.getZ()) <= REACH && offset.getY() >= -DOWN && offset.getY() <= UP;
+    }
+
+    /** A harness is buckled on: its hold is claimed, and the harness appears on the beast's back. */
     boolean buckle(Player player, ItemStack stack) {
         ServerLevel level = (ServerLevel) beast.level();
-        BlockPos spot = harnessSpot();
-        if (!level.getBlockState(spot).canBeReplaced()) {
-            player.displayClientMessage(Component.translatable("message.chronogenesis.harness.blocked").withStyle(ChatFormatting.GRAY), true);
-            return false;
-        }
-        level.setBlockAndUpdate(spot, ModBlocks.BUCKLED_HARNESS.get().defaultBlockState());
-        if (level.getBlockEntity(spot) instanceof DinoHarnessBlockEntity entity) {
+        claim(level);
+        BlockPos harness = harness();
+        level.setBlockAndUpdate(harness, ModBlocks.BUCKLED_HARNESS.get().defaultBlockState());
+        if (level.getBlockEntity(harness) instanceof DinoHarnessBlockEntity entity) {
             entity.setOwner(beast.getUUID());
         }
-        harness = spot;
-        offsets.clear();
-        offsets.add(BlockPos.ZERO);
-        markAnchored();
+        rescan(level);
         stack.consume(1, player);
-        level.playSound(null, spot, SoundEvents.HORSE_SADDLE, SoundSource.NEUTRAL, 1.0f, 0.6f);
+        level.playSound(null, beast.blockPosition().above(Titanosaur.BACK), SoundEvents.HORSE_SADDLE, SoundSource.NEUTRAL, 1.0f, 0.6f);
         player.displayClientMessage(Component.translatable("message.chronogenesis.harness.buckled").withStyle(ChatFormatting.DARK_AQUA), true);
         return true;
     }
 
-    private void markAnchored() {
-        anchoredAt = beast.position();
-        anchoredYaw = beast.getYRot();
-    }
-
-    /** A block was placed touching the cargo: it is part of it now. */
-    public boolean attach(BlockPos pos) {
-        if (harness == null || offsets.size() >= MAX_BLOCKS) {
-            return false;
-        }
-        BlockPos offset = pos.subtract(harness);
-        if (!offsets.contains(offset)) {
-            offsets.add(offset.immutable());
-        }
-        return true;
-    }
-
-    public void detach(BlockPos pos) {
-        if (harness != null && !pos.equals(harness)) {
-            offsets.remove(pos.subtract(harness));
+    private void claim(ServerLevel level) {
+        plot = CargoHold.holds(level).claim(beast.getUUID());
+        BlockPos harness = harness();
+        // A hold is handed out empty; clear anything a lost beast left in it.
+        CargoHold.force(level, plot, true);
+        forced = true;
+        for (BlockPos pos : BlockPos.betweenClosed(harness.offset(-REACH, -DOWN, -REACH), harness.offset(REACH, UP, REACH))) {
+            if (!level.getBlockState(pos).isAir()) {
+                level.removeBlockEntity(pos);
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_SUPPRESS_DROPS);
+            }
         }
     }
 
-    /**
-     * Server, every tick. Anchored: if the beast is steered or has been moved off its spot, the cargo is lifted.
-     * Carried: once it has stood still a while, the cargo is set down.
-     */
-    public void tick(boolean steered) {
+    /** Server, every tick: keeps the hold loaded, and the mirror up to date. */
+    public void tick() {
         ServerLevel level = (ServerLevel) beast.level();
-        if (harness != null) {
-            if (!level.isLoaded(harness)) {
-                return;
-            }
-            if (!level.getBlockState(harness).is(ModBlocks.BUCKLED_HARNESS.get())) {
-                collapse();
-                return;
-            }
-            if (anchoredAt == null) {
-                markAnchored();
-            }
-            boolean moved = beast.position().distanceToSqr(anchoredAt) > 0.36
-                    || Math.abs(Mth.wrapDegrees(beast.getYRot() - anchoredYaw)) > 20.0f;
-            if (steered || moved) {
-                lift(level);
-            }
+        if (legacy != null) {
+            migrate(level, legacy);
+            legacy = null;
+        }
+        if (plot < 0) {
             return;
         }
-        if (carrying()) {
-            boolean resting = !steered && beast.onGround() && beast.getDeltaMovement().horizontalDistanceSqr() < 1.0E-3;
-            still = resting ? still + 1 : 0;
-            if (still >= SETTLE && still % 10 == 0) {
-                setDown(level);
+        if (!forced) {
+            if (!CargoHold.holds(level).owns(plot, beast.getUUID())) {
+                // Someone else's hold now (a copy of this beast from an older save): this one has lost its cargo.
+                plot = -1;
+                carried.clear();
+                reshape();
+                beast.cargoChanged();
+                return;
             }
+            CargoHold.force(level, plot, true);
+            forced = true;
+        }
+        BlockPos harness = harness();
+        if (!level.isLoaded(harness)) {
+            return;
+        }
+        if (!level.getBlockState(harness).is(ModBlocks.BUCKLED_HARNESS.get())) {
+            collapse();
+            return;
+        }
+        if (++scan >= RESCAN) {
+            rescan(level);
         }
     }
 
-    /** Lifts the anchored cargo out of the world into the beast. */
-    private void lift(ServerLevel level) {
-        int facing = quarterNow();
-        // Squared to the quarter it faces, so the blocks keep to its body.
-        float yaw = facing * 90.0f;
-        beast.setYRot(yaw);
-        beast.yBodyRot = yaw;
-        beast.yHeadRot = yaw;
-        List<BlockPos> from = new ArrayList<>();
-        for (BlockPos offset : offsets) {
-            BlockPos pos = harness.offset(offset);
-            if (offset.equals(BlockPos.ZERO) || !level.getBlockState(pos).isAir()) {
-                from.add(pos);
-            }
+    /** The beast left the level (unloaded or gone): its hold need not stay loaded. */
+    public void unload() {
+        if (forced && plot >= 0 && beast.level() instanceof ServerLevel level) {
+            CargoHold.force(level, plot, false);
         }
-        moving = true;
-        carried.clear();
-        Map<BlockPos, RiderSeat> seats = new HashMap<>();
-        for (RiderSeat seat : level.getEntitiesOfClass(RiderSeat.class, bounds(from).inflate(1.0))) {
-            seats.put(seat.blockPosition(), seat);
-        }
-        for (BlockPos pos : from) {
-            BlockEntity entity = level.getBlockEntity(pos);
-            carried.add(new Carried(pos.subtract(harness), level.getBlockState(pos),
-                    entity == null ? null : entity.saveWithFullMetadata(level.registryAccess())));
-        }
-        for (BlockPos pos : from) {
-            level.removeBlockEntity(pos);
-            level.setBlock(pos, Blocks.AIR.defaultBlockState(), MOVE_FLAGS);
-        }
-        for (BlockPos pos : from) {
-            level.updateNeighborsAt(pos, Blocks.AIR);
-        }
-        anchor = Vec3.atLowerCornerOf(harness).subtract(beast.position());
-        quarter = facing;
-        BlockPos was = harness;
-        seats.forEach((pos, seat) -> seat.carriedBy(beast, pos.subtract(was)));
-        harness = null;
-        offsets.clear();
-        moving = false;
-        still = 0;
-        reshape();
-        beast.cargoChanged();
-        level.playSound(null, beast.blockPosition(), SoundEvents.CHAIN_PLACE, SoundSource.NEUTRAL, 1.0f, 0.6f);
+        forced = false;
     }
 
-    /** Sets the carried cargo down where it now stands, squared to the nearest quarter. Waits if anything is in the way. */
-    public boolean setDown(ServerLevel level) {
-        int facing = quarterNow();
-        float yaw = facing * 90.0f;
-        int steps = Mth.positiveModulo(facing - quarter, 4);
-        Rotation rotation = Rotation.values()[steps];
-        Vec3 at = beast.position();
-        List<BlockPos> to = new ArrayList<>();
-        Set<BlockPos> taken = new HashSet<>();
-        for (Carried block : carried) {
-            BlockPos target = BlockPos.containing(toWorld(Vec3.atCenterOf(block.offset()), at, yaw));
-            if (!taken.add(target) || !level.isLoaded(target) || !level.getBlockState(target).canBeReplaced()) {
-                return false;
-            }
-            to.add(target);
+    /** Looks at the hold again, and tells the clients if the cargo changed. */
+    public void rescan(ServerLevel level) {
+        scan = 0;
+        BlockPos harness = harness();
+        if (harness == null) {
+            return;
         }
-        beast.setYRot(yaw);
-        beast.yBodyRot = yaw;
-        beast.yHeadRot = yaw;
-        moving = true;
-        BlockPos newHarness = to.get(0);
-        for (int i = 0; i < carried.size(); i++) {
-            Carried block = carried.get(i);
-            BlockState state = block.state().rotate(rotation);
-            BlockPos pos = to.get(i);
-            level.setBlock(pos, state, MOVE_FLAGS);
-            if (block.data() != null) {
-                BlockEntity entity = BlockEntity.loadStatic(pos, state, block.data(), level.registryAccess());
-                if (entity != null) {
-                    level.setBlockEntity(entity);
-                }
-            }
-            if (block.offset().equals(BlockPos.ZERO)) {
-                newHarness = pos;
+        List<Carried> now = new ArrayList<>();
+        for (BlockPos pos : BlockPos.betweenClosed(harness.offset(-REACH, -DOWN, -REACH), harness.offset(REACH, UP, REACH))) {
+            BlockState state = level.getBlockState(pos);
+            if (!state.isAir()) {
+                now.add(new Carried(pos.subtract(harness), state));
             }
         }
-        offsets.clear();
-        for (int i = 0; i < carried.size(); i++) {
-            level.updateNeighborsAt(to.get(i), carried.get(i).state().getBlock());
-            offsets.add(to.get(i).subtract(newHarness));
+        if (!now.equals(carried)) {
+            carried.clear();
+            carried.addAll(now);
+            reshape();
+            beast.cargoChanged();
         }
-        harness = newHarness;
-        BlockPos placed = newHarness;
-        for (RiderSeat seat : level.getEntitiesOfClass(RiderSeat.class, beast.getBoundingBox().inflate(32.0), seat -> seat.carrier() == beast)) {
-            seat.setDown(placed.offset(seat.seatOffset().rotate(rotation)));
-        }
-        carried.clear();
-        reshape();
-        markAnchored();
-        moving = false;
-        still = 0;
-        beast.cargoChanged();
-        level.playSound(null, newHarness, SoundEvents.CHAIN_PLACE, SoundSource.NEUTRAL, 1.0f, 0.8f);
-        return true;
     }
 
-    /** Whether the carried cargo, with the beast at {@code pos} facing {@code yaw}, would be inside terrain. */
+    /** Whether one more block may be placed in the hold, at {@code pos}. */
+    public boolean mayPlace(BlockPos pos) {
+        BlockPos harness = harness();
+        return harness != null && within(pos.subtract(harness)) && carried.size() < MAX_BLOCKS;
+    }
+
+    /** Whether the cargo, with the beast at {@code pos} facing {@code yaw}, would be inside terrain. */
     public boolean blocked(Level level, Vec3 pos, float yaw) {
         for (AABB box : CargoPart.boxes(this, pos, yaw)) {
             if (!level.noBlockCollision(null, box.deflate(0.08))) {
@@ -345,131 +261,148 @@ public final class DinoCargo {
         return false;
     }
 
-    /** Nothing holds the cargo on any more: every block of it breaks, dropping. */
+    /** Nothing holds the cargo on any more: every block of it breaks, dropping from the beast, and the hold is let go. */
     public void collapse() {
         ServerLevel level = (ServerLevel) beast.level();
-        if (harness != null) {
-            BlockPos at = harness;
-            List<BlockPos> blocks = new ArrayList<>(offsets);
-            harness = null;
-            offsets.clear();
-            for (BlockPos offset : blocks) {
-                BlockPos pos = at.offset(offset);
-                if (!level.getBlockState(pos).isAir()) {
-                    level.destroyBlock(pos, true);
-                }
+        if (plot < 0 || collapsing) {
+            return;
+        }
+        collapsing = true;
+        BlockPos harness = harness();
+        // Broken while the beast still owns the hold, so what falls lands where the beast is.
+        for (BlockPos pos : BlockPos.betweenClosed(harness.offset(-REACH, -DOWN, -REACH), harness.offset(REACH, UP, REACH))) {
+            if (!level.getBlockState(pos).isAir()) {
+                level.destroyBlock(pos.immutable(), true);
             }
-            level.playSound(null, at, SoundEvents.CHAIN_BREAK, SoundSource.NEUTRAL, 1.5f, 0.5f);
         }
-        if (carrying()) {
-            for (Carried block : carried) {
-                BlockPos pos = BlockPos.containing(toWorld(Vec3.atCenterOf(block.offset()), beast.position(), beast.getYRot()));
-                BlockEntity entity = block.data() == null ? null : BlockEntity.loadStatic(pos, block.state(), block.data(), level.registryAccess());
-                if (entity != null) {
-                    entity.setLevel(level);
-                }
-                Block.dropResources(block.state(), level, pos, entity);
-                if (entity instanceof Container container) {
-                    Containers.dropContents(level, pos, container);
-                }
-            }
-            carried.clear();
-            reshape();
-            level.playSound(null, beast.blockPosition(), SoundEvents.CHAIN_BREAK, SoundSource.NEUTRAL, 1.5f, 0.5f);
-            beast.cargoChanged();
-        }
-    }
-
-    private static AABB bounds(List<BlockPos> positions) {
-        AABB box = new AABB(positions.get(0));
-        for (BlockPos pos : positions) {
-            box = box.minmax(new AABB(pos));
-        }
-        return box;
+        CargoHold.force(level, plot, false);
+        CargoHold.holds(level).free(plot);
+        plot = -1;
+        forced = false;
+        collapsing = false;
+        carried.clear();
+        reshape();
+        level.playSound(null, beast.blockPosition().above(Titanosaur.BACK), SoundEvents.CHAIN_BREAK, SoundSource.NEUTRAL, 1.5f, 0.5f);
+        beast.cargoChanged();
     }
 
     // ---------------------------------------------------------------- saving and syncing
 
     void save(CompoundTag tag) {
-        if (harness != null) {
-            tag.put("harness", NbtUtils.writeBlockPos(harness));
-            ListTag list = new ListTag();
-            for (BlockPos offset : offsets) {
-                list.add(NbtUtils.writeBlockPos(offset));
-            }
-            tag.put("cargo", list);
+        if (plot >= 0) {
+            tag.putInt("hold", plot);
         }
-        if (carrying()) {
-            tag.put("carried", writeCarried(true));
+        if (legacy != null) {
+            tag.merge(legacy);
         }
     }
 
     void load(CompoundTag tag) {
-        harness = NbtUtils.readBlockPos(tag, "harness").orElse(null);
-        offsets.clear();
-        for (Tag entry : tag.getList("cargo", Tag.TAG_INT_ARRAY)) {
-            if (entry instanceof net.minecraft.nbt.IntArrayTag array && array.size() == 3) {
-                offsets.add(new BlockPos(array.get(0).getAsInt(), array.get(1).getAsInt(), array.get(2).getAsInt()));
-            }
+        plot = tag.contains("hold") ? tag.getInt("hold") : -1;
+        forced = false;
+        if (plot < 0 && (tag.contains("harness") || tag.contains("carried"))) {
+            legacy = tag.copy();
         }
-        if (harness != null && offsets.isEmpty()) {
-            offsets.add(BlockPos.ZERO);
-        }
-        readCarried(tag.getCompound("carried"), beast.level().holderLookup(Registries.BLOCK));
-        anchoredAt = null;
     }
 
-    /** The carried cargo as a tag: what the client draws (and, with block entities' data, what is saved). */
-    CompoundTag writeCarried(boolean withData) {
+    /** An older cargo (anchored in the world, or lifted with its blocks' data) is moved into a hold. */
+    private void migrate(ServerLevel level, CompoundTag tag) {
+        claim(level);
+        BlockPos harness = harness();
+        // The old cargo kept to the world's quarters; the new one keeps to the beast. Turn it into the beast's frame.
+        int quarter = Mth.positiveModulo(Math.round(beast.getYRot() / 90.0f), 4);
+        Rotation back = Rotation.values()[(4 - quarter) % 4];
+        BlockPos oldHarness = NbtUtils.readBlockPos(tag, "harness").orElse(null);
+        if (oldHarness != null) {
+            for (Tag entry : tag.getList("cargo", Tag.TAG_INT_ARRAY)) {
+                if (entry instanceof IntArrayTag array && array.size() == 3) {
+                    BlockPos offset = new BlockPos(array.get(0).getAsInt(), array.get(1).getAsInt(), array.get(2).getAsInt());
+                    BlockPos from = oldHarness.offset(offset);
+                    BlockState state = level.getBlockState(from);
+                    if (state.isAir()) {
+                        continue;
+                    }
+                    BlockEntity entity = level.getBlockEntity(from);
+                    CompoundTag data = entity == null ? null : entity.saveWithFullMetadata(level.registryAccess());
+                    level.removeBlockEntity(from);
+                    level.setBlock(from, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_SUPPRESS_DROPS);
+                    put(level, harness.offset(offset.rotate(back)), state.rotate(back), data);
+                }
+            }
+        }
+        CompoundTag lifted = tag.getCompound("carried");
+        if (lifted.contains("blocks")) {
+            Rotation turn = Rotation.values()[Mth.positiveModulo(-lifted.getInt("quarter"), 4)];
+            HolderGetter<Block> blocks = level.holderLookup(Registries.BLOCK);
+            List<BlockState> palette = new ArrayList<>();
+            for (Tag entry : lifted.getList("palette", Tag.TAG_COMPOUND)) {
+                palette.add(NbtUtils.readBlockState(blocks, (CompoundTag) entry));
+            }
+            for (Tag entry : lifted.getList("blocks", Tag.TAG_COMPOUND)) {
+                CompoundTag block = (CompoundTag) entry;
+                int i = block.getInt("state");
+                if (i < palette.size()) {
+                    BlockPos offset = NbtUtils.readBlockPos(block, "pos").orElse(BlockPos.ZERO);
+                    put(level, harness.offset(offset.rotate(turn)), palette.get(i).rotate(turn),
+                            block.contains("data") ? block.getCompound("data") : null);
+                }
+            }
+        }
+        if (!level.getBlockState(harness).is(ModBlocks.BUCKLED_HARNESS.get())) {
+            level.setBlockAndUpdate(harness, ModBlocks.BUCKLED_HARNESS.get().defaultBlockState());
+        }
+        if (level.getBlockEntity(harness) instanceof DinoHarnessBlockEntity entity) {
+            entity.setOwner(beast.getUUID());
+        }
+        rescan(level);
+    }
+
+    private static void put(ServerLevel level, BlockPos pos, BlockState state, @Nullable CompoundTag data) {
+        level.setBlock(pos, state, Block.UPDATE_CLIENTS);
+        if (data != null) {
+            BlockEntity entity = BlockEntity.loadStatic(pos, state, data, level.registryAccess());
+            if (entity != null) {
+                level.setBlockEntity(entity);
+            }
+        }
+    }
+
+    /** The cargo as a tag: what the clients draw. */
+    CompoundTag writeCarried() {
         CompoundTag tag = new CompoundTag();
         if (carried.isEmpty()) {
             return tag;
         }
         ListTag palette = new ListTag();
         Map<BlockState, Integer> index = new HashMap<>();
-        ListTag blocks = new ListTag();
-        for (Carried block : carried) {
-            int i = index.computeIfAbsent(block.state(), state -> {
+        int[] packed = new int[carried.size() * 2];
+        for (int i = 0; i < carried.size(); i++) {
+            Carried block = carried.get(i);
+            packed[i * 2] = index.computeIfAbsent(block.state(), state -> {
                 palette.add(NbtUtils.writeBlockState(state));
                 return palette.size() - 1;
             });
-            CompoundTag entry = new CompoundTag();
-            entry.put("pos", NbtUtils.writeBlockPos(block.offset()));
-            entry.putInt("state", i);
-            if (withData && block.data() != null) {
-                entry.put("data", block.data());
-            }
-            blocks.add(entry);
+            BlockPos o = block.offset();
+            packed[i * 2 + 1] = ((o.getX() + 128) << 16) | ((o.getY() + 128) << 8) | (o.getZ() + 128);
         }
         tag.put("palette", palette);
-        tag.put("blocks", blocks);
-        tag.putDouble("ax", anchor.x);
-        tag.putDouble("ay", anchor.y);
-        tag.putDouble("az", anchor.z);
-        tag.putInt("quarter", quarter);
+        tag.putIntArray("blocks", packed);
         return tag;
     }
 
     /** Reads what {@link #writeCarried} wrote (the client does this when the beast's synced cargo changes). */
     public void readCarried(CompoundTag tag, HolderGetter<Block> blocks) {
         carried.clear();
-        if (!tag.contains("blocks")) {
-            reshape();
-            return;
-        }
         List<BlockState> palette = new ArrayList<>();
         for (Tag entry : tag.getList("palette", Tag.TAG_COMPOUND)) {
             palette.add(NbtUtils.readBlockState(blocks, (CompoundTag) entry));
         }
-        for (Tag entry : tag.getList("blocks", Tag.TAG_COMPOUND)) {
-            CompoundTag block = (CompoundTag) entry;
-            BlockPos offset = NbtUtils.readBlockPos(block, "pos").orElse(BlockPos.ZERO);
-            int i = block.getInt("state");
-            carried.add(new Carried(offset, i < palette.size() ? palette.get(i) : Blocks.AIR.defaultBlockState(),
-                    block.contains("data") ? block.getCompound("data") : null));
+        int[] packed = tag.getIntArray("blocks");
+        for (int i = 0; i + 1 < packed.length; i += 2) {
+            int p = packed[i + 1];
+            BlockPos offset = new BlockPos(((p >> 16) & 0xFF) - 128, ((p >> 8) & 0xFF) - 128, (p & 0xFF) - 128);
+            carried.add(new Carried(offset, packed[i] < palette.size() ? palette.get(packed[i]) : Blocks.AIR.defaultBlockState()));
         }
-        anchor = new Vec3(tag.getDouble("ax"), tag.getDouble("ay"), tag.getDouble("az"));
-        quarter = tag.getInt("quarter");
         reshape();
     }
 }

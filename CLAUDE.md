@@ -81,10 +81,17 @@ Docs (read the relevant one before implementing a feature, and keep names consis
 - Eras are dimensions sharing the overworld's seed (`data/chronogenesis/dimension/`), listed as data in
   `chronogenesis/era/`. The Precursor era has its own biomes (`worldgen/biome/precursor_*`, derived from vanilla ones)
   so only its own structures generate there; the Ice Age likewise has its own frozen biomes (`ice_age_*`).
-- Harnessed Titanosaurs carry their cargo as a moving structure (`entity/DinoCargo`): real blocks while it stands; lifted
-  into the entity (synced, drawn by its renderer, solid through `CargoPart` part entities) while it walks; set down
-  squared to a quarter turn when it stops (states rotated, block entities restored). Blocks with a facing must
-  implement `rotate` (grafts do). Dinosaurs hatch from eggs and grow (`entity/Dinos`).
+- Harnessed Titanosaurs carry their cargo fixed to their body (`entity/DinoCargo`, Valkyrien Skies-style): the real
+  blocks stand in the beast's hold (`entity/CargoHold`, a force-loaded plot near the world border, x/z 28,000,000+, high
+  up) and are mirrored on its back at any angle (synced palette, drawn by its renderer, solid through `CargoPart` part
+  entities). Clicks are found in the beast's frame on the client (`client/CargoControls`) and applied to the hold
+  block on the server (`CargoActionPayload`); reach to hold blocks is measured on the beast (`mixin/PlayerMixin`);
+  drops in a hold fall from the beast. Code that looks at "nearby" blocks of a machine on a beast sees the hold, not
+  the world. Dinosaurs hatch from eggs and grow (`entity/Dinos`).
+- Before Time's arena (`timetravel/ElderArena`) records its state (empty/waking/fight) and its boss in saved data:
+  never spawn the Unbegotten on arrival. The fight is begun by a woken Last Offshoot (`eldritch/`); the boss is a body
+  (`entity/Unbegotten`) plus limbs (`entity/UnbegottenLimb`), area attacks via `entity/UnbegottenBlast`. Limbs and
+  the waking offshoot are drawn from `client/OrganParts`.
 - Temples' barriers (`temple/TempleBarrier`) cancel placing/breaking near a running Temporal Core; tests that place
   blocks with a fake player must stay clear of one.
 - Lasting blocks placed in an era become remnants (`timetravel/Remnants`, data map `data_maps/block/remnant.json`):

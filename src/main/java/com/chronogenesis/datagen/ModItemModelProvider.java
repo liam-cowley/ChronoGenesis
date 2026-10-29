@@ -34,6 +34,12 @@ public class ModItemModelProvider extends ItemModelProvider {
             withExistingParent(egg + "_spawn_egg", mcLoc("item/template_spawn_egg"));
         }
         basicItem(ModItems.HEART_OF_THE_UNBEGOTTEN.get());
+        basicItem(ModItems.UNBEGOTTEN_PUMP.get());
+        basicItem(ModItems.LAST_OFFSHOOT.get());
+        basicItem(ModItems.UNBLINKING_EYE.get());
+        basicItem(ModItems.DORSAL_TENDRILS.get());
+        basicItem(ModItems.GRASPING_TENTACLE.get());
+        basicItem(ModItems.UNBEGOTTEN_HIDE.get());
         basicItem(ModItems.BRASS_BLEND.get());
         basicItem(ModItems.BRASS_INGOT.get());
         basicItem(ModItems.BRASS_NUGGET.get());

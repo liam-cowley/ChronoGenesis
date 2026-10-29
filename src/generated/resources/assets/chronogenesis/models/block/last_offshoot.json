@@ -1,0 +1,7 @@
+{
+  "parent": "chronogenesis:block/cortex_offshoot",
+  "textures": {
+    "brain": "chronogenesis:block/last_offshoot",
+    "particle": "chronogenesis:block/last_offshoot"
+  }
+}

@@ -55,14 +55,23 @@ public final class ModEntities {
                     .clientTrackingRange(16)
                     .build(ChronoGenesis.id("titanosaur").toString()));
 
-    /** The Elder God, before the beginning of time. Made with its arena, never spawned naturally. */
+    /** The Elder God, before the beginning of time: a Chronocortex grown into one in its arena. Never spawned naturally. */
     public static final Supplier<EntityType<Unbegotten>> UNBEGOTTEN = ENTITY_TYPES.register("unbegotten",
             () -> EntityType.Builder.of(Unbegotten::new, MobCategory.MONSTER)
-                    .sized(3.5f, 4.5f)
-                    .eyeHeight(3.0f)
+                    .sized(7.0f, 9.0f)
+                    .eyeHeight(6.0f)
                     .fireImmune()
                     .clientTrackingRange(16)
                     .build(ChronoGenesis.id("unbegotten").toString()));
+
+    /** A tentacle or an eye of the Unbegotten, rising at the edge of its arena. Grown by its body, never spawned. */
+    public static final Supplier<EntityType<com.chronogenesis.entity.UnbegottenLimb>> UNBEGOTTEN_LIMB = ENTITY_TYPES.register("unbegotten_limb",
+            () -> EntityType.Builder.of(com.chronogenesis.entity.UnbegottenLimb::new, MobCategory.MONSTER)
+                    .sized(2.0f, 10.0f)
+                    .eyeHeight(9.0f)
+                    .fireImmune()
+                    .clientTrackingRange(16)
+                    .build(ChronoGenesis.id("unbegotten_limb").toString()));
 
     /** The Hearth's iron golems, kept bright: guards of the Precursors' plains cities. */
     public static final Supplier<EntityType<PrecursorGolem>> PRECURSOR_GOLEM = ENTITY_TYPES.register("precursor_golem",
@@ -127,5 +136,6 @@ public final class ModEntities {
         event.put(SMILODON.get(), Smilodon.createAttributes().build());
         event.put(WOOLLY_RHINO.get(), WoollyRhino.createAttributes().build());
         event.put(UNBEGOTTEN.get(), Unbegotten.createAttributes().build());
+        event.put(UNBEGOTTEN_LIMB.get(), com.chronogenesis.entity.UnbegottenLimb.createAttributes().build());
     }
 }

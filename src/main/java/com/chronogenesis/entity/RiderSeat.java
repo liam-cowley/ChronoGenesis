@@ -11,19 +11,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * The invisible thing a player sits on in a Rider's Seat. While a player sits on a seat that is part of a
- * Titanosaur's cargo, their walking keys steer the beast; while the cargo is carried (lifted out of the world), the
- * seat rides with it, and is set down with it. It goes when they get up, or when the seat is gone.
+ * The invisible thing a player sits on in a Rider's Seat. In a seat that is part of a Titanosaur's cargo it rides
+ * where the seat is on the beast, and the sitter's walking keys steer the beast. It goes when they get up, or when the
+ * seat is gone.
  */
 public class RiderSeat extends Entity {
-    private static final double SEARCH = 48.0;
-    @Nullable
-    private Titanosaur beast;
-    /** The beast carrying this seat's block, while its cargo is lifted; and where the block sits in the cargo. */
+    /** The beast whose cargo the seat is part of, and where the seat sits in the cargo. */
     @Nullable
     private Titanosaur carrier;
     private BlockPos seatOffset = BlockPos.ZERO;
@@ -43,28 +39,31 @@ public class RiderSeat extends Entity {
         if (level().isClientSide()) {
             return;
         }
-        boolean held = carrier != null && carrier.isAlive() && carrier.cargo().carrying();
-        if (!held && carrier != null) {
-            carrier = null;
-        }
-        if ((!held && !level().getBlockState(blockPosition()).is(ModBlocks.RIDERS_SEAT.get())) || (getPassengers().isEmpty() && tickCount > 5)) {
+        if (!seated() || (getPassengers().isEmpty() && tickCount > 5)) {
             ejectPassengers();
             discard();
             return;
         }
-        if (getFirstPassenger() instanceof Player rider) {
-            Titanosaur steered = beast();
-            if (steered != null && (rider.zza != 0 || rider.xxa != 0)) {
-                steered.steer(rider.zza, rider.xxa);
-            }
+        if (carrier != null && getFirstPassenger() instanceof Player rider && (rider.zza != 0 || rider.xxa != 0)) {
+            carrier.steer(rider.zza, rider.xxa);
         }
     }
 
-    /** Its block was lifted into a carried cargo: it rides with the beast now. */
+    /** Whether its seat block is still there: in its beast's hold, or (outside any cargo) under it. */
+    private boolean seated() {
+        if (carrier == null) {
+            return level().getBlockState(blockPosition()).is(ModBlocks.RIDERS_SEAT.get());
+        }
+        BlockPos harness = carrier.cargo().harness();
+        return carrier.isAlive() && harness != null && level().getBlockState(harness.offset(seatOffset)).is(ModBlocks.RIDERS_SEAT.get());
+    }
+
+    /** Its block is part of a beast's cargo: it rides with the beast. */
     void carriedBy(Titanosaur beast, BlockPos offset) {
         carrier = beast;
         seatOffset = offset;
         beast.addSeat(this);
+        followCarrier(beast);
     }
 
     @Nullable
@@ -76,39 +75,16 @@ public class RiderSeat extends Entity {
         return seatOffset;
     }
 
-    /** Keeps to its block in the carried cargo. */
+    /** Keeps to its block on the beast. */
     void followCarrier(Titanosaur beast) {
         Vec3 at = beast.cargo().toWorld(new Vec3(seatOffset.getX() + 0.5, seatOffset.getY() + 0.3, seatOffset.getZ() + 0.5),
                 beast.position(), beast.getYRot());
         float turned = beast.getYRot() - getYRot();
         setPos(at.x, at.y, at.z);
         setYRot(beast.getYRot());
-        if (getFirstPassenger() instanceof Player rider && Math.abs(turned) > 1.0E-3) {
+        if (getFirstPassenger() instanceof Player rider && Math.abs(turned) > 1.0E-3 && tickCount > 1) {
             rider.setYRot(rider.getYRot() + turned);
         }
-    }
-
-    /** The cargo was set down: back onto its block. */
-    void setDown(BlockPos pos) {
-        carrier = null;
-        setPos(pos.getX() + 0.5, pos.getY() + 0.3, pos.getZ() + 0.5);
-    }
-
-    /** The beast whose cargo this seat is part of. */
-    @Nullable
-    private Titanosaur beast() {
-        if (carrier != null) {
-            return carrier;
-        }
-        if (beast != null && beast.isAlive() && beast.cargo().contains(blockPosition())) {
-            return beast;
-        }
-        beast = null;
-        for (Titanosaur candidate : level().getEntitiesOfClass(Titanosaur.class, new AABB(blockPosition()).inflate(SEARCH),
-                candidate -> candidate.cargo().contains(blockPosition()))) {
-            beast = candidate;
-        }
-        return beast;
     }
 
     @Override

@@ -192,6 +192,39 @@ public final class ModBlocks {
                     .lightLevel(state -> state.getValue(UnmadeNailBlock.DRIVEN) ? 12 : 3)
                     .pushReaction(PushReaction.BLOCK));
 
+    /** In the middle of the arena Before Time: the one place a Last Offshoot takes root. */
+    public static final DeferredBlock<com.chronogenesis.eldritch.CradleStoneBlock> CRADLE_STONE = BLOCKS.registerBlock("cradle_stone",
+            com.chronogenesis.eldritch.CradleStoneBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(-1.0f, 3600000.0f)
+                    .noLootTable()
+                    .sound(SoundType.DEEPSLATE_TILES)
+                    .lightLevel(state -> 9)
+                    .pushReaction(PushReaction.BLOCK));
+
+    /** The Chronocortex's last bud, planted in the Cradle Stone, where it wakes as the Unbegotten. */
+    public static final DeferredBlock<com.chronogenesis.eldritch.LastOffshootBlock> LAST_OFFSHOOT = BLOCKS.registerBlock("last_offshoot",
+            com.chronogenesis.eldritch.LastOffshootBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PURPLE)
+                    .strength(0.5f)
+                    .sound(SoundType.GLASS)
+                    .noOcclusion()
+                    .lightLevel(state -> 5)
+                    .pushReaction(PushReaction.DESTROY));
+
+    /** A tentacle of the Unbegotten lying across its arena: it cannot be broken, only hacked at. */
+    public static final DeferredBlock<com.chronogenesis.eldritch.UnbegottenFleshBlock> UNBEGOTTEN_FLESH = BLOCKS.registerBlock("unbegotten_flesh",
+            com.chronogenesis.eldritch.UnbegottenFleshBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PURPLE)
+                    .strength(-1.0f, 3600000.0f)
+                    .noLootTable()
+                    .sound(SoundType.SLIME_BLOCK)
+                    .lightLevel(state -> 4)
+                    .pushReaction(PushReaction.BLOCK));
+
     /**
      * Aeon Ice (the Ice Age, round a dead temple core): ice that time froze still. It never melts, it is slick, and it
      * steadies a Time organism it touches (2 each, see OrganismCoreBlockEntity).

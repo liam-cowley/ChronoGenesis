@@ -22,6 +22,11 @@
       "type": "patchouli:text",
       "text": "Light is slowed with everything else. From outside, a slowed chunk looks $(l)red and dim$(): its light arrives tired. A stopped chunk lets no light out and none through: a $(l)black column$() shaped like the chunk, with a thin glow where light only grazes it. Caught inside, the world outside looks blue and racing.$(br2)Through the suit's goggles, a stopped chunk is an old photograph instead.",
       "title": "How It Looks"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A Minute's Rest",
+      "text": "Time does not like being bent. Once I let go of a slowed or stopped chunk (or it is torn from me), that power will not answer again for a minute."
     }
   ]
 }

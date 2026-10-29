@@ -8,7 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
-/** The machines' animated parts: organism cores, grafts, and the Chronocortex's brain. */
+/** The machines' animated parts: organism cores, grafts, the Chronocortex's brain, and the Last Offshoot waking. */
 @EventBusSubscriber(modid = ChronoGenesis.MODID, value = Dist.CLIENT)
 public final class MachineRenderers {
     private MachineRenderers() {}
@@ -18,5 +18,6 @@ public final class MachineRenderers {
         event.registerBlockEntityRenderer(ModBlockEntities.ORGANISM_CORE.get(), OrganismCoreRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.GRAFT.get(), GraftRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHRONOCORTEX.get(), CortexBrainRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.LAST_OFFSHOOT.get(), LastOffshootRenderer::new);
     }
 }

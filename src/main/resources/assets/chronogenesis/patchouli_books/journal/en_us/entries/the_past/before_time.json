@@ -7,17 +7,32 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Nothing. An island of unmade stone in it, four pillars round it, each topped by a nail's head that holds nothing yet. Above the middle, the $(l)Unbegotten$(): the voice the Precursors heard."
+      "text": "Nothing. An island of unmade stone in it: a disc, causeways to four outcrops, and on each outcrop a pillar topped by a nail's head that holds nothing yet. In the middle, on a dais, the $(l)Cradle Stone$(), green runes round its top. Nothing waits there. Not until I bring it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Last Offshoot",
+      "text": "After the Hadean, the Chronocortex asked to be taken there. It grows a $(l)Last Offshoot$() (research). Plant it in the Cradle. Then a $(l)Nerve Spool$(), drawn through a $(l)level 3 gland$() to thread it, rooted in the Chronocortex (use it on the cortex), and laid into the offshoot: it is the cortex then, there, with its name. Use it to wake it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What It Became",
+      "text": "It felt everything. It drank the time out of the four nails, and grew, and grew strange, and burst out of its jar. It is the $(l)Unbegotten$() now, and it says it will not bow. Its body rises past the north rim; four $(l)tentacles$() out of the void round the disc; two $(l)eyes$() on stalks by the south outcrop. Each can be killed on its own."
     },
     {
       "type": "patchouli:text",
       "title": "Its Wounds Unhappen",
-      "text": "Time has not begun here, so nothing done to it stays: every five seconds it is as whole as it was five seconds before. Unless I hold it in slowed or stopped time, where it cannot rewind."
+      "text": "Until time begins, its wounds unhappen (every five seconds it is as whole as before), unless held in slowed or stopped time; but it tears any hold on time that lasts more than five seconds. The $(l)Unmade Nails$() take 24 drams of Time each from my blood: drive all four and time begins. Its tentacles slam across the causeways to keep me from them."
     },
     {
       "type": "patchouli:text",
-      "title": "Driving the Nails",
-      "text": "The $(l)Unmade Nails$() take Time from my blood, 24 drams each. Drive all four and time begins: wounds stay. It lashes those who come close, burns with its gaze (the suit keeps the worst out), sends shreds of itself and, at the end, drags everyone in."
+      "title": "Fighting It",
+      "text": "Watch the floor: rings of violet motes mark where it will strike, going green before they burst. Step out of them. Hack at a tentacle lying across a causeway (its flesh), or shoot the eyes; every living tentacle shields the body. Hide from an eye's gaze behind a pillar. Once time begins it sheds vexes; at the last its maw opens, drinks the air, and stars fall."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "While It Lives",
+      "text": "Nothing can be built on its arena (what was, it tears out), my tether goes slack and the shift does not end. Slain, it leaves its $(l)heart$() and two of the grafts it was growing. The arena is empty again after, for another offshoot."
     }
   ]
 }

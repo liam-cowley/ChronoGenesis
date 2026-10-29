@@ -69,5 +69,9 @@ public final class ModBlockEntities {
     public static final Supplier<BlockEntityType<com.chronogenesis.entity.DinoEggBlockEntity>> DINO_EGG = BLOCK_ENTITY_TYPES.register("dino_egg",
             () -> BlockEntityType.Builder.of(com.chronogenesis.entity.DinoEggBlockEntity::new, ModBlocks.DINO_EGG.get()).build(null));
 
+    @SuppressWarnings("DataFlowIssue")
+    public static final Supplier<BlockEntityType<com.chronogenesis.eldritch.LastOffshootBlockEntity>> LAST_OFFSHOOT = BLOCK_ENTITY_TYPES.register("last_offshoot",
+            () -> BlockEntityType.Builder.of(com.chronogenesis.eldritch.LastOffshootBlockEntity::new, ModBlocks.LAST_OFFSHOOT.get()).build(null));
+
     private ModBlockEntities() {}
 }
