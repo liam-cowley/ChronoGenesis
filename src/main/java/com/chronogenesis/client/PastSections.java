@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.DataLayer;
 import net.minecraft.world.level.chunk.LevelChunkSection;
@@ -35,6 +36,8 @@ public final class PastSections {
     private static final Map<Long, Section> SECTIONS = new HashMap<>();
     /** Sections whose mesh must be (re)built: new ones, and their neighbours, whose faces they may hide. */
     private static final Set<Long> DIRTY = new LinkedHashSet<>();
+    /** The level these sections are of: the past, or an era. Sections of another one replace them all. */
+    private static ResourceLocation source;
 
     private PastSections() {}
 
@@ -42,6 +45,10 @@ public final class PastSections {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null) {
             return;
+        }
+        if (!payload.source().equals(source)) {
+            clear();
+            source = payload.source();
         }
         var biomes = minecraft.level.registryAccess().registryOrThrow(Registries.BIOME);
         for (PastSectionsPayload.Section section : payload.sections()) {

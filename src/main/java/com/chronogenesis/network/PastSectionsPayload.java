@@ -12,15 +12,17 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.DataLayer;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 
 /**
- * Server to client: chunk sections of the past dimension, for the Temporal Lens. Blocks are serialised exactly
+ * Server to client: chunk sections of the past dimension (or of the era the Lens looks into: {@code source}), for
+ * the Temporal Lens. Blocks are serialised exactly
  * as in the game's chunk packets; light as two nibble arrays (sky, block) of final light values.
  */
-public record PastSectionsPayload(List<Section> sections) implements CustomPacketPayload {
+public record PastSectionsPayload(ResourceLocation source, List<Section> sections) implements CustomPacketPayload {
     public static final Type<PastSectionsPayload> TYPE = new Type<>(ChronoGenesis.id("past_sections"));
 
     /** One 16x16x16 section of the past at {@code pos} ({@link net.minecraft.core.SectionPos#asLong}). */
@@ -57,8 +59,10 @@ public record PastSectionsPayload(List<Section> sections) implements CustomPacke
         }
     }
 
-    public static final StreamCodec<ByteBuf, PastSectionsPayload> STREAM_CODEC =
-            Section.STREAM_CODEC.apply(ByteBufCodecs.list()).map(PastSectionsPayload::new, PastSectionsPayload::sections);
+    public static final StreamCodec<ByteBuf, PastSectionsPayload> STREAM_CODEC = StreamCodec.composite(
+            ResourceLocation.STREAM_CODEC, PastSectionsPayload::source,
+            Section.STREAM_CODEC.apply(ByteBufCodecs.list()), PastSectionsPayload::sections,
+            PastSectionsPayload::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

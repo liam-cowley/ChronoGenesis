@@ -1,0 +1,16 @@
+{
+  "title": {
+    "translate": "era.chronogenesis.before_time"
+  },
+  "description": {
+    "translate": "era.chronogenesis.before_time.desc"
+  },
+  "icon": "chronogenesis:unmade_nail",
+  "dimension": "chronogenesis:before_time",
+  "stage": 3,
+  "requires_memory": "chronogenesis:hadean_eon",
+  "cost": 128,
+  "minutes": 15,
+  "clue": "chronogenesis:before_time",
+  "order": 4
+}

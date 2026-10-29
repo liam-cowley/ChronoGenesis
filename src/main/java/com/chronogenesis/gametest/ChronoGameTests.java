@@ -19,6 +19,7 @@ import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
 import com.chronogenesis.entity.Precursor;
 import com.chronogenesis.entity.Titanosaur;
+import com.chronogenesis.entity.Unbegotten;
 import com.chronogenesis.essence.Aspect;
 import com.chronogenesis.essence.DrainEffects;
 import com.chronogenesis.essence.EssenceContents;
@@ -36,6 +37,8 @@ import com.chronogenesis.lens.LensSync;
 import com.chronogenesis.lens.Obelisks;
 import com.chronogenesis.lens.PastViews;
 import com.chronogenesis.lens.TemporalLensItem;
+import com.chronogenesis.lore.PrecursorLore;
+import com.chronogenesis.lore.PrecursorTabletItem;
 import com.chronogenesis.network.PastSectionsPayload;
 import com.chronogenesis.organism.BrassConduitBlock;
 import com.chronogenesis.organism.CorePhase;
@@ -60,6 +63,7 @@ import com.chronogenesis.temple.SealBlock;
 import com.chronogenesis.temple.TempleBarrier;
 import com.chronogenesis.temple.TemporalCoreBlock;
 import com.chronogenesis.time.TimeZones;
+import com.chronogenesis.timetravel.ElderArena;
 import com.chronogenesis.timetravel.Era;
 import com.chronogenesis.timetravel.Eras;
 import com.chronogenesis.timetravel.FossilCortexBlock;
@@ -68,6 +72,8 @@ import com.chronogenesis.timetravel.PastDimension;
 import com.chronogenesis.timetravel.PastStamping;
 import com.chronogenesis.timetravel.Remnants;
 import com.chronogenesis.timetravel.TemporalShift;
+import com.chronogenesis.timetravel.UnmadeNailBlock;
+import com.chronogenesis.world.PlacedTemplateStructure;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.JsonOps;
@@ -82,14 +88,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -108,6 +114,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -379,7 +386,8 @@ public final class ChronoGameTests {
         helper.succeedWhen(() -> {
             helper.assertTrue(cortex.wiredCores().contains(awareness) && cortex.wiredCores().contains(time),
                     "both organisms should be wired");
-            helper.assertTrue(Research.perform(player, cortex, Research.LEVEL_2_POWERS), "research should succeed");
+            helper.assertTrue(Research.perform(player, cortex, Research.LEVEL_2_POWERS), "research should succeed: essence "
+                    + cortex.availableEssence() + ", stage " + cortex.stage() + ", clues " + Research.get(player).known());
             helper.assertTrue(Research.has(player, Research.LEVEL_2_POWERS), "research not recorded");
             helper.assertTrue(awareness.stored() == 0, "Awareness not drawn: " + awareness.stored());
             helper.assertFalse(player.getInventory().contains(new ItemStack(Items.AMETHYST_SHARD)), "materials not taken");
@@ -520,7 +528,7 @@ public final class ChronoGameTests {
             player.setItemSlot(EquipmentSlot.CHEST, coat);
             helper.assertTrue(TemporalExposure.wardedPieces(player) == 1, "one warded piece worn");
             Era era = new Era(Component.literal("Test"), Component.empty(), Items.CLOCK, Level.OVERWORLD, 1, Optional.empty(),
-                    Optional.empty(), List.of(), 10, 4, Optional.empty(), 0);
+                    Optional.empty(), List.of(), 10, 4, Optional.empty(), 0, false);
             helper.assertTrue(TemporalShift.duration(era, 0) == 4 * 1200 / 2, "unwarded: half the minutes");
             helper.assertTrue(TemporalShift.duration(era, 4) == 4 * 1200, "warded head to foot: all of them");
             helper.succeed();
@@ -675,9 +683,15 @@ public final class ChronoGameTests {
         for (String biome : List.of("precursor_meadow", "precursor_jungle", "precursor_desert", "precursor_coast")) {
             helper.assertTrue(biomes.containsKey(ChronoGenesis.id(biome)), biome + " is missing");
         }
-        for (String palette : List.of("sun", "deep", "verdant")) {
-            StructureTemplate city = helper.getLevel().getStructureManager().get(ChronoGenesis.id("precursor_city_" + palette)).orElseThrow();
-            helper.assertTrue(city.getSize().getX() == 41 && city.getSize().getZ() == 41, palette + " city has the wrong size");
+        // Every kingdom's town and capital, and the ruin of each: the same size, so the ruin lies under its city.
+        for (String kingdom : List.of("sun", "tide", "deep", "verdant")) {
+            for (String size : List.of("town", "capital")) {
+                String name = "precursor_city_" + kingdom + "_" + size;
+                StructureTemplate city = helper.getLevel().getStructureManager().get(ChronoGenesis.id(name)).orElseThrow();
+                StructureTemplate ruin = helper.getLevel().getStructureManager().get(ChronoGenesis.id(name + "_ruin")).orElseThrow();
+                helper.assertTrue(city.getSize().getX() == (size.equals("town") ? 65 : 97), name + " has the wrong size");
+                helper.assertTrue(ruin.getSize().equals(city.getSize()), name + "'s ruin does not match it");
+            }
         }
         helper.succeed();
     }
@@ -801,6 +815,14 @@ public final class ChronoGameTests {
         }
         StructureTemplate temple = helper.getLevel().getStructureManager().get(ChronoGenesis.id("jurassic_temple")).orElseThrow();
         helper.assertTrue(temple.getSize().getX() == 35 && temple.getSize().getZ() == 35, "the temple has the wrong size");
+        // Built round an obelisk at its centre (where the present's obelisk stands), the core tied to it by sinew.
+        StructurePlaceSettings asIs = new StructurePlaceSettings();
+        helper.assertTrue(temple.filterBlocks(BlockPos.ZERO, asIs, ModBlocks.OBELISK_CAPSTONE.get()).stream()
+                .anyMatch(info -> info.pos().equals(new BlockPos(17, 27, 17))), "no obelisk at the centre");
+        helper.assertTrue(temple.filterBlocks(BlockPos.ZERO, asIs, ModBlocks.TEMPORAL_CORE.get()).stream()
+                .anyMatch(info -> info.pos().equals(new BlockPos(17, 3, 15))), "no core beside the obelisk");
+        helper.assertTrue(temple.filterBlocks(BlockPos.ZERO, asIs, ModBlocks.CORE_SINEW.get()).stream()
+                .anyMatch(info -> info.pos().equals(new BlockPos(17, 3, 16))), "the core is not tied to the obelisk");
         helper.succeed();
     }
 
@@ -1182,6 +1204,120 @@ public final class ChronoGameTests {
      * A stand-in player for server-side logic. Not a mock "joined" player: Curios tries to sync its slots to
      * those and fails without a client. A FakePlayer never joins the level and swallows packets.
      */
+    /** Sneak-using the Lens goes Echo, Decades, Centuries, then each era its holder has stood in (oldest last), and round. */
+    @GameTest(template = "floor7")
+    public static void lensLooksIntoVisitedEras(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        ItemStack lens = new ItemStack(ModItems.TEMPORAL_LENS.get());
+        lens.set(ModDataComponents.LENS_DEPTH.get(), LensDepth.CENTURIES);
+        TemporalLensItem.cycle(player, lens);
+        helper.assertTrue(TemporalLensItem.era(lens) == null && TemporalLensItem.depth(lens) == LensDepth.ECHO,
+                "with no era visited it should go round to Echo");
+        TemporalShift.remember(player, ChronoGenesis.id("jurassic_age"));
+        TemporalShift.remember(player, ChronoGenesis.id("precursor_era"));
+        lens.set(ModDataComponents.LENS_DEPTH.get(), LensDepth.CENTURIES);
+        TemporalLensItem.cycle(player, lens);
+        helper.assertTrue(ChronoGenesis.id("precursor_era").equals(TemporalLensItem.era(lens)), "the nearest era should come first");
+        TemporalLensItem.cycle(player, lens);
+        helper.assertTrue(ChronoGenesis.id("jurassic_age").equals(TemporalLensItem.era(lens)), "then the older one");
+        helper.assertTrue(TemporalLensItem.cost(lens) == TemporalLensItem.ERA_COST, "looking into an era costs more");
+        TemporalLensItem.cycle(player, lens);
+        helper.assertTrue(TemporalLensItem.era(lens) == null && TemporalLensItem.depth(lens) == LensDepth.ECHO, "then round again");
+        helper.succeed();
+    }
+
+    /**
+     * A Precursor Tablet means nothing until their tongue is understood; read then, its fragment is recorded, and the
+     * last key fragment brings the whole story together.
+     */
+    @GameTest(template = "floor7")
+    public static void tabletsTellWhyTheyFell(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        ItemStack tablet = PrecursorTabletItem.of("nails_1");
+        player.setItemInHand(InteractionHand.MAIN_HAND, tablet);
+        tablet.getItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        helper.assertFalse(PrecursorLore.known(player, "nails_1"), "unreadable without their tongue");
+        Research.set(player, Research.get(player).withCompleted(Precursor.TONGUE));
+        tablet.getItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        helper.assertTrue(PrecursorLore.known(player, "nails_1"), "read, it should be recorded");
+        for (String key : PrecursorLore.KEY) {
+            helper.assertFalse(PrecursorLore.known(player, PrecursorLore.SLIP), "not everything is known yet");
+            ItemStack fragment = PrecursorTabletItem.of(key);
+            player.setItemInHand(InteractionHand.MAIN_HAND, fragment);
+            fragment.getItem().use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        }
+        helper.assertTrue(PrecursorLore.known(player, PrecursorLore.SLIP), "every kingdom's fall and the voice: it should fall into place");
+        helper.succeed();
+    }
+
+    /** A Precursor remembers its kingdom (its city's template sets it). */
+    @GameTest(template = "floor7")
+    public static void precursorsKnowTheirKingdom(GameTestHelper helper) {
+        Precursor precursor = helper.spawn(ModEntities.PRECURSOR.get(), new BlockPos(3, 1, 3));
+        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+        precursor.saveWithoutId(tag);
+        tag.putString("Kingdom", "tide");
+        precursor.load(tag);
+        helper.assertTrue(precursor.kingdom().equals("tide"), "it should know it is of the Tide Kingdom");
+        helper.succeed();
+    }
+
+    /** The Hadean and Before Time decode; the Hadean's air is toxic, and only warded goggles filter it. */
+    @GameTest(template = "floor7")
+    public static void lastErasAreValid(GameTestHelper helper) throws Exception {
+        var server = helper.getLevel().getServer();
+        for (String name : List.of("hadean_eon", "before_time")) {
+            var resource = server.getResourceManager().getResourceOrThrow(ChronoGenesis.id("dimension/" + name + ".json"));
+            try (var reader = resource.openAsReader()) {
+                var stem = LevelStem.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, server.registryAccess()), JsonParser.parseReader(reader));
+                helper.assertTrue(stem.result().isPresent(), name + " does not decode: " + stem.error().map(Object::toString).orElse(""));
+            }
+        }
+        Era hadean = Eras.get(helper.getLevel().registryAccess(), ChronoGenesis.id("hadean_eon"));
+        Era before = Eras.get(helper.getLevel().registryAccess(), ChronoGenesis.id("before_time"));
+        helper.assertTrue(hadean != null && hadean.toxicAir(), "the Hadean's air should be toxic");
+        helper.assertTrue(before != null && before.memory().orElseThrow().equals(ChronoGenesis.id("hadean_eon")), "Before Time follows the Hadean");
+        ServerPlayer player = fakePlayer(helper);
+        helper.assertFalse(TemporalShift.breathes(player), "bare-faced, the air burns");
+        ItemStack goggles = new ItemStack(ModItems.CHRONO_GOGGLES.get());
+        player.setItemSlot(EquipmentSlot.HEAD, goggles);
+        helper.assertFalse(TemporalShift.breathes(player), "plain goggles do not filter it");
+        ChronoSuitItem.ward(goggles);
+        helper.assertTrue(TemporalShift.breathes(player), "warded goggles do");
+        // The structures that share placements decode as the custom type.
+        var structures = server.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        for (String name : List.of("obelisk", "jurassic_temple", "precursor_city", "precursor_ruin")) {
+            helper.assertTrue(structures.get(ChronoGenesis.id(name)) instanceof PlacedTemplateStructure, name + " should be a placed template");
+        }
+        helper.succeed();
+    }
+
+    /**
+     * Before Time: an arena with four Unmade Nails. The Unbegotten's wounds unhappen until all four are driven; then
+     * time has begun and it is mortal.
+     */
+    @GameTest(template = "floor7", timeoutTicks = 200)
+    public static void drivingTheNailsBeginsTime(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos centre = helper.absolutePos(new BlockPos(3, 120, 3));
+        ElderArena.build(level, centre, level.getRandom());
+        Unbegotten god = ModEntities.UNBEGOTTEN.get().create(level);
+        god.moveTo(centre.getX() + 0.5, centre.getY() + 10, centre.getZ() + 0.5, 0, 0);
+        god.setHome(centre);
+        helper.assertFalse(god.mortal(), "before time begins it should not die");
+        ServerPlayer player = fakePlayer(helper);
+        List<BlockPos> nails = ElderArena.nails(centre);
+        helper.assertFalse(UnmadeNailBlock.drive(level, nails.get(0), player), "a body without Time cannot drive a nail");
+        player.getInventory().add(new ItemStack(ModItems.ETERNAL_HOURGLASS.get()));
+        for (BlockPos nail : nails) {
+            helper.assertTrue(UnmadeNailBlock.drive(level, nail, player), "the nail should go in");
+        }
+        helper.assertTrue(ElderArena.driven(level, centre) == 4, "all four nails should be driven");
+        helper.assertTrue(god.mortal(), "with time begun its wounds should stay");
+        god.discard();
+        helper.succeed();
+    }
+
     private static ServerPlayer fakePlayer(GameTestHelper helper) {
         // A fresh one per test (the factory caches by profile), so no inventory or pools leak between tests.
         return FakePlayerFactory.get(helper.getLevel(), new GameProfile(UUID.randomUUID(), "chronogenesis_test"));

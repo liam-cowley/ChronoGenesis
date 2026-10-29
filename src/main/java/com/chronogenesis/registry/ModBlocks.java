@@ -19,8 +19,10 @@ import com.chronogenesis.temple.TemporalCoreBlock;
 import com.chronogenesis.time.TimeTearBlock;
 import com.chronogenesis.timetravel.CortexOffshootBlock;
 import com.chronogenesis.timetravel.FossilCortexBlock;
+import com.chronogenesis.timetravel.UnmadeNailBlock;
 
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -167,6 +169,27 @@ public final class ModBlocks {
                     .sound(SoundType.AMETHYST)
                     .noOcclusion()
                     .lightLevel(state -> state.getValue(TemporalCoreBlock.ACTIVE) ? 12 : 4)
+                    .pushReaction(PushReaction.BLOCK));
+
+    /** The tendrils that tie a temple's Temporal Core to the obelisk it is built around. */
+    public static final DeferredBlock<RotatedPillarBlock> CORE_SINEW = BLOCKS.registerBlock("core_sinew", RotatedPillarBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PURPLE)
+                    .strength(1.5f)
+                    .sound(SoundType.SLIME_BLOCK)
+                    .noOcclusion()
+                    .noLootTable()
+                    .lightLevel(state -> 3));
+
+    /** On its pillar Before Time: a nail's head with nothing yet to hold. Driven with Time, it begins time. */
+    public static final DeferredBlock<UnmadeNailBlock> UNMADE_NAIL = BLOCKS.registerBlock("unmade_nail", UnmadeNailBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(-1.0f, 3600000.0f)
+                    .noLootTable()
+                    .noOcclusion()
+                    .sound(SoundType.DEEPSLATE_TILES)
+                    .lightLevel(state -> state.getValue(UnmadeNailBlock.DRIVEN) ? 12 : 3)
                     .pushReaction(PushReaction.BLOCK));
 
     public static final DeferredBlock<SealBlock> HEAVY_SEAL = seal("heavy_seal", SealBlock.Kind.HEAVY);

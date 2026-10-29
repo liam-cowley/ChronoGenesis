@@ -7,6 +7,7 @@ import com.chronogenesis.entity.Precursor;
 import com.chronogenesis.entity.Raptor;
 import com.chronogenesis.entity.RiderSeat;
 import com.chronogenesis.entity.Titanosaur;
+import com.chronogenesis.entity.Unbegotten;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
@@ -50,6 +51,15 @@ public final class ModEntities {
                     .clientTrackingRange(16)
                     .build(ChronoGenesis.id("titanosaur").toString()));
 
+    /** The Elder God, before the beginning of time. Made with its arena, never spawned naturally. */
+    public static final Supplier<EntityType<Unbegotten>> UNBEGOTTEN = ENTITY_TYPES.register("unbegotten",
+            () -> EntityType.Builder.of(Unbegotten::new, MobCategory.MONSTER)
+                    .sized(3.5f, 4.5f)
+                    .eyeHeight(3.0f)
+                    .fireImmune()
+                    .clientTrackingRange(16)
+                    .build(ChronoGenesis.id("unbegotten").toString()));
+
     /** What a player sits on in a Rider's Seat. */
     public static final Supplier<EntityType<RiderSeat>> RIDER_SEAT = ENTITY_TYPES.register("rider_seat",
             () -> EntityType.Builder.<RiderSeat>of(RiderSeat::new, MobCategory.MISC)
@@ -73,5 +83,6 @@ public final class ModEntities {
         event.put(PRECURSOR.get(), Precursor.createAttributes().build());
         event.put(RAPTOR.get(), Raptor.createAttributes().build());
         event.put(TITANOSAUR.get(), Titanosaur.createAttributes().build());
+        event.put(UNBEGOTTEN.get(), Unbegotten.createAttributes().build());
     }
 }

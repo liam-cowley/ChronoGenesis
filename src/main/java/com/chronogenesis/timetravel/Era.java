@@ -29,10 +29,11 @@ import net.minecraft.world.level.Level;
  * @param cost      drams of Time, drawn from its wired organisms
  * @param minutes   how long the shift holds before time snaps the traveller back
  * @param clue      noticed on arrival
+ * @param toxicAir  its air burns the lungs (the Hadean): only Time-warded goggles filter it
  */
 public record Era(Component title, Component description, Item icon, ResourceKey<Level> dimension, int stage,
                   Optional<ResourceLocation> lesson, Optional<ResourceLocation> memory, List<Route> routes, int cost, int minutes,
-                  Optional<ResourceLocation> clue, int order) {
+                  Optional<ResourceLocation> clue, int order, boolean toxicAir) {
     /** One way into an era: a memory it must hold and/or a lesson it must have learned. */
     public record Route(Optional<ResourceLocation> memory, Optional<ResourceLocation> lesson) {
         public static final Codec<Route> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -57,6 +58,7 @@ public record Era(Component title, Component description, Item icon, ResourceKey
             Codec.intRange(0, 100_000).optionalFieldOf("cost", 0).forGetter(Era::cost),
             Codec.intRange(1, 1440).optionalFieldOf("minutes", 5).forGetter(Era::minutes),
             ResourceLocation.CODEC.optionalFieldOf("clue").forGetter(Era::clue),
-            Codec.INT.optionalFieldOf("order", 0).forGetter(Era::order)
+            Codec.INT.optionalFieldOf("order", 0).forGetter(Era::order),
+            Codec.BOOL.optionalFieldOf("toxic_air", false).forGetter(Era::toxicAir)
     ).apply(instance, Era::new));
 }

@@ -146,7 +146,7 @@ public final class LensView {
         copyFrame(main, past);
         past.bindWrite(false);
         LensDepth depth = TemporalLensItem.depth(minecraft.player.getUseItem());
-        if (depth.reaches(LensDepth.DECADES)) {
+        if (depth.reaches(LensDepth.DECADES) || TemporalLensItem.era(minecraft.player.getUseItem()) != null) {
             wipePresent();
             PastMesh.draw(event.getModelViewMatrix(), event.getProjectionMatrix(), event.getCamera().getPosition());
         }

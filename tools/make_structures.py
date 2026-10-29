@@ -8,7 +8,9 @@ line up block for block.
   abandoned_laboratory       the ruin that generates in the world
   abandoned_laboratory_past  the same lab in its prime, as the Lens shows it at Decades
   obelisk                    an obelisk: untouched by time, so it has no past template of its own
-  precursor_city_<palette>   a city of the Precursors (the Precursor era only): sun, deep, verdant
+  precursor_city_<k>_<size>  a city of the Precursors (the Precursor era): kingdoms sun, tide, deep, verdant;
+                             sizes town (65) and capital (97). See precursor_cities.py
+  precursor_city_..._ruin    the same city as it lies in the present: decayed and buried
   jurassic_temple            a sealed ziggurat of the Jurassic Age: a Temporal Core, five seals, raptors
 
 Usage: python3 tools/make_structures.py
@@ -67,7 +69,7 @@ def parse_state(state):
 
 def structure(size, blocks, block_nbt, entities=()):
     """blocks: {(x, y, z): state string}; block_nbt: {(x, y, z): {key: string}} for block entities;
-    entities: [((x, y, z) as floats, (x, y, z) block, entity id)], kept persistent."""
+    entities: [((x, y, z) as floats, (x, y, z) block, entity id[, {tag: string}])], kept persistent."""
     palette = []
     index = {}
     entries = []
@@ -95,8 +97,9 @@ def structure(size, blocks, block_nbt, entities=()):
         "entities": (TAG_LIST, (TAG_COMPOUND, [{
             "pos": (TAG_LIST, (TAG_DOUBLE, list(pos))),
             "blockPos": ints(*block),
-            "nbt": (TAG_COMPOUND, {"id": (TAG_STRING, entity), "PersistenceRequired": (TAG_BYTE, 1)}),
-        } for pos, block, entity in entities])),
+            "nbt": (TAG_COMPOUND, {"id": (TAG_STRING, e[2]), "PersistenceRequired": (TAG_BYTE, 1),
+                                   **{k: (TAG_STRING, v) for k, v in (e[3] if len(e) > 3 else {}).items()}}),
+        } for e in entities for pos, block in [(e[0], e[1])]])),
     }
     return struct.pack(">b", TAG_COMPOUND) + name("") + payload(TAG_COMPOUND, root)
 
@@ -244,139 +247,9 @@ def obelisk():
 
 
 # ---------------------------------------------------------------- Precursor cities (the Age of the Precursors)
-# Cities of the people who came before: a stepped ziggurat with a shrine, houses with prismarine roofs, market
-# stalls, lamp posts, and Precursors in the streets. Three palettes, each the ancestor of a ruin that survives
-# in the present: sandstone and gold (desert temples), deepslate (ancient cities), clean stone brick (jungle
-# temples). Their roofs are prismarine: the ocean ruins are what is left of their harbours.
+# See precursor_cities.py: four kingdoms, a town and a capital each, and the ruin each leaves buried in the present.
 
-CITY = 41          # footprint, x and z
-CITY_H = 12        # height: ground (y=0), six steps of ziggurat, a shrine
-CENTER = 20
-
-PALETTES = {
-    "sun": {"pave": "minecraft:smooth_sandstone", "street": "minecraft:cut_red_sandstone",
-            "wall": "minecraft:cut_sandstone", "trim": "minecraft:gold_block", "pillar": "minecraft:chiseled_sandstone",
-            "house": ["minecraft:white_terracotta", "minecraft:orange_terracotta", "minecraft:smooth_sandstone"],
-            "roof": "minecraft:prismarine_bricks", "roof_top": "minecraft:dark_prismarine",
-            "stair": "minecraft:sandstone_stairs", "canopy": ["minecraft:orange_wool", "minecraft:cyan_wool", "minecraft:yellow_wool"]},
-    "deep": {"pave": "minecraft:polished_deepslate", "street": "minecraft:deepslate_tiles",
-             "wall": "minecraft:deepslate_bricks", "trim": "minecraft:gold_block", "pillar": "minecraft:chiseled_deepslate",
-             "house": ["minecraft:deepslate_bricks", "minecraft:polished_blackstone_bricks", "minecraft:polished_deepslate"],
-             "roof": "minecraft:dark_prismarine", "roof_top": "minecraft:prismarine_bricks",
-             "stair": "minecraft:deepslate_brick_stairs", "canopy": ["minecraft:cyan_wool", "minecraft:light_blue_wool", "minecraft:purple_wool"]},
-    "verdant": {"pave": "minecraft:stone_bricks", "street": "minecraft:polished_andesite",
-                "wall": "minecraft:stone_bricks", "trim": "minecraft:chiseled_stone_bricks", "pillar": "minecraft:chiseled_stone_bricks",
-                "house": ["minecraft:polished_andesite", "minecraft:stone_bricks", "minecraft:smooth_stone"],
-                "roof": "minecraft:prismarine", "roof_top": "minecraft:prismarine_bricks",
-                "stair": "minecraft:stone_brick_stairs", "canopy": ["minecraft:lime_wool", "minecraft:green_wool", "minecraft:yellow_wool"]},
-}
-
-HOUSES = [(5, 12), (5, 28), (35, 12), (35, 28), (12, 5), (28, 5), (12, 35), (28, 35)]
-STALLS = [(17, 3), (23, 3), (17, 37), (23, 37), (3, 17), (3, 23), (37, 17), (37, 23)]
-PRECURSORS = [(20, 9), (20, 31), (9, 20), (31, 20), (17, 5), (23, 35), (5, 23), (35, 17), (13, 13), (27, 27),
-              (13, 27), (27, 13)]
-
-
-def precursor_city(palette, seed):
-    p = PALETTES[palette]
-    r = random.Random(seed)
-    b = {}
-    for x in range(CITY):
-        for z in range(CITY):
-            avenue = abs(x - CENTER) <= 1 or abs(z - CENTER) <= 1 or x in (0, CITY - 1) or z in (0, CITY - 1)
-            b[(x, 0, z)] = p["street"] if avenue else p["pave"]
-            for y in range(1, CITY_H):
-                b[(x, y, z)] = AIR
-
-    # The ziggurat: six one-block steps, gold trim on every other, stairs up the middle of each side.
-    for y in range(1, 7):
-        half = 7 - y
-        for x in range(CENTER - half, CENTER + half + 1):
-            for z in range(CENTER - half, CENTER + half + 1):
-                edge = max(abs(x - CENTER), abs(z - CENTER)) == half
-                b[(x, y, z)] = p["trim"] if edge and y % 2 == 0 else p["wall"]
-        for offset in (-1, 0, 1):
-            b[(CENTER + offset, y, CENTER - half)] = p["stair"] + "[facing=south,half=bottom,shape=straight]"
-            b[(CENTER + offset, y, CENTER + half)] = p["stair"] + "[facing=north,half=bottom,shape=straight]"
-            b[(CENTER - half, y, CENTER + offset)] = p["stair"] + "[facing=east,half=bottom,shape=straight]"
-            b[(CENTER + half, y, CENTER + offset)] = p["stair"] + "[facing=west,half=bottom,shape=straight]"
-    # The shrine on top: four pillars, a roof, a gold altar with an amethyst growing on it, a lantern above.
-    for dx, dz in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
-        for y in (7, 8):
-            b[(CENTER + dx, y, CENTER + dz)] = p["pillar"]
-    for dx in (-1, 0, 1):
-        for dz in (-1, 0, 1):
-            b[(CENTER + dx, 9, CENTER + dz)] = p["roof"]
-    b[(CENTER, 10, CENTER)] = p["roof_top"]
-    b[(CENTER, 6, CENTER)] = "minecraft:gold_block"
-    b[(CENTER, 7, CENTER)] = "minecraft:amethyst_cluster[facing=up,waterlogged=false]"
-    b[(CENTER, 8, CENTER)] = "minecraft:soul_lantern[hanging=true,waterlogged=false]"
-
-    # Houses: walls of the palette, a doorway towards the avenue, windows, a stepped prismarine roof.
-    for hx, hz in HOUSES:
-        material = r.choice(p["house"])
-        door_x = hx + (1 if hx < CENTER else -1) * 3 if abs(hz - CENTER) < abs(hx - CENTER) else hx
-        for x in range(hx - 3, hx + 4):
-            for z in range(hz - 3, hz + 4):
-                edge = max(abs(x - hx), abs(z - hz)) == 3
-                corner = abs(x - hx) == 3 and abs(z - hz) == 3
-                for y in range(1, 5):
-                    if corner:
-                        b[(x, y, z)] = p["pillar"]
-                    elif edge:
-                        window = y == 2 and (x - hx + z - hz) % 2 == 0
-                        b[(x, y, z)] = "minecraft:glass_pane" if window else material
-                b[(x, 5, z)] = p["roof"]
-                if max(abs(x - hx), abs(z - hz)) <= 2:
-                    b[(x, 6, z)] = p["roof"]
-                if max(abs(x - hx), abs(z - hz)) <= 1:
-                    b[(x, 7, z)] = p["roof_top"]
-        # The doorway faces the city's centre, on the longer axis.
-        if abs(hx - CENTER) >= abs(hz - CENTER):
-            dx = -3 if hx > CENTER else 3
-            door = [(hx + dx, 1, hz), (hx + dx, 2, hz)]
-        else:
-            dz = -3 if hz > CENTER else 3
-            door = [(hx, 1, hz + dz), (hx, 2, hz + dz)]
-        for pos in door:
-            b[pos] = AIR
-        b[(hx - 2, 1, hz - 2)] = "minecraft:barrel[facing=up,open=false]"
-        b[(hx + 2, 1, hz - 2)] = "minecraft:lectern[facing=south,has_book=false,powered=false]"
-        b[(hx + 2, 1, hz + 2)] = "minecraft:candle[candles=3,lit=true,waterlogged=false]"
-        b[(hx - 2, 1, hz + 2)] = "minecraft:flower_pot"
-        b[(hx, 4, hz)] = "minecraft:soul_lantern[hanging=true,waterlogged=false]"
-
-    # Market stalls at the ends of the avenues: fence posts, a woollen canopy, wares beneath.
-    for sx, sz in STALLS:
-        canopy = r.choice(p["canopy"])
-        for dx in (-1, 0, 1):
-            for dz in (-1, 0, 1):
-                b[(sx + dx, 3, sz + dz)] = canopy
-        for dx, dz in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
-            for y in (1, 2):
-                b[(sx + dx, y, sz + dz)] = "minecraft:oak_fence"
-        b[(sx, 1, sz)] = r.choice(["minecraft:barrel[facing=up,open=true]", "minecraft:composter[level=7]",
-                                   "minecraft:melon", "minecraft:pumpkin", "minecraft:hay_block[axis=y]"])
-
-    # Lamp posts along the avenues.
-    for d in (4, 10, 30, 36):
-        for x, z in [(d, CENTER - 2), (d, CENTER + 2), (CENTER - 2, d), (CENTER + 2, d)]:
-            if b.get((x, 1, z)) == AIR:
-                b[(x, 1, z)] = p["pillar"]
-                b[(x, 2, z)] = p["pillar"]
-                b[(x, 3, z)] = "minecraft:soul_lantern[hanging=false,waterlogged=false]"
-    return b
-
-
-def precursors_in(blocks):
-    """The townsfolk: standing in the streets, on the ziggurat's steps, by the stalls."""
-    entities = []
-    for x, z in PRECURSORS:
-        y = 1
-        while blocks.get((x, y, z), AIR) != AIR and y < CITY_H - 2:
-            y += 1
-        entities.append(((x + 0.5, float(y), z + 0.5), (x, y, z), "chronogenesis:precursor"))
-    return entities
+import precursor_cities  # noqa: E402  (next to this script)
 
 
 # ---------------------------------------------------------------- the Jurassic temple
@@ -385,16 +258,20 @@ def precursors_in(blocks):
 #   heavy (east room, Iron Fists or a Ground Slam), narrow (west, at the end of a one-block crawlspace: Shrink),
 #   swift (north, at the end of a long hall: run into it with Quickening), veiled (one of the core chamber's walls,
 #   seen with Glowing Sight), stilled (the upper room, up the ladder: slow or stop its time).
-# Local coordinates: the core stands at (17, 1, 17); its barrier reaches 18 around it, from 3 below to 24 above.
+# It is built around an obelisk (the same one that stands in the present: the temple is centred on the obelisks'
+# placement), whose shaft rises through the core chamber and out of the summit. The core hangs beside the shaft,
+# tied to it by sinews. Local coordinates: the shaft at (17, y, 17), the core at (17, 3, 15); its barrier reaches 18
+# around the core, from 5 below to 24 above.
 
 TEMPLE = 35
-TEMPLE_H = 26
+TEMPLE_H = 28
+T_CORE = (17, 3, 15)
 T_WALL = "minecraft:polished_blackstone_bricks"
 T_TRIM = "minecraft:gilded_blackstone"
 T_FLOOR = "minecraft:polished_deepslate"
 T_PILLAR = "minecraft:chiseled_polished_blackstone"
 T_LAMP = "minecraft:soul_lantern[hanging=true,waterlogged=false]"
-T_RAPTORS = [(17, 1, 28), (28, 1, 17), (8, 1, 5), (20, 10, 15)]
+T_RAPTORS = [(17, 1, 28), (28, 1, 17), (8, 1, 5), (20, 10, 14)]
 
 
 def jurassic_temple():
@@ -416,7 +293,6 @@ def jurassic_temple():
                 if x in (lo, hi) or z in (lo, hi):
                     b[(x, y0 + 4, z)] = T_TRIM
     box(16, 25, 16, 18, 25, 18, CG + "obelisk_inscription")
-    b[(17, 25, 17)] = CG + "obelisk_capstone"
     box(1, 0, 1, TEMPLE - 2, 0, TEMPLE - 2, T_FLOOR)
 
     # The entrance hall, from the south face to the core chamber.
@@ -428,8 +304,6 @@ def jurassic_temple():
     box(11, 1, 11, 23, 8, 23, AIR)
     for x, z in [(12, 12), (12, 22), (22, 12), (22, 22)]:
         box(x, 1, z, x, 8, z, T_PILLAR)
-    b[(17, 0, 17)] = T_TRIM
-    b[(17, 1, 17)] = CG + "temporal_core[active=true]"
     b[(17, 1, 12)] = "minecraft:chest[facing=south,type=single,waterlogged=false]"
     for x, z in [(14, 14), (20, 14), (14, 20), (20, 20)]:
         b[(x, 8, z)] = T_LAMP
@@ -465,6 +339,31 @@ def jurassic_temple():
     b[(17, 10, 15)] = T_TRIM
     b[(17, 11, 15)] = CG + "stilled_seal[broken=false]"
     b[(17, 13, 14)] = T_LAMP
+
+    # The obelisk: the temple's spine, from the floor out through the summit to its capstone.
+    for y in range(0, TEMPLE_H - 1):
+        b[(17, y, 17)] = CG + ("obelisk_inscription" if y % 4 == 2 else "obelisk_stone")
+    b[(17, TEMPLE_H - 1, 17)] = CG + "obelisk_capstone"
+    # The core hangs beside it, tied on by sinews: one to the shaft, a strand down to the floor and one up and over,
+    # and more knotted round the shaft above and below.
+    cx, cy, cz = T_CORE
+    b[(cx, cy, cz)] = CG + "temporal_core[active=true]"
+    sinew = CG + "core_sinew[axis={}]"
+    b[(cx, cy, cz + 1)] = sinew.format("z")
+    for y in (1, 2, 4, 5, 6):
+        b[(cx, y, cz)] = sinew.format("y")
+    b[(cx, 6, cz + 1)] = sinew.format("z")
+    for x, y, z, axis in [(16, 2, 17, "x"), (18, 4, 17, "x"), (17, 3, 18, "z"), (16, 7, 17, "x"), (18, 8, 17, "x"),
+                          (17, 7, 18, "z"), (15, 2, 17, "x"), (19, 4, 17, "x"), (17, 8, 16, "z")]:
+        b[(x, y, z)] = sinew.format(axis)
+    # On the entrance hall's walls, what its builders left: the nail, the sinews, the eye beneath.
+    mural = ["..k..", "mmkmm", ".mkm.", "..k..", ".ppp.", ".pep."]
+    colours = {"k": CG + "obelisk_stone", "m": "minecraft:magenta_terracotta", "p": "minecraft:purple_concrete",
+               "e": "minecraft:lime_concrete"}
+    for row, line in enumerate(mural):
+        for col, ch in enumerate(line):
+            if ch in colours:
+                b[(15, 1 + 5 - row, 26 + col)] = colours[ch]
     return b
 
 
@@ -479,8 +378,13 @@ if __name__ == "__main__":
     write("abandoned_laboratory.nbt", structure((W, H, D), ruin, chest))
     write("abandoned_laboratory_past.nbt", structure((W, H, D), past, {}))
     write("obelisk.nbt", structure((3, 12, 3), obelisk(), {}))
-    for i, palette in enumerate(PALETTES):
-        city = precursor_city(palette, 4100 + i)
-        write("precursor_city_" + palette + ".nbt", structure((CITY, CITY_H, CITY), city, {}, precursors_in(city)))
+    for i, kingdom in enumerate(precursor_cities.KINGDOMS):
+        for j, size in enumerate(precursor_cities.SIZES):
+            built = precursor_cities.city(kingdom, size, 4100 + 10 * i + j)
+            dims = (built.n, precursor_cities.CITY_H, built.n)
+            base = "precursor_city_" + kingdom + "_" + size
+            write(base + ".nbt", structure(dims, built.b, built.nbt, built.entities))
+            ruin, ruin_nbt = precursor_cities.ruin(built, 5100 + 10 * i + j)
+            write(base + "_ruin.nbt", structure(dims, ruin, ruin_nbt))
     temple_chest = {(17, 1, 12): {"id": "minecraft:chest", "LootTable": "chronogenesis:chests/jurassic_temple"}}
     write("jurassic_temple.nbt", structure((TEMPLE, TEMPLE_H, TEMPLE), jurassic_temple(), temple_chest, raptors_in_temple()))

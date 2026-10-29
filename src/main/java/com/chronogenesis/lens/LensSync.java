@@ -15,9 +15,11 @@ import com.chronogenesis.timetravel.PastDimension;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.chunk.DataLayer;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -29,7 +31,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
- * Sends the past to a player looking through the Temporal Lens: the past dimension's chunk sections around them,
+ * Sends the past to a player looking through the Temporal Lens: the past dimension's (or a visited era's) chunk
+ * sections around them,
  * nearest first, a few at a time, each once. Past chunks are asked for (generated if new) as needed. What a
  * player has been sent is forgotten as they move away, so it is sent again if they come back.
  */
@@ -45,14 +48,30 @@ public final class LensSync {
     private static final int PER_BURST = 12;
 
     private static final Map<UUID, Set<Long>> SENT = new HashMap<>();
+    /** Which level each player was last sent sections of: the past, or an era. */
+    private static final Map<UUID, ResourceKey<Level>> SOURCE = new HashMap<>();
 
     private LensSync() {}
 
     /** One burst of the past for a player looking through the Lens. */
     public static void tick(ServerPlayer player) {
         ServerLevel past = PastDimension.level(player.server);
-        if (past == null || !PastDimension.hasPast(player.level()) || player instanceof FakePlayer) {
+        if (past != null) {
+            tick(player, past);
+        }
+    }
+
+    /**
+     * One burst of {@code past} (the past dimension, or an era the player has stood in) for a player looking
+     * through the Lens. Switching to another one starts the client's copy afresh.
+     */
+    public static void tick(ServerPlayer player, ServerLevel past) {
+        if (!PastDimension.hasPast(player.level()) || player instanceof FakePlayer) {
             return;
+        }
+        boolean fresh = SOURCE.put(player.getUUID(), past.dimension()) != past.dimension();
+        if (fresh) {
+            SENT.remove(player.getUUID());
         }
         Set<Long> sent = SENT.computeIfAbsent(player.getUUID(), id -> new HashSet<>());
         ChunkPos centre = player.chunkPosition();
@@ -86,8 +105,8 @@ public final class LensSync {
                 break;
             }
         }
-        if (!batch.isEmpty()) {
-            PastSectionsPayload payload = new PastSectionsPayload(batch);
+        if (!batch.isEmpty() || fresh) {
+            PastSectionsPayload payload = new PastSectionsPayload(past.dimension().location(), batch);
             if (player.connection != null && player.connection.hasChannel(payload)) {
                 PacketDistributor.sendToPlayer(player, payload);
             }
@@ -124,10 +143,12 @@ public final class LensSync {
     @SubscribeEvent
     static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         SENT.remove(event.getEntity().getUUID());
+        SOURCE.remove(event.getEntity().getUUID());
     }
 
     @SubscribeEvent
     static void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         SENT.remove(event.getEntity().getUUID());
+        SOURCE.remove(event.getEntity().getUUID());
     }
 }

@@ -12,6 +12,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -39,6 +40,14 @@ public final class ModDataComponents {
     /** How far back a Temporal Lens looks. */
     public static final Supplier<DataComponentType<LensDepth>> LENS_DEPTH = DATA_COMPONENTS.registerComponentType("lens_depth",
             builder -> builder.persistent(LensDepth.CODEC).networkSynchronized(LensDepth.STREAM_CODEC));
+
+    /** An era the Temporal Lens looks into instead of its depth (one the holder has visited). */
+    public static final Supplier<DataComponentType<ResourceLocation>> LENS_ERA = DATA_COMPONENTS.registerComponentType("lens_era",
+            builder -> builder.persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC));
+
+    /** Which fragment of the Precursors' story a tablet holds (see lore/PrecursorLore). */
+    public static final Supplier<DataComponentType<ResourceLocation>> LORE = DATA_COMPONENTS.registerComponentType("lore",
+            builder -> builder.persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC));
 
     /** Which machine an Intact Blueprint shows. */
     public static final Supplier<DataComponentType<Blueprint>> BLUEPRINT = DATA_COMPONENTS.registerComponentType("blueprint",

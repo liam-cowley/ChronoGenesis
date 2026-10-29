@@ -18,6 +18,11 @@
       "type": "patchouli:text",
       "title": "How Far Back",
       "text": "Sneak and use it to change the setting.$(br)$(l)Echo$(): hours. Nothing yet.$(br)$(l)Decades$(): ruined laboratories with their lights still on.$(br)$(l)Centuries$(): older ruins, whole.$(br2)Something tells me it can see further still, if the Chronocortex grows."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Eras",
+      "text": "Once I have stood in an era, the Lens can find it again. Past Centuries, sneaking and using it turns to each era I have visited: the same ground, as it was then. It costs more Time to look so far."
     }
   ]
 }

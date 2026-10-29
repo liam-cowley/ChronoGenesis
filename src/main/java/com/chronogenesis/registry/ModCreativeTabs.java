@@ -8,6 +8,8 @@ import com.chronogenesis.essence.EssenceContents;
 import com.chronogenesis.item.ChronoSyringeItem;
 import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.item.EssenceContainerItem;
+import com.chronogenesis.lore.PrecursorLore;
+import com.chronogenesis.lore.PrecursorTabletItem;
 import com.chronogenesis.organism.EssenceJugBlockEntity;
 
 import net.minecraft.core.registries.Registries;
@@ -64,6 +66,9 @@ public final class ModCreativeTabs {
                     stacks.add(filled(item, aspect, EssenceJugBlockEntity.CAPACITY));
                 }
             }
+        } else if (item instanceof PrecursorTabletItem) {
+            stacks.clear();
+            PrecursorLore.FRAGMENTS.forEach(fragment -> stacks.add(PrecursorTabletItem.of(fragment)));
         } else if (item instanceof CultureItem) {
             stacks.clear();
             for (Aspect aspect : Aspect.values()) {

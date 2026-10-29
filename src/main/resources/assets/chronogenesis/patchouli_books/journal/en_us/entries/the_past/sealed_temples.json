@@ -7,7 +7,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Great ziggurats stand in the Jurassic fernlands, older than any people. Inside, a $(l)Temporal Core$() holds everything still: nothing can be placed or broken, not even with an explosion. Raptors guard the halls."
+      "text": "Great ziggurats stand in the Jurassic, older than any people, and each is built round an $(l)obelisk$(): the same black stone that stands at that spot in my own time. Inside, a $(l)Temporal Core$() hangs from the obelisk on sinews and holds everything still: nothing can be placed or broken. Raptors guard the halls."
     },
     {
       "type": "patchouli:text",

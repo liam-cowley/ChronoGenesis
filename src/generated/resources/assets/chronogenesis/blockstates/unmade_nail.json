@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "driven=false": {
+      "model": "chronogenesis:block/unmade_nail"
+    },
+    "driven=true": {
+      "model": "chronogenesis:block/unmade_nail_driven"
+    }
+  }
+}

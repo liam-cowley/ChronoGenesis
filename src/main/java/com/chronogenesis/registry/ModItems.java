@@ -18,6 +18,7 @@ import com.chronogenesis.item.StasisAmpouleItem;
 import com.chronogenesis.item.UmbilicalLocketItem;
 import com.chronogenesis.lens.IntactBlueprintItem;
 import com.chronogenesis.lens.TemporalLensItem;
+import com.chronogenesis.lore.PrecursorTabletItem;
 import com.chronogenesis.temple.StilledCoreItem;
 import com.chronogenesis.timetravel.OffshootItem;
 
@@ -93,6 +94,10 @@ public final class ModItems {
     public static final DeferredItem<ChronoTetherItem> CHRONO_TETHER = ITEMS.registerItem("chrono_tether",
             ChronoTetherItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
 
+    /** A fragment of why the Precursors fell. Found, never made. */
+    public static final DeferredItem<PrecursorTabletItem> PRECURSOR_TABLET = ITEMS.registerItem("precursor_tablet",
+            PrecursorTabletItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+
     /** A bud of the Chronocortex, planted in a past era to grow through the ages. Grown by research. */
     public static final DeferredItem<OffshootItem> CORTEX_OFFSHOOT = ITEMS.registerItem("cortex_offshoot",
             properties -> new OffshootItem(ModBlocks.CORTEX_OFFSHOOT.get(), properties),
@@ -125,6 +130,13 @@ public final class ModItems {
             new Item.Properties().stacksTo(16).rarity(Rarity.RARE));
 
     public static final DeferredItem<BlockItem> TEMPORAL_CORE = ITEMS.registerSimpleBlockItem("temporal_core", ModBlocks.TEMPORAL_CORE);
+    public static final DeferredItem<BlockItem> UNMADE_NAIL = ITEMS.registerSimpleBlockItem("unmade_nail", ModBlocks.UNMADE_NAIL);
+    /** What the Unbegotten leaves: a heart that beat before time began. */
+    public static final DeferredItem<Item> HEART_OF_THE_UNBEGOTTEN = ITEMS.registerSimpleItem("heart_of_the_unbegotten",
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant());
+    public static final DeferredItem<DeferredSpawnEggItem> UNBEGOTTEN_SPAWN_EGG = ITEMS.registerItem("unbegotten_spawn_egg",
+            properties -> new DeferredSpawnEggItem(ModEntities.UNBEGOTTEN, 0x1A0A24, 0xA6FF80, properties));
+    public static final DeferredItem<BlockItem> CORE_SINEW = ITEMS.registerSimpleBlockItem("core_sinew", ModBlocks.CORE_SINEW);
     public static final DeferredItem<BlockItem> HEAVY_SEAL = ITEMS.registerSimpleBlockItem("heavy_seal", ModBlocks.HEAVY_SEAL);
     public static final DeferredItem<BlockItem> NARROW_SEAL = ITEMS.registerSimpleBlockItem("narrow_seal", ModBlocks.NARROW_SEAL);
     public static final DeferredItem<BlockItem> SWIFT_SEAL = ITEMS.registerSimpleBlockItem("swift_seal", ModBlocks.SWIFT_SEAL);

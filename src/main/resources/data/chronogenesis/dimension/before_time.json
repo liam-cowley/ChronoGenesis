@@ -1,0 +1,13 @@
+{
+  "type": "chronogenesis:before_time",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "layers": [],
+      "biome": "chronogenesis:before_time",
+      "lakes": false,
+      "features": false,
+      "structure_overrides": []
+    }
+  }
+}

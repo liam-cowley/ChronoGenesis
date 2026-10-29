@@ -1,0 +1,23 @@
+{
+  "name": "Before Time",
+  "icon": "chronogenesis:unmade_nail",
+  "category": "chronogenesis:the_past",
+  "sortnum": 11,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Nothing. An island of unmade stone in it, four pillars round it, each topped by a nail's head that holds nothing yet. Above the middle, the $(l)Unbegotten$(): the voice the Precursors heard."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Its Wounds Unhappen",
+      "text": "Time has not begun here, so nothing done to it stays: every five seconds it is as whole as it was five seconds before. Unless I hold it in slowed or stopped time, where it cannot rewind."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Driving the Nails",
+      "text": "The $(l)Unmade Nails$() take Time from my blood, 24 drams each. Drive all four and time begins: wounds stay. It lashes those who come close, burns with its gaze (the suit keeps the worst out), sends shreds of itself and, at the end, drags everyone in."
+    }
+  ]
+}

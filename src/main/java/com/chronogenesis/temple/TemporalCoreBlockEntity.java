@@ -30,9 +30,9 @@ import net.minecraft.world.phys.AABB;
 public class TemporalCoreBlockEntity extends BlockEntity {
     /** Seals that must be broken: any of the temple's five, so there is more than one way in. */
     public static final int SEALS_NEEDED = 3;
-    /** The barrier: this far around the core, and from a little below it to the temple's top. */
+    /** The barrier: this far around the core, and from under the temple's floor to its top. */
     public static final int RADIUS = 18;
-    public static final int BELOW = 3;
+    public static final int BELOW = 5;
     public static final int ABOVE = 24;
 
     static final Set<TemporalCoreBlockEntity> LOADED = Collections.newSetFromMap(new WeakHashMap<>());

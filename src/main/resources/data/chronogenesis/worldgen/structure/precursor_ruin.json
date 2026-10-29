@@ -1,0 +1,71 @@
+{
+  "type": "chronogenesis:placed_template",
+  "biomes": "#chronogenesis:has_structure/precursor_ruin",
+  "step": "underground_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "encapsulate",
+  "choices": [
+    {
+      "biomes": "chronogenesis:precursor_desert",
+      "templates": [
+        {
+          "data": "chronogenesis:precursor_city_sun_town",
+          "weight": 3
+        },
+        {
+          "data": "chronogenesis:precursor_city_sun_capital",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "biomes": "chronogenesis:precursor_coast",
+      "templates": [
+        {
+          "data": "chronogenesis:precursor_city_tide_town",
+          "weight": 3
+        },
+        {
+          "data": "chronogenesis:precursor_city_tide_capital",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "biomes": "chronogenesis:precursor_jungle",
+      "templates": [
+        {
+          "data": "chronogenesis:precursor_city_verdant_town",
+          "weight": 3
+        },
+        {
+          "data": "chronogenesis:precursor_city_verdant_capital",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "biomes": "chronogenesis:precursor_meadow",
+      "templates": [
+        {
+          "data": "chronogenesis:precursor_city_deep_town",
+          "weight": 3
+        },
+        {
+          "data": "chronogenesis:precursor_city_deep_capital",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "biomes_of": "chronogenesis:precursor_era",
+  "suffix": "_ruin",
+  "ground": 18,
+  "top": 10,
+  "buried": {
+    "type": "minecraft:uniform",
+    "min_inclusive": 0,
+    "max_inclusive": 30
+  },
+  "chance": 0.6
+}

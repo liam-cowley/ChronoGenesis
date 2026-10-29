@@ -68,6 +68,12 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `item/chrono_syringe_fill.png` | 16x16 | Syringe liquid mask (layer 1, tinted) |
 | `item/chrono_syringe_front.png` | 16x16 | Syringe glint and brass ticks (layer 2) |
 | `item/chrono_trousers.png` | 16x16 | Suit: trousers |
+| `item/precursor_tablet.png` | 16x16 | A fired-clay tablet of pressed glyphs (Precursor Tablet) |
+| `item/heart_of_the_unbegotten.png` | 16x16 | A dark heart with a green eye open in it |
+| `block/core_sinew.png` | 16x16 | Purple knotted sinew with a green vein (ties a temple's core to its obelisk) |
+| `block/unmade_nail.png` | 16x16 | Dull cracked obelisk stone with a violet vein (an undriven nail) |
+| `entity/unbegotten.png` | 128x64 | The Unbegotten, for `client/UnbegottenModel`'s boxes |
+| `entity/unbegotten_eyes.png` | 128x64 | Its glowing parts (eye, tentacle tips, eye-stalks), drawn with `RenderType.eyes` |
 | `item/chrono_*_warded.png` | 16x16 | Each suit icon once Time-warded: tendrils curling out of its seams (item property `chronogenesis:warded`) |
 | `item/culture.png` | 16x16 | Tentacled growth (tinted by aspect) |
 | `item/culture_dish.png` | 16x16 | Brass-rimmed petri dish (drawn over the growth) |

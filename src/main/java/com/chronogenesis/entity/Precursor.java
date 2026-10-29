@@ -1,11 +1,13 @@
 package com.chronogenesis.entity;
 
+import java.util.List;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.Research;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -41,9 +43,15 @@ import net.minecraft.world.level.Level;
 public class Precursor extends PathfinderMob {
     /** Lines they say: {@code precursor.chronogenesis.say.<n>} is the translation. */
     public static final int LINES = 12;
+    /** Lines only a kingdom's own folk say: {@code precursor.chronogenesis.say.<kingdom>.<n>}. */
+    public static final int KINGDOM_LINES = 6;
+    public static final List<String> KINGDOMS = List.of("sun", "tide", "deep", "verdant");
     /** Understanding them: granted (as a completed topic) to whoever links the memory of their age. */
     public static final ResourceLocation TONGUE = ChronoGenesis.id("memory/precursor_era");
     private static final int HOME_RANGE = 20;
+
+    /** Which kingdom's city it lives in (set by its city's template): they talk about their own troubles. */
+    private String kingdom = "";
     private static final String[] SYLLABLES = {"ka", "rhu", "ten", "ish", "vo", "ael", "dun", "sa", "mir", "oth",
             "qe", "lun", "zha", "ir", "tol", "ume"};
 
@@ -91,14 +99,18 @@ public class Precursor extends PathfinderMob {
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (!level().isClientSide()) {
-            int line = random.nextInt(LINES);
+            // Mostly their own kingdom's worries; sometimes what every Precursor says.
+            int kingdomIndex = KINGDOMS.indexOf(kingdom);
+            boolean own = kingdomIndex >= 0 && random.nextFloat() < 0.6f;
+            int line = own ? random.nextInt(KINGDOM_LINES) : random.nextInt(LINES);
+            String key = own ? "precursor.chronogenesis.say." + kingdom + "." + line : "precursor.chronogenesis.say." + line;
             getLookControl().setLookAt(player);
             playSound(SoundEvents.VILLAGER_AMBIENT, 1.0f, 0.65f);
             player.displayClientMessage(Component.translatable("precursor.chronogenesis.speaker").withStyle(ChatFormatting.GOLD)
-                    .append(Component.literal(tongue(line)).withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC)), false);
+                    .append(Component.literal(tongue(own ? 100 + 10 * kingdomIndex + line : line))
+                            .withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC)), false);
             if (Research.has(player, TONGUE)) {
-                player.displayClientMessage(Component.translatable("precursor.chronogenesis.say." + line)
-                        .withStyle(ChatFormatting.GRAY), false);
+                player.displayClientMessage(Component.translatable(key).withStyle(ChatFormatting.GRAY), false);
             }
         }
         return InteractionResult.sidedSuccess(level().isClientSide());
@@ -146,6 +158,22 @@ public class Precursor extends PathfinderMob {
     @Override
     public float getVoicePitch() {
         return 0.65f + (random.nextFloat() - 0.5f) * 0.1f;
+    }
+
+    public String kingdom() {
+        return kingdom;
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putString("Kingdom", kingdom);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        kingdom = tag.getString("Kingdom");
     }
 
     /** Where it calls home (its first standing place), for tests. */

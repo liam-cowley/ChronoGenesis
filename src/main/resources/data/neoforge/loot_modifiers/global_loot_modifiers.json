@@ -3,6 +3,10 @@
   "entries": [
     "chronogenesis:brain_from_zombie_villager",
     "chronogenesis:brain_from_witch",
-    "chronogenesis:heart_from_livestock"
+    "chronogenesis:heart_from_livestock",
+    "chronogenesis:tablets_in_desert_ruins",
+    "chronogenesis:tablets_in_ocean_ruins",
+    "chronogenesis:tablets_in_ancient_ruins",
+    "chronogenesis:tablets_in_jungle_ruins"
   ]
 }

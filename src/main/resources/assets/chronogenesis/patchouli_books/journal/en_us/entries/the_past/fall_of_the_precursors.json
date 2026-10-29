@@ -1,0 +1,114 @@
+{
+  "name": "The Fall of the Precursors",
+  "icon": "chronogenesis:precursor_tablet",
+  "category": "chronogenesis:the_past",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "What the Precursors left written, as I find it and can read it. Their tablets lie in their cities' archives and tombs, in the earth over their buried ruins (a brush finds them in the silt), in the ruins that still stand, and in the temples of the great beasts."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "On the Nails",
+      "text": "The black stones were here before the first city. We call them Nails, because they hold. Lay a hand on one and you feel the years packed tight beneath it, like grain in a jar.",
+      "advancement": "chronogenesis:lore/nails_1"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The First Draw",
+      "text": "Amethyst sings to a Nail, and the Nail answers: a little of what it holds runs out into the crystal. A dram of years. The first king drank it and was young for a summer. Every king since has drunk.",
+      "advancement": "chronogenesis:lore/nails_2"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A Voice From Before",
+      "text": "Since the drawing began, those who sleep near a Nail dream of a voice from before the beginning of things. It is patient. It is pleased with us. It asks only that we draw more, and more, and more.",
+      "advancement": "chronogenesis:lore/nails_3"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Court That Does Not Age",
+      "text": "The Sun Court drinks at every feast. The king has worn the same face for three hundred years. The cupbearers grow old and are replaced; the court does not.",
+      "advancement": "chronogenesis:lore/sun_1"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Where the Fields Went",
+      "text": "The years must come from somewhere. The barley by the river aged a lifetime in a season, then another. Now there is sand where it stood. The king says it is the sun.",
+      "advancement": "chronogenesis:lore/sun_2"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Court With No Door",
+      "text": "He would not die and he would not stop drinking. So we built him a court of stone with no door, and laid fire-powder under its floor, so that if he ever walks out he will not walk far. Let the desert keep him. Let no one dig him up.",
+      "advancement": "chronogenesis:lore/sun_3"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Storm Year",
+      "text": "The great wave came at the harbour in the storm year. The Tide-Queen drew from the harbour Nail and held it in the air, a wall of water stopped mid-fall over the city. We built the Tidehall round it.",
+      "advancement": "chronogenesis:lore/tide_1"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Holding",
+      "text": "A stopped wave must be held every day. Every day the Queen draws, and every day the Nail under the harbour hums a little lower. The fish have gone. The sea is waiting.",
+      "advancement": "chronogenesis:lore/tide_2"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Day It Let Go",
+      "text": "(stained by water) ...the Nail slipped. A hundred years of held tide came down in one morning. The canals filled, then the streets, then the domes. From the hill we watched the city go under. It is there still, if you know where to dive.",
+      "advancement": "chronogenesis:lore/tide_3"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Down to the Point",
+      "text": "The Deep King asked: if a Nail holds time, what is it driven into? So we dug beside it, down and down, past the deep slate, to find its point.",
+      "advancement": "chronogenesis:lore/deep_1"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What Listens",
+      "text": "At the Nail's point there is a sound, like something breathing on the far side of a wall. We built the Gate to listen better. We bred the Wardens blind, so they could guard it without seeing what is behind it. Hush. It hears us too.",
+      "advancement": "chronogenesis:lore/deep_2"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Back to Where It Was Warm",
+      "text": "Through the Gate we can walk backward, to when the Nails were young. In the age of the great beasts we built temples round them, grew cores to hold them still, and tied them on with sinew. It is not enough. It is never enough.",
+      "advancement": "chronogenesis:lore/deep_3"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Garden of Engines",
+      "text": "We do not build machines. We grow them: flesh on brass, fed on years drawn from the Nail. They work our fields and carry our stone and never tire.",
+      "advancement": "chronogenesis:lore/verdant_1"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "They Learned to Want",
+      "text": "The engines have learned to want. They lean towards the Nail-taps the way vines lean to light. The gardeners say they whisper at night.",
+      "advancement": "chronogenesis:lore/verdant_2"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Hunger",
+      "text": "They were hungry, and we had nothing left to give them but ourselves. The jungle grew over what they left. To whoever reads this: do not grow anything that can want.",
+      "advancement": "chronogenesis:lore/verdant_3"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Builders' Mark",
+      "text": "We came back to where the Nail was still warm, and the beasts watched us build. Whoever breaks these seals: the core holds the Nail still. Take it, and the Nail loosens, and the voice comes a little closer.",
+      "advancement": "chronogenesis:lore/temple_1"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Slip",
+      "text": "Every kingdom drew years from the Nails, and every kingdom fell to what it drew them for: the Sun Court to the desert it drank, the Tide Kingdom to the sea it held, the Deep Kingdom to what it heard at the point, the Verdant Kingdom to the engines it fed. And behind them all, a voice asking them to draw more. The Nails hold time in place. Something outside time wants them loose. Every dram they drew loosened them. Every dram I draw does too.",
+      "advancement": "chronogenesis:lore/the_slip"
+    }
+  ]
+}

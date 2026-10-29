@@ -1,0 +1,7 @@
+{
+  "criteria": {
+    "read": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

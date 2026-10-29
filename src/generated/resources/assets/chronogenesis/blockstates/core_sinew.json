@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "chronogenesis:block/core_sinew",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "chronogenesis:block/core_sinew"
+    },
+    "axis=z": {
+      "model": "chronogenesis:block/core_sinew",
+      "x": 90
+    }
+  }
+}

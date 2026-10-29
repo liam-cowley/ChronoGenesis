@@ -152,6 +152,10 @@
     suit piece pressed into a swollen (level 2+) Time gland grows tendrils; warded head to foot, shifts hold the
     era's full minutes without nausea or exposure (half the minutes unwarded, and the era tugs at every unwarded
     piece).
+14. ✅ Precursor kingdoms (sun, tide, deep, verdant: four layouts, towns and capitals), buried ruins in the present
+    (lined up with their cities), the fall of the Precursors (tablets, murals, kingdom speech, the Chronocortex's
+    lines, the journal). ✅ Jurassic temples round the obelisks. ✅ The Hadean Eon (toxic air) and Before Time (the
+    arena, Unmade Nails, the Unbegotten). ✅ Visited eras in the Temporal Lens.
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

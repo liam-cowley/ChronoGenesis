@@ -1,5 +1,6 @@
 package com.chronogenesis.registry;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.chronogenesis.ChronoGenesis;
@@ -9,6 +10,7 @@ import com.chronogenesis.player.PlayerEssence;
 import com.chronogenesis.time.TemporalStress;
 import com.chronogenesis.timetravel.TemporalShift;
 
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -51,6 +53,20 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<TemporalShift.Shift>> TIME_SHIFT = ATTACHMENT_TYPES.register("time_shift",
             () -> AttachmentType.builder(() -> TemporalShift.Shift.NONE)
                     .serialize(TemporalShift.Shift.CODEC, TemporalShift.Shift::active)
+                    .build());
+
+    /** On players: the eras they have stood in (so the Temporal Lens can look into them). Kept through death. */
+    public static final Supplier<AttachmentType<List<ResourceLocation>>> VISITED_ERAS = ATTACHMENT_TYPES.register("visited_eras",
+            () -> AttachmentType.<List<ResourceLocation>>builder(() -> List.of())
+                    .serialize(ResourceLocation.CODEC.listOf(), list -> !list.isEmpty())
+                    .copyOnDeath()
+                    .build());
+
+    /** On players: the fragments of the Precursors' story they have read (lore/PrecursorLore). Kept through death. */
+    public static final Supplier<AttachmentType<List<String>>> READ_LORE = ATTACHMENT_TYPES.register("read_lore",
+            () -> AttachmentType.<List<String>>builder(() -> List.of())
+                    .serialize(com.mojang.serialization.Codec.STRING.listOf(), list -> !list.isEmpty())
+                    .copyOnDeath()
                     .build());
 
     private ModAttachments() {}

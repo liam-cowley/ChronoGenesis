@@ -27,6 +27,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         suitPiece(ModItems.CHRONO_LAB_COAT.get());
         suitPiece(ModItems.CHRONO_TROUSERS.get());
         suitPiece(ModItems.CHRONO_GALOSHES.get());
+        basicItem(ModItems.PRECURSOR_TABLET.get());
+        basicItem(ModItems.HEART_OF_THE_UNBEGOTTEN.get());
         basicItem(ModItems.BRASS_BLEND.get());
         basicItem(ModItems.BRASS_INGOT.get());
         basicItem(ModItems.BRASS_NUGGET.get());
@@ -52,6 +54,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         withExistingParent("precursor_spawn_egg", mcLoc("item/template_spawn_egg"));
         withExistingParent("raptor_spawn_egg", mcLoc("item/template_spawn_egg"));
         withExistingParent("titanosaur_spawn_egg", mcLoc("item/template_spawn_egg"));
+        withExistingParent("unbegotten_spawn_egg", mcLoc("item/template_spawn_egg"));
         basicItem(ModItems.DINO_HARNESS.get());
         basicItem(ModItems.STILLED_CORE.get());
         basicItem(ModItems.TEMPORAL_RESIDUE.get());

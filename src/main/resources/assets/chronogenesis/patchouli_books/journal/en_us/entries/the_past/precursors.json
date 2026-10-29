@@ -7,12 +7,12 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "They are taller than villagers, grey, with eyes like amethyst and gold on their brows. Their cities stand around stepped ziggurats: sandstone and gold, deepslate, clean stone. Their roofs are prismarine.$(br2)They keep to their cities, busy, talking among themselves in a tongue I cannot follow."
+      "text": "They are taller than villagers, grey, with eyes like amethyst and gold on their brows. Their cities belong to four kingdoms, and no two look alike: the walled Sun Court in the desert, the Tide Kingdom's ringed canals on the coast, the Deep Kingdom's pit city in the meadows, the Verdant Kingdom's garden city in the jungle.$(br2)They keep to their cities, busy, talking among themselves in a tongue I cannot follow."
     },
     {
       "type": "patchouli:text",
       "title": "What Became of Them",
-      "text": "Their sandstone cities are the desert temples. Their deep cities are the ancient cities under the slate. Their harbours drowned into the ocean ruins. Their clean stone is the jungle temples, mossed over.$(br2)The villagers have their bones. Not much else."
+      "text": "Their sandstone cities are the desert temples. Their deep cities are the ancient cities under the slate. Their harbours drowned into the ocean ruins. Their garden cities are the jungle temples, mossed over.$(br2)And some lie whole under my feet: $(l)buried ruins$(), right under where each city stands in their age. Dig, and brush the silt."
     }
   ]
 }

@@ -725,6 +725,22 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .modelFile(cores[state.getValue(TemporalCoreBlock.ACTIVE) ? 1 : 0]).build());
         simpleBlockItem(ModBlocks.TEMPORAL_CORE.get(), cores[1]);
 
+        // Core sinew: a knotted strand along its axis, thicker at the knots.
+        BlockModelBuilder sinew = models().withExistingParent("core_sinew", mcLoc("block/block"))
+                .texture("flesh", modLoc("block/core_sinew"))
+                .texture("particle", modLoc("block/core_sinew"))
+                .renderType("cutout");
+        box(sinew, 6, 0, 6, 10, 16, 10, "#flesh", false);
+        box(sinew, 5, 3, 5.5f, 10.5f, 6, 11, "#flesh", false);
+        box(sinew, 5.5f, 10, 5, 11, 13, 10.5f, "#flesh", false);
+        getVariantBuilder(ModBlocks.CORE_SINEW.get()).forAllStates(state -> {
+            var axis = state.getValue(net.minecraft.world.level.block.RotatedPillarBlock.AXIS);
+            return ConfiguredModel.builder().modelFile(sinew)
+                    .rotationX(axis == net.minecraft.core.Direction.Axis.Y ? 0 : 90)
+                    .rotationY(axis == net.minecraft.core.Direction.Axis.X ? 90 : 0).build();
+        });
+        simpleBlockItem(ModBlocks.CORE_SINEW.get(), sinew);
+
         ModelFile broken = models().cubeAll("seal_broken", mcLoc("block/cracked_polished_blackstone_bricks"));
         for (var seal : java.util.List.of(ModBlocks.HEAVY_SEAL, ModBlocks.NARROW_SEAL, ModBlocks.SWIFT_SEAL, ModBlocks.VEILED_SEAL,
                 ModBlocks.STILLED_SEAL)) {
@@ -751,6 +767,21 @@ public class ModBlockStateProvider extends BlockStateProvider {
         box(cap, 4, 6, 4, 12, 12, 12, "#glyph", false);
         box(cap, 6.5f, 12, 6.5f, 9.5f, 16, 9.5f, "#stone", false);
         simpleBlock(ModBlocks.OBELISK_CAPSTONE.get(), cap);
+        // The Unmade Nail: the capstone's shape, dull and veined until it is driven, then glowing like an inscription.
+        BlockModelBuilder[] nails = new BlockModelBuilder[2];
+        for (int driven = 0; driven < 2; driven++) {
+            BlockModelBuilder nail = models().withExistingParent(driven == 1 ? "unmade_nail_driven" : "unmade_nail", mcLoc("block/block"))
+                    .texture("stone", modLoc("block/obelisk_stone"))
+                    .texture("glyph", modLoc(driven == 1 ? "block/obelisk_inscription" : "block/unmade_nail"))
+                    .texture("particle", modLoc("block/unmade_nail"));
+            box(nail, 1, 0, 1, 15, 6, 15, "#glyph", false);
+            box(nail, 4, 6, 4, 12, 12, 12, "#stone", false);
+            box(nail, 6.5f, 12, 6.5f, 9.5f, 16, 9.5f, "#glyph", false);
+            nails[driven] = nail;
+        }
+        getVariantBuilder(ModBlocks.UNMADE_NAIL.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(nails[state.getValue(com.chronogenesis.timetravel.UnmadeNailBlock.DRIVEN) ? 1 : 0]).build());
+        simpleBlockItem(ModBlocks.UNMADE_NAIL.get(), nails[0]);
     }
 
     /** A thin sheet of yellowed paper on a table, turned to face the reader. */

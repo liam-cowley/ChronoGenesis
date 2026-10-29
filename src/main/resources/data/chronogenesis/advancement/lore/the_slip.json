@@ -1,0 +1,23 @@
+{
+  "parent": "chronogenesis:root",
+  "display": {
+    "icon": {
+      "id": "chronogenesis:precursor_tablet"
+    },
+    "title": {
+      "translate": "lore.chronogenesis.the_slip.title"
+    },
+    "description": {
+      "text": "Piece together why every kingdom of the Precursors fell."
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "read": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

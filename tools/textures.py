@@ -2602,6 +2602,143 @@ def gauntlet_texture():
     WRITTEN.append(("item/essence_manipulator_gauntlet", img.crop((0, 0, 16, 16))))
 
 
+# ---------------------------------------------------------------- the Precursors' fall, and before time
+
+def core_sinew():
+    """A temple's Core Sinew: purple, wet, knotted, a green vein running along it (the strand runs up the tile)."""
+    r = rng(1201)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            band = 10 * math.sin(y * 0.9 + x * 0.3)
+            c = shade((128, 56, 120, 255), int(band) + r.randint(-6, 6))
+            if x in (7, 8) and (y + x) % 3 != 0:
+                c = (110, 196, 92, 255) if (y // 2) % 2 == 0 else (80, 150, 70, 255)
+            if y in (4, 5, 11, 12) and 4 <= x <= 11:
+                c = shade(c, 18)
+            img.putpixel((x, y), c)
+    save(img, "block/core_sinew")
+
+
+def unmade_nail():
+    """An Unmade Nail's stone: the obelisks' black, but dull, cracked, a faint violet vein: nothing held yet."""
+    r = rng(1203)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), shade((44, 38, 50, 255), r.randint(-5, 5) + (4 if (x * 3 + y) % 11 == 0 else 0)))
+    for (x, y) in [(3, 2), (4, 3), (4, 4), (5, 5), (5, 6), (6, 7), (11, 9), (10, 10), (10, 11), (9, 12), (9, 13)]:
+        img.putpixel((x, y), (18, 14, 22, 255))
+    for (x, y) in [(6, 8), (7, 8), (8, 9), (8, 10), (12, 4), (12, 5)]:
+        img.putpixel((x, y), (120, 70, 160, 255))
+    save(img, "block/unmade_nail")
+
+
+def precursor_tablet():
+    """A fired-clay tablet, corners worn round, rows of pressed glyphs, a crack across one corner."""
+    clay, clay_hi, clay_dk, mark = (176, 108, 68, 255), (206, 140, 96, 255), (120, 70, 44, 255), (82, 44, 30, 255)
+    img = grid([
+        "................",
+        "...dddddddddd...",
+        "..dHHHHHHHHHcd..",
+        "..dHmCmmCmCcCd..",
+        "..dCCCCCCCcCCd..",
+        "..dCmmCmCcmmCd..",
+        "..dCCCCCCcCCCd..",
+        "..dCmCmmcCmCmd..",
+        "..dCCCCcCCCCCd..",
+        "..dCmmCcmmCmCd..",
+        "..dCCCCCCCCCCd..",
+        "..dCmCmmCmmCCd..",
+        "..dCCCCCCCCCCd..",
+        "...dddddddddd...",
+        "................",
+        "................",
+    ], {"d": clay_dk, "H": clay_hi, "C": clay, "m": mark, "c": (98, 56, 36, 255)})
+    save(img, "item/precursor_tablet")
+
+
+def heart_of_the_unbegotten():
+    """A dark heart that beat before time began: purple flesh, a green eye open in its middle, tendril stubs."""
+    p = {"k": (24, 10, 28, 255), "d": (70, 26, 78, 255), "p": (118, 48, 120, 255), "h": (160, 82, 160, 255),
+         "e": ELDRITCH, "E": ELDRITCH_DK, "s": (10, 6, 10, 255), "t": (138, 64, 128, 255)}
+    save(grid([
+        "................",
+        "..t..........t..",
+        "...t.kk..kk.t...",
+        "...kkppk kppkk..".replace(" ", "k"),
+        "..kphhpppphppdk.",
+        "..kphpEEEEppddk.",
+        "..kppEeeeeEpddk.",
+        "..kppEesseEpddk.",
+        "..kdpEeeeeEpddk.",
+        "...kdpEEEEpddk..",
+        "...kddpppppddk..",
+        "....kdddpdddk...",
+        ".....kdddddk....",
+        "......kddk.t....",
+        ".......kk...t...",
+        "................",
+    ], p), "item/heart_of_the_unbegotten")
+
+
+def unbegotten_entity():
+    """128x64 for client/UnbegottenModel's boxes, and its glowing layer: flesh the purple of a bruise, veined, a
+    crown of black ridged horn, a yellow-green eye with a slit, a ringed maw of teeth, tentacles darkening to green."""
+    img = Image.new("RGBA", (128, 64), CLEAR)
+    glow = Image.new("RGBA", (128, 64), CLEAR)
+    r = rng(1301)
+    flesh, flesh_top, flesh_dk = (92, 40, 98), (112, 54, 116), (52, 20, 60)
+    paint_box(img, r, 0, 0, 16, 16, 16, flesh_top, flesh, flesh_dk, lambda x, y: (x * 3 + y * 5) % 17 == 0)
+    # Veins wandering over the mass.
+    for _ in range(14):
+        x, y = r.randint(0, 63), r.randint(16, 31)
+        for _ in range(8):
+            if 0 <= x < 64 and 16 <= y < 32:
+                img.putpixel((x, y), (150, 70, 150, 255))
+            x += r.choice((-1, 0, 1))
+            y += r.choice((-1, 1))
+    paint_box(img, r, 0, 32, 18, 3, 12, (40, 34, 44), (28, 22, 32), (16, 12, 20), lambda x, y: x % 3 == 0)
+    # The eye: a yellow-green iris round a dark slit, rimmed with raw flesh.
+    paint_box(img, r, 64, 0, 10, 8, 1, (130, 40, 70), (130, 40, 70), (90, 24, 50))
+    for y in range(8):
+        for x in range(10):
+            d = math.hypot((x - 4.5) / 4.5, (y - 3.5) / 3.5)
+            if d < 1.0:
+                c = (200, 236, 90, 255) if d > 0.55 else (166, 255, 128, 255)
+                img.putpixel((65 + x, 1 + y), c)
+                glow.putpixel((65 + x, 1 + y), c)
+    paint_box(img, r, 64, 10, 3, 6, 1, (8, 6, 8), (8, 6, 8), (8, 6, 8))
+    # The maw: a ring of teeth round a red throat.
+    paint_box(img, r, 0, 47, 12, 3, 12, (70, 20, 40), (60, 22, 50), (40, 10, 24))
+    for x in range(0, 48):
+        if x % 2 == 0:
+            img.putpixel((x, 59), (230, 222, 196, 255))
+            img.putpixel((x, 60), (200, 190, 160, 255))
+    for x in range(24, 36):
+        for y in range(47, 59):
+            img.putpixel((x, y), (110, 14, 24, 255) if (x + y) % 4 else (70, 6, 14, 255))
+    # Tentacles: ringed purple; the tips green and glowing.
+    paint_box(img, r, 64, 32, 3, 4, 3, (128, 58, 120), (110, 48, 104), (80, 30, 76), lambda x, y: y % 2 == 1)
+    paint_box(img, r, 80, 32, 3, 4, 3, (166, 255, 128), (120, 210, 96), (80, 150, 70))
+    for x in range(80, 92):
+        for y in range(32, 39):
+            if img.getpixel((x, y))[3]:
+                glow.putpixel((x, y), shade(img.getpixel((x, y)), -30))
+    # Eye-stalks, and the eyes on them.
+    paint_box(img, r, 96, 32, 2, 3, 2, (120, 54, 112), (100, 44, 96), (70, 28, 66))
+    paint_box(img, r, 104, 32, 2, 2, 2, (166, 255, 128), (200, 236, 90), (120, 200, 80))
+    for x in range(104, 112):
+        for y in range(32, 36):
+            if img.getpixel((x, y))[3]:
+                glow.putpixel((x, y), img.getpixel((x, y)))
+    img = _smooth(img, wrap=False, passes=2, sigma=20.0)
+    os.makedirs(os.path.join(OUT, "entity"), exist_ok=True)
+    img.save(os.path.join(OUT, "entity/unbegotten.png"))
+    glow.save(os.path.join(OUT, "entity/unbegotten_eyes.png"))
+    WRITTEN.append(("entity/unbegotten", img.crop((0, 0, 64, 32)).resize((32, 16))))
+
+
 # ---------------------------------------------------------------- the finishing pass (modern Minecraft shading)
 # Every texture goes through finish() as it is saved. The art above draws shapes and materials; this pass shades them
 # the way modern Minecraft textures are shaded: soft, lit from the top-left, each material on a short hue-shifted ramp
@@ -2624,7 +2761,7 @@ PICTURE_TILES = ("block/clock", "block/finish", "block/starting_gate", "block/ey
                  "block/faded_blueprint", "_seal", "block/obelisk_inscription", "block/cerebrum_eye", "block/riders_seat")
 # Pale and tinted organic tiles: a gentler contrast (tints multiply it, and pale materials show it most).
 SOFT_TILES = ("chronoflesh_", "organism_core", "cortex_lobe", "cerebrum", "fossil_cortex", "brain_tissue", "dissection_table",
-              "faded_blueprint", "harness", "graft_flesh", "gland_sac", "leech_skin", "ganglion")
+              "faded_blueprint", "harness", "graft_flesh", "gland_sac", "leech_skin", "ganglion", "core_sinew")
 RAMP_STEPS = 5
 TINY_REGION = 4
 
@@ -2910,6 +3047,11 @@ harness_blocks()
 temple_blocks()
 jurassic_items()
 gauntlet_texture()
+core_sinew()
+unmade_nail()
+precursor_tablet()
+heart_of_the_unbegotten()
+unbegotten_entity()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

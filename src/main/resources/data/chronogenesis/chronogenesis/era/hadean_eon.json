@@ -1,0 +1,17 @@
+{
+  "title": {
+    "translate": "era.chronogenesis.hadean_eon"
+  },
+  "description": {
+    "translate": "era.chronogenesis.hadean_eon.desc"
+  },
+  "icon": "minecraft:magma_block",
+  "dimension": "chronogenesis:hadean_eon",
+  "stage": 3,
+  "requires_memory": "chronogenesis:jurassic_age",
+  "cost": 96,
+  "minutes": 8,
+  "clue": "chronogenesis:unmade_world",
+  "order": 3,
+  "toxic_air": true
+}

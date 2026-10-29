@@ -1,0 +1,18 @@
+{
+  "name": "The Hadean Eon",
+  "icon": "minecraft:magma_block",
+  "category": "chronogenesis:the_past",
+  "sortnum": 10,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The world before it cooled: black stone, seas of fire, ash falling from a red sky. Nothing lives. Its $(l)air burns$(): without warded goggles I am poisoned while I stay."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Already Standing",
+      "text": "And yet the obelisks are there, black and crisp, in a world still molten. The Nails are older than the world's crust. Whoever drove them did it before there was a world to stand on."
+    }
+  ]
+}

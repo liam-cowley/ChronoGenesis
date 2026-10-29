@@ -1,5 +1,7 @@
 package com.chronogenesis.timetravel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
@@ -8,6 +10,7 @@ import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
 import com.chronogenesis.biocomputer.Clues;
 import com.chronogenesis.essence.Aspect;
+import com.chronogenesis.item.ChronoSuitItem;
 import com.chronogenesis.item.EternalHourglassItem;
 import com.chronogenesis.network.ShiftStatusPayload;
 import com.chronogenesis.player.TemporalExposure;
@@ -28,7 +31,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
@@ -138,9 +143,16 @@ public final class TemporalShift {
         cortex.say("shift", era.title());
 
         player.setData(ModAttachments.TIME_SHIFT, shift);
+        remember(player, id);
         travel(player, there, player.getX(), player.getZ(), player.getYRot(), player.getXRot());
         player.displayClientMessage(Component.translatable("message.chronogenesis.shift.arrived", era.title(),
                 Math.max(1, shift.ticksLeft() / 1200)).withStyle(ChatFormatting.DARK_AQUA), false);
+        if (era.toxicAir() && !breathes(player)) {
+            tell(player, "message.chronogenesis.shift.toxic_air");
+        }
+        if (there.dimension() == ElderArena.DIMENSION) {
+            ElderArena.arrive(player, there);
+        }
         if (warded < 4) {
             // An unwarded body is wrenched through, and the era lets go of it sooner.
             TemporalExposure.expose(player, EXPOSURE);
@@ -150,6 +162,26 @@ public final class TemporalShift {
         era.clue().ifPresent(clue -> Clues.grant(player, clue));
         sync(player);
         return true;
+    }
+
+    /** Whether a traveller can breathe a toxic era's air: Time-warded goggles filter it. */
+    public static boolean breathes(Player player) {
+        ItemStack head = player.getItemBySlot(EquipmentSlot.HEAD);
+        return head.is(ModItems.CHRONO_GOGGLES.get()) && ChronoSuitItem.warded(head);
+    }
+
+    /** The eras a player has stood in, which the Temporal Lens can then look into. */
+    public static List<ResourceLocation> visited(Player player) {
+        return player.getData(ModAttachments.VISITED_ERAS);
+    }
+
+    public static void remember(Player player, ResourceLocation era) {
+        List<ResourceLocation> visited = visited(player);
+        if (!visited.contains(era)) {
+            List<ResourceLocation> more = new ArrayList<>(visited);
+            more.add(era);
+            player.setData(ModAttachments.VISITED_ERAS, List.copyOf(more));
+        }
     }
 
     /**
@@ -226,6 +258,14 @@ public final class TemporalShift {
         if (player.tickCount % DRIFT_INTERVAL == 0) {
             // The era pulls at every piece of the traveller that is not warded against it.
             TemporalExposure.exposeUnshielded(player, 4 - TemporalExposure.wardedPieces(player));
+        }
+        if (era.toxicAir() && player.tickCount % 40 == 0 && !breathes(player)) {
+            // The air before the world cooled: only a warded mask filters it.
+            player.addEffect(new MobEffectInstance(MobEffects.POISON, 80, 0, false, true));
+            if (player.tickCount % 400 == 0) {
+                player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 120, 0, false, false));
+                tell(player, "message.chronogenesis.shift.toxic_air");
+            }
         }
         Shift next = shift.tick();
         player.setData(ModAttachments.TIME_SHIFT, next);

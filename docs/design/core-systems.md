@@ -280,14 +280,42 @@ Its roles:
    the same x/z on the ground of the era's dimension (same seed, so the land lines up) and are snapped back where
    they left when the minutes run out; using the tether returns them early; dying ends it.
    **Eras, in the order they are discovered:** *The Age of the Precursors* (`chronogenesis:precursor_era`), *The Ice Age*
-   (`chronogenesis:ice_age`), then (not built yet) the Jurassic age, the world's creation (bare rock, poisonous air,
-   magma), and the time before time, where the Elder God waits.
+   (`chronogenesis:ice_age`), *The Jurassic Age*, *The Hadean Eon* (the world's making) and *Before Time*, where the
+   Elder God waits. Every era stood in is remembered (`visited_eras` attachment) and becomes a Temporal Lens setting.
    - *The Age of the Precursors:* the overworld's terrain and seed with four golden-age biomes of its own (meadow,
-     jungle, desert, coast: warm sky, teal water, no monsters). **Precursor cities** (`precursor_city`, three palettes:
-     sandstone and gold, deepslate, clean stone brick; a stepped ziggurat with a shrine, houses with prismarine roofs,
-     market stalls, lamps) stand close together, full of **Precursors**: a people before the villagers, villager-boned
-     but taller, grey, amethyst-eyed, robed in blue and gold, busy, speaking their own tongue. Their cities are the
-     ruins of the present: desert and jungle temples, ancient cities, ocean ruins.
+     jungle, desert, coast: warm sky, teal water, no monsters). **Precursor cities** (`precursor_city`) belong to four
+     **kingdoms**, by the biome they stand in, each laid out and built its own way (`tools/precursor_cities.py`), as a
+     town (65 wide) or a capital (97 wide):
+     - the **Sun Court** (desert): a walled grid of flat-roofed houses round the *Undying Court*, a step pyramid with a
+       sealed tomb (a trap of TNT under it: to keep its king in);
+     - the **Tide Kingdom** (coast): rings of canals round the domed *Tidehall*, which holds a wave frozen mid-fall;
+       a lighthouse;
+     - the **Deep Kingdom** (meadow): terraces stepping down a great pit to the *Gate* (reinforced deepslate, sculk)
+       at its bottom, a crypt under it;
+     - the **Verdant Kingdom** (jungle): winding paths through trees to the *Garden of Engines*, a glass dome of their
+       living machines (flesh on brass armature).
+     Each also has an archive (its kingdom's mural, chests of tablets), a Nail Tap (a replica obelisk with copper
+     siphons and amethyst), a king's statue, stalls and its **Precursors**: a people before the villagers,
+     villager-boned but taller, grey, amethyst-eyed, busy, speaking their own tongue. Each knows its kingdom
+     (`Kingdom` tag) and mostly talks about its kingdom's troubles. Their cities are the ruins of the present: desert
+     and jungle temples, ancient cities, ocean ruins, and their own **buried ruins** (below).
+   - **Buried ruins** (`precursor_ruin`, overworld): 60% of the cities lie in the present 0-30 blocks under the
+     surface, at the very same spot: the structure type `chronogenesis:placed_template` centres a template on its
+     chunk and draws its template and rotation first from the chunk's random, and the ruin asks the Precursor era's
+     biome source (same noise, same seed) which kingdom stands there. The ruin is the city decayed (upper storeys
+     crumbled, wood, glass and wool gone, rooms filled with earth) except its archive and tombs, with
+     **suspicious sand or gravel** (archaeology loot: tablets) in its floors. Dig it out.
+   - **The fall of the Precursors** (`lore/PrecursorLore`): sixteen fragments on **Precursor Tablets**, found in
+     city archives and tombs, buried ruins (brushed out), the Jurassic temples, and the present's desert temples, ocean
+     ruins, ancient cities and jungle temples (each its own kingdom's). Readable once their tongue is understood
+     (linking the Precursor era's memory); reading one records it (`read_lore` attachment) and opens its journal page
+     (advancement `chronogenesis:lore/<fragment>`). What they tell: the obelisks are the **Nails** that hold time; every
+     kingdom drew years from them and fell to what it drew them for: the Sun Court drank them (the land aged into
+     desert), the Tide Kingdom held its sea still (until it came down all at once), the Deep Kingdom dug to the Nail's
+     point to listen (and built the Gate, and went back to the Jurassic to build temples round the Nails), the Verdant
+     Kingdom fed them to engines it grew (which learned to want). Behind them all a voice from before time asked for
+     more: every dram loosened the Nails. Reading the four falls and the voice pieces it together (*The Slip*). The
+     Chronocortex has its own lines about it.
    - *The Ice Age:* the overworld's noise and seed with only frozen biomes. Needs the lesson of the cold and the
      memory of the Precursors.
    - *The Jurassic Age* (`chronogenesis:jurassic_age`, stage 2): four hot, wet biomes (fernlands, jungle, swamp,
@@ -300,13 +328,27 @@ Its roles:
        the beast turns past the next quarter, the whole cargo is lifted and set down there, rotated, block entities
        moved with their data, standing entities carried; if a target is blocked, the beast cannot go there. Breaking
        the harness (or killing the beast) drops the whole cargo at once. A **Rider's Seat** in the cargo steers it.
-     - **Sealed temples** (`jurassic_temple`, a 35x35 five-tier ziggurat): a **Temporal Core** at the centre holds a
+     - **Sealed temples** (`jurassic_temple`, a 35x35 five-tier ziggurat) are built **round the obelisks**: the temple
+       shares the obelisks' placement (`placed_template`, centred, unrotated), so wherever an obelisk stands in the
+       present a temple stands round it in the Jurassic, the obelisk's shaft rising through its core chamber and out of
+       its summit. The **Temporal Core** hangs beside the shaft, tied to it by **Core Sinews**; it holds a
        barrier (18 blocks around it, `temple/TempleBarrier`): no placing, breaking, pouring or explosions inside. Five
        **seals**, each needing a different power: Heavy (Iron Fists, or a Ground Slam), Narrow (at the end of a
        one-high crawlspace; only turned while Shrunk), Swift (run into it faster than a sprint: Quickening), Veiled
        (looks like the wall; Glowing Sight shows it, and is needed to open it), Stilled (only touchable in slowed or
        stopped time). **Any three** still the core: the barrier falls, the clue *A temple's barrier, broken* is noted,
        and the core can be taken as a **Stilled Core** (fills the Time pool). Raptors guard it; a chest holds loot.
+   - *The Hadean Eon* (`chronogenesis:hadean_eon`, stage 3, needs the Jurassic's memory): the overworld's land before
+     it cooled (`noise_settings/hadean`: blackstone, lava seas, basalt and magma, deltas, ash). Nothing lives, but the
+     obelisks already stand. Its air is **toxic** (era `toxic_air`): poison and nausea unless Time-warded goggles filter it.
+   - *Before Time* (`chronogenesis:before_time`, stage 3, needs the Hadean's memory): a void under an eternal night. An
+     arriving traveller is put on the nearest **arena** (`timetravel/ElderArena`, made where they arrive if there is
+     none within 160 blocks): an island of unmade stone with four pillars, each topped by an **Unmade Nail**. Over it
+     floats **the Unbegotten** (`entity/Unbegotten`, 600 health, boss bar): it lashes everyone near it, charges a gaze
+     that wounds and exposes, sends vexes below 60% and drags everyone in below 30%. While time has not begun its
+     wounds **unhappen** (every 5 s it is as whole as 5 s before), unless it is held in slowed or stopped time. Driving
+     all four nails (24 drams of Time each) begins time: then it can die. It leaves the **Heart of the Unbegotten**.
+     The first nails ever driven are these: the obelisks of every later age.
    **Remnants:** blocks that outlast the ages (the `chronogenesis:remnant` block data map: stone, deepslate,
    sandstone, prismarine, bricks, terracotta, concrete, gold, copper, amethyst, obsidian...) placed in an era remain:
    they are recorded (`timetravel/Remnants`) and, as soon as the spot is loaded, stand at the same place in the
@@ -456,6 +498,11 @@ reads it into a `blueprint_<name>` clue, with a pen-scribble sound (`chronogenes
 Echo shows nothing yet. Holding the view on a Faded Blueprint for 2 s at Decades or deeper reads it
 into a `blueprint_<name>` clue.
 
+**Eras through the Lens:** after Centuries, sneak-use goes on to every era its holder has stood in (newest first,
+the `lens_era` component), then round to Echo. Set to an era, the Lens shows that era's own dimension at the same
+spot instead of the past dimension (3 drams per 2 s): `LensSync` streams whichever level is being looked into, and
+the client drops its copy when the source changes.
+
 ### Clues and the journal
 Things you notice through the Lens become **Clues**, which are logged in the journal:
 - the merchant's stall that sold something important
@@ -490,9 +537,9 @@ inside; strength fades from 16 to 64 blocks. Past-view ghosts inside the horizon
 dropped. Seeing one gives *A stone that time bends around*; holding the Lens on it from the edge
 (4.5-7.5 blocks) for 3 s gives *Fragments of an inscription older than time*.
 
-Lore hook for later: obelisks are **nails holding time in place**, left by whoever (or whatever)
-came before. They become anchors and targets for time travel, and are a thread that leads to the
-Elder God.
+Lore: obelisks are the **Nails** that hold time in place. The Precursors drew years from them and fell;
+the Jurassic temples are built round them; they already stand in the Hadean; and Before Time the player drives the
+first of them, to make the Elder God mortal.
 
 ## 8. Implementation notes for the current code
 - Replace the single `temporal_essence` int attachment with an **essence-pool attachment**: a map

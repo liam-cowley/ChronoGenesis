@@ -1,9 +1,13 @@
 package com.chronogenesis.lens;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.chronogenesis.biocomputer.Clues;
 import com.chronogenesis.essence.Aspect;
@@ -15,12 +19,16 @@ import com.chronogenesis.player.Powers;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModDataComponents;
 import com.chronogenesis.registry.ModSounds;
+import com.chronogenesis.timetravel.Era;
+import com.chronogenesis.timetravel.Eras;
 import com.chronogenesis.timetravel.PastDimension;
 import com.chronogenesis.timetravel.PastStamping;
+import com.chronogenesis.timetravel.TemporalShift;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -61,6 +69,8 @@ public class TemporalLensItem extends EssenceContainerItem {
     /** How far an obelisk can be seen through the Lens. */
     public static final double OBELISK_SIGHT = 48.0;
     public static final int INSCRIPTION_TICKS = 60;
+    /** Drams of Time per two seconds of looking into an era. */
+    public static final int ERA_COST = 3;
 
     private record Scan(BlockPos pos, int ticks) {}
 
@@ -72,20 +82,61 @@ public class TemporalLensItem extends EssenceContainerItem {
         return stack.getOrDefault(ModDataComponents.LENS_DEPTH.get(), LensDepth.DECADES);
     }
 
+    /** The era the Lens looks into instead of its depth, if it is set to one. */
+    @Nullable
+    public static ResourceLocation era(ItemStack stack) {
+        return stack.get(ModDataComponents.LENS_ERA.get());
+    }
+
+    /** What the Lens is set to: its depth, or the era's name. */
+    public static Component setting(ItemStack stack, Level level) {
+        ResourceLocation id = era(stack);
+        if (id == null) {
+            return depth(stack).displayName();
+        }
+        Era era = Eras.get(level.registryAccess(), id);
+        return era == null ? Component.literal(id.toString()) : era.title();
+    }
+
+    /** Drams of Time burnt every two seconds: an era costs more than any depth. */
+    public static int cost(ItemStack stack) {
+        return era(stack) != null ? ERA_COST : depth(stack).cost();
+    }
+
+    /**
+     * Sneak-use: the next setting. Echo, Decades, Centuries, then every era the holder has stood in (oldest last),
+     * then round again.
+     */
+    public static void cycle(Player player, ItemStack stack) {
+        List<ResourceLocation> eras = new ArrayList<>(TemporalShift.visited(player).stream()
+                .filter(id -> Eras.get(player.level().registryAccess(), id) != null).toList());
+        eras.sort(Comparator.comparingInt(id -> Eras.get(player.level().registryAccess(), id).order()));
+        int depths = LensDepth.values().length;
+        ResourceLocation current = era(stack);
+        int index = current != null && eras.contains(current) ? depths + eras.indexOf(current)
+                : current != null ? depths - 1 : depth(stack).ordinal();
+        int next = (index + 1) % (depths + eras.size());
+        if (next < depths) {
+            stack.set(ModDataComponents.LENS_DEPTH.get(), LensDepth.values()[next]);
+            stack.remove(ModDataComponents.LENS_ERA.get());
+        } else {
+            stack.set(ModDataComponents.LENS_ERA.get(), eras.get(next - depths));
+        }
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (player.isSecondaryUseActive()) {
-            LensDepth next = depth(stack).next();
-            stack.set(ModDataComponents.LENS_DEPTH.get(), next);
             if (!level.isClientSide()) {
-                player.displayClientMessage(Component.translatable("message.chronogenesis.lens.depth", next.displayName())
+                cycle(player, stack);
+                player.displayClientMessage(Component.translatable("message.chronogenesis.lens.depth", setting(stack, level))
                         .withStyle(ChatFormatting.DARK_AQUA), true);
             }
             player.playSound(SoundEvents.SPYGLASS_STOP_USING, 1.0f, 1.4f);
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         }
-        if (timeAvailable(player, stack) < depth(stack).cost()) {
+        if (timeAvailable(player, stack) < cost(stack)) {
             if (!level.isClientSide()) {
                 player.displayClientMessage(Component.translatable("message.chronogenesis.lens.no_time")
                         .withStyle(ChatFormatting.GRAY), true);
@@ -114,7 +165,7 @@ public class TemporalLensItem extends EssenceContainerItem {
         }
         int used = getUseDuration(stack, entity) - remaining;
         if (used % BEAT == 0) {
-            if (!pay(player, stack, depth(stack).cost())) {
+            if (!pay(player, stack, cost(stack))) {
                 player.displayClientMessage(Component.translatable("message.chronogenesis.lens.no_time")
                         .withStyle(ChatFormatting.GRAY), true);
                 player.stopUsingItem();
@@ -122,15 +173,25 @@ public class TemporalLensItem extends EssenceContainerItem {
             }
             // The ruins in view stand whole in the past; seeing one for the first time is worth a note.
             ServerLevel past = PastDimension.level(player.server);
-            if (past != null && PastDimension.hasPast(serverLevel)) {
+            if (era(stack) == null && past != null && PastDimension.hasPast(serverLevel)) {
                 for (PastViews.Found found : PastViews.nearby(serverLevel, player.blockPosition(), depth(stack))) {
                     PastStamping.stamp(past, found.start(), found.view());
                     found.view().clue().ifPresent(clue -> Clues.grant(player, clue));
                 }
             }
         }
-        if (used % SYNC_INTERVAL == 0 && depth(stack).reaches(LensDepth.DECADES)) {
-            LensSync.tick(player);
+        if (used % SYNC_INTERVAL == 0) {
+            ResourceLocation id = era(stack);
+            if (id != null) {
+                // An era once stood in: the same ground, as it was then.
+                Era era = Eras.get(serverLevel.registryAccess(), id);
+                ServerLevel there = era == null ? null : player.server.getLevel(era.dimension());
+                if (there != null) {
+                    LensSync.tick(player, there);
+                }
+            } else if (depth(stack).reaches(LensDepth.DECADES)) {
+                LensSync.tick(player);
+            }
         }
         scanTick(player, depth(stack));
         obeliskTick(player);
@@ -258,7 +319,8 @@ public class TemporalLensItem extends EssenceContainerItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("tooltip.chronogenesis.lens.depth", depth(stack).displayName()).withStyle(ChatFormatting.DARK_AQUA));
+        Component setting = context.level() == null ? depth(stack).displayName() : setting(stack, context.level());
+        tooltip.add(Component.translatable("tooltip.chronogenesis.lens.depth", setting).withStyle(ChatFormatting.DARK_AQUA));
         super.appendHoverText(stack, context, tooltip, flag);
         tooltip.add(Component.translatable("tooltip.chronogenesis.lens.hint").withStyle(ChatFormatting.DARK_GRAY));
     }
