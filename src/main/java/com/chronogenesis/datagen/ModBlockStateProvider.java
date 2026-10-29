@@ -292,81 +292,32 @@ public class ModBlockStateProvider extends BlockStateProvider {
     // ---------------------------------------------------------------- core
 
     private void corePhases() {
-        // Seed: a culture on a brass cradle, reaching for the frame.
+        // The cores' living parts (the beating mass, the eye, each essence's growths) are drawn animated by
+        // client/OrganismCoreRenderer; the model is what does not move: the frame, and the seed's brass cradle.
         BlockModelBuilder seed = organismModel("organism_core_seed", "organism_core")
                 .texture("brass", modLoc("block/brass_fitting"));
         frame(seed);
         box(seed, 3, 0, 3, 13, 2, 13, "#brass", false);
-        box(seed, 5, 2, 5, 11, 7, 11, FLESH, true);
-        box(seed, 6, 7, 6, 10, 9, 10, FLESH, true);
-        box(seed, 2, 2, 7, 5, 4, 9, FLESH, true);
-        box(seed, 11, 3, 7, 14, 5, 9, FLESH, true);
-        box(seed, 7, 9, 7, 9, 13, 9, FLESH, true);
-
-        // Awake: a bloated mass inside the frame, each essence with its own eye (and its own growths).
-        // Hungry: shrunken, the eyes half shut and bloodshot.
-        Map<Aspect, ModelFile> awake = new EnumMap<>(Aspect.class);
-        Map<Aspect, ModelFile> hungry = new EnumMap<>(Aspect.class);
+        Map<Aspect, ModelFile> grown = new EnumMap<>(Aspect.class);
         for (Aspect aspect : Aspect.values()) {
             String a = aspect.getSerializedName();
-            BlockModelBuilder full = parts(organismModel("organism_core_" + a + "_awake", "organism_core_" + a)
-                    .texture("core_eye", modLoc("block/organism_core_" + a + "_overlay")));
-            frame(full);
-            box(full, 1, 1, 1, 15, 15, 15, FLESH, true);
-            box(full, 1, 1, 1, 15, 15, 15, "#core_eye", false);
-            coreGrowths(full, aspect, 1);
-            awake.put(aspect, full);
-
-            BlockModelBuilder shrunk = parts(organismModel("organism_core_" + a + "_hungry", "organism_core_" + a)
-                    .texture("core_eye", modLoc("block/organism_core_" + a + "_hungry_overlay")));
-            frame(shrunk);
-            box(shrunk, 2, 2, 2, 14, 14, 14, FLESH, true);
-            box(shrunk, 2, 2, 2, 14, 14, 14, "#core_eye", false);
-            coreGrowths(shrunk, aspect, 2);
-            hungry.put(aspect, shrunk);
+            BlockModelBuilder frameOnly = organismModel("organism_core_" + a + "_awake", "organism_core_" + a)
+                    .texture("brass", modLoc("block/brass_fitting"));
+            frame(frameOnly);
+            // A cradle of brass the mass sits in, and veins down the frame's posts.
+            box(frameOnly, 3, 0, 3, 13, 1, 13, "#brass", false);
+            grown.put(aspect, frameOnly);
         }
-
-        // Necrotic: slumped, grey, stitched shut.
         BlockModelBuilder necrotic = organismModel("organism_core_necrotic", "organism_core_necrotic");
         frame(necrotic);
-        box(necrotic, 2, 1, 2, 14, 11, 14, FLESH, false);
-        box(necrotic, 4, 11, 4, 12, 12, 12, FLESH, false);
+        box(necrotic, 3, 0, 3, 13, 1, 13, FLESH, false);
 
         getVariantBuilder(ModBlocks.ORGANISM_CORE.get()).forAllStates(state -> ConfiguredModel.builder()
                 .modelFile(switch (state.getValue(OrganismCoreBlock.PHASE)) {
                     case SEED -> seed;
-                    case AWAKE -> awake.get(state.getValue(FleshBlock.ASPECT));
-                    case HUNGRY -> hungry.get(state.getValue(FleshBlock.ASPECT));
+                    case AWAKE, HUNGRY -> grown.get(state.getValue(FleshBlock.ASPECT));
                     case NECROTIC -> necrotic;
                 }).build());
-    }
-
-    /** What grows out of a core, by essence: the same language as its flesh. */
-    private static void coreGrowths(BlockModelBuilder m, Aspect aspect, float inset) {
-        float lo = inset;
-        float hi = 16 - inset;
-        switch (aspect) {
-            case DENSITY -> {
-                box(m, lo - 0.5f, 4, lo - 0.5f, hi + 0.5f, 5, hi + 0.5f, "#steel", false);
-                box(m, lo - 0.5f, 11, lo - 0.5f, hi + 0.5f, 12, hi + 0.5f, "#steel", false);
-            }
-            case SPEED -> {
-                strand(m, 2, 2, Direction.Axis.Z, 45);
-                strand(m, 14, 14, Direction.Axis.Z, -45);
-            }
-            case SIZE -> {
-                box(m, 9, hi, 4, 13, hi + 2.5f, 8, FLESH, true);
-                box(m, lo - 2, 4, 9, lo, 8, 13, FLESH, true);
-            }
-            case AWARENESS -> {
-                box(m, 6.5f, hi, 6.5f, 9.5f, hi + 1, 9.5f, "#eye", false);
-                box(m, 3, 3, lo - 1, 5.5f, 5.5f, lo, "#eye", false);
-            }
-            case TIME -> {
-                shard(m, 4, hi, 5, 4);
-                shard(m, 12, hi, 11, 3);
-            }
-        }
     }
 
     // ---------------------------------------------------------------- grafts
@@ -690,7 +641,25 @@ public class ModBlockStateProvider extends BlockStateProvider {
      * temple's Temporal Core (an amethyst engine in a gold cage; dull once stilled) and its five seals (each with its
      * glyph; the veiled one is plain temple wall). A broken seal is cracked blackstone.
      */
+    /** Aeon Ice, and the dinosaur egg: an egg on the ground, cracking as it fills with Time. */
+    private void iceAndEggs() {
+        simpleBlockWithItem(ModBlocks.AEON_ICE.get(), models().cubeAll("aeon_ice", modLoc("block/aeon_ice")));
+        ModelFile[] eggs = new ModelFile[4];
+        for (int i = 0; i < 4; i++) {
+            BlockModelBuilder egg = models().withExistingParent("dino_egg_" + i, mcLoc("block/block"))
+                    .texture("egg", modLoc("block/dino_egg_" + i)).texture("particle", modLoc("block/dino_egg_" + i));
+            box(egg, 5, 0, 5, 11, 1, 11, "#egg", false);
+            box(egg, 4, 1, 4, 12, 7, 12, "#egg", false);
+            box(egg, 5, 7, 5, 11, 10, 11, "#egg", false);
+            box(egg, 6.5f, 10, 6.5f, 9.5f, 11, 9.5f, "#egg", false);
+            eggs[i] = egg;
+        }
+        getVariantBuilder(ModBlocks.DINO_EGG.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(eggs[state.getValue(com.chronogenesis.entity.DinoEggBlock.CRACKS)]).build());
+    }
+
     private void jurassic() {
+        iceAndEggs();
         simpleBlock(ModBlocks.BUCKLED_HARNESS.get(), models().cubeBottomTop("buckled_harness", modLoc("block/harness_side"),
                 modLoc("block/harness_side"), modLoc("block/harness_top")));
 

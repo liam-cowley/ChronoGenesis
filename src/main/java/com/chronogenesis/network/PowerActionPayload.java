@@ -23,7 +23,9 @@ public record PowerActionPayload(Action action, Power power, int value) implemen
         /** Set a power's strength. */
         STRENGTH,
         /** Raise or lower the selected power's strength by one. */
-        NUDGE
+        NUDGE,
+        /** Jumped again in mid-air, light as a feather (the client has already leapt). */
+        DOUBLE_JUMP
     }
 
     public static final Type<PowerActionPayload> TYPE = new Type<>(ChronoGenesis.id("power_action"));
@@ -35,6 +37,10 @@ public record PowerActionPayload(Action action, Power power, int value) implemen
 
     public static PowerActionPayload use() {
         return new PowerActionPayload(Action.USE, Power.REWIND, 0);
+    }
+
+    public static PowerActionPayload doubleJump() {
+        return new PowerActionPayload(Action.DOUBLE_JUMP, Power.FEATHERWEIGHT, 0);
     }
 
     public static PowerActionPayload nudge(int delta) {

@@ -1,113 +1,137 @@
 {
-  "name": "The Fall of the Precursors",
+  "name": "What the Precursors Watched For",
   "icon": "chronogenesis:precursor_tablet",
   "category": "chronogenesis:the_past",
   "sortnum": 4,
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "What the Precursors left written, as I find it and can read it. Their tablets lie in their cities' archives and tombs, in the earth over their buried ruins (a brush finds them in the silt), in the ruins that still stand, and in the temples of the great beasts."
+      "text": "What the Precursors left written, as I find it and can read it. Their tablets lie in their cities' archives, vaults, houses and shrines, and in what is left of them in the present: desert and jungle temples, ocean ruins (a brush finds them in the silt), ancient cities, even the chests of villages. The temples of the great beasts have tablets of their own, in an older hand."
     },
     {
       "type": "patchouli:text",
-      "title": "On the Nails",
-      "text": "The black stones were here before the first city. We call them Nails, because they hold. Lay a hand on one and you feel the years packed tight beneath it, like grain in a jar.",
+      "title": "On the Black Stones",
+      "text": "The black stones were here before the first city. Nobody raised them and nobody can break them. We have learned one thing about them: near them, nothing goes missing. So we build our shrines round them, and keep our children close to them at night.",
       "advancement": "chronogenesis:lore/nails_1"
     },
     {
       "type": "patchouli:text",
-      "title": "The First Draw",
-      "text": "Amethyst sings to a Nail, and the Nail answers: a little of what it holds runs out into the crystal. A dram of years. The first king drank it and was young for a summer. Every king since has drunk.",
+      "title": "What Goes Missing",
+      "text": "It began with a street. Everyone walked it, and one morning no one could remember it being built, and by evening no one could remember it at all. Then a well. Then a name. It is not that things are taken. It is that they were never there, and only the gap is left.",
       "advancement": "chronogenesis:lore/nails_2"
     },
     {
       "type": "patchouli:text",
-      "title": "A Voice From Before",
-      "text": "Since the drawing began, those who sleep near a Nail dream of a voice from before the beginning of things. It is patient. It is pleased with us. It asks only that we draw more, and more, and more.",
+      "title": "The Hand Outside",
+      "text": "Those who sleep near the black stones dream of something outside all the years there are, working at the stones the way a child works at a loose tooth. It is patient. Where it gets one a little loose, the world near it comes undone, and what comes undone was never there.",
       "advancement": "chronogenesis:lore/nails_3"
     },
     {
       "type": "patchouli:text",
-      "title": "The Court That Does Not Age",
-      "text": "The Sun Court drinks at every feast. The king has worn the same face for three hundred years. The cupbearers grow old and are replaced; the court does not.",
+      "title": "The City of No Shadows",
+      "text": "It comes out of shadow. So the Sun Court builds without shadow: white walls, flat roofs, no eaves, no awnings over the streets; lamps lit every night in every window. We sleep on the roofs, in the last of the light. Where there is no dark, it cannot reach.",
       "advancement": "chronogenesis:lore/sun_1"
     },
     {
       "type": "patchouli:text",
-      "title": "Where the Fields Went",
-      "text": "The years must come from somewhere. The barley by the river aged a lifetime in a season, then another. Now there is sand where it stood. The king says it is the sun.",
+      "title": "The King's Face",
+      "text": "There was an eye in the King's shadow. We all saw it, at the feast. By morning none of us could say what his face had looked like, and the painters could not paint it, and his mother did not know him.",
       "advancement": "chronogenesis:lore/sun_2"
     },
     {
       "type": "patchouli:text",
       "title": "The Court With No Door",
-      "text": "He would not die and he would not stop drinking. So we built him a court of stone with no door, and laid fire-powder under its floor, so that if he ever walks out he will not walk far. Let the desert keep him. Let no one dig him up.",
+      "text": "Whatever wears the King now must not walk among us. We sealed him under the Court of Noon in a room with no door, and laid fire-powder under its floor, so that if he walks out he will not walk far. Let the sand keep him. Let no one dig him up.",
       "advancement": "chronogenesis:lore/sun_3"
     },
     {
       "type": "patchouli:text",
-      "title": "The Storm Year",
-      "text": "The great wave came at the harbour in the storm year. The Tide-Queen drew from the harbour Nail and held it in the air, a wall of water stopped mid-fall over the city. We built the Tidehall round it.",
+      "title": "Eyes That Do Not Close",
+      "text": "It cannot take what is watched. So the Tide Kingdom bred Guardians: eyes that never close, all round the rings, under the decks, in the Watch Pools. As long as one of them is looking, the city stays.",
       "advancement": "chronogenesis:lore/tide_1"
     },
     {
       "type": "patchouli:text",
-      "title": "Holding",
-      "text": "A stopped wave must be held every day. Every day the Queen draws, and every day the Nail under the harbour hums a little lower. The fish have gone. The sea is waiting.",
+      "title": "The Eye Pool",
+      "text": "The eldest Guardian lives in the pool under the Tidehall and watches the city from below. We feed it by hand. It has never once looked away. The priests say it is tired.",
       "advancement": "chronogenesis:lore/tide_2"
     },
     {
       "type": "patchouli:text",
-      "title": "The Day It Let Go",
-      "text": "(stained by water) ...the Nail slipped. A hundred years of held tide came down in one morning. The canals filled, then the streets, then the domes. From the hill we watched the city go under. It is there still, if you know where to dive.",
+      "title": "The Night They Blinked",
+      "text": "(stained by water) ...every Guardian blinked at once, the whole sea of eyes. In the morning half the rings were open water, and no one could say who had lived on them. Their ruins lie under the sea, and we cannot remember building them.",
       "advancement": "chronogenesis:lore/tide_3"
     },
     {
       "type": "patchouli:text",
-      "title": "Down to the Point",
-      "text": "The Deep King asked: if a Nail holds time, what is it driven into? So we dug beside it, down and down, past the deep slate, to find its point.",
+      "title": "Down Into the Quiet",
+      "text": "It finds what can be seen. So the Deep Kingdom went down, under the deep slate, into the dark where nothing is seen, and built our city there in silence. We speak in whispers. We light our streets with soul-fire, low.",
       "advancement": "chronogenesis:lore/deep_1"
     },
     {
       "type": "patchouli:text",
-      "title": "What Listens",
-      "text": "At the Nail's point there is a sound, like something breathing on the far side of a wall. We built the Gate to listen better. We bred the Wardens blind, so they could guard it without seeing what is behind it. Hush. It hears us too.",
+      "title": "Guards Who Do Not See",
+      "text": "We bred the Wardens blind, so that it cannot be shown to them; they know the world by sound alone, and they keep the city. They do not harm us. We grew the sculk to listen with them. Hush near the sensors. Sound carries down.",
       "advancement": "chronogenesis:lore/deep_2"
     },
     {
       "type": "patchouli:text",
-      "title": "Back to Where It Was Warm",
-      "text": "Through the Gate we can walk backward, to when the Nails were young. In the age of the great beasts we built temples round them, grew cores to hold them still, and tied them on with sinew. It is not enough. It is never enough.",
+      "title": "Hush",
+      "text": "The city empties quietly. A house, then a street, and no one can say who lived there. The Wardens still walk the streets, listening for us. When we are all gone they will still be listening. Do not make them angry: they are all that is left of our watch.",
       "advancement": "chronogenesis:lore/deep_3"
     },
     {
       "type": "patchouli:text",
       "title": "The Garden of Engines",
-      "text": "We do not build machines. We grow them: flesh on brass, fed on years drawn from the Nail. They work our fields and carry our stone and never tire.",
+      "text": "We do not build machines. We grow them: flesh on brass, under the copper dome. We grew them to remember for us. Whatever goes missing, the engines remember it was there, and tell us, and we write it down.",
       "advancement": "chronogenesis:lore/verdant_1"
     },
     {
       "type": "patchouli:text",
-      "title": "They Learned to Want",
-      "text": "The engines have learned to want. They lean towards the Nail-taps the way vines lean to light. The gardeners say they whisper at night.",
+      "title": "What the Engines Remember",
+      "text": "The engines remember a street on the east side that none of us has ever seen. They remember a tower. They remember a king. Every year they remember more that we do not.",
       "advancement": "chronogenesis:lore/verdant_2"
     },
     {
       "type": "patchouli:text",
-      "title": "Hunger",
-      "text": "They were hungry, and we had nothing left to give them but ourselves. The jungle grew over what they left. To whoever reads this: do not grow anything that can want.",
+      "title": "Overgrown",
+      "text": "Now the engines remember a whole city, and it is this one, and we are not in it. The gardeners say the engines are mourning. To whoever reads this: we were here. The engines will forget us too, and then the jungle.",
       "advancement": "chronogenesis:lore/verdant_3"
     },
     {
       "type": "patchouli:text",
+      "title": "Iron",
+      "text": "What comes undone cannot take iron. A nail of iron in a doorpost, and the door stays. So the Hearth forged iron watchers, tall as two men, and set them to walk our lanes: our golems.",
+      "advancement": "chronogenesis:lore/hearth_1"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Keep Them Bright",
+      "text": "Rust is where the unmaking starts: the iron forgets it is iron. Polish the golems every morning. Let no vine grow on them, no flower, no stain. A golem kept bright is a village kept.",
+      "advancement": "chronogenesis:lore/hearth_2"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What the Hearth Will Leave",
+      "text": "The Hearth is coming undone. Our children will forget the Anvil Hall, then our tongue, then that there was a Hearth at all. But they will keep the golems, and the golems will keep them. Let them live small and safe in little villages. Let them never know what we kept watch against.",
+      "advancement": "chronogenesis:lore/hearth_3"
+    },
+    {
+      "type": "patchouli:text",
       "title": "The Builders' Mark",
-      "text": "We came back to where the Nail was still warm, and the beasts watched us build. Whoever breaks these seals: the core holds the Nail still. Take it, and the Nail loosens, and the voice comes a little closer.",
+      "text": "(an older script, the tongue's ancestor) We grew the core to hold this stone still and tied it on with sinew. When the cold comes the cores will die, and the stones will have to hold on their own. Whoever comes after us: watch the stones.",
       "advancement": "chronogenesis:lore/temple_1"
     },
     {
       "type": "patchouli:text",
-      "title": "The Slip",
-      "text": "Every kingdom drew years from the Nails, and every kingdom fell to what it drew them for: the Sun Court to the desert it drank, the Tide Kingdom to the sea it held, the Deep Kingdom to what it heard at the point, the Verdant Kingdom to the engines it fed. And behind them all, a voice asking them to draw more. The Nails hold time in place. Something outside time wants them loose. Every dram they drew loosened them. Every dram I draw does too.",
+      "title": "Frozen Into the Ice",
+      "text": "(the tablet is rimed with frost) The core is dead. Its last moment froze around it, and the ice does not melt, for nothing moves in it. The stone still holds without it. Build round the stones. Keep them.",
+      "advancement": "chronogenesis:lore/temple_2"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Unmaking",
+      "text": "The Precursors never knew what the black stones were. They are Nails, holding time in place, and something outside time is working them loose. Where one loosens, things are unmade: not destroyed, never there. Every kingdom kept its own watch: the Sun Court against shadow, the Tide Kingdom with Guardians' open eyes, the Deep Kingdom in the dark with blind Wardens, the Verdant Kingdom with engines that remembered, the Hearth with golems of bright iron. Every watch failed, and the kingdoms were unmade: only their remains are left, and their guards, still keeping watch. The Nails still hold.",
       "advancement": "chronogenesis:lore/the_slip"
     }
   ]

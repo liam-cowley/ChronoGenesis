@@ -8,10 +8,11 @@ line up block for block.
   abandoned_laboratory       the ruin that generates in the world
   abandoned_laboratory_past  the same lab in its prime, as the Lens shows it at Decades
   obelisk                    an obelisk: untouched by time, so it has no past template of its own
-  precursor_city_<k>_<size>  a city of the Precursors (the Precursor era): kingdoms sun, tide, deep, verdant;
-                             sizes town (65) and capital (97). See precursor_cities.py
-  precursor_city_..._ruin    the same city as it lies in the present: decayed and buried
+  precursor_city_<name>      a city of the Precursors (the Precursor era), over the present's remains: sun,
+                             tide_town, tide_capital, hearth, verdant. See precursor_cities.py
+  precursor_shrine_<k>       an obelisk in the shrine a kingdom built round it (the Precursor era)
   jurassic_temple            a sealed ziggurat of the Jurassic Age: a Temporal Core, five seals, raptors
+  ice_temple_ruin            what is left of it in the Ice Age: broken, frozen, the obelisk still whole
 
 Usage: python3 tools/make_structures.py
 """
@@ -69,7 +70,7 @@ def parse_state(state):
 
 def structure(size, blocks, block_nbt, entities=()):
     """blocks: {(x, y, z): state string}; block_nbt: {(x, y, z): {key: string}} for block entities;
-    entities: [((x, y, z) as floats, (x, y, z) block, entity id[, {tag: string}])], kept persistent."""
+    entities: [((x, y, z) as floats, (x, y, z) block, entity id[, {tag: string or [strings]}])], kept persistent."""
     palette = []
     index = {}
     entries = []
@@ -98,7 +99,8 @@ def structure(size, blocks, block_nbt, entities=()):
             "pos": (TAG_LIST, (TAG_DOUBLE, list(pos))),
             "blockPos": ints(*block),
             "nbt": (TAG_COMPOUND, {"id": (TAG_STRING, e[2]), "PersistenceRequired": (TAG_BYTE, 1),
-                                   **{k: (TAG_STRING, v) for k, v in (e[3] if len(e) > 3 else {}).items()}}),
+                                   **{k: ((TAG_LIST, (TAG_STRING, v)) if isinstance(v, list) else (TAG_STRING, v))
+                                      for k, v in (e[3] if len(e) > 3 else {}).items()}}),
         } for e in entities for pos, block in [(e[0], e[1])]])),
     }
     return struct.pack(">b", TAG_COMPOUND) + name("") + payload(TAG_COMPOUND, root)
@@ -247,7 +249,7 @@ def obelisk():
 
 
 # ---------------------------------------------------------------- Precursor cities (the Age of the Precursors)
-# See precursor_cities.py: four kingdoms, a town and a capital each, and the ruin each leaves buried in the present.
+# See precursor_cities.py: the kingdoms' cities (over the present's remains) and the shrines round the obelisks.
 
 import precursor_cities  # noqa: E402  (next to this script)
 
@@ -367,6 +369,57 @@ def jurassic_temple():
     return b
 
 
+def ice_temple_ruin():
+    """The Jurassic temple as the Ice Age has it: its tiers broken, its rooms half full of ice and snow, its seals
+    and lamps long gone. The obelisk stands whole in the middle (exactly the obelisk of the present: it is the same
+    one), and where the core hung, its time froze when it died: Aeon Ice round the frozen sinews."""
+    r = random.Random(7303)
+    temple = jurassic_temple()
+    out = {}
+    for (x, y, z), state in temple.items():
+        if x == 17 and z == 17:
+            continue
+        if state == AIR:
+            out[(x, y, z)] = "minecraft:snow_block" if y <= 2 and r.random() < 0.35 else ("minecraft:packed_ice" if y == 1 and r.random() < 0.1 else AIR)
+            continue
+        if "seal" in state or "lantern" in state or "ladder" in state:
+            out[(x, y, z)] = AIR if "seal" not in state else T_WALL
+            continue
+        if "temporal_core" in state:
+            continue
+        if r.random() < (y - 6) / 26.0:
+            continue
+        if state == T_WALL and r.random() < 0.3:
+            state = r.choice(["minecraft:cracked_polished_blackstone_bricks", "minecraft:packed_ice", "minecraft:blue_ice"])
+        out[(x, y, z)] = state
+    # Snow on whatever is left open to the sky.
+    tops = {}
+    for (x, y, z), state in out.items():
+        if state != AIR:
+            tops[(x, z)] = max(tops.get((x, z), -1), y)
+    for (x, z), y in tops.items():
+        if y + 1 < TEMPLE_H and r.random() < 0.8:
+            out[(x, y + 1, z)] = "minecraft:snow[layers=" + str(r.randint(1, 3)) + "]"
+    # Where the core hung: Aeon Ice, the core's last moment, round the frozen sinews.
+    cx, cy, cz = T_CORE
+    for dx in (-1, 0, 1):
+        for dy in (-1, 0, 1):
+            for dz in (-1, 0, 1):
+                if abs(dx) + abs(dy) + abs(dz) <= 2 and (cx + dx, cz + dz) != (17, 17):
+                    out[(cx + dx, cy + dy, cz + dz)] = CG + "aeon_ice"
+    for x, y, z in [(14, 1, 13), (20, 2, 21), (12, 1, 19), (22, 1, 15)]:
+        out[(x, y, z)] = CG + "aeon_ice"
+    # A raptor that froze where it stood guard: its bones in the ice.
+    for x, y, z in [(17, 1, 27), (17, 2, 27), (17, 1, 28), (17, 1, 29), (17, 2, 26)]:
+        out[(x, y, z)] = "minecraft:bone_block[axis=z]"
+    out[(17, 1, 12)] = "minecraft:chest[facing=south,type=single,waterlogged=false]"
+    for (x, y, z), state in list(out.items()):
+        if (x, z) in ((16, 17), (18, 17), (17, 16), (17, 18)) or (16 <= x <= 18 and 16 <= z <= 18):
+            out.pop((x, y, z), None)
+    precursor_cities.obelisk_into(out, 17, 0, 17)
+    return out
+
+
 def raptors_in_temple():
     return [((x + 0.5, float(y), z + 0.5), (x, y, z), "chronogenesis:raptor") for x, y, z in T_RAPTORS]
 
@@ -378,13 +431,14 @@ if __name__ == "__main__":
     write("abandoned_laboratory.nbt", structure((W, H, D), ruin, chest))
     write("abandoned_laboratory_past.nbt", structure((W, H, D), past, {}))
     write("obelisk.nbt", structure((3, 12, 3), obelisk(), {}))
-    for i, kingdom in enumerate(precursor_cities.KINGDOMS):
-        for j, size in enumerate(precursor_cities.SIZES):
-            built = precursor_cities.city(kingdom, size, 4100 + 10 * i + j)
-            dims = (built.n, precursor_cities.CITY_H, built.n)
-            base = "precursor_city_" + kingdom + "_" + size
-            write(base + ".nbt", structure(dims, built.b, built.nbt, built.entities))
-            ruin, ruin_nbt = precursor_cities.ruin(built, 5100 + 10 * i + j)
-            write(base + "_ruin.nbt", structure(dims, ruin, ruin_nbt))
+    for i, city_name in enumerate(precursor_cities.CITIES):
+        built = precursor_cities.city(city_name, 4100 + 10 * i)
+        write("precursor_city_" + city_name + ".nbt", structure((built.n, built.H, built.n), built.b, built.nbt, built.entities))
+    for i, kingdom in enumerate(["sun", "tide", "hearth", "verdant"]):
+        blocks, chests = precursor_cities.shrine(kingdom, 6100 + i)
+        write("precursor_shrine_" + kingdom + ".nbt", structure((precursor_cities.S, precursor_cities.SH, precursor_cities.S),
+                                                                blocks, chests))
     temple_chest = {(17, 1, 12): {"id": "minecraft:chest", "LootTable": "chronogenesis:chests/jurassic_temple"}}
     write("jurassic_temple.nbt", structure((TEMPLE, TEMPLE_H, TEMPLE), jurassic_temple(), temple_chest, raptors_in_temple()))
+    ice_chest = {(17, 1, 12): {"id": "minecraft:chest", "LootTable": "chronogenesis:chests/ice_temple_ruin"}}
+    write("ice_temple_ruin.nbt", structure((TEMPLE, TEMPLE_H, TEMPLE), ice_temple_ruin(), ice_chest))

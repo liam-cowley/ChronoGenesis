@@ -1,6 +1,7 @@
 package com.chronogenesis.entity;
 
 import java.util.List;
+
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.Research;
 
@@ -9,6 +10,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -44,20 +48,26 @@ public class Precursor extends PathfinderMob {
     /** Lines they say: {@code precursor.chronogenesis.say.<n>} is the translation. */
     public static final int LINES = 12;
     /** Lines only a kingdom's own folk say: {@code precursor.chronogenesis.say.<kingdom>.<n>}. */
-    public static final int KINGDOM_LINES = 6;
-    public static final List<String> KINGDOMS = List.of("sun", "tide", "deep", "verdant");
+    public static final int KINGDOM_LINES = 10;
+    public static final List<String> KINGDOMS = List.of("sun", "tide", "deep", "verdant", "hearth");
+    /** Synced: each kingdom dresses its own way (client/PrecursorRenderer). */
+    private static final EntityDataAccessor<String> KINGDOM = SynchedEntityData.defineId(Precursor.class, EntityDataSerializers.STRING);
     /** Understanding them: granted (as a completed topic) to whoever links the memory of their age. */
     public static final ResourceLocation TONGUE = ChronoGenesis.id("memory/precursor_era");
     private static final int HOME_RANGE = 20;
 
-    /** Which kingdom's city it lives in (set by its city's template): they talk about their own troubles. */
-    private String kingdom = "";
     private static final String[] SYLLABLES = {"ka", "rhu", "ten", "ish", "vo", "ael", "dun", "sa", "mir", "oth",
             "qe", "lun", "zha", "ir", "tol", "ume"};
 
     public Precursor(EntityType<? extends Precursor> type, Level level) {
         super(type, level);
         setPersistenceRequired();
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(KINGDOM, "");
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -100,6 +110,7 @@ public class Precursor extends PathfinderMob {
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (!level().isClientSide()) {
             // Mostly their own kingdom's worries; sometimes what every Precursor says.
+            String kingdom = kingdom();
             int kingdomIndex = KINGDOMS.indexOf(kingdom);
             boolean own = kingdomIndex >= 0 && random.nextFloat() < 0.6f;
             int line = own ? random.nextInt(KINGDOM_LINES) : random.nextInt(LINES);
@@ -160,20 +171,25 @@ public class Precursor extends PathfinderMob {
         return 0.65f + (random.nextFloat() - 0.5f) * 0.1f;
     }
 
+    /** Which kingdom's city it lives in (set by its city's template): they talk about their own troubles. */
     public String kingdom() {
-        return kingdom;
+        return entityData.get(KINGDOM);
+    }
+
+    public void setKingdom(String kingdom) {
+        entityData.set(KINGDOM, kingdom);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        tag.putString("Kingdom", kingdom);
+        tag.putString("Kingdom", kingdom());
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        kingdom = tag.getString("Kingdom");
+        setKingdom(tag.getString("Kingdom"));
     }
 
     /** Where it calls home (its first standing place), for tests. */

@@ -64,6 +64,12 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         dropOther(ModBlocks.CORTEX_LOBE.get(), ModItems.BRASS_ARMATURE.get());
         dropSelf(ModBlocks.LEECH_TENDRIL.get());
         dropSelf(ModBlocks.ENHANCING_GLAND.get());
+        dropSelf(ModBlocks.AEON_ICE.get());
+        // An egg keeps what is in it (and loses the Time it was fed).
+        add(ModBlocks.DINO_EGG.get(), LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                .add(LootItem.lootTableItem(ModBlocks.DINO_EGG.get())
+                        .apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
+                                .include(ModDataComponents.DINO.get())))));
         // The jug keeps its essence when broken.
         add(ModBlocks.ESSENCE_JUG.get(), LootTable.lootTable().withPool(applyExplosionCondition(ModBlocks.ESSENCE_JUG.get(),
                 LootPool.lootPool().setRolls(ConstantValue.exactly(1))

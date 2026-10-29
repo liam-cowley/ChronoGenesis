@@ -30,6 +30,11 @@
       "type": "patchouli:text",
       "text": "Feed it essence of its own kind: right-click any part of it with a vial. It $(o)hungers$(). Fed essence becomes growth: flesh creeps over the frame, block by block. When the frame is full, it stores the rest.$(br2)It must eat regularly. Starved, it eats itself back to bare copper, and then it dies.",
       "title": "Hunger"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Every Essence Its Shape",
+      "text": "Past a seedling (five blocks), an organism must be grown into its own essence's shape, or it is $(l)malformed$(): it lives and eats, but nothing can draw on it.$(br2)Density: compact, a solid lump. Speed: long, three times longer than wide. Size: broad, twice as wide as tall. Awareness: branching, three tips at least. Time: a spire, twice as tall as wide, like a Nail."
     }
   ],
   "sortnum": 0,

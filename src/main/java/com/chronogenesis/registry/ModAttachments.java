@@ -69,5 +69,11 @@ public final class ModAttachments {
                     .copyOnDeath()
                     .build());
 
+    /** On players: until when (game time) the Precursors' guards hold a grudge against them (entity/PrecursorGuards). */
+    public static final Supplier<AttachmentType<Long>> PRECURSOR_GRUDGE = ATTACHMENT_TYPES.register("precursor_grudge",
+            () -> AttachmentType.builder(() -> 0L)
+                    .serialize(com.mojang.serialization.Codec.LONG, until -> until > 0)
+                    .build());
+
     private ModAttachments() {}
 }

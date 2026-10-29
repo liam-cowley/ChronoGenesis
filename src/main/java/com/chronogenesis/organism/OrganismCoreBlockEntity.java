@@ -50,6 +50,8 @@ public class OrganismCoreBlockEntity extends BlockEntity {
     private int hearts;
     /** Density flesh blocks touching this organism: heavy mass steadies Time. Updated on every scan. */
     private int densityTouching;
+    /** Blocks of Aeon Ice (the Ice Age: time frozen still) touching the body: each steadies a Time organism by 2. */
+    private int aeonTouching;
     /** Time organisms only: builds up while under-stabilised; bursts at {@link #BURST_AT}. Saved. */
     private int instability;
     private List<BlockPos> frontier = List.of();
@@ -91,9 +93,9 @@ public class OrganismCoreBlockEntity extends BlockEntity {
         return instability;
     }
 
-    /** How much steadying this Time organism has: 3 per Stasis Bladder, 1 per 2 touching Density flesh. */
+    /** How much steadying this Time organism has: 3 per Stasis Bladder, 2 per Aeon Ice, 1 per 2 touching Density flesh. */
     public int stability() {
-        return bladders * 3 + densityTouching / 2;
+        return bladders * 3 + aeonTouching * 2 + densityTouching / 2;
     }
 
     /** How much steadying it needs: more for a bigger body and a fuller store. */
@@ -118,8 +120,16 @@ public class OrganismCoreBlockEntity extends BlockEntity {
         return accepted;
     }
 
-    /** Takes essence out (Taps, Glands). Returns how much was taken. */
+    /** Whether its body is in its essence's shape (or still a seedling): only then can anything draw on it. */
+    public boolean formed() {
+        return getBlockState().getValue(OrganismCoreBlock.FORMED);
+    }
+
+    /** Takes essence out (Taps, Glands, the Chronocortex). A malformed organism gives nothing. Returns how much was taken. */
     public int extract(int amount) {
+        if (!formed()) {
+            return 0;
+        }
         int taken = Math.min(amount, stored);
         if (taken > 0) {
             stored -= taken;
@@ -140,6 +150,11 @@ public class OrganismCoreBlockEntity extends BlockEntity {
         Component status = Component.translatable("message.chronogenesis.organism.status",
                 aspect().displayName(), size + 1, stored, capacity(),
                 Component.translatable("message.chronogenesis.organism.hunger." + hunger));
+        OrganismShape shape = level == null ? null : OrganismShape.of(level.registryAccess(), aspect());
+        if (shape != null) {
+            status = status.copy().append(Component.translatable(formed() ? "message.chronogenesis.organism.formed"
+                    : "message.chronogenesis.organism.malformed", shape.describe()));
+        }
         if (aspect() == Aspect.TIME) {
             status = status.copy().append(Component.translatable("message.chronogenesis.organism.stability",
                     stability(), stabilityNeeded(), instability, BURST_AT));
@@ -188,13 +203,28 @@ public class OrganismCoreBlockEntity extends BlockEntity {
         }
         countNeighbours(level);
         updatePhase(level);
+        updateShape(level);
     }
 
-    /** Counts Stasis Bladders and Hearts grown on this organism, and Density flesh pressing against it. */
+    /** Is the body (now) in its essence's shape? */
+    private void updateShape(ServerLevel level) {
+        OrganismShape shape = OrganismShape.of(level.registryAccess(), aspect());
+        List<BlockPos> body = new java.util.ArrayList<>(flesh);
+        body.add(worldPosition);
+        boolean fits = shape == null || shape.fits(body);
+        if (formed() != fits) {
+            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(OrganismCoreBlock.FORMED, fits));
+            level.playSound(null, worldPosition, fits ? SoundEvents.SCULK_BLOCK_SPREAD : SoundEvents.SCULK_BLOCK_BREAK,
+                    SoundSource.BLOCKS, 0.8f, fits ? 0.7f : 1.4f);
+        }
+    }
+
+    /** Counts Stasis Bladders and Hearts grown on this organism, and Density flesh and Aeon Ice pressing against it. */
     private void countNeighbours(ServerLevel level) {
         int bladderCount = 0;
         int heartCount = 0;
         java.util.Set<BlockPos> dense = new java.util.HashSet<>();
+        java.util.Set<BlockPos> aeon = new java.util.HashSet<>();
         List<BlockPos> body = new java.util.ArrayList<>(flesh);
         body.add(worldPosition);
         for (BlockPos pos : body) {
@@ -210,12 +240,15 @@ public class OrganismCoreBlockEntity extends BlockEntity {
                 } else if (aspect() != Aspect.DENSITY && state.is(ModBlocks.CHRONOFLESH.get())
                         && state.getValue(FleshBlock.ASPECT) == Aspect.DENSITY) {
                     dense.add(next);
+                } else if (state.is(ModBlocks.AEON_ICE.get())) {
+                    aeon.add(next);
                 }
             }
         }
         bladders = bladderCount;
         hearts = heartCount;
         densityTouching = dense.size();
+        aeonTouching = aeon.size();
     }
 
     /**

@@ -1,0 +1,53 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 1
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "chronogenesis:precursor_tablet",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "chronogenesis:lore": "chronogenesis:hearth_1"
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "chronogenesis:precursor_tablet",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "chronogenesis:lore": "chronogenesis:hearth_2"
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "chronogenesis:precursor_tablet",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "chronogenesis:lore": "chronogenesis:hearth_3"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

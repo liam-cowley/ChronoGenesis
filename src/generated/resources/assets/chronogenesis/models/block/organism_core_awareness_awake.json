@@ -388,147 +388,41 @@
     {
       "faces": {
         "down": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         },
         "east": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         },
         "north": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         },
         "south": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         },
         "up": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         },
         "west": {
-          "texture": "#flesh",
-          "tintindex": 0
-        }
-      },
-      "from": [
-        1,
-        1,
-        1
-      ],
-      "to": [
-        15,
-        15,
-        15
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#core_eye"
-        },
-        "east": {
-          "texture": "#core_eye"
-        },
-        "north": {
-          "texture": "#core_eye"
-        },
-        "south": {
-          "texture": "#core_eye"
-        },
-        "up": {
-          "texture": "#core_eye"
-        },
-        "west": {
-          "texture": "#core_eye"
-        }
-      },
-      "from": [
-        1,
-        1,
-        1
-      ],
-      "to": [
-        15,
-        15,
-        15
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#eye"
-        },
-        "east": {
-          "texture": "#eye"
-        },
-        "north": {
-          "texture": "#eye"
-        },
-        "south": {
-          "texture": "#eye"
-        },
-        "up": {
-          "texture": "#eye"
-        },
-        "west": {
-          "texture": "#eye"
-        }
-      },
-      "from": [
-        6.5,
-        15,
-        6.5
-      ],
-      "to": [
-        9.5,
-        16,
-        9.5
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#eye"
-        },
-        "east": {
-          "texture": "#eye"
-        },
-        "north": {
-          "texture": "#eye"
-        },
-        "south": {
-          "texture": "#eye"
-        },
-        "up": {
-          "texture": "#eye"
-        },
-        "west": {
-          "texture": "#eye"
+          "texture": "#brass"
         }
       },
       "from": [
         3,
-        3,
-        0
+        0,
+        3
       ],
       "to": [
-        5.5,
-        5.5,
-        1
+        13,
+        1,
+        13
       ]
     }
   ],
   "render_type": "minecraft:cutout",
   "textures": {
-    "core_eye": "chronogenesis:block/organism_core_awareness_overlay",
-    "crystal": "minecraft:block/amethyst_block",
-    "eye": "chronogenesis:block/eye",
+    "brass": "chronogenesis:block/brass_fitting",
     "flesh": "chronogenesis:block/organism_core_awareness",
     "frame": "chronogenesis:block/brass_block",
-    "particle": "chronogenesis:block/organism_core_awareness",
-    "pustule": "chronogenesis:block/flesh_pustule",
-    "steel": "chronogenesis:block/steel"
+    "particle": "chronogenesis:block/organism_core_awareness"
   }
 }

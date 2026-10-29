@@ -30,6 +30,11 @@ import net.minecraft.util.StringRepresentable;
  */
 public enum Power implements StringRepresentable {
     IRON_FISTS(Kind.PASSIVE, 1, Aspect.DENSITY),
+    /**
+     * Density, drawn the other way: the body made light. You take more harm from blows, but fall slowly, jump many
+     * blocks high, and can jump again in mid-air.
+     */
+    FEATHERWEIGHT(Kind.PASSIVE, 2, Aspect.DENSITY),
     GLOWING_SIGHT(Kind.PASSIVE, 1, Aspect.AWARENESS),
     QUICKENING(Kind.PASSIVE, 1, Aspect.SPEED),
     SHRINK(Kind.PASSIVE, 1, Aspect.SIZE),

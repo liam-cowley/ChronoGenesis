@@ -49,6 +49,10 @@ public final class ModDataComponents {
     public static final Supplier<DataComponentType<ResourceLocation>> LORE = DATA_COMPONENTS.registerComponentType("lore",
             builder -> builder.persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC));
 
+    /** Which dinosaur a fossil is of, or an egg holds (an entity type's id). */
+    public static final Supplier<DataComponentType<ResourceLocation>> DINO = DATA_COMPONENTS.registerComponentType("dino",
+            builder -> builder.persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC));
+
     /** Which machine an Intact Blueprint shows. */
     public static final Supplier<DataComponentType<Blueprint>> BLUEPRINT = DATA_COMPONENTS.registerComponentType("blueprint",
             builder -> builder.persistent(Blueprint.CODEC).networkSynchronized(Blueprint.STREAM_CODEC));

@@ -12,17 +12,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
- * Why the Precursors' kingdoms fell, in fragments (core-systems.md section 8, "The fall of the Precursors"). Each is
+ * What the Precursors kept watch against, in fragments (core-systems.md section 8, "The fall of the Precursors"). Each is
  * written on a Precursor Tablet; reading one (in their tongue) records it (on the player), and awards an advancement
  * ({@code chronogenesis:lore/<fragment>}) that opens its page in the journal. Text: {@code lore.chronogenesis.<fragment>.title}
  * and {@code .text}.
  * <p>
- * The story, for whoever pieces it together: the Nails (the obelisks) hold time in place. Every kingdom learned to
- * draw years from them, and each fell to what it drew them for: the Sun Court drank them (and the land around it
- * aged into desert), the Tide Kingdom held its sea still with them (until the sea came down all at once), the Deep
- * Kingdom dug to the Nail's point to listen (and heard), the Verdant Kingdom fed them to engines it grew (which
- * learned to want). Behind them all, a voice from before the beginning of time asked them to draw more: every dram
- * loosened the Nails that keep it out.
+ * The story, for whoever pieces it together: the Precursors never knew the black stones for the Nails that hold
+ * time, nor that time could be travelled. They knew that near the stones nothing went missing, and that elsewhere
+ * things were being unmade (never there at all): something outside time was working the Nails loose. Every kingdom
+ * kept its own watch: the Sun Court built without shadow, the Tide Kingdom bred Guardians whose eyes never close,
+ * the Deep Kingdom went down into the dark with blind Wardens, the Verdant Kingdom grew engines to remember for it,
+ * the Hearth forged golems of bright iron. Every watch failed. The temples' tablets were left by older builders.
  */
 public final class PrecursorLore {
     /** Every fragment, in reading order. */
@@ -32,9 +32,10 @@ public final class PrecursorLore {
             "tide_1", "tide_2", "tide_3",
             "deep_1", "deep_2", "deep_3",
             "verdant_1", "verdant_2", "verdant_3",
-            "temple_1");
-    /** Read all of these and it falls into place: each kingdom's fall, and the voice behind them. */
-    public static final List<String> KEY = List.of("nails_3", "sun_3", "tide_3", "deep_2", "verdant_3");
+            "hearth_1", "hearth_2", "hearth_3",
+            "temple_1", "temple_2");
+    /** Read all of these and it falls into place: every kingdom's watch, and what it kept watch against. */
+    public static final List<String> KEY = List.of("nails_3", "sun_3", "tide_3", "deep_3", "verdant_3", "hearth_3");
     public static final String SLIP = "the_slip";
 
     private PrecursorLore() {}

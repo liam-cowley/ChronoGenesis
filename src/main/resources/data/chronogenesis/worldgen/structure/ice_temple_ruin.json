@@ -1,0 +1,14 @@
+{
+  "type": "chronogenesis:placed_template",
+  "biomes": "#chronogenesis:has_structure/ice_temple_ruin",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_box",
+  "templates": [
+    {
+      "data": "chronogenesis:ice_temple_ruin",
+      "weight": 1
+    }
+  ],
+  "rotate": false
+}

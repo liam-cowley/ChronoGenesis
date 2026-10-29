@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "chronogenesis:precursor_sun_court",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 14357617,
+    "separation": 8,
+    "spacing": 32
+  }
+}

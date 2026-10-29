@@ -1,0 +1,16 @@
+{
+  "type": "chronogenesis:remains",
+  "biomes": "#chronogenesis:has_structure/precursor_era",
+  "step": "underground_decoration",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_box",
+  "remains": [
+    "minecraft:ancient_city"
+  ],
+  "restore": {
+    "kingdom": "deep",
+    "guard": "minecraft:warden",
+    "folk_chance": 0.2,
+    "guard_chance": 0.06
+  }
+}

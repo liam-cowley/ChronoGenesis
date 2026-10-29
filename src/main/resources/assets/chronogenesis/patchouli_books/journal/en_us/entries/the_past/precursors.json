@@ -7,12 +7,26 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "They are taller than villagers, grey, with eyes like amethyst and gold on their brows. Their cities belong to four kingdoms, and no two look alike: the walled Sun Court in the desert, the Tide Kingdom's ringed canals on the coast, the Deep Kingdom's pit city in the meadows, the Verdant Kingdom's garden city in the jungle.$(br2)They keep to their cities, busy, talking among themselves in a tongue I cannot follow."
+      "text": "They are taller than villagers, grey, with eyes like amethyst. Their cities belong to five kingdoms, and no two look alike, nor do their people dress alike: the Sun Court in white linen and gold, the Tide Kingdom in sea-green scales, the Deep Kingdom hooded, their eyes bound, the Hearth in russet wool, the Verdant Kingdom crowned with flowers.$(br2)They keep to their cities, busy, talking among themselves in a tongue I cannot follow."
     },
     {
       "type": "patchouli:text",
-      "title": "What Became of Them",
-      "text": "Their sandstone cities are the desert temples. Their deep cities are the ancient cities under the slate. Their harbours drowned into the ocean ruins. Their garden cities are the jungle temples, mossed over.$(br2)And some lie whole under my feet: $(l)buried ruins$(), right under where each city stands in their age. Dig, and brush the silt."
+      "text": "What is left of their cities in my own time still holds their tablets: brush the silt at the desert temples and the ocean ruins, open the old chests of the temples, the ancient cities, even the villages."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Where Their Cities Stand",
+      "text": "Their cities stand where our ruins do. Under every desert temple, the Sun Court; under the jungle temples, the Verdant Kingdom; over the ocean ruins and the great sea monuments, the Tide Kingdom on its rings; where our villages are, the Hearth; and the ancient cities deep below are the Deep Kingdom's, whole again."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Their Guards",
+      "text": "Each kingdom kept a guard against what was coming: blind Wardens in the deep, Guardians in the sea, golems of bright iron on the plains. They leave me be. Strike one of the Precursors, or their guards, and every guard near turns on me for a while."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Shrines",
+      "text": "The black stones stand in their age too, in the same places, each in a little temple of the kingdom of its land. They did not know what the stones were. Only that near them, nothing went missing."
     }
   ]
 }

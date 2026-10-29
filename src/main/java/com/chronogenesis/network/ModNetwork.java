@@ -39,6 +39,7 @@ public final class ModNetwork {
                             case TOGGLE -> Powers.toggle(player, payload.power());
                             case STRENGTH -> Powers.setStrength(player, payload.power(), payload.value());
                             case NUDGE -> Powers.nudgeStrength(player, Integer.signum(payload.value()));
+                            case DOUBLE_JUMP -> Powers.doubleJumped(player);
                         }
                     }
                 }));

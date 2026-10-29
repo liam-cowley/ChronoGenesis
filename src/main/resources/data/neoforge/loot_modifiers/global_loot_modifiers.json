@@ -7,6 +7,9 @@
     "chronogenesis:tablets_in_desert_ruins",
     "chronogenesis:tablets_in_ocean_ruins",
     "chronogenesis:tablets_in_ancient_ruins",
-    "chronogenesis:tablets_in_jungle_ruins"
+    "chronogenesis:tablets_in_jungle_ruins",
+    "chronogenesis:tablets_in_villages",
+    "chronogenesis:tablets_brushed_sun",
+    "chronogenesis:tablets_brushed_tide"
   ]
 }

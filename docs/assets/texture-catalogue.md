@@ -123,3 +123,16 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 ## Models
 
 The generated block states and models live in `src/generated/resources/assets/chronogenesis/` (datagen output; change `ModBlockStateProvider` / `ModItemModelProvider`, not the JSON). Organism models are built in `ModBlockStateProvider` from shared parts: the brass frame (12 beams), tinted flesh masses, untinted brass and eyes. Flesh has `growth` 0-3 (tendrils, creeping, swelling, mature); cores have `phase` (seed, awake, hungry, necrotic); grafts are modelled pointing up and rotated by facing; the Brass Conduit is a multipart (core + arms, bare / vein / clogged).
+
+## The kingdoms, the Ice Age, the machines' organs
+| Texture | What it is |
+|---|---|
+| `entity/precursor_<sun,tide,deep,hearth,verdant>.png` | Each kingdom's dress on the villager layout (64x64): white linen and gold; sea-green scales; a charcoal hood and a soul-blue eye band; russet wool and an apron; woven green and flowers |
+| `entity/precursor_golem.png` | The Hearth's iron golem (iron golem layout, 128x128): bright riveted iron, a brass plate, pale amethyst eyes; no vines or cracks |
+| `entity/mammoth.png`, `smilodon.png`, `woolly_rhino.png` | The Ice Age's creatures, painted to `client/IceAgeModels`' boxes |
+| `entity/organ.png` | 64x64 patches for `client/OrganParts`: pale flesh, an eye, an iron strap, tendon, amethyst, a sac, brain folds, teeth, brass, tentacle rings (tinted parts painted pale) |
+| `block/aeon_ice.png` | Ice with time frozen in it: a spiral, glints |
+| `block/dino_egg_0..3.png` | A mottled egg, cracking in three stages as it fills with Time |
+| `item/dino_egg.png`, `item/fossil.png` | The egg; a bone set in grey stone |
+| `gui/power/featherweight.png` | A feather |
+

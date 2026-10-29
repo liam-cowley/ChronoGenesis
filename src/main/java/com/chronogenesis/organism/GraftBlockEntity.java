@@ -702,6 +702,10 @@ public class GraftBlockEntity extends BlockEntity {
             OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.ward.small", WARD_GLAND_LEVEL));
             return ItemInteractionResult.FAIL;
         }
+        if (!core.formed()) {
+            OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.organism.malformed_short"));
+            return ItemInteractionResult.FAIL;
+        }
         if (core.stored() < WARD_COST) {
             OrganismInteractions.tell(player, Component.translatable("message.chronogenesis.gland.ward.hungry", WARD_COST));
             return ItemInteractionResult.FAIL;

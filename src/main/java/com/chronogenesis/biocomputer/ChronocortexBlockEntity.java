@@ -97,6 +97,9 @@ public class ChronocortexBlockEntity extends BlockEntity {
     private int tick;
     private int lobes;
     private final Set<ResourceLocation> lessons = new LinkedHashSet<>();
+    /** Creatures it has learned from their fossils, in the order learned: it can bud their eggs. */
+    private final List<ResourceLocation> species = new ArrayList<>();
+    private int nextSpecies;
     /** Eras it remembers: an offshoot it budded grew through each, and was linked back. */
     private final Set<ResourceLocation> memories = new LinkedHashSet<>();
     @Nullable
@@ -205,7 +208,9 @@ public class ChronocortexBlockEntity extends BlockEntity {
     public Map<Aspect, Integer> availableEssence() {
         Map<Aspect, Integer> essence = new EnumMap<>(Aspect.class);
         for (OrganismCoreBlockEntity core : wiredCores()) {
-            essence.merge(core.aspect(), core.stored(), Integer::sum);
+            if (core.formed()) {
+                essence.merge(core.aspect(), core.stored(), Integer::sum);
+            }
         }
         return essence;
     }
@@ -264,6 +269,9 @@ public class ChronocortexBlockEntity extends BlockEntity {
         if (stack.getItem() instanceof NerveSpoolItem) {
             return link(stack, player);
         }
+        if (stack.getItem() instanceof com.chronogenesis.item.FossilItem || (stack.is(net.minecraft.world.item.Items.EGG) && !species.isEmpty())) {
+            return bud(stack, player);
+        }
         return teach(stack, player);
     }
 
@@ -305,12 +313,73 @@ public class ChronocortexBlockEntity extends BlockEntity {
         lessons.add(id);
         stack.consume(1, player);
         setChanged();
+        sync();
         ServerLevel serverLevel = (ServerLevel) level;
         serverLevel.playSound(null, worldPosition, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0f, 0.6f);
         serverLevel.sendParticles(ParticleTypes.ENCHANT, worldPosition.getX() + 0.5, worldPosition.getY() + 1.2,
                 worldPosition.getZ() + 0.5, 40, 0.4, 0.4, 0.4, 0.6);
         say(lesson.learned());
         checkStage(serverLevel);
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    // ---------------------------------------------------------------- eggs from fossils
+
+    /** Drams of Size an egg is budded from (its own flesh, drawn from its organisms). */
+    public static final int EGG_COST = 16;
+
+    public List<ResourceLocation> species() {
+        return species;
+    }
+
+    /**
+     * Shown a fossil, it learns the creature and buds an egg of it from its own matter; shown a hen's egg, it buds
+     * another of a creature it knows (each in turn). Each egg costs {@link #EGG_COST} drams of Size.
+     */
+    public ItemInteractionResult bud(ItemStack stack, Player player) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return ItemInteractionResult.SUCCESS;
+        }
+        ResourceLocation kind;
+        boolean fossil = stack.getItem() instanceof com.chronogenesis.item.FossilItem;
+        if (fossil) {
+            kind = stack.get(ModDataComponents.DINO.get());
+            if (kind == null) {
+                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            }
+        } else {
+            kind = species.get(nextSpecies % species.size());
+        }
+        boolean hourglass = com.chronogenesis.item.EternalHourglassItem.carried(player);
+        if (!hourglass && availableEssence().getOrDefault(Aspect.SIZE, 0) < EGG_COST) {
+            say("egg.no_matter", EGG_COST);
+            return ItemInteractionResult.CONSUME;
+        }
+        net.minecraft.world.entity.EntityType<?> type = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(kind).orElse(null);
+        if (type == null) {
+            return ItemInteractionResult.CONSUME;
+        }
+        if (fossil && !species.contains(kind)) {
+            species.add(kind);
+            sync();
+            say("egg.learned", type.getDescription());
+        } else {
+            say("egg.budded", type.getDescription());
+        }
+        if (!fossil) {
+            nextSpecies = (nextSpecies + 1) % species.size();
+        }
+        if (!hourglass) {
+            drawEssence(Aspect.SIZE, EGG_COST);
+        }
+        stack.consume(1, player);
+        setChanged();
+        net.minecraft.world.entity.item.ItemEntity egg = new net.minecraft.world.entity.item.ItemEntity(serverLevel,
+                worldPosition.getX() + 0.5, worldPosition.getY() + 1.2, worldPosition.getZ() + 0.5, com.chronogenesis.entity.DinoEggItem.of(type));
+        serverLevel.addFreshEntity(egg);
+        serverLevel.playSound(null, worldPosition, SoundEvents.SLIME_SQUISH, SoundSource.BLOCKS, 1.0f, 0.5f);
+        serverLevel.sendParticles(ParticleTypes.ITEM_SLIME, worldPosition.getX() + 0.5, worldPosition.getY() + 1.0,
+                worldPosition.getZ() + 0.5, 20, 0.4, 0.3, 0.4, 0.05);
         return ItemInteractionResult.SUCCESS;
     }
 
@@ -340,6 +409,7 @@ public class ChronocortexBlockEntity extends BlockEntity {
         }
         ResourceLocation era = fossil.era();
         memories.add(era);
+        sync();
         setChanged();
         serverLevel.setBlockAndUpdate(end.pos(), fossil.getBlockState().setValue(FossilCortexBlock.AWAKE, true));
         spool.consume(1, player);
@@ -524,6 +594,7 @@ public class ChronocortexBlockEntity extends BlockEntity {
         }
         if (count != lobes) {
             lobes = count;
+            sync();
             setChanged();
         }
         return grew;
@@ -626,6 +697,33 @@ public class ChronocortexBlockEntity extends BlockEntity {
         }
     }
 
+    // ---------------------------------------------------------------- what clients see
+
+    /**
+     * How much it knows: lessons, eras remembered (twice over), creatures learned. The more, the stranger it looks
+     * (client/CortexBrainRenderer).
+     */
+    public int knowledge() {
+        return lessons.size() + 2 * memories.size() + species.size();
+    }
+
+    /** Tells clients what it has become (its look follows its lobes and its knowledge). */
+    private void sync() {
+        if (level != null && !level.isClientSide()) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+        }
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
+    }
+
+    @Override
+    public net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.game.ClientGamePacketListener> getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+    }
+
     // ---------------------------------------------------------------- saving
 
     @Override
@@ -645,6 +743,10 @@ public class ChronocortexBlockEntity extends BlockEntity {
         CompoundTag nicks = new CompoundTag();
         nicknames.forEach((id, nickname) -> nicks.putString(id.toString(), nickname));
         tag.put("nicknames", nicks);
+        ListTag learnedSpecies = new ListTag();
+        species.forEach(id -> learnedSpecies.add(StringTag.valueOf(id.toString())));
+        tag.put("species", learnedSpecies);
+        tag.putInt("next_species", nextSpecies);
     }
 
     @Override
@@ -667,6 +769,14 @@ public class ChronocortexBlockEntity extends BlockEntity {
                 memories.add(id);
             }
         }
+        species.clear();
+        for (Tag entry : tag.getList("species", Tag.TAG_STRING)) {
+            ResourceLocation id = ResourceLocation.tryParse(entry.getAsString());
+            if (id != null) {
+                species.add(id);
+            }
+        }
+        nextSpecies = tag.getInt("next_species");
         nicknames.clear();
         CompoundTag nicks = tag.getCompound("nicknames");
         for (String key : nicks.getAllKeys()) {

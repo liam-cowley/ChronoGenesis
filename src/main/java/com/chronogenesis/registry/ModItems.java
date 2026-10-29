@@ -143,6 +143,22 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> VEILED_SEAL = ITEMS.registerSimpleBlockItem("veiled_seal", ModBlocks.VEILED_SEAL);
     public static final DeferredItem<BlockItem> STILLED_SEAL = ITEMS.registerSimpleBlockItem("stilled_seal", ModBlocks.STILLED_SEAL);
 
+    public static final DeferredItem<BlockItem> AEON_ICE = ITEMS.registerSimpleBlockItem("aeon_ice", ModBlocks.AEON_ICE);
+    /** What is left in a beast of the Jurassic once all its Time is drawn out: fed to the Chronocortex, it can bud its eggs. */
+    public static final DeferredItem<com.chronogenesis.item.FossilItem> FOSSIL = ITEMS.registerItem("fossil",
+            com.chronogenesis.item.FossilItem::new, new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<com.chronogenesis.entity.DinoEggItem> DINO_EGG = ITEMS.registerItem("dino_egg",
+            properties -> new com.chronogenesis.entity.DinoEggItem(ModBlocks.DINO_EGG.get(), properties),
+            new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<DeferredSpawnEggItem> MAMMOTH_SPAWN_EGG = ITEMS.registerItem("mammoth_spawn_egg",
+            properties -> new DeferredSpawnEggItem(ModEntities.MAMMOTH, 0x5A3A22, 0xE8DCC0, properties), new Item.Properties());
+    public static final DeferredItem<DeferredSpawnEggItem> SMILODON_SPAWN_EGG = ITEMS.registerItem("smilodon_spawn_egg",
+            properties -> new DeferredSpawnEggItem(ModEntities.SMILODON, 0xD8C8A8, 0x8A6A44, properties), new Item.Properties());
+    public static final DeferredItem<DeferredSpawnEggItem> WOOLLY_RHINO_SPAWN_EGG = ITEMS.registerItem("woolly_rhino_spawn_egg",
+            properties -> new DeferredSpawnEggItem(ModEntities.WOOLLY_RHINO, 0x6A4A2E, 0x3A2A1A, properties), new Item.Properties());
+    public static final DeferredItem<DeferredSpawnEggItem> PRECURSOR_GOLEM_SPAWN_EGG = ITEMS.registerItem("precursor_golem_spawn_egg",
+            properties -> new DeferredSpawnEggItem(ModEntities.PRECURSOR_GOLEM, 0xD8D8D8, 0x6A8AA0, properties), new Item.Properties());
+
     public static final DeferredItem<DeferredSpawnEggItem> RAPTOR_SPAWN_EGG = ITEMS.registerItem("raptor_spawn_egg",
             properties -> new DeferredSpawnEggItem(ModEntities.RAPTOR, 0x8A6A3A, 0x3A2A18, properties), new Item.Properties());
     public static final DeferredItem<DeferredSpawnEggItem> TITANOSAUR_SPAWN_EGG = ITEMS.registerItem("titanosaur_spawn_egg",

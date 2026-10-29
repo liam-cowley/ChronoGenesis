@@ -407,46 +407,14 @@
         }
       },
       "from": [
-        2,
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
         1,
-        2
-      ],
-      "to": [
-        14,
-        11,
-        14
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#flesh"
-        },
-        "east": {
-          "texture": "#flesh"
-        },
-        "north": {
-          "texture": "#flesh"
-        },
-        "south": {
-          "texture": "#flesh"
-        },
-        "up": {
-          "texture": "#flesh"
-        },
-        "west": {
-          "texture": "#flesh"
-        }
-      },
-      "from": [
-        4,
-        11,
-        4
-      ],
-      "to": [
-        12,
-        12,
-        12
+        13
       ]
     }
   ],

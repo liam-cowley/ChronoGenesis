@@ -11,6 +11,7 @@ import com.chronogenesis.network.PowerActionPayload;
 import com.chronogenesis.organism.EssenceJugBlockEntity;
 import com.chronogenesis.organism.FleshBlock;
 import com.chronogenesis.player.Powers;
+import com.chronogenesis.registry.ModAttachments;
 import com.chronogenesis.registry.ModBlocks;
 import com.chronogenesis.registry.ModEntities;
 import com.chronogenesis.registry.ModItems;
@@ -97,6 +98,7 @@ public final class ClientEvents {
         }
         Minecraft minecraft = Minecraft.getInstance();
         ShiftHud.tick();
+        doubleJump(minecraft);
         while (POWERS.consumeClick()) {
             if (minecraft.screen != null) {
                 continue;
@@ -113,6 +115,32 @@ public final class ClientEvents {
                 PacketDistributor.sendToServer(PowerActionPayload.use());
             }
         }
+    }
+
+    private static boolean jumpWasDown;
+    private static boolean doubleJumped;
+
+    /**
+     * Featherweight: jump again in mid-air (once, until you land). The client leaps (it moves its own player) and tells
+     * the server, which takes a dram of Density and forgets the fall.
+     */
+    private static void doubleJump(Minecraft minecraft) {
+        var player = minecraft.player;
+        boolean down = minecraft.options.keyJump.isDown();
+        if (player.onGround() || player.isInWater() || player.onClimbable() || player.getAbilities().flying) {
+            doubleJumped = false;
+        } else if (down && !jumpWasDown && !doubleJumped && minecraft.screen == null && player.getDeltaMovement().y < 0.25) {
+            int light = Powers.featherweight(player.getData(ModAttachments.PLAYER_ESSENCE));
+            if (light > 0) {
+                doubleJumped = true;
+                var motion = player.getDeltaMovement();
+                player.setDeltaMovement(motion.x, Powers.doubleJumpPower(light), motion.z);
+                player.resetFallDistance();
+                player.level().addParticle(net.minecraft.core.particles.ParticleTypes.CLOUD, player.getX(), player.getY(), player.getZ(), 0, -0.1, 0);
+                PacketDistributor.sendToServer(PowerActionPayload.doubleJump());
+            }
+        }
+        jumpWasDown = down;
     }
 
     /** Shift + scroll with the Essence Manipulator in hand: the selected power's strength, not the hotbar. */

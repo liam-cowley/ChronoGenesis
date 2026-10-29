@@ -28,6 +28,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         suitPiece(ModItems.CHRONO_TROUSERS.get());
         suitPiece(ModItems.CHRONO_GALOSHES.get());
         basicItem(ModItems.PRECURSOR_TABLET.get());
+        basicItem(ModItems.FOSSIL.get());
+        basicItem(ModItems.DINO_EGG.get());
+        for (String egg : new String[] {"mammoth", "smilodon", "woolly_rhino", "precursor_golem"}) {
+            withExistingParent(egg + "_spawn_egg", mcLoc("item/template_spawn_egg"));
+        }
         basicItem(ModItems.HEART_OF_THE_UNBEGOTTEN.get());
         basicItem(ModItems.BRASS_BLEND.get());
         basicItem(ModItems.BRASS_INGOT.get());

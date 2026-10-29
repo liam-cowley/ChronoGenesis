@@ -388,247 +388,41 @@
     {
       "faces": {
         "down": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         },
         "east": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         },
         "north": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         },
         "south": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         },
         "up": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         },
         "west": {
-          "texture": "#flesh",
-          "tintindex": 0
+          "texture": "#brass"
         }
       },
       "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
         1,
-        1,
-        1
-      ],
-      "to": [
-        15,
-        15,
-        15
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#core_eye"
-        },
-        "east": {
-          "texture": "#core_eye"
-        },
-        "north": {
-          "texture": "#core_eye"
-        },
-        "south": {
-          "texture": "#core_eye"
-        },
-        "up": {
-          "texture": "#core_eye"
-        },
-        "west": {
-          "texture": "#core_eye"
-        }
-      },
-      "from": [
-        1,
-        1,
-        1
-      ],
-      "to": [
-        15,
-        15,
-        15
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#crystal"
-        },
-        "east": {
-          "texture": "#crystal"
-        },
-        "north": {
-          "texture": "#crystal"
-        },
-        "south": {
-          "texture": "#crystal"
-        },
-        "up": {
-          "texture": "#crystal"
-        },
-        "west": {
-          "texture": "#crystal"
-        }
-      },
-      "from": [
-        2,
-        15,
-        4.5
-      ],
-      "rotation": {
-        "angle": 45.0,
-        "axis": "y",
-        "origin": [
-          4,
-          15,
-          5
-        ]
-      },
-      "to": [
-        6,
-        19,
-        5.5
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#crystal"
-        },
-        "east": {
-          "texture": "#crystal"
-        },
-        "north": {
-          "texture": "#crystal"
-        },
-        "south": {
-          "texture": "#crystal"
-        },
-        "up": {
-          "texture": "#crystal"
-        },
-        "west": {
-          "texture": "#crystal"
-        }
-      },
-      "from": [
-        2,
-        15,
-        4.5
-      ],
-      "rotation": {
-        "angle": -45.0,
-        "axis": "y",
-        "origin": [
-          4,
-          15,
-          5
-        ]
-      },
-      "to": [
-        6,
-        19,
-        5.5
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#crystal"
-        },
-        "east": {
-          "texture": "#crystal"
-        },
-        "north": {
-          "texture": "#crystal"
-        },
-        "south": {
-          "texture": "#crystal"
-        },
-        "up": {
-          "texture": "#crystal"
-        },
-        "west": {
-          "texture": "#crystal"
-        }
-      },
-      "from": [
-        10,
-        15,
-        10.5
-      ],
-      "rotation": {
-        "angle": 45.0,
-        "axis": "y",
-        "origin": [
-          12,
-          15,
-          11
-        ]
-      },
-      "to": [
-        14,
-        18,
-        11.5
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#crystal"
-        },
-        "east": {
-          "texture": "#crystal"
-        },
-        "north": {
-          "texture": "#crystal"
-        },
-        "south": {
-          "texture": "#crystal"
-        },
-        "up": {
-          "texture": "#crystal"
-        },
-        "west": {
-          "texture": "#crystal"
-        }
-      },
-      "from": [
-        10,
-        15,
-        10.5
-      ],
-      "rotation": {
-        "angle": -45.0,
-        "axis": "y",
-        "origin": [
-          12,
-          15,
-          11
-        ]
-      },
-      "to": [
-        14,
-        18,
-        11.5
+        13
       ]
     }
   ],
   "render_type": "minecraft:cutout",
   "textures": {
-    "core_eye": "chronogenesis:block/organism_core_time_overlay",
-    "crystal": "minecraft:block/amethyst_block",
-    "eye": "chronogenesis:block/eye",
+    "brass": "chronogenesis:block/brass_fitting",
     "flesh": "chronogenesis:block/organism_core_time",
     "frame": "chronogenesis:block/brass_block",
-    "particle": "chronogenesis:block/organism_core_time",
-    "pustule": "chronogenesis:block/flesh_pustule",
-    "steel": "chronogenesis:block/steel"
+    "particle": "chronogenesis:block/organism_core_time"
   }
 }

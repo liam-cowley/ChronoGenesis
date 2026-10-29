@@ -27,6 +27,16 @@
     {
       "type": "patchouli:crafting",
       "recipe": "chronogenesis:riders_seat"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Fossils and Eggs",
+      "text": "Draw every last dram of Time out of a beast of the Jurassic and what is left is its shape, set hard: a fossil. Shown to the Chronocortex, it learns the creature, and buds an egg of it from its own flesh (sixteen drams of Size). A hen's egg shown to it buds another.$(br2)Fed sixteen drams of Time, an egg hatches. The young one remembers me, and grows in a day: faster on leaves or meat, as it eats, or on Time."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A House That Walks",
+      "text": "Standing, a harnessed Titanosaur's cargo is ground to build on. Steered, it lifts the whole of it out of the world and carries it, solid underfoot, turning with it. When it stands still again it sets it all down, squared to the nearest quarter. If anything is in its way, it waits."
     }
   ]
 }

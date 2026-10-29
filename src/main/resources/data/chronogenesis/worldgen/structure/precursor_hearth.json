@@ -1,0 +1,21 @@
+{
+  "type": "chronogenesis:remains",
+  "biomes": "#chronogenesis:has_structure/precursor_era",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_thin",
+  "remains": [
+    "minecraft:village_plains",
+    "minecraft:village_desert",
+    "minecraft:village_savanna",
+    "minecraft:village_snowy",
+    "minecraft:village_taiga"
+  ],
+  "templates": [
+    {
+      "data": "chronogenesis:precursor_city_hearth",
+      "weight": 1
+    }
+  ],
+  "ground": 4
+}

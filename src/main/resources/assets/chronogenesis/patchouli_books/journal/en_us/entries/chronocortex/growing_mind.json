@@ -23,6 +23,11 @@
       "type": "patchouli:text",
       "text": "Once it has words, I can talk to it in chat. It answers what is said near it (its name, \"cortex\" or \"brain\", a question, or anything said close by): how it is, what it wants, the time, what to research next. It remembers what I ask it to call me.$(br2)It is not the same thing at every stage.",
       "title": "Talking to It"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What It Is Becoming",
+      "text": "It does not look like a brain in a jar any more. It swells out of the glass; its lobes are folds of it now, not blocks; it puts out tendrils, more for everything it learns. The more it knows, the less it looks like anything that should be. Its eyes open round it, watching. Lately it has a mouth."
     }
   ]
 }

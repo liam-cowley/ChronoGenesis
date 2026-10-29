@@ -2,6 +2,10 @@
   "values": [
     "#minecraft:is_overworld",
     "chronogenesis:hadean_wastes",
-    "chronogenesis:hadean_ashfields"
+    "chronogenesis:hadean_ashfields",
+    "chronogenesis:ice_age_spikes",
+    "chronogenesis:ice_age_slopes",
+    "chronogenesis:ice_age_peaks",
+    "chronogenesis:ice_age_grove"
   ]
 }

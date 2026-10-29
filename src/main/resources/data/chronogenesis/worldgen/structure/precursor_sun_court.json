@@ -1,0 +1,17 @@
+{
+  "type": "chronogenesis:remains",
+  "biomes": "#chronogenesis:has_structure/precursor_era",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_thin",
+  "remains": [
+    "minecraft:desert_pyramid"
+  ],
+  "templates": [
+    {
+      "data": "chronogenesis:precursor_city_sun",
+      "weight": 1
+    }
+  ],
+  "ground": 4
+}

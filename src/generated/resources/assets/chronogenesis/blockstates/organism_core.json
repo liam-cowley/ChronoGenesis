@@ -1,63 +1,123 @@
 {
   "variants": {
-    "aspect=awareness,phase=awake": {
+    "aspect=awareness,formed=false,phase=awake": {
       "model": "chronogenesis:block/organism_core_awareness_awake"
     },
-    "aspect=awareness,phase=hungry": {
-      "model": "chronogenesis:block/organism_core_awareness_hungry"
+    "aspect=awareness,formed=false,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_awareness_awake"
     },
-    "aspect=awareness,phase=necrotic": {
+    "aspect=awareness,formed=false,phase=necrotic": {
       "model": "chronogenesis:block/organism_core_necrotic"
     },
-    "aspect=awareness,phase=seed": {
+    "aspect=awareness,formed=false,phase=seed": {
       "model": "chronogenesis:block/organism_core_seed"
     },
-    "aspect=density,phase=awake": {
+    "aspect=awareness,formed=true,phase=awake": {
+      "model": "chronogenesis:block/organism_core_awareness_awake"
+    },
+    "aspect=awareness,formed=true,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_awareness_awake"
+    },
+    "aspect=awareness,formed=true,phase=necrotic": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=awareness,formed=true,phase=seed": {
+      "model": "chronogenesis:block/organism_core_seed"
+    },
+    "aspect=density,formed=false,phase=awake": {
       "model": "chronogenesis:block/organism_core_density_awake"
     },
-    "aspect=density,phase=hungry": {
-      "model": "chronogenesis:block/organism_core_density_hungry"
+    "aspect=density,formed=false,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_density_awake"
     },
-    "aspect=density,phase=necrotic": {
+    "aspect=density,formed=false,phase=necrotic": {
       "model": "chronogenesis:block/organism_core_necrotic"
     },
-    "aspect=density,phase=seed": {
+    "aspect=density,formed=false,phase=seed": {
       "model": "chronogenesis:block/organism_core_seed"
     },
-    "aspect=size,phase=awake": {
+    "aspect=density,formed=true,phase=awake": {
+      "model": "chronogenesis:block/organism_core_density_awake"
+    },
+    "aspect=density,formed=true,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_density_awake"
+    },
+    "aspect=density,formed=true,phase=necrotic": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=density,formed=true,phase=seed": {
+      "model": "chronogenesis:block/organism_core_seed"
+    },
+    "aspect=size,formed=false,phase=awake": {
       "model": "chronogenesis:block/organism_core_size_awake"
     },
-    "aspect=size,phase=hungry": {
-      "model": "chronogenesis:block/organism_core_size_hungry"
+    "aspect=size,formed=false,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_size_awake"
     },
-    "aspect=size,phase=necrotic": {
+    "aspect=size,formed=false,phase=necrotic": {
       "model": "chronogenesis:block/organism_core_necrotic"
     },
-    "aspect=size,phase=seed": {
+    "aspect=size,formed=false,phase=seed": {
       "model": "chronogenesis:block/organism_core_seed"
     },
-    "aspect=speed,phase=awake": {
+    "aspect=size,formed=true,phase=awake": {
+      "model": "chronogenesis:block/organism_core_size_awake"
+    },
+    "aspect=size,formed=true,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_size_awake"
+    },
+    "aspect=size,formed=true,phase=necrotic": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=size,formed=true,phase=seed": {
+      "model": "chronogenesis:block/organism_core_seed"
+    },
+    "aspect=speed,formed=false,phase=awake": {
       "model": "chronogenesis:block/organism_core_speed_awake"
     },
-    "aspect=speed,phase=hungry": {
-      "model": "chronogenesis:block/organism_core_speed_hungry"
+    "aspect=speed,formed=false,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_speed_awake"
     },
-    "aspect=speed,phase=necrotic": {
+    "aspect=speed,formed=false,phase=necrotic": {
       "model": "chronogenesis:block/organism_core_necrotic"
     },
-    "aspect=speed,phase=seed": {
+    "aspect=speed,formed=false,phase=seed": {
       "model": "chronogenesis:block/organism_core_seed"
     },
-    "aspect=time,phase=awake": {
-      "model": "chronogenesis:block/organism_core_time_awake"
+    "aspect=speed,formed=true,phase=awake": {
+      "model": "chronogenesis:block/organism_core_speed_awake"
     },
-    "aspect=time,phase=hungry": {
-      "model": "chronogenesis:block/organism_core_time_hungry"
+    "aspect=speed,formed=true,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_speed_awake"
     },
-    "aspect=time,phase=necrotic": {
+    "aspect=speed,formed=true,phase=necrotic": {
       "model": "chronogenesis:block/organism_core_necrotic"
     },
-    "aspect=time,phase=seed": {
+    "aspect=speed,formed=true,phase=seed": {
+      "model": "chronogenesis:block/organism_core_seed"
+    },
+    "aspect=time,formed=false,phase=awake": {
+      "model": "chronogenesis:block/organism_core_time_awake"
+    },
+    "aspect=time,formed=false,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_time_awake"
+    },
+    "aspect=time,formed=false,phase=necrotic": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=time,formed=false,phase=seed": {
+      "model": "chronogenesis:block/organism_core_seed"
+    },
+    "aspect=time,formed=true,phase=awake": {
+      "model": "chronogenesis:block/organism_core_time_awake"
+    },
+    "aspect=time,formed=true,phase=hungry": {
+      "model": "chronogenesis:block/organism_core_time_awake"
+    },
+    "aspect=time,formed=true,phase=necrotic": {
+      "model": "chronogenesis:block/organism_core_necrotic"
+    },
+    "aspect=time,formed=true,phase=seed": {
       "model": "chronogenesis:block/organism_core_seed"
     }
   }

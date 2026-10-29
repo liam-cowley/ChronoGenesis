@@ -77,9 +77,19 @@ public class CortexLobeBlock extends Block {
         }
     }
 
+    /** Grown lobes are not drawn as blocks: the Chronocortex draws them, swelling folds of brain (client/CortexBrainRenderer). */
+    public static boolean drawnByCortex(BlockState state) {
+        return state.getValue(PART) != Part.FRESH;
+    }
+
+    @Override
+    protected net.minecraft.world.level.block.RenderShape getRenderShape(BlockState state) {
+        return drawnByCortex(state) ? net.minecraft.world.level.block.RenderShape.INVISIBLE : net.minecraft.world.level.block.RenderShape.MODEL;
+    }
+
     @Override
     protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.getValue(PART) == Part.FRESH ? Shapes.empty() : Shapes.block();
+        return Shapes.empty();
     }
 
     /** The Chronocortex this lobe belongs to: the nearest one within reach. */

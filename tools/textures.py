@@ -3053,6 +3053,320 @@ precursor_tablet()
 heart_of_the_unbegotten()
 unbegotten_entity()
 
+
+# ---------------------------------------------------------------- the kingdoms' dress, their golems, the Ice Age, the machines' organs
+
+def _sheet(w, h):
+    return Image.new("RGBA", (w, h), CLEAR)
+
+
+def _rect(img, r, x0, y0, x1, y1, colour, jitter=6):
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            if 0 <= x < img.width and 0 <= y < img.height:
+                c = tuple(max(0, min(255, v + r.randint(-jitter, jitter))) for v in colour[:3])
+                img.putpixel((x, y), c + (255,))
+
+
+def _save_sheet(img, path, preview=(0, 0, 16, 16)):
+    full = os.path.join(OUT, path + ".png")
+    os.makedirs(os.path.dirname(full), exist_ok=True)
+    img = _smooth(img, wrap=False, passes=2, sigma=20.0)
+    img.save(full)
+    WRITTEN.append((path, img.crop(preview).resize((16, 16))))
+
+
+def precursor_kingdoms():
+    """Each kingdom's dress, on the villager layout (64x64) the Precursors share:
+    sun: white linen, a broad gold collar, a blue-and-gold striped headcloth, bare arms;
+    tide: sea-green robes scaled like a fish's, a shell-white sash, a prismarine circlet with a fin;
+    deep: a charcoal hood, a soul-blue band over the eyes (they kept to the dark, and saw by listening), cyan trim;
+    hearth: a russet tunic, a leather apron, an iron buckle, cream sleeves, a red cap;
+    verdant: woven green, a leaf pattern, moss on the shoulders, copper armbands, a crown of flowers."""
+    SKIN = (128, 150, 146)
+    styles = {
+        "sun": dict(robe=(230, 224, 206), robe_dk=(200, 192, 170), trim=(224, 182, 72), hat=(36, 70, 150), hat2=(224, 182, 72),
+                    arms=SKIN),
+        "tide": dict(robe=(52, 128, 118), robe_dk=(34, 92, 86), trim=(236, 230, 214), hat=(92, 168, 156), hat2=(60, 120, 112),
+                     arms=(52, 128, 118)),
+        "deep": dict(robe=(46, 44, 52), robe_dk=(30, 28, 36), trim=(72, 200, 210), hat=(46, 44, 52), hat2=(36, 34, 42),
+                     arms=(46, 44, 52)),
+        "hearth": dict(robe=(150, 70, 44), robe_dk=(108, 50, 32), trim=(176, 176, 182), hat=(180, 40, 36), hat2=(140, 30, 28),
+                       arms=(222, 206, 172)),
+        "verdant": dict(robe=(70, 118, 52), robe_dk=(48, 86, 36), trim=(196, 120, 72), hat=(232, 120, 160), hat2=(250, 220, 90),
+                        arms=(70, 118, 52)),
+    }
+    for k, st in styles.items():
+        r = rng(700 + len(k))
+        img = _sheet(64, 64)
+        # Head and face: skin, amethyst eyes.
+        _rect(img, r, 0, 0, 32, 18, SKIN)
+        for x in (9, 10, 13, 14):
+            img.putpixel((x, 12), (40, 30, 50, 255))
+        for x, c in [(9, (174, 112, 224)), (10, (236, 200, 255)), (13, (236, 200, 255)), (14, (174, 112, 224))]:
+            img.putpixel((x, 13), c + (255,))
+        for x in range(10, 14):
+            img.putpixel((x, 16), (86, 100, 98, 255))
+        _rect(img, r, 24, 0, 32, 6, SKIN)
+        # Body, legs, arms, outer robe.
+        _rect(img, r, 16, 20, 44, 38, st["robe"])
+        _rect(img, r, 0, 22, 16, 38, st["robe_dk"])
+        _rect(img, r, 44, 22, 60, 34, st["arms"])
+        _rect(img, r, 40, 38, 64, 46, SKIN if k in ("sun",) else st["arms"])
+        _rect(img, r, 0, 38, 28, 64, st["robe"])
+        _rect(img, r, 0, 61, 28, 64, st["trim"], 4)
+        if k == "sun":
+            # The broad collar, gold and lapis; the striped headcloth over the head layer.
+            _rect(img, r, 16, 20, 44, 24, st["trim"], 4)
+            for x in range(16, 44, 3):
+                img.putpixel((x, 22), (36, 70, 150, 255))
+            _rect(img, r, 0, 38, 28, 41, st["trim"], 4)
+            for y in range(0, 18):
+                for x in range(32, 64):
+                    if 40 <= x < 48 and 10 <= y < 18:
+                        continue
+                    img.putpixel((x, y), (st["hat"] if (y // 2) % 2 else st["hat2"]) + (255,))
+            _rect(img, r, 44, 32, 60, 34, st["trim"], 4)
+        elif k == "tide":
+            # Scales down the robe; a shell sash; a circlet with a fin crest.
+            for y in range(40, 61, 2):
+                for x in range(0, 28, 3):
+                    img.putpixel((x + (y // 2) % 2, y), st["robe_dk"] + (255,))
+            for i in range(0, 20):
+                _rect(img, r, 2 + i, 42 + i, 4 + i, 44 + i, st["trim"], 3)
+            for x in range(32, 64):
+                for y in (8, 9):
+                    img.putpixel((x, y), st["hat"] + (255,))
+            for y in range(2, 8):
+                for x in range(43, 45):
+                    img.putpixel((x, y), st["hat2"] + (255,))
+        elif k == "deep":
+            # The hood over everything but the face; a soul-blue band over the eyes.
+            for y in range(0, 18):
+                for x in range(32, 64):
+                    if 40 <= x < 48 and 10 <= y < 18:
+                        continue
+                    img.putpixel((x, y), (st["hat"] if (x + y) % 5 else st["hat2"]) + (255,))
+            _rect(img, r, 8, 11, 16, 14, (40, 120, 140), 4)
+            for x in (9, 14):
+                img.putpixel((x, 12), (150, 240, 250, 255))
+            _rect(img, r, 0, 61, 28, 64, st["trim"], 4)
+            for y in range(42, 60, 5):
+                for x in range(4, 24, 6):
+                    img.putpixel((x, y), st["trim"] + (255,))
+        elif k == "hearth":
+            # A leather apron over the tunic, an iron buckle, a red cap.
+            _rect(img, r, 6, 40, 22, 62, (110, 74, 46))
+            _rect(img, r, 0, 47, 28, 49, (70, 46, 30), 3)
+            _rect(img, r, 12, 46, 16, 50, st["trim"], 2)
+            _rect(img, r, 22, 30, 38, 32, (70, 46, 30), 3)
+            _rect(img, r, 28, 29, 32, 33, st["trim"], 2)
+            for y in range(0, 8):
+                for x in range(32, 64):
+                    img.putpixel((x, y), (st["hat"] if y < 7 else st["hat2"]) + (255,))
+        else:
+            # Leaves down the robe, moss on the shoulders, copper armbands, a crown of flowers.
+            for y in range(42, 60, 4):
+                for x in range(2, 26, 5):
+                    for dx, dy in [(0, 0), (1, -1), (1, 1), (2, 0)]:
+                        img.putpixel((x + dx, y + dy), (110, 168, 72, 255))
+            _rect(img, r, 16, 20, 44, 22, (88, 110, 44), 6)
+            _rect(img, r, 44, 26, 60, 28, st["trim"], 3)
+            for x in range(32, 64, 2):
+                img.putpixel((x, 8), (st["hat"] if (x // 2) % 2 else st["hat2"]) + (255,))
+                img.putpixel((x + 1, 8), (90, 150, 60, 255))
+        _save_sheet(img, "entity/precursor_" + k, (0, 0, 32, 32))
+
+
+def precursor_golem():
+    """128x128 for the iron golem's model: iron kept bright (no vines, no rust, no cracks), riveted plates, a blue
+    sheen, a Hearth brass plate on the chest, eyes glowing a pale amethyst."""
+    img = _sheet(128, 128)
+    r = rng(1401)
+    iron, iron_hi, iron_dk = (206, 210, 216), (232, 236, 242), (150, 156, 166)
+    rivet = lambda x, y: (x % 6 == 2 and y % 6 == 2)
+    for (u, v, w, h, d) in [(0, 0, 8, 10, 8), (24, 0, 2, 4, 2), (0, 40, 18, 12, 11), (0, 70, 9, 5, 6), (60, 21, 4, 30, 6),
+                            (60, 58, 4, 30, 6), (37, 0, 6, 16, 5), (60, 0, 6, 16, 5)]:
+        paint_box(img, r, u, v, w, h, d, iron_hi, iron, iron_dk, rivet)
+    # Plate seams.
+    for x in range(0, 58):
+        img.putpixel((x, 40 + 11 + 6), (120, 126, 136, 255))
+    # Eyes on the head's front face (u 8-16, v 8-18).
+    for x, y in [(9, 12), (10, 12), (13, 12), (14, 12)]:
+        img.putpixel((x, y), (40, 36, 52, 255))
+    for x, y in [(10, 12), (13, 12)]:
+        img.putpixel((x, y), (214, 170, 255, 255))
+    # The brass plate on the chest (front face of the body: u 11-29, v 51-63).
+    for x in range(17, 23):
+        for y in range(53, 58):
+            img.putpixel((x, y), (200, 160, 70, 255) if (x + y) % 4 else (150, 116, 40, 255))
+    _save_sheet(img, "entity/precursor_golem", (0, 0, 32, 32))
+
+
+def ice_age_entities():
+    """The Ice Age's creatures, each sheet painted to its model's boxes (client/IceAgeModels)."""
+    # The Mammoth (128x128): long brown hair, darker below, a domed crown, ivory tusks, small dark eyes.
+    img = _sheet(128, 128)
+    r = rng(1501)
+    hair, hair_top, hair_dk = (112, 70, 40), (130, 84, 50), (70, 42, 24)
+    shag = lambda x, y: (x * 5 + y * 2) % 7 == 0
+    for (u, v, w, h, d) in [(0, 0, 18, 18, 28), (0, 46, 19, 5, 29), (0, 80, 12, 13, 10), (44, 80, 8, 4, 7), (76, 80, 4, 8, 4),
+                            (76, 92, 3, 7, 3), (92, 80, 2, 6, 2), (100, 0, 1, 7, 5), (0, 104, 6, 14, 6), (24, 104, 2, 9, 2)]:
+        paint_box(img, r, u, v, w, h, d, hair_top, hair, hair_dk, shag)
+    for (u, v, w, h, d) in [(96, 46, 2, 2, 8), (96, 56, 1, 1, 6)]:
+        paint_box(img, r, u, v, w, h, d, (236, 226, 200), (222, 210, 180), (190, 176, 146))
+    eyes(img, 0, 80, 12, 13, 10, (24, 16, 10, 255), row=3)
+    full = os.path.join(OUT, "entity/mammoth.png")
+    img = _smooth(img, wrap=False, passes=2, sigma=20.0)
+    img.save(full)
+    WRITTEN.append(("entity/mammoth", img.crop((0, 0, 32, 32)).resize((16, 16))))
+
+    # The Smilodon (64x64): pale tawny, faint stripes, a white muzzle, long ivory sabres.
+    img = _sheet(64, 64)
+    r = rng(1502)
+    fur, fur_top, fur_dk = (206, 180, 132), (188, 160, 112), (236, 224, 200)
+    stripe = lambda x, y: (x + y * 2) % 9 == 0
+    for (u, v, w, h, d) in [(0, 0, 8, 8, 18), (0, 26, 7, 6, 7), (36, 26, 2, 2, 1), (42, 26, 5, 2, 5), (0, 40, 3, 10, 3),
+                            (12, 40, 2, 9, 2)]:
+        paint_box(img, r, u, v, w, h, d, fur_top, fur, fur_dk, stripe)
+    paint_box(img, r, 28, 26, 1, 5, 1, (244, 238, 220), (236, 228, 206), (210, 200, 176))
+    eyes(img, 0, 26, 7, 6, 7, (200, 160, 40, 255), row=1)
+    full = os.path.join(OUT, "entity/smilodon.png")
+    img = _smooth(img, wrap=False, passes=2, sigma=20.0)
+    img.save(full)
+    WRITTEN.append(("entity/smilodon", img.crop((0, 0, 32, 32)).resize((16, 16))))
+
+    # The Woolly Rhinoceros (128x64): dun wool, a darker hump, grey horn.
+    img = _sheet(128, 64)
+    r = rng(1503)
+    wool, wool_top, wool_dk = (150, 112, 70), (128, 94, 58), (96, 70, 44)
+    tuft = lambda x, y: (x * 3 + y * 7) % 8 == 0
+    for (u, v, w, h, d) in [(0, 0, 14, 14, 24), (76, 0, 10, 4, 10), (0, 38, 8, 8, 10), (52, 38, 5, 10, 5), (76, 14, 2, 6, 2)]:
+        paint_box(img, r, u, v, w, h, d, wool_top, wool, wool_dk, tuft)
+    for (u, v, w, h, d) in [(36, 38, 2, 7, 2), (44, 38, 2, 4, 2)]:
+        paint_box(img, r, u, v, w, h, d, (176, 170, 160), (150, 144, 134), (110, 104, 96))
+    eyes(img, 0, 38, 8, 8, 10, (20, 14, 10, 255), row=2)
+    full = os.path.join(OUT, "entity/woolly_rhino.png")
+    img = _smooth(img, wrap=False, passes=2, sigma=20.0)
+    img.save(full)
+    WRITTEN.append(("entity/woolly_rhino", img.crop((0, 0, 32, 32)).resize((16, 16))))
+
+
+def organ_sheet():
+    """64x64: the machines' animated parts (client/OrganParts), each in its own patch: flesh, an eye, an iron strap,
+    tendon, amethyst, a sac, brain folds, teeth, brass, a tentacle's rings. Tinted parts are painted pale (the
+    renderer tints them by essence)."""
+    img = _sheet(64, 64)
+    r = rng(1601)
+    pale, pale_top, pale_dk = (236, 214, 210), (246, 228, 224), (196, 168, 164)
+    vein = lambda x, y: (x * 7 + y * 3) % 13 == 0 or (x + y * 5) % 17 == 0
+    paint_box(img, r, 0, 0, 8, 8, 8, pale_top, pale, pale_dk, vein)                         # flesh
+    paint_box(img, r, 32, 0, 4, 4, 1, (120, 40, 50), (120, 40, 50), (90, 26, 34))           # eye: lid round it
+    for y in range(4):
+        for x in range(4):
+            d = math.hypot(x - 1.5, y - 1.5)
+            c = (240, 236, 226) if d > 1.5 else (200, 236, 90) if d > 0.8 else (10, 8, 10)
+            img.putpixel((33 + x, 1 + y), c + (255,))
+    paint_box(img, r, 0, 16, 10, 1, 10, (170, 174, 180), (140, 144, 150), (96, 100, 106), lambda x, y: x % 4 == 1)  # strap
+    paint_box(img, r, 0, 28, 1, 1, 10, (240, 226, 214), (226, 206, 194), (190, 166, 154), lambda x, y: x % 2 == 0)  # tendon
+    paint_box(img, r, 24, 28, 2, 6, 2, (220, 180, 255), (174, 112, 224), (110, 64, 160))   # shard
+    paint_box(img, r, 32, 28, 6, 6, 6, (250, 236, 236), (238, 220, 222), (206, 182, 186), vein)  # sac
+    gyri = lambda x, y: (int(math.sin(x * 0.9) * 2 + y) % 4 == 0)
+    paint_box(img, r, 0, 40, 8, 8, 8, (244, 226, 226), (232, 208, 208), (200, 170, 172), gyri)   # brain folds
+    paint_box(img, r, 32, 40, 6, 2, 1, (250, 246, 230), (236, 228, 206), (200, 190, 166), lambda x, y: x % 2 == 0)  # teeth
+    paint_box(img, r, 32, 44, 2, 6, 2, (240, 200, 96), (210, 166, 64), (150, 112, 36))      # brass
+    paint_box(img, r, 40, 44, 2, 4, 2, pale_top, pale, pale_dk, lambda x, y: y % 2 == 0)     # tentacle rings
+    full = os.path.join(OUT, "entity/organ.png")
+    os.makedirs(os.path.dirname(full), exist_ok=True)
+    img.save(full)
+    WRITTEN.append(("entity/organ", img.crop((0, 0, 32, 32)).resize((16, 16))))
+
+
+def ice_and_eggs():
+    """Aeon Ice (pale ice with time frozen in it: a spiral, a clock's tick, glints), the dinosaur egg (mottled, cracking
+    in three stages), its item, and the fossil (bone set in grey stone)."""
+    r = rng(1701)
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            img.putpixel((x, y), shade((164, 214, 238, 255), r.randint(-8, 8) + (6 if (x * 2 + y) % 9 == 0 else 0)))
+    for t in range(40):
+        a = t * 0.35
+        x, y = int(8 + math.cos(a) * t * 0.17), int(8 + math.sin(a) * t * 0.17)
+        if 0 <= x < 16 and 0 <= y < 16:
+            img.putpixel((x, y), (234, 250, 255, 255))
+    for x, y in [(3, 3), (12, 2), (2, 12), (13, 13), (7, 1)]:
+        img.putpixel((x, y), (255, 255, 255, 255))
+    save(img, "block/aeon_ice")
+    for stage in range(4):
+        r = rng(1702)
+        img = new()
+        for y in range(16):
+            for x in range(16):
+                c = shade((222, 206, 168, 255), r.randint(-6, 6))
+                if r.random() < 0.12:
+                    c = (124, 92, 60, 255)
+                img.putpixel((x, y), c)
+        cracks = [[(8, 2), (7, 3), (8, 4), (9, 5), (8, 6)], [(3, 8), (4, 9), (5, 9), (6, 10), (6, 11)],
+                  [(12, 9), (11, 10), (12, 11), (13, 12), (12, 13), (11, 14)]]
+        for i in range(stage):
+            for x, y in cracks[i]:
+                img.putpixel((x, y), (40, 28, 20, 255))
+        save(img, "block/dino_egg_" + str(stage))
+    save(grid([
+        "................",
+        "................",
+        "......dddd......",
+        ".....dEEEEd.....",
+        "....dEEsEEEd....",
+        "....dEEEEEEd....",
+        "...dEEEEEsEEd...",
+        "...dEsEEEEEEd...",
+        "...dEEEEEEEEd...",
+        "...dEEEEsEEEd...",
+        "...dEEEEEEEEd...",
+        "....dEEsEEEd....",
+        ".....dEEEEd.....",
+        "......dddd......",
+        "................",
+        "................",
+    ], {"d": (150, 124, 84, 255), "E": (226, 210, 172, 255), "s": (124, 92, 60, 255)}), "item/dino_egg")
+    save(grid([
+        "................",
+        "................",
+        "...gggggggg.....",
+        "..gGGGGGGGGg....",
+        "..gGbbGGGGGGg...",
+        ".gGGbBbGGGGGg...",
+        ".gGGGbBbbbGGGg..",
+        ".gGGGGbBBBbGGg..",
+        ".gGGGGGbbbBbGg..",
+        "..gGGGGGGGbBbg..",
+        "..gGGGGGGGGbbg..",
+        "...gGGGGGGGGg...",
+        "....ggggggggg...",
+        "................",
+        "................",
+        "................",
+    ], {"g": (84, 80, 76, 255), "G": (132, 126, 118, 255), "b": (196, 182, 150, 255), "B": (232, 222, 196, 255)}), "item/fossil")
+
+
+def featherweight_icon():
+    def feather(d):
+        d.line([(3, 13), (12, 3)], fill=GLYPH)
+        for i in range(4, 12, 2):
+            d.line([(i - 1, 15 - i), (i - 3, 13 - i)], fill=GLYPH)
+            d.line([(i, 16 - i), (i + 2, 18 - i)], fill=GLYPH)
+    icon("featherweight", feather)
+
+
+precursor_kingdoms()
+precursor_golem()
+ice_age_entities()
+organ_sheet()
+ice_and_eggs()
+featherweight_icon()
+
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.
     cols = 8

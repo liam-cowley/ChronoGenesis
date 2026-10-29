@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "chronogenesis:precursor_tide_town",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 14357621,
+    "separation": 8,
+    "spacing": 20
+  }
+}

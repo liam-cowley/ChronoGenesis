@@ -156,6 +156,13 @@
     (lined up with their cities), the fall of the Precursors (tablets, murals, kingdom speech, the Chronocortex's
     lines, the journal). ✅ Jurassic temples round the obelisks. ✅ The Hadean Eon (toxic air) and Before Time (the
     arena, Unmade Nails, the Unbegotten). ✅ Visited eras in the Temporal Lens.
+15. ✅ The kingdoms rebuilt over the present's remains (Sun Court at desert temples, Tide towns and capital at ocean
+    ruins and monuments, the Hearth at villages, the Verdant Kingdom at jungle temples, the Deep Kingdom: ancient
+    cities restored), friendly guards (Wardens, Guardians, bright golems) with grudges, the Precursors' new story
+    (they never knew time travel; the Unmaking), shrines round the obelisks; the Ice Age's temple remains, Aeon Ice,
+    Mammoths, Woolly Rhinos and Smilodons; shifts held indefinitely when warded head to foot; Before Time out of the
+    Lens. ✅ Featherweight (Density 2, double jump). ✅ Fossils, eggs and hatchlings. ✅ The harness as a moving
+    structure. ✅ Organism shapes per essence; animated cores, grafts and the Chronocortex's brain.
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

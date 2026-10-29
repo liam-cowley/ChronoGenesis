@@ -1,5 +1,6 @@
 package com.chronogenesis.gametest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +18,12 @@ import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.biocomputer.Lessons;
 import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
+import com.chronogenesis.entity.DinoEggBlock;
+import com.chronogenesis.entity.DinoEggBlockEntity;
+import com.chronogenesis.entity.Dinos;
 import com.chronogenesis.entity.Precursor;
+import com.chronogenesis.entity.PrecursorGuards;
+import com.chronogenesis.entity.Raptor;
 import com.chronogenesis.entity.Titanosaur;
 import com.chronogenesis.entity.Unbegotten;
 import com.chronogenesis.essence.Aspect;
@@ -28,6 +34,7 @@ import com.chronogenesis.essence.MobEssence;
 import com.chronogenesis.item.ChronoSuitItem;
 import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.item.EternalHourglassItem;
+import com.chronogenesis.item.FossilItem;
 import com.chronogenesis.item.NerveSpoolItem;
 import com.chronogenesis.item.UmbilicalLocketItem;
 import com.chronogenesis.lens.Blueprint;
@@ -49,6 +56,7 @@ import com.chronogenesis.organism.GraftBlock;
 import com.chronogenesis.organism.GraftBlockEntity;
 import com.chronogenesis.organism.OrganismCoreBlock;
 import com.chronogenesis.organism.OrganismCoreBlockEntity;
+import com.chronogenesis.organism.OrganismShape;
 import com.chronogenesis.player.PlayerEssence;
 import com.chronogenesis.player.Power;
 import com.chronogenesis.player.Powers;
@@ -74,6 +82,8 @@ import com.chronogenesis.timetravel.Remnants;
 import com.chronogenesis.timetravel.TemporalShift;
 import com.chronogenesis.timetravel.UnmadeNailBlock;
 import com.chronogenesis.world.PlacedTemplateStructure;
+import com.chronogenesis.world.RemainsStructure;
+import com.chronogenesis.world.RestoredPiece;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.JsonOps;
@@ -97,8 +107,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
@@ -505,9 +517,9 @@ public final class ChronoGameTests {
         BlockPos corePos = new BlockPos(3, 1, 3);
         helper.setBlock(corePos, core(Aspect.TIME));
         BlockState timeFlesh = ModBlocks.CHRONOFLESH.get().defaultBlockState().setValue(FleshBlock.ASPECT, Aspect.TIME);
-        for (Direction side : Direction.Plane.HORIZONTAL) {
-            helper.setBlock(corePos.relative(side), timeFlesh);
-            helper.setBlock(corePos.relative(side).relative(side.getClockWise()), timeFlesh);
+        // A Time organism grown as a spire (its shape), beside the core.
+        for (int y = 0; y < 5; y++) {
+            helper.setBlock(corePos.east().above(y), timeFlesh);
         }
         helper.setBlock(corePos.above(), graft(ModBlocks.ENHANCING_GLAND.get()));
         ServerPlayer player = fakePlayer(helper);
@@ -528,9 +540,10 @@ public final class ChronoGameTests {
             player.setItemSlot(EquipmentSlot.CHEST, coat);
             helper.assertTrue(TemporalExposure.wardedPieces(player) == 1, "one warded piece worn");
             Era era = new Era(Component.literal("Test"), Component.empty(), Items.CLOCK, Level.OVERWORLD, 1, Optional.empty(),
-                    Optional.empty(), List.of(), 10, 4, Optional.empty(), 0, false);
+                    Optional.empty(), List.of(), 10, 4, Optional.empty(), 0, false, true);
             helper.assertTrue(TemporalShift.duration(era, 0) == 4 * 1200 / 2, "unwarded: half the minutes");
-            helper.assertTrue(TemporalShift.duration(era, 4) == 4 * 1200, "warded head to foot: all of them");
+            helper.assertTrue(TemporalShift.duration(era, 3) == 4 * 1200 * 7 / 8, "three pieces: seven eighths");
+            helper.assertTrue(TemporalShift.duration(era, 4) == TemporalShift.HELD, "warded head to foot: as long as they like");
             helper.succeed();
         });
     }
@@ -683,16 +696,23 @@ public final class ChronoGameTests {
         for (String biome : List.of("precursor_meadow", "precursor_jungle", "precursor_desert", "precursor_coast")) {
             helper.assertTrue(biomes.containsKey(ChronoGenesis.id(biome)), biome + " is missing");
         }
-        // Every kingdom's town and capital, and the ruin of each: the same size, so the ruin lies under its city.
-        for (String kingdom : List.of("sun", "tide", "deep", "verdant")) {
-            for (String size : List.of("town", "capital")) {
-                String name = "precursor_city_" + kingdom + "_" + size;
-                StructureTemplate city = helper.getLevel().getStructureManager().get(ChronoGenesis.id(name)).orElseThrow();
-                StructureTemplate ruin = helper.getLevel().getStructureManager().get(ChronoGenesis.id(name + "_ruin")).orElseThrow();
-                helper.assertTrue(city.getSize().getX() == (size.equals("town") ? 65 : 97), name + " has the wrong size");
-                helper.assertTrue(ruin.getSize().equals(city.getSize()), name + "'s ruin does not match it");
-            }
+        // Every kingdom's city; every shrine has the obelisk in its middle, exactly where the present's stands.
+        var templates = helper.getLevel().getStructureManager();
+        for (String name : List.of("sun", "tide_town", "tide_capital", "hearth", "verdant")) {
+            StructureTemplate city = templates.get(ChronoGenesis.id("precursor_city_" + name)).orElseThrow();
+            helper.assertTrue(city.getSize().getX() >= 129, name + " should be a great city");
         }
+        StructurePlaceSettings asIs = new StructurePlaceSettings();
+        for (String kingdom : List.of("sun", "tide", "hearth", "verdant")) {
+            StructureTemplate shrine = templates.get(ChronoGenesis.id("precursor_shrine_" + kingdom)).orElseThrow();
+            int middle = shrine.getSize().getX() / 2;
+            helper.assertTrue(shrine.filterBlocks(BlockPos.ZERO, asIs, ModBlocks.OBELISK_CAPSTONE.get()).stream()
+                    .anyMatch(b -> b.pos().equals(new BlockPos(middle, 3 + 11, middle))), kingdom + "'s shrine should hold the obelisk");
+        }
+        StructureTemplate ice = templates.get(ChronoGenesis.id("ice_temple_ruin")).orElseThrow();
+        helper.assertTrue(ice.filterBlocks(BlockPos.ZERO, asIs, ModBlocks.OBELISK_CAPSTONE.get()).stream()
+                .anyMatch(b -> b.pos().equals(new BlockPos(17, 11, 17))), "the obelisk should stand whole in the Ice Age");
+        helper.assertFalse(ice.filterBlocks(BlockPos.ZERO, asIs, ModBlocks.AEON_ICE.get()).isEmpty(), "the dead core's Aeon Ice");
         helper.succeed();
     }
 
@@ -889,8 +909,8 @@ public final class ChronoGameTests {
     }
 
     /**
-     * A harnessed Titanosaur carries its cargo: real blocks (a chest keeps its contents) moved and turned with it.
-     * Breaking the harness drops the whole cargo.
+     * A harnessed Titanosaur carries its cargo as a moving structure: standing, real blocks on its back; moved, lifted
+     * into the beast (a chest keeps its contents); stood still, set down again turned with it. Its death drops it all.
      */
     @GameTest(template = "floor7", timeoutTicks = 200)
     public static void titanosaurCarriesItsCargo(GameTestHelper helper) {
@@ -908,26 +928,28 @@ public final class ChronoGameTests {
             level.setBlockAndUpdate(chestPos, Blocks.CHEST.defaultBlockState());
             ((ChestBlockEntity) level.getBlockEntity(chestPos)).setItem(0, new ItemStack(Items.DIAMOND, 3));
             helper.assertTrue(beast.cargo().attach(chestPos), "the chest should join the cargo");
+            beast.cargo().tick(false);
+            helper.assertFalse(beast.cargo().carrying(), "standing still, the cargo stays in the world");
 
-            // A step east: the cargo follows, the chest with its diamonds.
+            // It moves: the cargo comes away from the world and goes with it.
             beast.setPos(beast.getX() + 1, beast.getY(), beast.getZ());
-            helper.assertTrue(beast.cargo().follow(), "the cargo should follow");
-            BlockPos moved = harness.east();
-            helper.assertTrue(moved.equals(beast.cargo().harness()), "the harness did not move: " + beast.cargo().harness());
-            helper.assertTrue(level.getBlockState(moved.east()).is(Blocks.CHEST), "the chest did not move");
-            helper.assertTrue(((ChestBlockEntity) level.getBlockEntity(moved.east())).getItem(0).getCount() == 3,
-                    "the chest lost its contents");
-            helper.assertTrue(level.getBlockState(harness).isAir(), "the old harness spot should be empty");
+            beast.cargo().tick(false);
+            helper.assertTrue(beast.cargo().carrying() && beast.cargo().size() == 2, "the cargo should be lifted, size " + beast.cargo().size());
+            helper.assertTrue(level.getBlockState(harness).isAir() && level.getBlockState(chestPos).isAir(), "lifted out of the world");
+            helper.assertFalse(beast.cargo().shape().isEmpty(), "a carried cargo has a solid shape");
 
-            // A quarter turn clockwise: east becomes south.
+            // A quarter turn clockwise, then it settles: east becomes south.
             beast.setYRot(90);
-            helper.assertTrue(beast.cargo().follow(), "the cargo should turn");
-            helper.assertTrue(level.getBlockState(moved.south()).is(Blocks.CHEST), "the chest did not turn with it");
+            helper.assertTrue(beast.cargo().setDown(level), "the cargo should be set down");
+            BlockPos down = beast.cargo().harness();
+            helper.assertTrue(down != null && level.getBlockState(down).is(ModBlocks.BUCKLED_HARNESS.get()), "the harness is back in the world");
+            helper.assertTrue(level.getBlockState(down.south()).is(Blocks.CHEST), "the chest did not turn with it");
+            helper.assertTrue(((ChestBlockEntity) level.getBlockEntity(down.south())).getItem(0).getCount() == 3, "the chest lost its contents");
 
             // The harness breaks: everything falls.
-            level.destroyBlock(moved, true);
+            level.destroyBlock(down, true);
             helper.assertFalse(beast.cargo().harnessed(), "still harnessed");
-            helper.assertTrue(level.getBlockState(moved.south()).isAir(), "the cargo should have fallen");
+            helper.assertTrue(level.getBlockState(down.south()).isAir(), "the cargo should have fallen");
             beast.discard();
             helper.succeed();
         });
@@ -1215,6 +1237,7 @@ public final class ChronoGameTests {
                 "with no era visited it should go round to Echo");
         TemporalShift.remember(player, ChronoGenesis.id("jurassic_age"));
         TemporalShift.remember(player, ChronoGenesis.id("precursor_era"));
+        TemporalShift.remember(player, ChronoGenesis.id("before_time")); // nothing to see there: never a setting
         lens.set(ModDataComponents.LENS_DEPTH.get(), LensDepth.CENTURIES);
         TemporalLensItem.cycle(player, lens);
         helper.assertTrue(ChronoGenesis.id("precursor_era").equals(TemporalLensItem.era(lens)), "the nearest era should come first");
@@ -1286,8 +1309,12 @@ public final class ChronoGameTests {
         helper.assertTrue(TemporalShift.breathes(player), "warded goggles do");
         // The structures that share placements decode as the custom type.
         var structures = server.registryAccess().registryOrThrow(Registries.STRUCTURE);
-        for (String name : List.of("obelisk", "jurassic_temple", "precursor_city", "precursor_ruin")) {
+        for (String name : List.of("obelisk", "jurassic_temple", "precursor_shrine", "ice_temple_ruin")) {
             helper.assertTrue(structures.get(ChronoGenesis.id(name)) instanceof PlacedTemplateStructure, name + " should be a placed template");
+        }
+        for (String name : List.of("precursor_sun_court", "precursor_tide_town", "precursor_tide_capital", "precursor_hearth",
+                "precursor_verdant_kingdom", "precursor_deep_kingdom")) {
+            helper.assertTrue(structures.get(ChronoGenesis.id(name)) instanceof RemainsStructure, name + " should stand over remains");
         }
         helper.succeed();
     }
@@ -1315,6 +1342,125 @@ public final class ChronoGameTests {
         helper.assertTrue(ElderArena.driven(level, centre) == 4, "all four nails should be driven");
         helper.assertTrue(god.mortal(), "with time begun its wounds should stay");
         god.discard();
+        helper.succeed();
+    }
+
+    /** A Precursor city's guards leave the peaceful alone; hurt one of the Precursors and they turn on you. */
+    @GameTest(template = "floor7", timeoutTicks = 100)
+    public static void guardsAreFriendlyUntilWronged(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        Warden warden = helper.spawn(EntityType.WARDEN, new BlockPos(1, 1, 1));
+        warden.setNoAi(true);
+        PrecursorGuards.makeGuard(warden);
+        Precursor precursor = helper.spawn(ModEntities.PRECURSOR.get(), new BlockPos(5, 1, 5));
+        helper.assertFalse(warden.canTargetEntity(player), "a guard Warden should leave a peaceful player be");
+        helper.assertTrue(warden.canTargetEntity(new net.minecraft.world.entity.monster.Zombie(helper.getLevel())), "but not monsters");
+        helper.assertFalse(warden.canTargetEntity(precursor), "nor ever the Precursors");
+        precursor.hurt(helper.getLevel().damageSources().playerAttack(player), 1.0f);
+        helper.assertTrue(PrecursorGuards.offender(player), "hurting a Precursor should earn a grudge");
+        helper.assertTrue(warden.canTargetEntity(player), "now the guard should go for them");
+        warden.discard();
+        helper.succeed();
+    }
+
+    /** The ancient cities as they were: cracked stone whole, shriekers unable to call anything, candles lit. */
+    @GameTest(template = "floor7")
+    public static void restoredCitiesAreMended(GameTestHelper helper) {
+        helper.assertTrue(RestoredPiece.mend(Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState()).is(Blocks.DEEPSLATE_BRICKS), "cracks");
+        helper.assertTrue(RestoredPiece.mend(Blocks.SCULK_VEIN.defaultBlockState()).isAir(), "overgrowth");
+        helper.assertFalse(RestoredPiece.mend(Blocks.SCULK_SHRIEKER.defaultBlockState().setValue(
+                net.minecraft.world.level.block.SculkShriekerBlock.CAN_SUMMON, true)).getValue(
+                net.minecraft.world.level.block.SculkShriekerBlock.CAN_SUMMON), "a shrieker should call nothing");
+        helper.assertTrue(RestoredPiece.mend(Blocks.CANDLE.defaultBlockState()).getValue(net.minecraft.world.level.block.CandleBlock.LIT),
+                "candles lit");
+        helper.succeed();
+    }
+
+    /** Featherweight: lighter (less gravity, a higher jump, softer landings), but blows land harder. */
+    @GameTest(template = "floor7")
+    public static void featherweightLightens(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        double gravity = player.getAttributeValue(Attributes.GRAVITY);
+        double jump = player.getAttributeValue(Attributes.JUMP_STRENGTH);
+        Powers.set(player, PlayerEssence.EMPTY.withLevel(Aspect.DENSITY, 2).withPool(Aspect.DENSITY, 20)
+                .withPassive(Power.FEATHERWEIGHT, true));
+        Powers.applyModifiers(player);
+        helper.assertTrue(player.getAttributeValue(Attributes.GRAVITY) < gravity * 0.6, "it should fall slower");
+        helper.assertTrue(player.getAttributeValue(Attributes.JUMP_STRENGTH) > jump, "it should jump higher");
+        helper.assertTrue(Powers.featherweightHarm(Powers.featherweight(Powers.get(player))) > 1.0f, "blows should land harder");
+        helper.succeed();
+    }
+
+    /** Each essence's organisms must be grown into its shape once past a seedling: a Time organism is a spire. */
+    @GameTest(template = "floor7")
+    public static void organismsNeedTheirShape(GameTestHelper helper) {
+        var access = helper.getLevel().registryAccess();
+        OrganismShape spire = OrganismShape.of(access, Aspect.TIME);
+        OrganismShape compact = OrganismShape.of(access, Aspect.DENSITY);
+        OrganismShape elongated = OrganismShape.of(access, Aspect.SPEED);
+        helper.assertTrue(spire != null && compact != null && elongated != null, "every essence should have a shape");
+        List<BlockPos> column = new ArrayList<>();
+        List<BlockPos> row = new ArrayList<>();
+        List<BlockPos> cube = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            column.add(new BlockPos(0, i, 0));
+            row.add(new BlockPos(i, 0, 0));
+        }
+        for (BlockPos pos : BlockPos.betweenClosed(BlockPos.ZERO, new BlockPos(1, 1, 1))) {
+            cube.add(pos.immutable());
+        }
+        helper.assertTrue(spire.fits(column) && !spire.fits(row), "Time stands up like a Nail");
+        helper.assertTrue(elongated.fits(row) && !elongated.fits(cube), "Speed runs long");
+        helper.assertTrue(compact.fits(cube) && !compact.fits(row), "Density packs tight");
+        helper.assertTrue(spire.fits(row.subList(0, 3)), "a seedling works whatever its shape");
+        // A malformed organism gives nothing.
+        BlockPos corePos = new BlockPos(3, 1, 3);
+        helper.setBlock(corePos, core(Aspect.DENSITY).setValue(OrganismCoreBlock.FORMED, false));
+        OrganismCoreBlockEntity core = helper.getBlockEntity(corePos);
+        core.feed(10);
+        helper.assertTrue(core.extract(5) == 0, "nothing can draw on a malformed organism");
+        helper.succeed();
+    }
+
+    /**
+     * A fossil shown to the Chronocortex: it learns the beast and buds its egg. Fed Time, the egg hatches a young one
+     * that remembers who hatched it; its food (or more Time) brings it on.
+     */
+    @GameTest(template = "floor7", timeoutTicks = 100)
+    public static void fossilsBecomeEggsBecomeHatchlings(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = fakePlayer(helper);
+        ItemStack fossil = FossilItem.of(ModEntities.RAPTOR.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, fossil);
+        player.getInventory().add(new ItemStack(ModItems.ETERNAL_HOURGLASS.get()));
+        helper.assertTrue(FossilItem.species(fossil) == ModEntities.RAPTOR.get(), "a raptor's fossil");
+        BlockPos cortexPos = new BlockPos(1, 1, 1);
+        helper.setBlock(cortexPos, ModBlocks.CHRONOCORTEX.get().defaultBlockState());
+        ChronocortexBlockEntity cortex = helper.getBlockEntity(cortexPos);
+        cortex.bud(fossil, player);
+        helper.assertTrue(cortex.species().contains(ChronoGenesis.id("raptor")), "the cortex should know the raptor");
+        helper.assertFalse(level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                new net.minecraft.world.phys.AABB(helper.absolutePos(cortexPos)).inflate(3),
+                item -> item.getItem().is(ModItems.DINO_EGG.get())).isEmpty(), "it should bud an egg");
+
+        BlockPos eggPos = new BlockPos(4, 1, 4);
+        helper.setBlock(eggPos, ModBlocks.DINO_EGG.get().defaultBlockState());
+        DinoEggBlockEntity egg = helper.getBlockEntity(eggPos);
+        egg.setSpecies(ChronoGenesis.id("raptor"));
+        egg.feed(DinoEggBlock.HATCH_AT);
+        egg.hatch(level, player);
+        helper.assertTrue(level.getBlockState(helper.absolutePos(eggPos)).isAir(), "the egg should be gone");
+        Raptor young = level.getEntitiesOfClass(Raptor.class, new net.minecraft.world.phys.AABB(helper.absolutePos(eggPos)).inflate(2))
+                .stream().findFirst().orElse(null);
+        helper.assertTrue(young != null && young.isBaby(), "a young raptor should hatch");
+        helper.assertTrue(player.getUUID().equals(young.hatcher()), "it should remember who hatched it");
+        int age = young.age();
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BEEF));
+        young.interact(player, InteractionHand.MAIN_HAND);
+        helper.assertTrue(young.age() >= age + Dinos.FOOD_BONUS, "meat should bring a raptor on");
+        Dinos.grow(young, young, Dinos.GROW_UP);
+        helper.assertFalse(young.isBaby(), "grown up");
+        young.discard();
         helper.succeed();
     }
 

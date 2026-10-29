@@ -54,7 +54,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
  *       tether returns them early. Dying there ends it (they wake at home, like any death).</li>
  *   <li>Shifting is hard on an unprotected body: Temporal Exposure (less with the suit) and nausea, and while there
  *       the era pulls at every suit piece that is not Time-warded. Only a traveller warded head to foot shifts
- *       cleanly and stays the era's full minutes; with no warded piece the shift holds half of them.</li>
+ *       cleanly, and the era holds them for as long as they like (until they use the tether); with no warded piece
+ *       the shift holds half the era's minutes.</li>
  * </ul>
  */
 @EventBusSubscriber(modid = ChronoGenesis.MODID)
@@ -65,6 +66,8 @@ public final class TemporalShift {
     private static final int SYNC_INTERVAL = 20;
     /** Ticks between the era's pulls at an unwarded traveller (an exposure per unwarded piece). */
     private static final int DRIFT_INTERVAL = 100;
+    /** The ticks left of a shift that does not run down. */
+    public static final int HELD = Integer.MAX_VALUE;
 
     /** Where a traveller came from, which era they are in, and how long it holds. Not shifted: {@link #NONE}. */
     public record Shift(ResourceKey<Level> home, Vec3 homePos, ResourceLocation era, int ticksLeft) {
@@ -80,8 +83,17 @@ public final class TemporalShift {
             return ticksLeft > 0;
         }
 
+        /** Held for as long as the traveller likes (warded head to foot): it does not run down. */
+        public boolean held() {
+            return ticksLeft == HELD;
+        }
+
         Shift tick() {
-            return new Shift(home, homePos, era, ticksLeft - 1);
+            return held() ? this : new Shift(home, homePos, era, ticksLeft - 1);
+        }
+
+        Shift withTicks(int ticks) {
+            return new Shift(home, homePos, era, ticks);
         }
     }
 
@@ -185,11 +197,11 @@ public final class TemporalShift {
     }
 
     /**
-     * How long a shift holds: the era's minutes for a traveller Time-warded head to foot, half of them with no warded
-     * piece, an eighth more for each warded piece between.
+     * How long a shift holds: for a traveller Time-warded head to foot, as long as they like ({@link #HELD}); half
+     * the era's minutes with no warded piece, an eighth more for each warded piece between.
      */
     public static int duration(Era era, int wardedPieces) {
-        return era.minutes() * 60 * 20 * (4 + wardedPieces) / 8;
+        return wardedPieces >= 4 ? HELD : era.minutes() * 60 * 20 * (4 + wardedPieces) / 8;
     }
 
     /** Back to where the shift began. */
@@ -266,6 +278,13 @@ public final class TemporalShift {
                 player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 120, 0, false, false));
                 tell(player, "message.chronogenesis.shift.toxic_air");
             }
+        }
+        int warded = TemporalExposure.wardedPieces(player);
+        if (shift.held() != (warded >= 4)) {
+            // Warded head to foot the era holds them; take a piece off and it starts letting go.
+            shift = shift.withTicks(duration(era, warded));
+            tell(player, shift.held() ? "message.chronogenesis.shift.held" : "message.chronogenesis.shift.unheld");
+            sync(player);
         }
         Shift next = shift.tick();
         player.setData(ModAttachments.TIME_SHIFT, next);

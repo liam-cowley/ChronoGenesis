@@ -76,6 +76,35 @@ a frame you build, fed on exactly the aspect you want it to deal with.
 A bigger frame means a bigger organism, with more storage and faster flow. That makes the shape of
 the frame a real design decision.
 
+### Shapes (as built)
+Each essence's organisms must be grown into **their own shape** to work (`organism/OrganismShape`, data:
+`data/<ns>/chronogenesis/organism_shape/<name>.json`). A seedling (under 5 blocks, core included) works whatever its
+shape; past that, an organism out of shape is **malformed** (`formed` blockstate false): it lives, eats and grows, but
+nothing can draw on it (Taps, Glands, the Chronocortex, lockets get nothing; the cortex does not count its essence).
+Its status line says what its shape needs.
+
+| Essence | Shape | Rule (default) |
+|---|---|---|
+| Density | compact | at least 0.6 of its bounding box filled, no side more than twice another |
+| Speed | elongated | its longest side at least 3 times the next |
+| Size | broad | both widths at least twice its height |
+| Awareness | branching | at least 3 tips (blocks with one neighbour): dendrites |
+| Time | spire | at least twice as tall as it is wide: grown like a Nail |
+
+### Looks (as built)
+Machines move. Their living parts are drawn animated by block entity renderers from shared parts
+(`client/OrganParts`, sheet `textures/entity/organ.png`): flesh, eyes, iron straps, tendons, amethyst shards, sacs,
+brain folds, teeth, brass, tentacle segments, tinted by essence.
+- **Organism cores** (`client/OrganismCoreRenderer`; the block model is only the frame): a mass that beats, lumps
+  swelling out of step, an eye that turns to whoever is near and blinks; Density strapped in iron, Speed drawn taut
+  on thrumming tendons to the frame's corners, Size with sacs swelling and sagging, Awareness folded like a brain
+  with eyes on stalks, Time circled by amethyst shards with a brass hand going round. A seed is a small bud; hungry
+  it shrinks and its heart races; necrotic it is grey, slumped and stitched shut; malformed it twitches, flushed.
+- **Grafts** (`client/GraftRenderer`): the Tap's plunger works, the Maw's teeth open and close, the Leech Tendril
+  writhes (gulping while it drinks), glands throb and bladders swell, the Heart beats, the Eye follows you, the
+  Clock's hands go round, the Ganglion's nerves twitch, the Temporal Field's rings of shards turn.
+- **The Chronocortex** (`client/CortexBrainRenderer`): see section 5.
+
 ### Grafts
 You **graft** flesh parts onto an organism's surface, and they decide what it does. Grafts are
 made from harvested mob parts and flesh. They are data-driven, so new ones can be added through
@@ -122,6 +151,9 @@ pool while in use.
 | **Time** | **Stutter**: a 3-block bubble where everything moves at half speed for 3 s (projectiles too) | Area slow, area haste, time-stopped chunk, Time Loop (section 6) |
 
 ### As built: powers, the Manipulator, gland levels, composites
+- **Featherweight** (passive, Density level 2): the body made light. Blows land a third harder per strength (fall
+  damage excepted), but gravity is roughly halved, jumps go several blocks high, landings hurt half as much, and a
+  second jump in mid-air is possible (once until you land; the client leaps and tells the server, a dram of Density).
 - **Passive and active.** Every power is one entry of `player/Power`. Passive powers (Iron Fists, Glowing Sight,
   Quickening, Shrink, Grow, and the passive composites) are switched on and burn their pools slowly; several can
   run at once. One active power is selected and used: Rewind (Time 1), Slow Time (Time 2), Time Freeze (Time 3),
@@ -273,61 +305,102 @@ Its roles:
 
    Most topics accept **several alternative clue sets**, so the research tree branches: you can
    unlock the Lens or the Suit through different discoveries in different orders.
+   **Its look (as built, `client/CortexBrainRenderer`):** not a jar and a cube of lobes but a living brain. Folds of
+   brain rise out of the jar, more every stage; its grown lobes are not drawn as blocks but as swelling masses of
+   folds where they stand (the Cerebrum's eyes open in them, watching). Tendrils reach out of it, more for every
+   stage and every thing it knows, longer as it grows. Its knowledge (`knowledge()`: lessons, eras remembered twice
+   over, creatures learned; synced to clients) makes it stranger: its flesh goes from grey-pink to bruise violet to
+   an eldritch green, eyes open in a ring round it, its folds stop keeping to a brain's shape, a crown of shards
+   turns over it (10+), and at the last a maw opens in it (16+).
 3. **Temporal shifts.** Time travel, from stage 1 onward.
    **As built:** eras are data (`data/<ns>/chronogenesis/era/<name>.json`: dimension, stage, lesson, Time cost,
    minutes, clue). Its **Eras** page sends a player within 8 blocks (`timetravel/TemporalShift`): it needs the era's
    stage, lesson and remembered era, the Time from wired organisms, and a **Chrono Tether** (research: Temporal Shift). They arrive at
    the same x/z on the ground of the era's dimension (same seed, so the land lines up) and are snapped back where
-   they left when the minutes run out; using the tether returns them early; dying ends it.
+   they left when the minutes run out; using the tether returns them early; dying ends it. Warded head to foot (the
+   suit infused with Time), the era holds them for as long as they like (`TemporalShift.HELD`; the HUD says so):
+   only the tether, or taking a piece off, starts it letting go.
    **Eras, in the order they are discovered:** *The Age of the Precursors* (`chronogenesis:precursor_era`), *The Ice Age*
    (`chronogenesis:ice_age`), *The Jurassic Age*, *The Hadean Eon* (the world's making) and *Before Time*, where the
-   Elder God waits. Every era stood in is remembered (`visited_eras` attachment) and becomes a Temporal Lens setting.
+   Elder God waits. Every era stood in is remembered (`visited_eras` attachment) and becomes a Temporal Lens setting,
+   except Before Time (era `lens: false`: there is nothing there to see).
    - *The Age of the Precursors:* the overworld's terrain and seed with four golden-age biomes of its own (meadow,
-     jungle, desert, coast: warm sky, teal water, no monsters). **Precursor cities** (`precursor_city`) belong to four
-     **kingdoms**, by the biome they stand in, each laid out and built its own way (`tools/precursor_cities.py`), as a
-     town (65 wide) or a capital (97 wide):
-     - the **Sun Court** (desert): a walled grid of flat-roofed houses round the *Undying Court*, a step pyramid with a
-       sealed tomb (a trap of TNT under it: to keep its king in);
-     - the **Tide Kingdom** (coast): rings of canals round the domed *Tidehall*, which holds a wave frozen mid-fall;
-       a lighthouse;
-     - the **Deep Kingdom** (meadow): terraces stepping down a great pit to the *Gate* (reinforced deepslate, sculk)
-       at its bottom, a crypt under it;
-     - the **Verdant Kingdom** (jungle): winding paths through trees to the *Garden of Engines*, a glass dome of their
-       living machines (flesh on brass armature).
-     Each also has an archive (its kingdom's mural, chests of tablets), a Nail Tap (a replica obelisk with copper
-     siphons and amethyst), a king's statue, stalls and its **Precursors**: a people before the villagers,
-     villager-boned but taller, grey, amethyst-eyed, busy, speaking their own tongue. Each knows its kingdom
-     (`Kingdom` tag) and mostly talks about its kingdom's troubles. Their cities are the ruins of the present: desert
-     and jungle temples, ancient cities, ocean ruins, and their own **buried ruins** (below).
-   - **Buried ruins** (`precursor_ruin`, overworld): 60% of the cities lie in the present 0-30 blocks under the
-     surface, at the very same spot: the structure type `chronogenesis:placed_template` centres a template on its
-     chunk and draws its template and rotation first from the chunk's random, and the ruin asks the Precursor era's
-     biome source (same noise, same seed) which kingdom stands there. The ruin is the city decayed (upper storeys
-     crumbled, wood, glass and wool gone, rooms filled with earth) except its archive and tombs, with
-     **suspicious sand or gravel** (archaeology loot: tablets) in its floors. Dig it out.
-   - **The fall of the Precursors** (`lore/PrecursorLore`): sixteen fragments on **Precursor Tablets**, found in
-     city archives and tombs, buried ruins (brushed out), the Jurassic temples, and the present's desert temples, ocean
-     ruins, ancient cities and jungle temples (each its own kingdom's). Readable once their tongue is understood
-     (linking the Precursor era's memory); reading one records it (`read_lore` attachment) and opens its journal page
-     (advancement `chronogenesis:lore/<fragment>`). What they tell: the obelisks are the **Nails** that hold time; every
-     kingdom drew years from them and fell to what it drew them for: the Sun Court drank them (the land aged into
-     desert), the Tide Kingdom held its sea still (until it came down all at once), the Deep Kingdom dug to the Nail's
-     point to listen (and built the Gate, and went back to the Jurassic to build temples round the Nails), the Verdant
-     Kingdom fed them to engines it grew (which learned to want). Behind them all a voice from before time asked for
-     more: every dram loosened the Nails. Reading the four falls and the voice pieces it together (*The Slip*). The
-     Chronocortex has its own lines about it.
-   - *The Ice Age:* the overworld's noise and seed with only frozen biomes. Needs the lesson of the cold and the
-     memory of the Precursors.
+     jungle, desert, coast: warm sky, teal water, no monsters). The Precursors never knew the obelisks for the Nails
+     that hold time, nor that time could be travelled: they knew that near the black stones nothing went missing, and
+     that elsewhere things were being **unmade** (never there at all). Every kingdom kept its own watch against it.
+     **Their cities stand exactly where the present has their remains** (`world/RemainsStructure`,
+     `chronogenesis:remains`): each city's structure set copies a vanilla structure's placement, and asks the
+     overworld's own generator whether that structure really stands at the chunk (biome, terrain, the monument's
+     sea), and where. Each kingdom is built its own way by `tools/precursor_cities.py` (about 160 blocks across),
+     its people dressed its own way (`textures/entity/precursor_<kingdom>.png`) and talking of their own watch:
+     - the **Sun Court** (desert temples): the City of No Shadows. A walled square of flat white roofs on a grid, a
+       maze of alleys in the common quarter, courtyard villas with pools, the Processional Way of gold-tipped pylons,
+       a great market round a sundial, the Well of Noon, a necropolis of mastabas with sealed chambers, and the
+       *Court of Noon*: a step pyramid with a pillared throne hall, a treasury, and under it the tomb they sealed
+       their king in when the shadow took his face (fire-powder under the floor: the present's desert temple trap).
+       Dress: white linen, a gold collar, a striped headcloth.
+     - the **Tide Kingdom** (ocean ruins: towns; ocean monuments: the capital): rings of stilted decks on the open
+       sea (piers carried to the sea floor), bridges, lighthouses, quartz houses with stepped prismarine roofs, the
+       *Watch Pools* where their **Guardians** came up to be fed, and the *Tidehall*: a rotunda over the *Eye Pool*,
+       with a glass stair down to the *Sanctum of the Open Eye* under the sea. Dress: sea-green scales, a shell sash.
+     - the **Deep Kingdom** (ancient cities): the ancient city itself, **restored** as it was (the same jigsaw, the same
+       seed, so the same streets; `world/RestoredPiece` mends cracked stone, clears the sculk's overgrowth and the
+       dead, lights candles, stops shriekers calling), its folk and its blind **Wardens** back in its streets.
+       Dress: a charcoal hood, a soul-blue band over the eyes.
+     - the **Hearth** (villages): timber-framed cottages along crooked lanes, front gardens and cellars, smithies,
+       windmills, fields, a low field-stone wall, and the *Anvil Hall*: a great hall on its green with the hearth that
+       never went out, the high seat, the golems' forge pit, the armoury and vault below. Its **iron golems** are kept
+       bright (`entity/PrecursorGolem`: no vines, no rust, no cracks). Dress: russet wool, a leather apron, a red cap.
+     - the **Verdant Kingdom** (jungle temples): houses up in great trees round spiral stairs, rope bridges between
+       them, stilt huts, terraced gardens, and the *Garden of Engines*: a glass dome on copper ribs full of living
+       machines grown to remember for them, the *Remembering Engine* at its heart, a gallery round it. Dress: woven
+       green, copper armbands, a crown of flowers.
+     Every city has an archive (its kingdom's mural, shelves, chests of tablets), a statue of its king, stalls,
+     houses with chests (`precursor_house_<k>`) and a vault in its great building (`precursor_vault_<k>`).
+   - **Guards** (`entity/PrecursorGuards`): the Wardens, Guardians and golems (tag `chronogenesis.guard`, or a
+     Precursor Golem) are friendly to whoever keeps the peace: they will not hunt, sense, roar at or darken a player
+     (`mixin/WardenMixin`; target changes cancelled). Hurt a guard or a Precursor and the guards hold a **grudge**
+     (`precursor_grudge`, two minutes): every guard within 48 blocks turns on you.
+   - **Shrines** (`precursor_shrine`): the obelisks stand in the Precursor era too, on exactly the same spots (the
+     obelisks' placement), each in a small temple of the kingdom of its land (`precursor_shrine_<k>`: a sun court
+     open to the sky, a round deck of quartz columns on the sea, a timber lych-house, a ring of grown arches).
+   - **The present's remains** carry their kingdoms' tablets: desert and jungle temples, ocean ruins (their suspicious
+     sand and gravel too), ancient cities, and village chests (the Hearth's).
+   - **What they watched for** (`lore/PrecursorLore`): twenty fragments on **Precursor Tablets**, readable once their
+     tongue is understood (linking the Precursor era's memory); reading one records it (`read_lore`) and opens its
+     journal page. The Nails (`nails_*`), each kingdom's watch and how it failed (`sun_*`, `tide_*`, `deep_*`,
+     `verdant_*`, `hearth_*`: the Hearth's children became the villagers, and kept the golems), and two older
+     tablets in the temples (`temple_1`, the Jurassic; `temple_2`, frozen in the Ice Age). The last tablet of every
+     kingdom and the Nails' third make it fall into place: *The Unmaking* (`the_slip`).
+   - *The Ice Age:* the overworld's noise and seed with four frozen biomes of its own (`ice_age_spikes`, `_slopes`,
+     `_peaks`, `_grove`). Needs the lesson of the cold and the memory of the Precursors. The obelisks stand whole
+     there, in **what is left of the Jurassic temples** (`ice_temple_ruin`, the obelisks' placement): broken tiers,
+     rooms half full of snow and ice, a raptor's bones, and where the core hung, the moment it died frozen round it:
+     **Aeon Ice**, time stopped still. **Why go:** Aeon Ice never melts, and every block of it touching a Time
+     organism steadies it by 2 (a Stasis Bladder is 3); the oldest eras cost more Time than an unsteadied organism can
+     hold. And its creatures: the **Mammoth** (herds; the richest Density and Size there is; hurt one and the herd
+     turns on you), the **Woolly Rhinoceros** (charges, throwing what it hits) and the **Smilodon** (a sabre-toothed
+     cat that stalks anyone walking upright). It is also one way into the Jurassic.
    - *The Jurassic Age* (`chronogenesis:jurassic_age`, stage 2): four hot, wet biomes (fernlands, jungle, swamp,
      coast). Two routes in (eras can list alternative `routes`): the Ice Age's memory, or the Precursors' memory plus
      the lesson **Deep Time** (a bone block). **Raptors** (hostile, leaping, in packs) and **Titanosaurs** (huge,
      peaceful unless hurt).
-     - **Building on a Titanosaur** (`entity/DinoCargo`): a **Dino Harness** (research, needs a Jurassic clue) used on
-       one puts a harness block on its back. Blocks placed touching the harness or the cargo join the cargo; they are
-       real blocks (block entities and multiblocks keep working). When the harness's spot moves to another block, or
-       the beast turns past the next quarter, the whole cargo is lifted and set down there, rotated, block entities
-       moved with their data, standing entities carried; if a target is blocked, the beast cannot go there. Breaking
-       the harness (or killing the beast) drops the whole cargo at once. A **Rider's Seat** in the cargo steers it.
+     - **Building on a Titanosaur** (`entity/DinoCargo`), as a moving structure (the way Create carries
+       contraptions): a **Dino Harness** (research, needs a Jurassic clue) used on a grown one puts a harness block on
+       its back. Standing, its cargo is blocks in the world: blocks placed touching the harness or the cargo join it,
+       and machines on it run. The moment it is steered (or moved), the cargo is **lifted** into the beast (block
+       entities with all their data), drawn on it turning smoothly with it, solid (merged into up to 16 boxes,
+       `entity/CargoPart`, part entities: you can stand on it and are carried along), and unable to pass through terrain
+       (the beast stops). Stood still a moment, it is **set down** where it stands, squared to the nearest quarter
+       turn (states rotated, block entities restored). A **Rider's Seat** in the cargo steers it, and rides with it
+       while it is carried. If the beast dies, the cargo drops (containers spill).
+     - **Fossils and eggs**: draw the last of a dinosaur's Time out of it in the Jurassic (raptors hold 12 drams,
+       titanosaurs 40) and it leaves a **Fossil** of its kind (`dino` component). Shown to the Chronocortex, it learns
+       the creature and buds a **Dinosaur Egg** from its own matter (16 drams of Size from its organisms); a hen's egg
+       shown to it buds another of a creature it knows (each in turn). Placed and fed 16 drams of Time (any container
+       holding it), the egg cracks and hatches a young one that remembers who hatched it (raptors never hunt their
+       hatcher). It grows up in a day (`entity/Dinos`), faster for its food (leaves for plant-eaters, meat for
+       meat-eaters: 1800 ticks) or Time (600 ticks a dram). A calf cannot be harnessed.
      - **Sealed temples** (`jurassic_temple`, a 35x35 five-tier ziggurat) are built **round the obelisks**: the temple
        shares the obelisks' placement (`placed_template`, centred, unrotated), so wherever an obelisk stands in the
        present a temple stands round it in the Jurassic, the obelisk's shaft rising through its core chamber and out of
@@ -537,9 +610,10 @@ inside; strength fades from 16 to 64 blocks. Past-view ghosts inside the horizon
 dropped. Seeing one gives *A stone that time bends around*; holding the Lens on it from the edge
 (4.5-7.5 blocks) for 3 s gives *Fragments of an inscription older than time*.
 
-Lore: obelisks are the **Nails** that hold time in place. The Precursors drew years from them and fell;
-the Jurassic temples are built round them; they already stand in the Hadean; and Before Time the player drives the
-first of them, to make the Elder God mortal.
+Lore: obelisks are the **Nails** that hold time in place. The Precursors built shrines round them (near them
+nothing went missing) without knowing what they were; the Jurassic temples are built round them, and the Ice Age keeps
+those temples' remains; they already stand in the Hadean; and Before Time the player drives the first of them, to make
+the Elder God mortal. Through every era they stand on exactly the same spots.
 
 ## 8. Implementation notes for the current code
 - Replace the single `temporal_essence` int attachment with an **essence-pool attachment**: a map

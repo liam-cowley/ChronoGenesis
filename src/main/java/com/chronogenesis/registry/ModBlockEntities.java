@@ -65,5 +65,9 @@ public final class ModBlockEntities {
     public static final Supplier<BlockEntityType<ObeliskBlockEntity>> OBELISK = BLOCK_ENTITY_TYPES.register("obelisk",
             () -> BlockEntityType.Builder.of(ObeliskBlockEntity::new, ModBlocks.OBELISK_CAPSTONE.get()).build(null));
 
+    @SuppressWarnings("DataFlowIssue")
+    public static final Supplier<BlockEntityType<com.chronogenesis.entity.DinoEggBlockEntity>> DINO_EGG = BLOCK_ENTITY_TYPES.register("dino_egg",
+            () -> BlockEntityType.Builder.of(com.chronogenesis.entity.DinoEggBlockEntity::new, ModBlocks.DINO_EGG.get()).build(null));
+
     private ModBlockEntities() {}
 }

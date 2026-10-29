@@ -192,6 +192,28 @@ public final class ModBlocks {
                     .lightLevel(state -> state.getValue(UnmadeNailBlock.DRIVEN) ? 12 : 3)
                     .pushReaction(PushReaction.BLOCK));
 
+    /**
+     * Aeon Ice (the Ice Age, round a dead temple core): ice that time froze still. It never melts, it is slick, and it
+     * steadies a Time organism it touches (2 each, see OrganismCoreBlockEntity).
+     */
+    public static final DeferredBlock<Block> AEON_ICE = BLOCKS.registerSimpleBlock("aeon_ice",
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.ICE)
+                    .strength(2.8f, 6.0f)
+                    .friction(0.989f)
+                    .sound(SoundType.GLASS)
+                    .lightLevel(state -> 4)
+                    .requiresCorrectToolForDrops());
+
+    /** A dinosaur's egg, budded by the Chronocortex: feed it Time and it hatches. */
+    public static final DeferredBlock<com.chronogenesis.entity.DinoEggBlock> DINO_EGG = BLOCKS.registerBlock("dino_egg",
+            com.chronogenesis.entity.DinoEggBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.TERRACOTTA_WHITE)
+                    .strength(0.5f)
+                    .sound(SoundType.METAL)
+                    .noOcclusion());
+
     public static final DeferredBlock<SealBlock> HEAVY_SEAL = seal("heavy_seal", SealBlock.Kind.HEAVY);
     public static final DeferredBlock<SealBlock> NARROW_SEAL = seal("narrow_seal", SealBlock.Kind.NARROW);
     public static final DeferredBlock<SealBlock> SWIFT_SEAL = seal("swift_seal", SealBlock.Kind.SWIFT);

@@ -1,0 +1,48 @@
+{
+  "type": "chronogenesis:placed_template",
+  "biomes": "#chronogenesis:has_structure/precursor_era",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_box",
+  "choices": [
+    {
+      "biomes": "chronogenesis:precursor_desert",
+      "templates": [
+        {
+          "data": "chronogenesis:precursor_shrine_sun",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "biomes": "chronogenesis:precursor_coast",
+      "templates": [
+        {
+          "data": "chronogenesis:precursor_shrine_tide",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "biomes": "chronogenesis:precursor_jungle",
+      "templates": [
+        {
+          "data": "chronogenesis:precursor_shrine_verdant",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "biomes": "chronogenesis:precursor_meadow",
+      "templates": [
+        {
+          "data": "chronogenesis:precursor_shrine_hearth",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "rotate": false,
+  "ground": 3,
+  "foundations": true
+}

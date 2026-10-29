@@ -21,6 +21,11 @@
       "type": "patchouli:text",
       "text": "Strength runs from 1 to my power level for the essence, at most 3. Stronger costs more: Rewind reaches further back, Slow Time slows harder, Iron Fists break harder stone.",
       "title": "Strength"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Featherweight",
+      "text": "Density drawn the other way (level 2, passive): my body made light. Blows land harder, but I fall like a feather, jump several blocks, and can jump again in mid-air, a dram of Density each time."
     }
   ]
 }

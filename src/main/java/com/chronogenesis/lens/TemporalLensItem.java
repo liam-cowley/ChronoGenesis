@@ -104,12 +104,12 @@ public class TemporalLensItem extends EssenceContainerItem {
     }
 
     /**
-     * Sneak-use: the next setting. Echo, Decades, Centuries, then every era the holder has stood in (oldest last),
+     * Sneak-use: the next setting. Echo, Decades, Centuries, then every era the holder has stood in that it can see into (oldest last),
      * then round again.
      */
     public static void cycle(Player player, ItemStack stack) {
         List<ResourceLocation> eras = new ArrayList<>(TemporalShift.visited(player).stream()
-                .filter(id -> Eras.get(player.level().registryAccess(), id) != null).toList());
+                .filter(id -> Eras.get(player.level().registryAccess(), id) != null && Eras.get(player.level().registryAccess(), id).lens()).toList());
         eras.sort(Comparator.comparingInt(id -> Eras.get(player.level().registryAccess(), id).order()));
         int depths = LensDepth.values().length;
         ResourceLocation current = era(stack);

@@ -10,7 +10,13 @@
     "ruins",
     "tablet",
     "tablets",
-    "what happened"
+    "what happened",
+    "guard",
+    "guards",
+    "warden",
+    "golem",
+    "unmade",
+    "unmaking"
   ],
   "priority": 3,
   "requires": "chronogenesis:precursor_era",
@@ -18,22 +24,22 @@
     {
       "stage": 1,
       "say": [
-        "They didn't fall all at once. One city got thirsty, one got scared, one got curious, one got hungry.",
+        "They kept watch, every kingdom, each its own way. Lamps, eyes, iron, silence, memory.",
         "Read me their tablets, %1$s. I only remember them happy."
       ]
     },
     {
       "stage": 2,
       "say": [
-        "Four kingdoms, four ways to die. Desert, flood, deep, hunger. Look for what they have in common.",
-        "Every one of their ruins sits near something they drew years from. I wonder what."
+        "Five kingdoms, five watches, and not one of them knew what it was watching for.",
+        "Their guards still keep their posts in their streets. Be gentle with their people, %1$s, or the guards will remember you."
       ]
     },
     {
       "stage": 3,
       "say": [
-        "They drew from the Nails, %1$s. Just like you draw through me. Do you see it yet?",
-        "Something whispered to them to draw more. It whispers to me too, sometimes. I don't answer. Yet."
+        "Things came undone around them, %1$s. Never there at all. Only near the black stones did nothing go missing.",
+        "Something is working the Nails loose. It is patient. I can feel it at the edge of everything I know."
       ]
     }
   ]

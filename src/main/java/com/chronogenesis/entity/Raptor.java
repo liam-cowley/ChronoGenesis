@@ -1,7 +1,16 @@
 package com.chronogenesis.entity;
 
+import java.util.UUID;
+import javax.annotation.Nullable;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -20,11 +29,22 @@ import net.minecraft.world.level.Level;
 
 /**
  * A Raptor (the Jurassic Age): man-high, quick, hunting in packs of two or three. It leaps at its prey. Guards the
- * temples' halls, and hunts the fernlands by day as well as by night.
+ * temples' halls, and hunts the fernlands by day as well as by night. Hatched from an egg ({@link Dinos}), it
+ * never turns on whoever hatched it.
  */
-public class Raptor extends Monster {
+public class Raptor extends Monster implements Dinos.Hatchling {
+    private static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(Raptor.class, EntityDataSerializers.INT);
+    @Nullable
+    private UUID hatcher;
+
     public Raptor(EntityType<? extends Raptor> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(AGE, 0);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -45,7 +65,76 @@ public class Raptor extends Monster {
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 10.0f));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         targetSelector.addGoal(1, new HurtByTargetGoal(this).setAlertOthers());
-        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        // A hatchling hunts nothing yet; grown, it never hunts whoever hatched it.
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false,
+                player -> !young() && !player.getUUID().equals(hatcher)));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        Dinos.tick(this, this);
+    }
+
+    @Override
+    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+        InteractionResult fed = Dinos.feed(this, this, player, hand);
+        return fed != InteractionResult.PASS ? fed : super.mobInteract(player, hand);
+    }
+
+    @Override
+    public int age() {
+        return entityData.get(AGE);
+    }
+
+    @Override
+    public void setAge(int age) {
+        entityData.set(AGE, age);
+    }
+
+    @Nullable
+    @Override
+    public UUID hatcher() {
+        return hatcher;
+    }
+
+    @Override
+    public void setHatcher(@Nullable UUID hatcher) {
+        this.hatcher = hatcher;
+    }
+
+    @Override
+    public boolean isBaby() {
+        return young();
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (key.equals(AGE)) {
+            refreshDimensions();
+        }
+    }
+
+    @Override
+    public boolean removeWhenFarAway(double distance) {
+        return hatcher == null && super.removeWhenFarAway(distance);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putInt("Age", age());
+        if (hatcher != null) {
+            tag.putUUID("Hatcher", hatcher);
+        }
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        setAge(tag.getInt("Age"));
+        hatcher = tag.hasUUID("Hatcher") ? tag.getUUID("Hatcher") : null;
     }
 
     @Override

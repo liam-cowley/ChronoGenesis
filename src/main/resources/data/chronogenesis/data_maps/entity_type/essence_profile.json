@@ -62,6 +62,48 @@
       "size": 16,
       "awareness": 4,
       "time": 0
+    },
+    "chronogenesis:raptor": {
+      "density": 6,
+      "speed": 16,
+      "size": 4,
+      "awareness": 14,
+      "time": 12
+    },
+    "chronogenesis:titanosaur": {
+      "density": 40,
+      "speed": 4,
+      "size": 80,
+      "awareness": 4,
+      "time": 40
+    },
+    "chronogenesis:mammoth": {
+      "density": 36,
+      "speed": 4,
+      "size": 44,
+      "awareness": 8,
+      "time": 0
+    },
+    "chronogenesis:woolly_rhino": {
+      "density": 26,
+      "speed": 10,
+      "size": 18,
+      "awareness": 4,
+      "time": 0
+    },
+    "chronogenesis:smilodon": {
+      "density": 8,
+      "speed": 20,
+      "size": 8,
+      "awareness": 14,
+      "time": 0
+    },
+    "chronogenesis:precursor_golem": {
+      "density": 44,
+      "speed": 2,
+      "size": 16,
+      "awareness": 4,
+      "time": 0
     }
   }
 }

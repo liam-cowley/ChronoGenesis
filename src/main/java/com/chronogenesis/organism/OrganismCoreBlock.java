@@ -38,10 +38,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class OrganismCoreBlock extends BaseEntityBlock {
     public static final MapCodec<OrganismCoreBlock> CODEC = simpleCodec(OrganismCoreBlock::new);
     public static final EnumProperty<CorePhase> PHASE = EnumProperty.create("phase", CorePhase.class);
+    /** Whether its body is in its essence's shape (see {@link OrganismShape}): malformed, nothing can draw on it. */
+    public static final net.minecraft.world.level.block.state.properties.BooleanProperty FORMED =
+            net.minecraft.world.level.block.state.properties.BooleanProperty.create("formed");
 
     public OrganismCoreBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FleshBlock.ASPECT, Aspect.DENSITY).setValue(PHASE, CorePhase.SEED));
+        registerDefaultState(stateDefinition.any().setValue(FleshBlock.ASPECT, Aspect.DENSITY).setValue(PHASE, CorePhase.SEED).setValue(FORMED, true));
     }
 
     @Override
@@ -51,7 +54,7 @@ public class OrganismCoreBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FleshBlock.ASPECT, PHASE);
+        builder.add(FleshBlock.ASPECT, PHASE, FORMED);
     }
 
     @Override

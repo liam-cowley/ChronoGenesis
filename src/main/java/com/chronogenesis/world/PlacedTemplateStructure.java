@@ -35,7 +35,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  * structure set's placement stand on exactly the same spot in every dimension of the same seed:
  * <ul>
  *   <li>the overworld's obelisks and the Jurassic temples built around them;</li>
- *   <li>the Precursor era's cities and their ruins buried in the present.</li>
+ *   <li>the obelisks again in the Ice Age, round the Jurassic temples' remains, and in the Precursor era, each
+ *       in a shrine of the kingdom of its land.</li>
  * </ul>
  * The template and its rotation are the first things drawn from the chunk's random, so two structures with the same
  * {@code templates} list choose the same one, turned the same way, wherever they are. A {@code suffix} then places a
@@ -53,6 +54,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  * @param top       for buried templates: how far above its ground the template's top lies
  * @param buried    blocks of earth over its top (absent: it stands on the surface)
  * @param chance    how often it is there at all
+ * @param foundations whether what it builds on its bottom layer reaches down to the ground (see {@link PlacedTemplatePiece})
  */
 public class PlacedTemplateStructure extends Structure {
     /** Templates for a set of biomes. */
@@ -74,7 +76,8 @@ public class PlacedTemplateStructure extends Structure {
             Codec.INT.optionalFieldOf("ground", 0).forGetter(s -> s.ground),
             Codec.INT.optionalFieldOf("top", 0).forGetter(s -> s.top),
             IntProvider.CODEC.optionalFieldOf("buried").forGetter(s -> s.buried),
-            Codec.floatRange(0.0f, 1.0f).optionalFieldOf("chance", 1.0f).forGetter(s -> s.chance)
+            Codec.floatRange(0.0f, 1.0f).optionalFieldOf("chance", 1.0f).forGetter(s -> s.chance),
+            Codec.BOOL.optionalFieldOf("foundations", false).forGetter(s -> s.foundations)
     ).apply(instance, PlacedTemplateStructure::new));
 
     private final SimpleWeightedRandomList<ResourceLocation> templates;
@@ -86,10 +89,11 @@ public class PlacedTemplateStructure extends Structure {
     private final int top;
     private final Optional<IntProvider> buried;
     private final float chance;
+    private final boolean foundations;
 
     public PlacedTemplateStructure(StructureSettings settings, SimpleWeightedRandomList<ResourceLocation> templates,
             List<Choice> choices, Optional<ResourceKey<LevelStem>> biomesOf, boolean rotate, String suffix, int ground, int top,
-            Optional<IntProvider> buried, float chance) {
+            Optional<IntProvider> buried, float chance, boolean foundations) {
         super(settings);
         this.templates = templates;
         this.choices = choices;
@@ -100,6 +104,7 @@ public class PlacedTemplateStructure extends Structure {
         this.top = top;
         this.buried = buried;
         this.chance = chance;
+        this.foundations = foundations;
     }
 
     @Override
@@ -125,7 +130,7 @@ public class PlacedTemplateStructure extends Structure {
         }
         BlockPos origin = new BlockPos(x - size.getX() / 2, groundY - ground, z - size.getZ() / 2);
         return Optional.of(new GenerationStub(new BlockPos(x, groundY, z), builder -> builder.addPiece(
-                new PlacedTemplatePiece(context.structureTemplateManager(), id, origin, rotation))));
+                new PlacedTemplatePiece(context.structureTemplateManager(), id, origin, rotation, foundations))));
     }
 
     /** The templates for this spot: by the biome there (in {@code biomesOf}'s dimension, if set). */

@@ -23,7 +23,7 @@ public final class ShiftHud {
     }
 
     static void tick() {
-        if (ticksLeft > 0 && !Minecraft.getInstance().isPaused()) {
+        if (ticksLeft > 0 && ticksLeft != Integer.MAX_VALUE && !Minecraft.getInstance().isPaused()) {
             ticksLeft--;
         }
     }
@@ -31,6 +31,12 @@ public final class ShiftHud {
     public static void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft minecraft = Minecraft.getInstance();
         if (ticksLeft <= 0 || minecraft.options.hideGui || minecraft.player == null) {
+            return;
+        }
+        if (ticksLeft == Integer.MAX_VALUE) {
+            // Warded head to foot: the era holds them for as long as they like.
+            graphics.drawCenteredString(minecraft.font, Component.translatable("screen.chronogenesis.shift.hud_held", era),
+                    graphics.guiWidth() / 2, 6, 0xFF6FE0D0);
             return;
         }
         int seconds = ticksLeft / 20;

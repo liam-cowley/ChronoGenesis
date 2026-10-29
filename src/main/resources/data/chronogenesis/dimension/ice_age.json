@@ -6,10 +6,10 @@
     "biome_source": {
       "type": "minecraft:checkerboard",
       "biomes": [
-        "minecraft:ice_spikes",
-        "minecraft:snowy_slopes",
-        "minecraft:frozen_peaks",
-        "minecraft:grove"
+        "chronogenesis:ice_age_spikes",
+        "chronogenesis:ice_age_slopes",
+        "chronogenesis:ice_age_peaks",
+        "chronogenesis:ice_age_grove"
       ],
       "scale": 3
     }

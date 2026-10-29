@@ -51,7 +51,20 @@ public final class MobEssence {
         DrainedEssence current = entity.getData(ModAttachments.DRAINED_ESSENCE);
         entity.setData(ModAttachments.DRAINED_ESSENCE, current.with(aspect, current.get(aspect) + taken));
         DrainEffects.onDrained(entity, aspect, taken);
+        fossilise(entity, aspect);
         return taken;
+    }
+
+    /**
+     * A dinosaur in the Jurassic Age with the last of its Time drawn out leaves a fossil of its kind: the shape of it,
+     * set hard (fed to the Chronocortex, it can bud the creature's eggs).
+     */
+    private static void fossilise(LivingEntity entity, Aspect aspect) {
+        if (aspect == Aspect.TIME && remaining(entity, Aspect.TIME) == 0 && com.chronogenesis.entity.Dinos.isDino(entity.getType())
+                && entity.level().dimension().location().equals(com.chronogenesis.ChronoGenesis.id("jurassic_age"))) {
+            entity.spawnAtLocation(com.chronogenesis.item.FossilItem.of(entity.getType()));
+            entity.playSound(net.minecraft.sounds.SoundEvents.BONE_BLOCK_BREAK, 1.0f, 0.6f);
+        }
     }
 
     /** Gives essence back (Temporal Fields, injecting a mob). Returns how much was restored. */

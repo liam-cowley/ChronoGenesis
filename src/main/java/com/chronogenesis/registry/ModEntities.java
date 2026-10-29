@@ -3,11 +3,15 @@ package com.chronogenesis.registry;
 import java.util.function.Supplier;
 
 import com.chronogenesis.ChronoGenesis;
+import com.chronogenesis.entity.Mammoth;
 import com.chronogenesis.entity.Precursor;
+import com.chronogenesis.entity.PrecursorGolem;
 import com.chronogenesis.entity.Raptor;
 import com.chronogenesis.entity.RiderSeat;
+import com.chronogenesis.entity.Smilodon;
 import com.chronogenesis.entity.Titanosaur;
 import com.chronogenesis.entity.Unbegotten;
+import com.chronogenesis.entity.WoollyRhino;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
@@ -60,6 +64,37 @@ public final class ModEntities {
                     .clientTrackingRange(16)
                     .build(ChronoGenesis.id("unbegotten").toString()));
 
+    /** The Hearth's iron golems, kept bright: guards of the Precursors' plains cities. */
+    public static final Supplier<EntityType<PrecursorGolem>> PRECURSOR_GOLEM = ENTITY_TYPES.register("precursor_golem",
+            () -> EntityType.Builder.of(PrecursorGolem::new, MobCategory.MISC)
+                    .sized(1.4f, 2.7f)
+                    .clientTrackingRange(10)
+                    .build(ChronoGenesis.id("precursor_golem").toString()));
+
+    /** The Ice Age's great herd beast. */
+    public static final Supplier<EntityType<Mammoth>> MAMMOTH = ENTITY_TYPES.register("mammoth",
+            () -> EntityType.Builder.of(Mammoth::new, MobCategory.CREATURE)
+                    .sized(3.0f, 3.8f)
+                    .eyeHeight(3.2f)
+                    .clientTrackingRange(12)
+                    .build(ChronoGenesis.id("mammoth").toString()));
+
+    /** The Ice Age's sabre-toothed cat. */
+    public static final Supplier<EntityType<Smilodon>> SMILODON = ENTITY_TYPES.register("smilodon",
+            () -> EntityType.Builder.of(Smilodon::new, MobCategory.CREATURE)
+                    .sized(1.1f, 1.3f)
+                    .eyeHeight(1.1f)
+                    .clientTrackingRange(10)
+                    .build(ChronoGenesis.id("smilodon").toString()));
+
+    /** The Ice Age's woolly rhinoceros. */
+    public static final Supplier<EntityType<WoollyRhino>> WOOLLY_RHINO = ENTITY_TYPES.register("woolly_rhino",
+            () -> EntityType.Builder.of(WoollyRhino::new, MobCategory.CREATURE)
+                    .sized(1.8f, 1.8f)
+                    .eyeHeight(1.3f)
+                    .clientTrackingRange(10)
+                    .build(ChronoGenesis.id("woolly_rhino").toString()));
+
     /** What a player sits on in a Rider's Seat. */
     public static final Supplier<EntityType<RiderSeat>> RIDER_SEAT = ENTITY_TYPES.register("rider_seat",
             () -> EntityType.Builder.<RiderSeat>of(RiderSeat::new, MobCategory.MISC)
@@ -74,6 +109,10 @@ public final class ModEntities {
     static void spawnPlacements(RegisterSpawnPlacementsEvent event) {
         event.register(RAPTOR.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Monster::checkAnyLightMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        for (var type : java.util.List.of(MAMMOTH.get(), SMILODON.get(), WOOLLY_RHINO.get())) {
+            event.register(type, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    (t, level, reason, pos, random) -> level.getBlockState(pos.below()).isSolid(), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        }
         event.register(TITANOSAUR.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
@@ -83,6 +122,10 @@ public final class ModEntities {
         event.put(PRECURSOR.get(), Precursor.createAttributes().build());
         event.put(RAPTOR.get(), Raptor.createAttributes().build());
         event.put(TITANOSAUR.get(), Titanosaur.createAttributes().build());
+        event.put(PRECURSOR_GOLEM.get(), net.minecraft.world.entity.animal.IronGolem.createAttributes().build());
+        event.put(MAMMOTH.get(), Mammoth.createAttributes().build());
+        event.put(SMILODON.get(), Smilodon.createAttributes().build());
+        event.put(WOOLLY_RHINO.get(), WoollyRhino.createAttributes().build());
         event.put(UNBEGOTTEN.get(), Unbegotten.createAttributes().build());
     }
 }

@@ -3,6 +3,8 @@ package com.chronogenesis.registry;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.world.PlacedTemplatePiece;
 import com.chronogenesis.world.PlacedTemplateStructure;
+import com.chronogenesis.world.RemainsStructure;
+import com.chronogenesis.world.RestoredPiece;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.StructureType;
@@ -22,6 +24,12 @@ public final class ModStructures {
             STRUCTURE_TYPES.register("placed_template", () -> () -> PlacedTemplateStructure.CODEC);
     public static final DeferredHolder<StructurePieceType, StructurePieceType> PLACED_TEMPLATE_PIECE =
             PIECE_TYPES.register("placed_template", () -> (StructurePieceType.StructureTemplateType) PlacedTemplatePiece::new);
+
+    /** A Precursor city over the present's remains (villages, temples, ocean ruins, monuments, ancient cities). */
+    public static final DeferredHolder<StructureType<?>, StructureType<RemainsStructure>> REMAINS =
+            STRUCTURE_TYPES.register("remains", () -> () -> RemainsStructure.CODEC);
+    public static final DeferredHolder<StructurePieceType, StructurePieceType> RESTORED_PIECE =
+            PIECE_TYPES.register("restored", () -> RestoredPiece::new);
 
     private ModStructures() {}
 }

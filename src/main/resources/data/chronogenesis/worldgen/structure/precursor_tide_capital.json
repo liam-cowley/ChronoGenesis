@@ -1,0 +1,18 @@
+{
+  "type": "chronogenesis:remains",
+  "biomes": "#chronogenesis:has_structure/precursor_era",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none",
+  "remains": [
+    "minecraft:monument"
+  ],
+  "templates": [
+    {
+      "data": "chronogenesis:precursor_city_tide_capital",
+      "weight": 1
+    }
+  ],
+  "ground": 8,
+  "on_water": true
+}

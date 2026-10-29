@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -51,6 +52,9 @@ public final class Powers {
     private static final ResourceLocation SIZE_MOD = ChronoGenesis.id("power_size");
     private static final ResourceLocation STEP_MOD = ChronoGenesis.id("power_step");
     private static final ResourceLocation FALL_MOD = ChronoGenesis.id("power_safe_fall");
+    private static final ResourceLocation GRAVITY_MOD = ChronoGenesis.id("power_gravity");
+    private static final ResourceLocation JUMP_MOD = ChronoGenesis.id("power_jump");
+    private static final ResourceLocation FALL_DAMAGE_MOD = ChronoGenesis.id("power_fall_damage");
 
     public static final double AWARENESS_RADIUS = 20.0;
     /** The highest power level there is: a gland grows to level 3 (Deepest Infusion). */
@@ -325,6 +329,7 @@ public final class Powers {
         return switch (power) {
             case IRON_FISTS, REFLEXES, PREMONITION -> 0;
             case QUICKENING -> 40;
+            case FEATHERWEIGHT -> 50;
             default -> 60;
         };
     }
@@ -368,7 +373,49 @@ public final class Powers {
         int scurry = essence.isOn(Power.SCURRY) ? essence.strength(Power.SCURRY) : 0;
         setModifier(player, Attributes.STEP_HEIGHT, STEP_MOD, scurry > 0 ? 0.4 + 0.3 * scurry : 0.0,
                 AttributeModifier.Operation.ADD_VALUE);
-        setModifier(player, Attributes.SAFE_FALL_DISTANCE, FALL_MOD, 5.0 * scurry, AttributeModifier.Operation.ADD_VALUE);
+        int light = featherweight(essence);
+        setModifier(player, Attributes.SAFE_FALL_DISTANCE, FALL_MOD, 5.0 * scurry + 6.0 * light, AttributeModifier.Operation.ADD_VALUE);
+        // Featherweight: a fall as slow as a feather's, a jump of several blocks, half the harm from landing.
+        setModifier(player, Attributes.GRAVITY, GRAVITY_MOD, light > 0 ? -(0.45 + 0.1 * light) : 0.0,
+                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        setModifier(player, Attributes.JUMP_STRENGTH, JUMP_MOD, 0.1 * light, AttributeModifier.Operation.ADD_VALUE);
+        setModifier(player, Attributes.FALL_DAMAGE_MULTIPLIER, FALL_DAMAGE_MOD, light > 0 ? -0.5 : 0.0,
+                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+    }
+
+    // ---------------------------------------------------------------- Featherweight
+
+    /** Featherweight's strength if it is on (and there is Density left to burn), else 0. Both sides. */
+    public static int featherweight(PlayerEssence essence) {
+        return essence.isOn(Power.FEATHERWEIGHT) && essence.pool(Aspect.DENSITY) > 0 ? essence.strength(Power.FEATHERWEIGHT) : 0;
+    }
+
+    /** How much harder blows land on a Featherweight body: a third more at strength 1, two thirds at 2, double at 3. */
+    public static float featherweightHarm(int strength) {
+        return strength <= 0 ? 1.0f : 1.0f + strength / 3.0f;
+    }
+
+    /** How hard the second jump in mid-air pushes up. */
+    public static double doubleJumpPower(int strength) {
+        return 0.5 + 0.08 * strength;
+    }
+
+    /** The client leapt again in mid-air: a dram of Density, and the fall so far forgotten. */
+    public static void doubleJumped(ServerPlayer player) {
+        if (featherweight(get(player)) > 0 && !player.onGround()) {
+            spend(player, Aspect.DENSITY, 1);
+            player.resetFallDistance();
+        }
+    }
+
+    @SubscribeEvent
+    static void onFeatherweightHurt(LivingIncomingDamageEvent event) {
+        if (event.getEntity() instanceof Player player && !event.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FALL)) {
+            int light = featherweight(get(player));
+            if (light > 0) {
+                event.setAmount(event.getAmount() * featherweightHarm(light));
+            }
+        }
     }
 
     static void setModifier(Player player, Holder<Attribute> attribute, ResourceLocation id, double amount,

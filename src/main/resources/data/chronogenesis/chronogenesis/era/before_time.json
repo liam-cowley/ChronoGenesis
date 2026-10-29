@@ -12,5 +12,6 @@
   "cost": 128,
   "minutes": 15,
   "clue": "chronogenesis:before_time",
-  "order": 4
+  "order": 4,
+  "lens": false
 }
