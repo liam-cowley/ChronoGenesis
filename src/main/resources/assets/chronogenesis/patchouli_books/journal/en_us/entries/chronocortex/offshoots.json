@@ -12,7 +12,7 @@
     {
       "type": "patchouli:text",
       "title": "The Nerve",
-      "text": "A $(l)Nerve Spool$() (string, rotten flesh, brass) carries the memory home. Use it on the fossil, then on the Chronocortex, however far apart.$(br2)Each era it remembers makes it more aware, opens the next era, and gives it new things to say. Remembering the Precursors, I understand their tongue."
+      "text": "A $(l)Nerve Spool$() (catgut, rotten flesh, brass; or catgut round a curl of mammoth ivory) carries the memory home. Use it on the fossil, then on the Chronocortex, however far apart.$(br2)Each era it remembers makes it more aware, opens the next era, and gives it new things to say. Remembering the Precursors, I understand their tongue."
     },
     {
       "type": "patchouli:crafting",

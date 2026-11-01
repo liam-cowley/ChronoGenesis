@@ -47,6 +47,35 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.GOLD_NEEDLE.get());
         basicItem(ModItems.BONE_NEEDLE.get());
         basicItem(ModItems.AMETHYST_NEEDLE.get());
+        basicItem(ModItems.SABRE_NEEDLE.get());
+        basicItem(ModItems.CLAW_NEEDLE.get());
+        basicItem(ModItems.IVORY_NEEDLE.get());
+        basicItem(ModItems.ZIRCON_NEEDLE.get());
+        basicItem(ModItems.GALVANIC_JAR.get());
+        basicItem(ModItems.PRESERVING_FLUID.get());
+        basicItem(ModItems.CATGUT.get());
+        basicItem(ModItems.SUNMETAL_INGOT.get());
+        basicItem(ModItems.TIDE_PEARL.get());
+        basicItem(ModItems.HEARTH_EMBER.get());
+        basicItem(ModItems.VERDANT_SPORE.get());
+        basicItem(ModItems.RESONANT_CRYSTAL.get());
+        basicItem(ModItems.MAMMOTH_IVORY.get());
+        basicItem(ModItems.WOOLLY_PELT.get());
+        basicItem(ModItems.SABRE_FANG.get());
+        basicItem(ModItems.RIME_CRYSTAL.get());
+        basicItem(ModItems.FROZEN_MARROW.get());
+        basicItem(ModItems.RAPTOR_CLAW.get());
+        basicItem(ModItems.TITAN_SCALE.get());
+        basicItem(ModItems.CYCAD_FROND.get());
+        basicItem(ModItems.JURASSIC_AMBER.get());
+        basicItem(ModItems.ZIRCON.get());
+        basicItem(ModItems.PRIMORDIAL_ASH.get());
+        basicItem(ModItems.METEORIC_IRON.get());
+        basicItem(ModItems.UNBEGOTTEN_ICHOR.get());
+        basicItem(ModItems.SUNBRASS_INGOT.get());
+        basicItem(ModItems.AMBER_LENS.get());
+        basicItem(ModItems.RIME_COIL.get());
+        basicItem(ModItems.ZIRCON_LATTICE.get());
         // Culture: the growth (tinted) in an untinted brass dish.
         withExistingParent("culture", mcLoc("item/generated"))
                 .texture("layer0", modLoc("item/culture"))

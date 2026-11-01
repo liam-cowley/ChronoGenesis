@@ -3,7 +3,7 @@
   "category": "misc",
   "pattern": [
     "III",
-    "B B",
+    "BGB",
     "B B"
   ],
   "key": {
@@ -12,6 +12,9 @@
     },
     "B": {
       "tag": "c:ingots/brass"
+    },
+    "G": {
+      "item": "chronogenesis:galvanic_jar"
     }
   },
   "result": {

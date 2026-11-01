@@ -116,6 +116,9 @@ Docs (read the relevant one before implementing a feature, and keep names consis
 - The Chronocortex's body is curved meshes, not boxes: `client/FleshMesh` (grid surfaces: spheres, tubes, caps, tori)
   and `client/CortexBody` (one form per stage; pure geometry, JOML only, so it can be rasterised offline), its eyes
   aimed by `client/CortexGaze` (line of sight to the local player, wandering, staring back, tentacles reaching).
+- Era materials (`item/EraMaterialItem`, tooltip names the age): creature drops in `loot_table/entities/`, drops
+  limited to one age as `loot_modifiers/era_*` (dimension `location_check`). Keep every item needed before the first
+  temporal shift craftable from present-day things; the ages add better/cheaper recipes and gate later research.
 - Powers are `player/Power` entries (passive or active, single essence or composite). Per-chunk time (Slow Time,
   Time Freeze) is `time/TimeZones` plus mixins in `mixin/`; it must stay cheap when no zone exists.
 - The Chrono-Insulated Suit is worn as 3D models (`client/SuitModel`, one per slot, texture

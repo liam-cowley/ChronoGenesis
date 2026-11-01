@@ -14,14 +14,18 @@
   "materials": [
     {
       "item": "minecraft:leather",
-      "count": 8
+      "count": 6
     },
     {
       "item": "minecraft:chain",
       "count": 4
     },
     {
-      "tag": "c:ingots/brass",
+      "item": "chronogenesis:sunbrass_ingot",
+      "count": 4
+    },
+    {
+      "item": "chronogenesis:catgut",
       "count": 4
     }
   ],

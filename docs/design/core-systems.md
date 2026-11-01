@@ -696,6 +696,36 @@ nothing went missing) without knowing what they were; the Jurassic temples are b
 those temples' remains; they already stand in the Hadean; and Before Time the player drives the first of them, to make
 the Elder God mortal. Through every era they stand on exactly the same spots.
 
+### Spoils of the ages (as built)
+Time travel has to be worth it, so every age has things the present lost, and the best ways to make things need
+them. Nothing needed before the first shift does: every early item still has a present-day recipe; the ages add
+better or cheaper ones, the needles of the ages, and research that will not start without them.
+
+- **The bench** (present): **Galvanic Jar** (copper, glass bottle, redstone: wakes an organ; in the Ganglion, Eye,
+  Heart, Starting Gate, Finish, Dissection Table, Manipulator), **Preserving Fluid** (cultures, glands, Ganglion,
+  Eye), **Catgut** (leech, maw, tap, bladder, spool, grafted organs). Rotten flesh is no longer in everything.
+- **Precursor Era**, one per kingdom, from its chests (vaults and tombs also hold the other kingdoms'): **Sunmetal**
+  (Sun; golems), **Tide Pearl** (Tide; guardians and squid there), **Hearth Ember** (Hearth; golems; furnace fuel
+  for 32 items), **Verdant Spore** (Verdant; leaves and moss there), **Resonant Crystal** (Deep; sculk, Wardens).
+  Sunbrass (2 brass, sunmetal, ember -> 3). Tide pearls preserve (4 fluids), spores make 3 cultures and 2 glands,
+  a resonant crystal makes Ganglions without a brain. The Confluence Needle needs 2 tide pearls.
+- **Ice Age**: **Mammoth Ivory**, **Woolly Pelt** (mammoths, rhinos), **Sabre Fang** (smilodons), **Rime
+  Crystal** (its ice and snow), **Frozen Marrow** (bone blocks, strays, skeletons, polar bears there; the temple
+  remains). Pelt suit pieces without phantoms, rime ampoules and the Rime Coil (stasis bladders), fanged leeches
+  and maws, ivory nerve spools, marrow Time cultures.
+- **Jurassic**: **Raptor Claw**, **Titan Scale**, **Cycad Frond** (ferns, leaves, grass), **Jurassic Amber**
+  (logs; temples). Amber ampoules (3), the Amber Lens (eyes, goggles), scale-plated armature (16), raptor starting
+  gates, cycad Size cultures. Deepest Infusion needs amber and claws.
+- **Hadean**: **Primordial Ash**, **Zircon**, **Meteoric Iron** (its stone: 30%, 6%, 2.5%). Ash brass blend (8);
+  the Zircon Lattice (zircon, sunbrass, a resonant crystal). The Last Offshoot needs zircon and ash.
+- **Before Time**: **Unbegotten Ichor** (the boss, 4-6; its limbs). The Unbegotten pump needs a lattice, meteoric
+  iron and ichor.
+- **Needles of the ages** draw 2 drams a jab: sabre (Density), claw (Speed), ivory (Size), zircon (Time). The
+  syringe remembers which needle is fitted (`needle` component) and gives that one back.
+
+Data: creature drops are `loot_table/entities/<creature>`; block and creature drops limited to one age are global
+loot modifiers (`loot_modifiers/era_*`: `location_check` on the dimension, rolling `loot_table/era/*`).
+
 ## 8. Implementation notes for the current code
 - Replace the single `temporal_essence` int attachment with an **essence-pool attachment**: a map
   from aspect to (current, max). Max comes from the essence profile; current starts full.

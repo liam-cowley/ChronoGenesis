@@ -28,6 +28,11 @@ import com.chronogenesis.entity.Raptor;
 import com.chronogenesis.entity.Titanosaur;
 import com.chronogenesis.entity.CargoHold;
 import com.chronogenesis.entity.Unbegotten;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.phys.AABB;
 import com.chronogenesis.player.PlayerGrafts;
 import com.chronogenesis.player.PlayerGraft;
@@ -1138,6 +1143,67 @@ public final class ChronoGameTests {
                 "the ruin should keep its two blueprints");
         helper.assertTrue(blocks.stream().anyMatch(info -> info.state().is(Blocks.CHEST) && info.nbt() != null
                 && info.nbt().getString("LootTable").equals("chronogenesis:chests/abandoned_laboratory")), "chest loot missing");
+        helper.succeed();
+    }
+
+    /**
+     * Needles are swapped for what they are, not just their aspect: the old one comes back, and a needle of the ages
+     * draws two drams a jab where an ordinary one draws one.
+     */
+    @GameTest(template = "floor7")
+    public static void eraNeedleDrawsTwo(GameTestHelper helper) {
+        ServerPlayer player = fakePlayer(helper);
+        player.setShiftKeyDown(true);
+        ItemStack syringe = new ItemStack(ModItems.CHRONO_SYRINGE.get());
+        player.setItemInHand(InteractionHand.MAIN_HAND, syringe);
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(ModItems.IRON_NEEDLE.get()));
+        syringe.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(ModItems.SABRE_NEEDLE.get()));
+        syringe.use(helper.getLevel(), player, InteractionHand.MAIN_HAND);
+        helper.assertTrue(syringe.get(ModDataComponents.NEEDLE.get()) == ModItems.SABRE_NEEDLE.get(), "sabre needle not fitted");
+        helper.assertTrue(player.getInventory().countItem(ModItems.IRON_NEEDLE.get()) == 1, "the iron needle was not given back");
+        player.setShiftKeyDown(false);
+        Cow cow = helper.spawn(EntityType.COW, 3, 1, 3);
+        cow.setNoAi(true);
+        ModItems.CHRONO_SYRINGE.get().drawFrom(syringe, player, cow, InteractionHand.MAIN_HAND);
+        EssenceContents drawn = EssenceItems.get(syringe);
+        helper.assertTrue(drawn != null && drawn.aspect() == Aspect.DENSITY && drawn.amount() == 2, "expected 2 drams of Density, got " + drawn);
+        helper.succeed();
+    }
+
+    /**
+     * The ages are worth the trip: every era recipe loads, their creatures drop their materials, the blocks of each
+     * age give theirs (only there), and research asks for them.
+     */
+    @GameTest(template = "floor7")
+    public static void eraMaterialsAreGathered(GameTestHelper helper) {
+        var server = helper.getLevel().getServer();
+        for (String recipe : List.of("galvanic_jar", "preserving_fluid", "catgut", "sunbrass_ingot", "amber_lens", "rime_coil",
+                "zircon_lattice", "sabre_needle", "claw_needle", "ivory_needle", "zircon_needle", "stasis_ampoule_from_rime",
+                "stasis_ampoule_from_amber", "brass_armature_from_titan_scale", "ganglion_from_resonant_crystal",
+                "chrono_lab_coat_from_pelt", "brass_blend_from_primordial_ash", "density_culture_from_verdant_spore")) {
+            helper.assertTrue(server.getRecipeManager().byKey(ChronoGenesis.id(recipe)).isPresent(), "recipe " + recipe + " did not load");
+        }
+        // None failed to parse (a broken recipe is only logged): all of them are there.
+        long recipes = server.getRecipeManager().getRecipes().stream().filter(holder -> holder.id().getNamespace().equals(ChronoGenesis.MODID)).count();
+        helper.assertTrue(recipes >= 78, "only " + recipes + " recipes loaded");
+        var tables = server.reloadableRegistries();
+        for (String table : List.of("entities/mammoth", "entities/woolly_rhino", "entities/smilodon", "entities/raptor",
+                "entities/titanosaur", "entities/precursor_golem", "entities/unbegotten_limb")) {
+            helper.assertTrue(tables.getLootTable(ResourceKey.create(Registries.LOOT_TABLE, ChronoGenesis.id(table))) != LootTable.EMPTY,
+                    "loot table " + table + " missing");
+        }
+        Map<String, Item> drops = Map.of("era/rime_crystal", ModItems.RIME_CRYSTAL.get(), "era/zircon", ModItems.ZIRCON.get(),
+                "era/jurassic_amber", ModItems.JURASSIC_AMBER.get(), "era/verdant_spore", ModItems.VERDANT_SPORE.get(),
+                "era/primordial_ash", ModItems.PRIMORDIAL_ASH.get());
+        LootParams params = new LootParams.Builder(helper.getLevel()).create(LootContextParamSets.EMPTY);
+        for (var drop : drops.entrySet()) {
+            var items = tables.getLootTable(ResourceKey.create(Registries.LOOT_TABLE, ChronoGenesis.id(drop.getKey()))).getRandomItems(params);
+            helper.assertTrue(items.stream().anyMatch(stack -> stack.is(drop.getValue())), drop.getKey() + " gave " + items);
+        }
+        var topics = helper.getLevel().registryAccess().registryOrThrow(com.chronogenesis.biocomputer.Research.REGISTRY);
+        helper.assertTrue(topics.get(ChronoGenesis.id("level_3_powers")).materials().stream()
+                .anyMatch(material -> material.test(new ItemStack(ModItems.JURASSIC_AMBER.get(), 4))), "Deepest Infusion should need amber");
         helper.succeed();
     }
 

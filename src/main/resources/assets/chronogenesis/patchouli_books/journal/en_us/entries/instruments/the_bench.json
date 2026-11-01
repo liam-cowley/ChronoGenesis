@@ -1,0 +1,22 @@
+{
+  "name": "The Bench",
+  "icon": "chronogenesis:galvanic_jar",
+  "category": "chronogenesis:instruments",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Three things I make before anything else, because everything else is made of them.$(br2)A $(l)Galvanic Jar$() holds a jolt: an organ grafted on with one wakes. $(l)Preserving Fluid$() keeps flesh from rotting, and things grow in it that should not. $(l)Catgut$() stitches living things to living things."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:galvanic_jar",
+      "recipe2": "chronogenesis:preserving_fluid"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "chronogenesis:catgut",
+      "text": "The ages have better ways to most of what I make. See $(l)Spoils of the Ages$()."
+    }
+  ]
+}

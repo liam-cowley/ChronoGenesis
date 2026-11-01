@@ -10,6 +10,8 @@ import com.chronogenesis.item.CreativeBlockItem;
 import com.chronogenesis.item.CultureItem;
 import com.chronogenesis.item.EssenceContainerItem;
 import com.chronogenesis.item.EssenceJugItem;
+import com.chronogenesis.item.EraMaterialItem;
+import com.chronogenesis.item.EraMaterialItem.Age;
 import com.chronogenesis.item.EssenceManipulatorItem;
 import com.chronogenesis.item.EternalHourglassItem;
 import com.chronogenesis.item.NeedleItem;
@@ -47,6 +49,58 @@ public final class ModItems {
     public static final DeferredItem<NeedleItem> GOLD_NEEDLE = needle("gold_needle", Aspect.SPEED);
     public static final DeferredItem<NeedleItem> BONE_NEEDLE = needle("bone_needle", Aspect.SIZE);
     public static final DeferredItem<NeedleItem> AMETHYST_NEEDLE = needle("amethyst_needle", Aspect.TIME);
+    // Needles of the ages: each draws two drams a jab.
+    /** Sabre fang (Ice Age): Density. */
+    public static final DeferredItem<NeedleItem> SABRE_NEEDLE = needle("sabre_needle", Aspect.DENSITY, 2);
+    /** Raptor claw (Jurassic): Speed. */
+    public static final DeferredItem<NeedleItem> CLAW_NEEDLE = needle("claw_needle", Aspect.SPEED, 2);
+    /** Mammoth ivory (Ice Age): Size. */
+    public static final DeferredItem<NeedleItem> IVORY_NEEDLE = needle("ivory_needle", Aspect.SIZE, 2);
+    /** Zircon (Hadean): Time, as old as the world's first stone. */
+    public static final DeferredItem<NeedleItem> ZIRCON_NEEDLE = needle("zircon_needle", Aspect.TIME, 2);
+
+    // Components of the bench: made from what the present has.
+    /** Copper, glass and redstone: a jar that holds a jolt. Wakes an organ when it is grafted on. */
+    public static final DeferredItem<EraMaterialItem> GALVANIC_JAR = material("galvanic_jar", null);
+    /** Keeps flesh from rotting: what cultures are grown in and specimens kept in. */
+    public static final DeferredItem<EraMaterialItem> PRESERVING_FLUID = material("preserving_fluid", null);
+    /** Gut thread, for stitching living things to living things. */
+    public static final DeferredItem<EraMaterialItem> CATGUT = material("catgut", null);
+
+    // The Age of the Precursors: one from each kingdom.
+    public static final DeferredItem<EraMaterialItem> SUNMETAL_INGOT = material("sunmetal_ingot", Age.PRECURSOR_ERA);
+    public static final DeferredItem<EraMaterialItem> TIDE_PEARL = material("tide_pearl", Age.PRECURSOR_ERA);
+    public static final DeferredItem<EraMaterialItem> HEARTH_EMBER = material("hearth_ember", Age.PRECURSOR_ERA);
+    public static final DeferredItem<EraMaterialItem> VERDANT_SPORE = material("verdant_spore", Age.PRECURSOR_ERA);
+    public static final DeferredItem<EraMaterialItem> RESONANT_CRYSTAL = material("resonant_crystal", Age.PRECURSOR_ERA);
+    // The Ice Age.
+    public static final DeferredItem<EraMaterialItem> MAMMOTH_IVORY = material("mammoth_ivory", Age.ICE_AGE);
+    public static final DeferredItem<EraMaterialItem> WOOLLY_PELT = material("woolly_pelt", Age.ICE_AGE);
+    public static final DeferredItem<EraMaterialItem> SABRE_FANG = material("sabre_fang", Age.ICE_AGE);
+    public static final DeferredItem<EraMaterialItem> RIME_CRYSTAL = material("rime_crystal", Age.ICE_AGE);
+    public static final DeferredItem<EraMaterialItem> FROZEN_MARROW = material("frozen_marrow", Age.ICE_AGE);
+    // The Jurassic Age.
+    public static final DeferredItem<EraMaterialItem> RAPTOR_CLAW = material("raptor_claw", Age.JURASSIC_AGE);
+    public static final DeferredItem<EraMaterialItem> TITAN_SCALE = material("titan_scale", Age.JURASSIC_AGE);
+    public static final DeferredItem<EraMaterialItem> CYCAD_FROND = material("cycad_frond", Age.JURASSIC_AGE);
+    public static final DeferredItem<EraMaterialItem> JURASSIC_AMBER = material("jurassic_amber", Age.JURASSIC_AGE);
+    // The Hadean Eon.
+    public static final DeferredItem<EraMaterialItem> ZIRCON = material("zircon", Age.HADEAN_EON);
+    public static final DeferredItem<EraMaterialItem> PRIMORDIAL_ASH = material("primordial_ash", Age.HADEAN_EON);
+    public static final DeferredItem<EraMaterialItem> METEORIC_IRON = material("meteoric_iron", Age.HADEAN_EON);
+    // Before Time.
+    public static final DeferredItem<EraMaterialItem> UNBEGOTTEN_ICHOR = ITEMS.registerItem("unbegotten_ichor",
+            properties -> new EraMaterialItem(properties, Age.BEFORE_TIME), new Item.Properties().rarity(Rarity.RARE));
+    // What the ages make together.
+    /** Brass alloyed with Precursor sunmetal in a hearth ember's heat: it does not tarnish. */
+    public static final DeferredItem<EraMaterialItem> SUNBRASS_INGOT = material("sunbrass_ingot", null);
+    /** Jurassic amber ground into a lens: it holds what it sees still. */
+    public static final DeferredItem<EraMaterialItem> AMBER_LENS = material("amber_lens", null);
+    /** Rime crystals wound in copper: a coil that keeps things from the pull of the hours. */
+    public static final DeferredItem<EraMaterialItem> RIME_COIL = material("rime_coil", null);
+    /** Zircon grown on a sunbrass frame round a resonant crystal: the oldest stone, tuned to ring. */
+    public static final DeferredItem<EraMaterialItem> ZIRCON_LATTICE = ITEMS.registerItem("zircon_lattice",
+            properties -> new EraMaterialItem(properties, null), new Item.Properties().rarity(Rarity.UNCOMMON));
 
     // Containers
     /** 8 drams of one glass-safe aspect. */
@@ -231,7 +285,15 @@ public final class ModItems {
     }
 
     private static DeferredItem<NeedleItem> needle(String name, Aspect aspect) {
-        return ITEMS.registerItem(name, properties -> new NeedleItem(properties, aspect), new Item.Properties().stacksTo(16));
+        return needle(name, aspect, 1);
+    }
+
+    private static DeferredItem<NeedleItem> needle(String name, Aspect aspect, int draw) {
+        return ITEMS.registerItem(name, properties -> new NeedleItem(properties, aspect, draw), new Item.Properties().stacksTo(16));
+    }
+
+    private static DeferredItem<EraMaterialItem> material(String name, Age age) {
+        return ITEMS.registerItem(name, properties -> new EraMaterialItem(properties, age), new Item.Properties());
     }
 
     private static DeferredItem<com.chronogenesis.item.PlayerGraftItem> playerGraft(String name, com.chronogenesis.player.PlayerGraft graft) {

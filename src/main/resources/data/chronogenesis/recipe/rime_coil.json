@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CR",
+    "RC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "chronogenesis:rime_crystal"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:rime_coil",
+    "count": 1
+  }
+}

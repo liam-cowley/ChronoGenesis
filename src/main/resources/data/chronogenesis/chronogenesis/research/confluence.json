@@ -24,6 +24,10 @@
     {
       "tag": "c:ingots/brass",
       "count": 2
+    },
+    {
+      "item": "chronogenesis:tide_pearl",
+      "count": 2
     }
   ],
   "clues": [

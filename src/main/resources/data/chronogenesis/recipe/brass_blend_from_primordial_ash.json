@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "c:ingots/copper"
+    },
+    {
+      "tag": "c:ingots/copper"
+    },
+    {
+      "tag": "c:ingots/copper"
+    },
+    {
+      "tag": "c:ingots/gold"
+    },
+    {
+      "item": "chronogenesis:primordial_ash"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:brass_blend",
+    "count": 8
+  }
+}

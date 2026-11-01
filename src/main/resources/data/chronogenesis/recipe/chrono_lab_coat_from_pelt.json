@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "W W",
+    "CBC",
+    "WCW"
+  ],
+  "key": {
+    "W": {
+      "item": "chronogenesis:woolly_pelt"
+    },
+    "C": {
+      "item": "chronogenesis:catgut"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:chrono_lab_coat",
+    "count": 1
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/blackstone"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/basalt"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/smooth_basalt"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/polished_basalt"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/tuff"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/magma_block"
+        }
+      ]
+    },
+    {
+      "condition": "minecraft:location_check",
+      "predicate": {
+        "dimension": "chronogenesis:hadean_eon"
+      }
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.3
+    }
+  ],
+  "table": "chronogenesis:era/primordial_ash"
+}

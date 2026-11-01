@@ -176,6 +176,11 @@
     writhing mass), 3D eyes that follow the player through line of sight, tentacles that part for its eye and reach
     for whoever comes close. ✅ The present's ruins: Ruined Castle, Abandoned Marketplace, Collapsed Observatory,
     Drowned Specimen House and the hidden Intact Laboratory, each with its past view, clues and loot.
+18. ✅ Spoils of the ages: the bench's components (galvanic jar, preserving fluid, catgut) in place of rotten flesh
+    everywhere, nineteen materials from the eras (five Precursor kingdoms, the Ice Age's beasts and frost, the
+    Jurassic's claws, scales and amber, the Hadean's ash, zircon and meteoric iron, the Unbegotten's ichor), four
+    alloys and parts made of them, needles of the ages (two drams a jab), better recipes and later research that
+    need them.
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

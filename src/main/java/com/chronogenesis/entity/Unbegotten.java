@@ -475,6 +475,8 @@ public class Unbegotten extends Monster {
             limb.kill();
         }
         spawnAtLocation(new ItemStack(ModItems.HEART_OF_THE_UNBEGOTTEN.get()));
+        // Its ichor, what it was made of before it was made.
+        spawnAtLocation(new ItemStack(ModItems.UNBEGOTTEN_ICHOR.get(), 4 + random.nextInt(3)));
         // Two of the grafts it was growing, for a body that is not its own.
         List<PlayerGraft> grafts = new ArrayList<>(List.of(PlayerGraft.values()));
         Collections.shuffle(grafts, new java.util.Random(random.nextLong()));

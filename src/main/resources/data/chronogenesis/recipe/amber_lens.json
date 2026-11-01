@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:jurassic_amber"
+    },
+    {
+      "item": "chronogenesis:jurassic_amber"
+    },
+    {
+      "item": "minecraft:glass_pane"
+    },
+    {
+      "item": "chronogenesis:sunbrass_ingot"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:amber_lens",
+    "count": 2
+  }
+}

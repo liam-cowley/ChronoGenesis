@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:verdant_spore"
+    },
+    {
+      "item": "chronogenesis:preserving_fluid"
+    },
+    {
+      "item": "chronogenesis:preserved_brain"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:culture",
+    "count": 3,
+    "components": {
+      "chronogenesis:aspect": "awareness"
+    }
+  }
+}

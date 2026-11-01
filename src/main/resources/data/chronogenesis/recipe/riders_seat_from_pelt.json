@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "W W",
+    "WCW",
+    "B B"
+  ],
+  "key": {
+    "W": {
+      "item": "chronogenesis:woolly_pelt"
+    },
+    "C": {
+      "item": "chronogenesis:catgut"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:riders_seat",
+    "count": 1
+  }
+}

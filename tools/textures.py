@@ -3740,7 +3740,302 @@ def eldritch_endgame():
     icon("aeon", aeon)
 
 
+# ---------------------------------------------------------------- the ages' materials
+# Painted from shape masks: each shape shaded by light from the top-left over a four-tone ramp and outlined, then
+# details laid on (a gnat in the amber, a spark over the jar, cracks glowing in the ember).
+
+def _tones(hi, light, mid, dark):
+    return [hi, light, mid, dark]
+
+
+def _shape_paint(img, mask, ramp, outline=OUTLINE, bias=0.0):
+    pts = [(x, y) for y in range(16) for x in range(16) if mask(x, y)]
+    if not pts:
+        return img
+    lo = min(x + y for x, y in pts)
+    hi = max(x + y for x, y in pts)
+    for x, y in pts:
+        edge = any(not (0 <= nx < 16 and 0 <= ny < 16 and mask(nx, ny)) for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)))
+        if edge and outline is not None:
+            img.putpixel((x, y), outline)
+            continue
+        t = ((x + y) - lo) / max(1, hi - lo) + bias
+        img.putpixel((x, y), ramp[max(0, min(3, int(t * 4)))])
+    return img
+
+
+def _oval(cx, cy, rx, ry):
+    return lambda x, y: ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1.0
+
+
+def _polygon(points):
+    def inside(x, y):
+        px, py = x + 0.5, y + 0.5
+        n = len(points)
+        c = False
+        for i in range(n):
+            x1, y1 = points[i]
+            x2, y2 = points[(i + 1) % n]
+            if (y1 > py) != (y2 > py) and px < (x2 - x1) * (py - y1) / (y2 - y1) + x1:
+                c = not c
+        return c
+    return inside
+
+
+def _curve_band(curve, width):
+    """A thick curve: points within width of the polyline curve (list of (x, y)), width tapering along it."""
+    def inside(x, y):
+        px, py = x + 0.5, y + 0.5
+        for i in range(len(curve) - 1):
+            (x1, y1), (x2, y2) = curve[i], curve[i + 1]
+            dx, dy = x2 - x1, y2 - y1
+            t = max(0.0, min(1.0, ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy)))
+            w = width(((i + t) / (len(curve) - 1)))
+            if (px - x1 - t * dx) ** 2 + (py - y1 - t * dy) ** 2 <= w * w:
+                return True
+        return False
+    return inside
+
+
+def _any_of(*masks):
+    return lambda x, y: any(m(x, y) for m in masks)
+
+
+def _cut(a, b):
+    return lambda x, y: a(x, y) and not b(x, y)
+
+
+def _era_ingot(name, ramp):
+    hi, light, mid, dark = ramp
+    p = {"k": OUTLINE, "H": hi, "Y": light, "M": mid, "d": dark, "W": (255, 252, 236, 255)}
+    save(grid([
+        "................",
+        "................",
+        "................",
+        "................",
+        ".......kkkkkkk..",
+        ".....kkHHHHHHk..",
+        "...kkHHWHHHHdk..",
+        "..kHHHHHHHHddk..",
+        "..kYYYYYYYYddk..",
+        "..kYWMMMMMMddk..",
+        "..kMMMMMMMMdk...",
+        "..kddddddddk....",
+        "...kkkkkkkk.....",
+        "................",
+        "................",
+        "................",
+    ], p), "item/" + name)
+
+
+def era_materials():
+    r = rng(1901)
+    GEM = _polygon([(7.5, 2), (12, 5), (12.5, 10), (8, 14), (3.5, 10), (3, 5)])
+
+    # The bench's own components.
+    img = new()
+    glass = _tones((214, 240, 250, 255), (176, 214, 230, 255), (140, 182, 204, 255), (100, 140, 166, 255))
+    _shape_paint(img, _polygon([(4, 5), (12, 5), (12, 14), (4, 14)]), glass)
+    _shape_paint(img, _polygon([(4, 3), (12, 3), (12, 5), (4, 5)]), _tones(COPPER_HI, COPPER, COPPER, COPPER_DK))
+    for y in range(5, 13):
+        img.putpixel((7, y), COPPER_HI if y < 8 else COPPER)
+        img.putpixel((8, y), COPPER_DK)
+    for x, y in [(8, 0), (7, 1), (9, 1), (8, 2), (10, 2)]:
+        img.putpixel((x, y), (255, 248, 140, 255))
+    for x in range(5, 12):
+        img.putpixel((x, 12), (120, 200, 255, 255))
+    save(img, "item/galvanic_jar")
+
+    img = new()
+    _shape_paint(img, _any_of(_oval(7.5, 10, 4.6, 4.2), _polygon([(6, 3), (10, 3), (10, 7), (6, 7)])), glass)
+    for y in range(9, 14):
+        for x in range(4, 12):
+            if _oval(7.5, 10, 3.6, 3.2)(x, y):
+                img.putpixel((x, y), (200, 214, 120, 255) if y > 9 else (226, 236, 150, 255))
+    _shape_paint(img, _polygon([(6, 1), (10, 1), (10, 3), (6, 3)]), _tones(CORK, CORK, CORK_DK, CORK_DK))
+    img.putpixel((6, 10), GLINT)
+    save(img, "item/preserving_fluid")
+
+    img = new()
+    gut = _tones((246, 226, 200, 255), (226, 198, 166, 255), (196, 160, 128, 255), (150, 116, 90, 255))
+    _shape_paint(img, _cut(_oval(7.5, 9, 5.5, 4.5), _oval(7.5, 9, 2.6, 1.8)), gut)
+    for x in range(3, 13, 2):
+        if img.getpixel((x, 7))[3]:
+            img.putpixel((x, 7), (176, 136, 104, 255))
+    for i, (x, y) in enumerate([(12, 6), (13, 5), (13, 4), (14, 3)]):
+        img.putpixel((x, y), gut[2])
+    save(img, "item/catgut")
+
+    # The Age of the Precursors.
+    _era_ingot("sunmetal_ingot", _tones((255, 246, 200, 255), (250, 222, 140, 255), (232, 186, 80, 255), (176, 124, 40, 255)))
+    img = new()
+    _shape_paint(img, _oval(7.5, 8.5, 4.7, 4.7), _tones((246, 255, 252, 255), (206, 240, 236, 255), (150, 210, 214, 255), (96, 156, 170, 255)))
+    img.putpixel((6, 6), GLINT)
+    img.putpixel((5, 7), (255, 255, 255, 200))
+    save(img, "item/tide_pearl")
+    img = new()
+    coal = _tones((96, 70, 60, 255), (70, 50, 44, 255), (48, 34, 32, 255), (30, 22, 22, 255))
+    _shape_paint(img, _polygon([(3, 9), (6, 4), (11, 4), (13, 9), (11, 13), (5, 13)]), coal)
+    for x, y in [(6, 7), (7, 8), (8, 8), (9, 9), (10, 10), (7, 10), (6, 11), (9, 6), (10, 7)]:
+        img.putpixel((x, y), (255, 170, 60, 255) if (x + y) % 2 else (255, 230, 120, 255))
+    save(img, "item/hearth_ember")
+    img = new()
+    _shape_paint(img, _oval(8, 7.5, 4.5, 5), _tones((190, 236, 140, 255), (140, 204, 96, 255), (96, 160, 64, 255), (60, 110, 44, 255)))
+    for x, y in [(6, 5), (9, 7), (7, 9), (10, 10), (8, 4)]:
+        img.putpixel((x, y), (236, 255, 200, 255))
+    for y in range(12, 16):
+        img.putpixel((8 - (y - 12) // 2, y), (90, 70, 40, 255))
+    save(img, "item/verdant_spore")
+    img = new()
+    _shape_paint(img, GEM, _tones((190, 255, 250, 255), (90, 214, 220, 255), (40, 150, 170, 255), (20, 80, 104, 255)))
+    for x, y in [(7, 7), (8, 8), (7, 9)]:
+        img.putpixel((x, y), (10, 30, 44, 255))
+    for a in range(0, 360, 30):
+        x, y = int(7.5 + 7.2 * math.cos(math.radians(a))), int(8.5 + 7.2 * math.sin(math.radians(a)))
+        if 0 <= x < 16 and 0 <= y < 16 and img.getpixel((x, y))[3] == 0 and a % 60 == 0:
+            img.putpixel((x, y), (120, 230, 230, 160))
+    save(img, "item/resonant_crystal")
+
+    # The Ice Age.
+    ivory = _tones((252, 246, 226, 255), (236, 224, 192, 255), (212, 194, 152, 255), (166, 146, 104, 255))
+    img = new()
+    _shape_paint(img, _curve_band([(2, 14), (5, 9), (9, 5.5), (14, 4.5)], lambda t: 2.6 - 1.9 * t), ivory)
+    save(img, "item/mammoth_ivory")
+    img = new()
+    fur = _tones((176, 120, 76, 255), (146, 96, 58, 255), (116, 74, 44, 255), (82, 52, 30, 255))
+    _shape_paint(img, _polygon([(2, 4), (5, 3), (8, 4), (11, 3), (14, 4), (13, 8), (14, 12), (10, 13), (8, 12), (5, 13), (2, 12), (3, 8)]), fur)
+    for _ in range(18):
+        x, y = r.randrange(3, 13), r.randrange(4, 12)
+        if img.getpixel((x, y)) != OUTLINE and img.getpixel((x, y))[3]:
+            img.putpixel((x, y), fur[3] if r.random() < 0.6 else fur[0])
+    save(img, "item/woolly_pelt")
+    img = new()
+    _shape_paint(img, _curve_band([(4, 2), (7, 5.5), (9, 9.5), (9, 14.5)], lambda t: 3.2 - 2.7 * t), ivory)
+    for x in range(3, 8):
+        if img.getpixel((x, 2))[3] and img.getpixel((x, 2)) != OUTLINE:
+            img.putpixel((x, 2), (150, 90, 80, 255))
+    save(img, "item/sabre_fang")
+    img = new()
+    rime = _tones((240, 252, 255, 255), (196, 234, 252, 255), (140, 200, 236, 255), (90, 150, 200, 255))
+    _shape_paint(img, _any_of(_polygon([(7, 1), (10, 7), (9, 14), (5, 14), (5, 7)]), _polygon([(12, 5), (14, 10), (12, 14), (10, 13)]),
+                       _polygon([(2, 7), (5, 10), (4, 14), (1, 13)])), rime)
+    img.putpixel((7, 4), GLINT)
+    save(img, "item/rime_crystal")
+    img = new()
+    bone = _tones(BONE_HI, BONE, BONE_DK, (130, 116, 86, 255))
+    _shape_paint(img, _any_of(_curve_band([(4.5, 4.5), (11.5, 11.5)], lambda t: 1.9), _oval(3.8, 4.8, 1.9, 1.9), _oval(4.8, 3.8, 1.9, 1.9), _oval(11.2, 12.2, 1.9, 1.9), _oval(12.2, 11.2, 1.9, 1.9)), bone)
+    for x, y in [(6, 6), (7, 7), (8, 8), (9, 9)]:
+        img.putpixel((x, y), (190, 60, 70, 255))
+    for x, y in [(3, 3), (4, 3), (12, 12), (11, 12), (3, 5), (12, 10)]:
+        img.putpixel((x, y), (190, 236, 255, 255))
+    save(img, "item/frozen_marrow")
+
+    # The Jurassic Age.
+    img = new()
+    _shape_paint(img, _curve_band([(4, 14), (4, 9), (6, 5), (10, 3), (13, 4.5)], lambda t: 2.6 - 2.1 * t),
+           _tones((120, 108, 96, 255), (84, 74, 66, 255), (58, 50, 46, 255), (36, 30, 28, 255)))
+    save(img, "item/raptor_claw")
+    img = new()
+    _shape_paint(img, _polygon([(8, 1), (13, 4), (13, 10), (8, 15), (3, 10), (3, 4)]),
+           _tones((176, 188, 140, 255), (140, 152, 108, 255), (106, 118, 80, 255), (72, 82, 56, 255)))
+    for y in range(3, 14):
+        if img.getpixel((8, y)) != OUTLINE:
+            img.putpixel((8, y), (196, 206, 160, 255))
+    save(img, "item/titan_scale")
+    img = new()
+    green = _tones((150, 214, 110, 255), (108, 176, 74, 255), (72, 136, 50, 255), (44, 92, 34, 255))
+    for i in range(6):
+        s = 3 + i * 1.8
+        bx, by = 2 + s * 0.8, 14 - s * 0.8
+        _shape_paint(img, _curve_band([(bx, by), (bx - 3 + i * 0.2, by - 3)], lambda t: 1.0), green, outline=None)
+        _shape_paint(img, _curve_band([(bx, by), (bx + 3, by + 2.5 - i * 0.2)], lambda t: 1.0), green, outline=None)
+    for k in range(13):
+        img.putpixel((2 + k * 10 // 13 + 1, 14 - k * 10 // 13), (96, 70, 36, 255))
+    save(img, "item/cycad_frond")
+    img = new()
+    _shape_paint(img, _polygon([(4, 5), (8, 2), (12, 4), (13, 9), (10, 13), (5, 13), (3, 9)]),
+           _tones((255, 214, 110, 255), (240, 168, 50, 255), (210, 120, 26, 255), (150, 76, 16, 255)))
+    for x, y in [(8, 8), (7, 8), (9, 8), (8, 7), (8, 9), (7, 7), (9, 7)]:
+        img.putpixel((x, y), (40, 22, 10, 255) if (x, y) in ((8, 8), (8, 7), (8, 9)) else (110, 60, 20, 255))
+    img.putpixel((6, 5), GLINT)
+    save(img, "item/jurassic_amber")
+
+    # The Hadean Eon.
+    img = new()
+    _shape_paint(img, GEM, _tones((255, 200, 160, 255), (220, 130, 90, 255), (168, 76, 50, 255), (104, 40, 30, 255)))
+    img.putpixel((6, 5), GLINT)
+    img.putpixel((5, 6), (255, 230, 210, 255))
+    save(img, "item/zircon")
+    img = new()
+    _shape_paint(img, _polygon([(1, 14), (5, 8), (8, 6), (11, 8), (15, 14)]), _tones((176, 172, 168, 255), (140, 136, 134, 255), (104, 100, 100, 255), (72, 68, 70, 255)))
+    for x, y in [(6, 11), (10, 12), (8, 9), (12, 13)]:
+        img.putpixel((x, y), (255, 120, 50, 255))
+    save(img, "item/primordial_ash")
+    img = new()
+    _shape_paint(img, _polygon([(3, 6), (6, 3), (11, 3), (14, 7), (13, 12), (8, 14), (3, 12), (2, 9)]),
+           _tones((150, 150, 158, 255), (110, 110, 118, 255), (76, 76, 84, 255), (46, 46, 54, 255)))
+    for k in range(4, 13, 3):
+        for t in range(6):
+            x, y = k - 2 + t, 4 + t + (k % 2)
+            if 0 <= x < 16 and img.getpixel((x, y)) not in (OUTLINE, CLEAR):
+                img.putpixel((x, y), (196, 200, 214, 255))
+    save(img, "item/meteoric_iron")
+
+    # Before Time.
+    img = new()
+    _shape_paint(img, _any_of(_oval(7.5, 10, 4, 4), _polygon([(6, 3), (9, 3), (9, 7), (6, 7)])), glass)
+    for y in range(8, 14):
+        for x in range(4, 12):
+            if _oval(7.5, 10, 3, 3)(x, y):
+                img.putpixel((x, y), (60, 20, 70, 255) if (x + y) % 3 else (150, 255, 120, 255))
+    _shape_paint(img, _polygon([(6, 1), (9, 1), (9, 3), (6, 3)]), _tones((88, 60, 96, 255), (60, 36, 66, 255), (40, 20, 46, 255), (20, 12, 24, 255)))
+    save(img, "item/unbegotten_ichor")
+
+    # What the ages make together.
+    _era_ingot("sunbrass_ingot", _tones((255, 236, 210, 255), (246, 196, 150, 255), (220, 150, 100, 255), (160, 96, 60, 255)))
+    img = new()
+    _shape_paint(img, _oval(7.5, 7.5, 6.2, 6.2), _tones(BRASS_HI, BRASS, BRASS_DK, BRASS_DDK))
+    _shape_paint(img, _oval(7.5, 7.5, 4.4, 4.4), _tones((255, 226, 140, 255), (246, 180, 70, 255), (220, 130, 30, 255), (170, 86, 20, 255)), outline=None)
+    img.putpixel((5, 5), GLINT)
+    img.putpixel((6, 5), (255, 240, 200, 255))
+    save(img, "item/amber_lens")
+    img = new()
+    _shape_paint(img, _polygon([(6, 2), (10, 2), (10, 14), (6, 14)]), rime)
+    for y in range(3, 14, 2):
+        for x in range(4, 13):
+            img.putpixel((x, y), COPPER_HI if x < 7 else COPPER if x < 10 else COPPER_DK)
+        img.putpixel((3, y), OUTLINE)
+        img.putpixel((13, y), OUTLINE)
+    save(img, "item/rime_coil")
+    img = new()
+    for k in (3, 7, 11):
+        for t in range(2, 14):
+            img.putpixel((k, t), (232, 172, 120, 255))
+            img.putpixel((t, k), (232, 172, 120, 255))
+    for x in (3, 7, 11):
+        for y in (3, 7, 11):
+            img.putpixel((x, y), (220, 130, 90, 255))
+            img.putpixel((x + 1, y), (168, 76, 50, 255))
+            img.putpixel((x, y + 1), (104, 40, 30, 255))
+            img.putpixel((x + 1, y + 1), (255, 200, 160, 255))
+    for x, y in [(7, 7), (8, 7), (7, 8), (8, 8)]:
+        img.putpixel((x, y), (90, 214, 220, 255))
+    save(img, "item/zircon_lattice")
+
+    # Needles of the ages.
+    needle("sabre_needle", lambda s, v: (110, 48, 40, 255) if int(s * 2) % 2 == 0 else (150, 74, 62, 255),
+           lambda s, v: (252, 246, 226, 255) if s < 8 else (212, 194, 152, 255), (166, 146, 104, 255), wide=True)
+    needle("claw_needle", lambda s, v: BRASS_HI if v < 0 else BRASS_DK if v > 0 else BRASS,
+           lambda s, v: (110, 98, 88, 255) if s < 9 else (58, 50, 46, 255), (36, 30, 28, 255), wide=True)
+    needle("ivory_needle", lambda s, v: (232, 172, 120, 255) if v <= 0 else (160, 96, 60, 255),
+           lambda s, v: (252, 246, 226, 255) if s < 10 else (236, 224, 192, 255), (255, 255, 240, 255))
+    needle("zircon_needle", lambda s, v: (232, 172, 120, 255) if v < 0 else (160, 96, 60, 255) if v > 0 else (220, 150, 100, 255),
+           lambda s, v: (255, 200, 160, 255) if v < 0 else (168, 76, 50, 255) if v > 0 else (220, 130, 90, 255),
+           (255, 240, 220, 255), wide=True)
+
+
 eldritch_endgame()
+era_materials()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

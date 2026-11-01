@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:verdant_spore"
+    },
+    {
+      "item": "chronogenesis:preserving_fluid"
+    },
+    {
+      "type": "neoforge:components",
+      "items": "chronogenesis:essence_vial",
+      "components": {
+        "chronogenesis:essence": {
+          "aspect": "speed",
+          "amount": 8
+        }
+      }
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:culture",
+    "count": 3,
+    "components": {
+      "chronogenesis:aspect": "speed"
+    }
+  }
+}

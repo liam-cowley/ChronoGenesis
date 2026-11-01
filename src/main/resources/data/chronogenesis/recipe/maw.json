@@ -6,13 +6,13 @@
       "item": "minecraft:rotten_flesh"
     },
     {
-      "item": "minecraft:rotten_flesh"
+      "item": "minecraft:bone"
     },
     {
       "item": "minecraft:bone"
     },
     {
-      "tag": "c:nuggets/brass"
+      "item": "chronogenesis:catgut"
     }
   ],
   "result": {

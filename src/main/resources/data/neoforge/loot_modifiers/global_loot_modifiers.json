@@ -10,6 +10,17 @@
     "chronogenesis:tablets_in_jungle_ruins",
     "chronogenesis:tablets_in_villages",
     "chronogenesis:tablets_brushed_sun",
-    "chronogenesis:tablets_brushed_tide"
+    "chronogenesis:tablets_brushed_tide",
+    "chronogenesis:era_verdant_spore",
+    "chronogenesis:era_tide_pearl",
+    "chronogenesis:era_resonant_crystal_sculk",
+    "chronogenesis:era_resonant_crystal_warden",
+    "chronogenesis:era_rime_crystal",
+    "chronogenesis:era_frozen_marrow",
+    "chronogenesis:era_cycad_frond",
+    "chronogenesis:era_jurassic_amber",
+    "chronogenesis:era_primordial_ash",
+    "chronogenesis:era_zircon",
+    "chronogenesis:era_meteoric_iron"
   ]
 }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:amber_lens"
+    },
+    {
+      "item": "chronogenesis:catgut"
+    },
+    {
+      "item": "chronogenesis:galvanic_jar"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:eye",
+    "count": 2
+  }
+}

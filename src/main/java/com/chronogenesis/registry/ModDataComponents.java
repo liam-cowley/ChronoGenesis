@@ -10,10 +10,13 @@ import com.chronogenesis.lens.LensDepth;
 
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /** Item stack data. Never use custom NBT on stacks in 1.21.1. */
@@ -28,6 +31,10 @@ public final class ModDataComponents {
     /** The aspect of a culture, or of the needle fitted in a syringe. */
     public static final Supplier<DataComponentType<Aspect>> ASPECT = DATA_COMPONENTS.registerComponentType("aspect",
             builder -> builder.persistent(Aspect.CODEC).networkSynchronized(Aspect.STREAM_CODEC));
+
+    /** The needle fitted in a syringe (its aspect is {@link #ASPECT}): how much it draws, and what is given back when it is swapped. */
+    public static final Supplier<DataComponentType<Item>> NEEDLE = DATA_COMPONENTS.registerComponentType("needle",
+            builder -> builder.persistent(BuiltInRegistries.ITEM.byNameCodec()).networkSynchronized(ByteBufCodecs.registry(Registries.ITEM)));
 
     /** Where an Umbilical Locket is tied to: an organism core, in a dimension. */
     public static final Supplier<DataComponentType<GlobalPos>> LOCKET_LINK = DATA_COMPONENTS.registerComponentType("locket_link",

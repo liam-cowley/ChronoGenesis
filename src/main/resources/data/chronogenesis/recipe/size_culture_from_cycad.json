@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:cycad_frond"
+    },
+    {
+      "item": "chronogenesis:preserving_fluid"
+    },
+    {
+      "type": "neoforge:components",
+      "items": "chronogenesis:essence_vial",
+      "components": {
+        "chronogenesis:essence": {
+          "aspect": "size",
+          "amount": 8
+        }
+      }
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:culture",
+    "count": 2,
+    "components": {
+      "chronogenesis:aspect": "size"
+    }
+  }
+}

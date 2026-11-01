@@ -152,3 +152,18 @@ The generated block states and models live in `src/generated/resources/assets/ch
 | `item/dino_egg.png`, `item/fossil.png` | The egg; a bone set in grey stone |
 | `gui/power/featherweight.png` | A feather |
 
+
+## Spoils of the ages (items, 16x16, `era_materials()`)
+Painted from shape masks (shaded from the top-left over a four-tone ramp, outlined) with details laid on, then
+finished like every other texture.
+
+| Texture | What it is |
+|---|---|
+| `item/galvanic_jar`, `item/preserving_fluid`, `item/catgut` | The bench: a glass jar with a copper cap, rod and spark; a corked flask of yellow-green fluid; a coil of gut thread |
+| `item/sunmetal_ingot`, `item/sunbrass_ingot` | Ingots (the brass ingot's shape): pale gold; rose gold |
+| `item/tide_pearl`, `item/hearth_ember`, `item/verdant_spore`, `item/resonant_crystal` | A pale aqua pearl; a coal with glowing cracks; a spotted green pod on a stalk; a teal gem with a dark heart, humming |
+| `item/mammoth_ivory`, `item/woolly_pelt`, `item/sabre_fang`, `item/rime_crystal`, `item/frozen_marrow` | A curved tusk; a shaggy brown hide; a long fang, its root bloody; icy shards; a bone with red marrow and frost at its ends |
+| `item/raptor_claw`, `item/titan_scale`, `item/cycad_frond`, `item/jurassic_amber` | A dark sickle claw; an olive shield of scale with a ridge; a fern frond; amber with a gnat inside |
+| `item/zircon`, `item/primordial_ash`, `item/meteoric_iron`, `item/unbegotten_ichor` | A red-brown gem; a heap of ash with embers; a dark lump etched with silver lines; a vial of black-violet ichor |
+| `item/amber_lens`, `item/rime_coil`, `item/zircon_lattice` | Amber in a brass ring; copper wound round a rime core; a sunbrass grid with zircon at its joints |
+| `item/sabre_needle`, `item/claw_needle`, `item/ivory_needle`, `item/zircon_needle` | Needles of the ages (the needles' diagonal shape) |

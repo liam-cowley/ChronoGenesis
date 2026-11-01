@@ -3,18 +3,18 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "minecraft:rotten_flesh"
+      "item": "chronogenesis:preserving_fluid"
     },
     {
       "item": "minecraft:bone_meal"
     },
     {
       "type": "neoforge:components",
-      "items": "chronogenesis:stasis_ampoule",
+      "items": "chronogenesis:essence_vial",
       "components": {
         "chronogenesis:essence": {
           "aspect": "time",
-          "amount": 4
+          "amount": 8
         }
       }
     },

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:verdant_spore"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "chronogenesis:catgut"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:enhancing_gland",
+    "count": 2
+  }
+}

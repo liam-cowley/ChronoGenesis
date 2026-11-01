@@ -1,8 +1,8 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "equipment",
+  "category": "misc",
   "pattern": [
-    "BCB",
+    "BGB",
     "LSL",
     " L "
   ],
@@ -10,8 +10,8 @@
     "B": {
       "tag": "c:ingots/brass"
     },
-    "C": {
-      "item": "minecraft:copper_ingot"
+    "G": {
+      "item": "chronogenesis:galvanic_jar"
     },
     "L": {
       "item": "minecraft:leather"

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BTB",
+    "T T",
+    "BTB"
+  ],
+  "key": {
+    "B": {
+      "tag": "c:ingots/brass"
+    },
+    "T": {
+      "item": "chronogenesis:titan_scale"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:brass_armature",
+    "count": 16
+  }
+}

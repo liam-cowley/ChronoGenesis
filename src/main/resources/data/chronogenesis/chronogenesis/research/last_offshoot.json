@@ -27,6 +27,14 @@
     {
       "item": "minecraft:echo_shard",
       "count": 2
+    },
+    {
+      "item": "chronogenesis:zircon",
+      "count": 4
+    },
+    {
+      "item": "chronogenesis:primordial_ash",
+      "count": 4
     }
   ],
   "clues": [

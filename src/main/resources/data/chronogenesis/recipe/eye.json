@@ -11,10 +11,10 @@
       }
     ],
     {
-      "item": "minecraft:rotten_flesh"
+      "item": "chronogenesis:preserving_fluid"
     },
     {
-      "tag": "c:nuggets/brass"
+      "item": "chronogenesis:galvanic_jar"
     }
   ],
   "result": {

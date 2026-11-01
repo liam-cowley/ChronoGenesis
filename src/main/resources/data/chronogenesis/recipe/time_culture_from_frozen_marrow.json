@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:preserving_fluid"
+    },
+    {
+      "item": "minecraft:bone_meal"
+    },
+    {
+      "type": "neoforge:components",
+      "items": "chronogenesis:essence_vial",
+      "components": {
+        "chronogenesis:essence": {
+          "aspect": "time",
+          "amount": 8
+        }
+      }
+    },
+    {
+      "item": "chronogenesis:frozen_marrow"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:culture",
+    "count": 2,
+    "components": {
+      "chronogenesis:aspect": "time"
+    }
+  }
+}

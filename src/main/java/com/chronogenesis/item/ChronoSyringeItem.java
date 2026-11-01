@@ -31,7 +31,7 @@ import net.minecraft.world.level.Level;
 /**
  * The Chrono Syringe: copper and glass with a swappable needle.
  * <ul>
- *   <li>Use on a mob: draw 1 dram of the needle's aspect into the syringe (max 4).</li>
+ *   <li>Use on a mob: draw 1 dram of the needle's aspect into the syringe (max 4); a needle of the ages draws 2.</li>
  *   <li>Amethyst needle: Time goes straight into a Stasis Ampoule in your inventory. Without one,
  *       the syringe's glass ages to sand.</li>
  *   <li>Use in the air: empty the syringe into a vial in your inventory.</li>
@@ -49,6 +49,18 @@ public class ChronoSyringeItem extends EssenceContainerItem {
     @Nullable
     public static Aspect needle(ItemStack syringe) {
         return syringe.get(ModDataComponents.ASPECT.get());
+    }
+
+    /** The needle fitted (for a syringe from before needles were remembered, the plain one of its aspect). */
+    public static Item fittedNeedle(ItemStack syringe) {
+        Item fitted = syringe.get(ModDataComponents.NEEDLE.get());
+        Aspect aspect = needle(syringe);
+        return fitted != null ? fitted : aspect == null ? Items.AIR : needleFor(aspect);
+    }
+
+    /** Drams the fitted needle draws with each jab. */
+    public static int draw(ItemStack syringe) {
+        return fittedNeedle(syringe) instanceof NeedleItem needle ? needle.draw() : 1;
     }
 
     /**
@@ -80,7 +92,7 @@ public class ChronoSyringeItem extends EssenceContainerItem {
             message(player, "message.chronogenesis.syringe.full");
             return InteractionResult.FAIL;
         }
-        int taken = MobEssence.drain(target, aspect, 1);
+        int taken = MobEssence.drain(target, aspect, Math.min(draw(stack), EssenceItems.space(stack, aspect)));
         if (taken > 0) {
             EssenceContents current = EssenceItems.get(stack);
             EssenceItems.set(stack, new EssenceContents(aspect, (current == null ? 0 : current.amount()) + taken));
@@ -98,10 +110,10 @@ public class ChronoSyringeItem extends EssenceContainerItem {
             level.playSound(null, player.blockPosition(), SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 0.8f, 0.6f);
             message(player, "message.chronogenesis.syringe.glass_aged");
             player.setItemInHand(hand, new ItemStack(Items.SAND));
-            give(player, new ItemStack(ModItems.AMETHYST_NEEDLE.get()));
+            give(player, new ItemStack(fittedNeedle(stack)));
             return InteractionResult.CONSUME;
         }
-        int taken = MobEssence.drain(target, Aspect.TIME, 1);
+        int taken = MobEssence.drain(target, Aspect.TIME, Math.min(draw(stack), EssenceItems.space(player.getInventory().getItem(slot), Aspect.TIME)));
         if (taken > 0) {
             EssenceItems.fillSlot(player, slot, Aspect.TIME, taken);
             TemporalStress.add((ServerLevel) player.level(), target.blockPosition(), taken * TemporalStress.PER_DRAM_EXTRACTED);
@@ -141,7 +153,8 @@ public class ChronoSyringeItem extends EssenceContainerItem {
 
     private void swapNeedle(Player player, ItemStack syringe, ItemStack needleStack, NeedleItem newNeedle) {
         Aspect old = needle(syringe);
-        if (old == newNeedle.aspect()) {
+        Item oldNeedle = fittedNeedle(syringe);
+        if (oldNeedle == newNeedle) {
             return;
         }
         EssenceContents contents = EssenceItems.get(syringe);
@@ -151,8 +164,9 @@ public class ChronoSyringeItem extends EssenceContainerItem {
         }
         needleStack.shrink(1);
         syringe.set(ModDataComponents.ASPECT.get(), newNeedle.aspect());
-        if (old != null) {
-            give(player, new ItemStack(needleFor(old)));
+        syringe.set(ModDataComponents.NEEDLE.get(), newNeedle);
+        if (old != null && oldNeedle != Items.AIR) {
+            give(player, new ItemStack(oldNeedle));
         }
         player.level().playSound(null, player.blockPosition(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 0.6f, 1.6f);
     }

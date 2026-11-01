@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " R",
+    "S "
+  ],
+  "key": {
+    "R": {
+      "item": "chronogenesis:raptor_claw"
+    },
+    "S": {
+      "item": "chronogenesis:sunbrass_ingot"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:claw_needle",
+    "count": 2
+  }
+}

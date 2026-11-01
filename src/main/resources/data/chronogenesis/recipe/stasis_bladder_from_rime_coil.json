@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:rime_coil"
+    },
+    {
+      "item": "minecraft:slime_ball"
+    },
+    {
+      "item": "chronogenesis:catgut"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:stasis_bladder",
+    "count": 1
+  }
+}

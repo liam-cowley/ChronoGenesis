@@ -6,10 +6,10 @@
       "item": "chronogenesis:preserved_heart"
     },
     {
-      "item": "minecraft:rotten_flesh"
+      "item": "chronogenesis:catgut"
     },
     {
-      "tag": "c:nuggets/brass"
+      "item": "chronogenesis:galvanic_jar"
     }
   ],
   "result": {

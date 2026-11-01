@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    "SIS",
+    " S "
+  ],
+  "key": {
+    "S": {
+      "item": "chronogenesis:catgut"
+    },
+    "I": {
+      "item": "chronogenesis:mammoth_ivory"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:nerve_spool",
+    "count": 1
+  }
+}

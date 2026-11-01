@@ -1,0 +1,38 @@
+{
+  "name": "Spoils of the Ages",
+  "icon": "chronogenesis:jurassic_amber",
+  "category": "chronogenesis:the_past",
+  "sortnum": 12,
+  "advancement": "chronogenesis:its_alive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Every age I go back to has things the present has lost. I bring them home in my pockets: better needles, cheaper ampoules, organs without the brain they used to cost, and research the Chronocortex will not start without them.$(br2)My own bench makes three things the rest is built on: a $(l)Galvanic Jar$() (copper, glass, redstone), $(l)Preserving Fluid$() and $(l)Catgut$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Precursors",
+      "text": "One thing from each kingdom, in their chests:$(br)$(l)Sunmetal$() (the Sun Court; their golems carry it too), $(l)Tide Pearls$() (the Tide, and its guardians), $(l)Hearth Embers$() (the Hearth's houses and golems; an ember burns four times as long as coal), $(l)Verdant Spores$() (the Verdant Kingdom, and its leaves and moss) and $(l)Resonant Crystals$() (the Deep, its sculk and its Wardens).$(br2)Brass, sunmetal and an ember make $(l)Sunbrass$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Ice Age",
+      "text": "$(l)Mammoth Ivory$() and $(l)Woolly Pelts$() from the mammoths and rhinos, $(l)Sabre Fangs$() from the smilodons, $(l)Rime Crystals$() from its ice and snow, $(l)Frozen Marrow$() from the frozen dead.$(br2)A pelt suit needs no phantoms. Rime makes two ampoules from a crystal, and wound in copper a $(l)Rime Coil$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Jurassic",
+      "text": "$(l)Raptor Claws$(), $(l)Titan Scales$() (a scale-plated armature frame comes sixteen at a time), $(l)Cycad Fronds$() from the ferns and $(l)Amber$() from the trees. Amber holds time: three ampoules from one piece, and ground with sunbrass, an $(l)Amber Lens$() for eyes that need no spider."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Hadean and Before",
+      "text": "Its stone gives $(l)Primordial Ash$() (a flux: eight brass blends from one batch), now and then $(l)Zircon$(), the oldest stone there is, and rarely $(l)Meteoric Iron$(). Zircon on a sunbrass frame round a resonant crystal is a $(l)Zircon Lattice$().$(br2)What waits before time bleeds $(l)Ichor$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Needles of the Ages",
+      "text": "Each draws two drams a jab where mine draw one:$(br)$(l)Sabre$() (a fang on catgut): Density.$(br)$(l)Claw$() (a raptor's claw, sunbrass): Speed.$(br)$(l)Ivory$() (mammoth ivory, catgut): Size.$(br)$(l)Zircon$() (zircon, meteoric iron): Time.$(br2)Swapping a needle gives back the one that was fitted, whatever it was."
+    }
+  ]
+}

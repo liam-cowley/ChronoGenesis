@@ -20,8 +20,16 @@
       "count": 1
     },
     {
-      "tag": "c:ingots/brass",
+      "item": "chronogenesis:zircon_lattice",
+      "count": 1
+    },
+    {
+      "item": "chronogenesis:meteoric_iron",
       "count": 4
+    },
+    {
+      "item": "chronogenesis:unbegotten_ichor",
+      "count": 2
     }
   ],
   "clues": [

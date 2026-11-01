@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "minecraft:rotten_flesh"
+      "item": "chronogenesis:galvanic_jar"
     },
     {
       "tag": "c:ingots/brass"

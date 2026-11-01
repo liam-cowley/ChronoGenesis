@@ -1,0 +1,41 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/jungle_leaves"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/moss_block"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/azalea_leaves"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/flowering_azalea_leaves"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:blocks/vine"
+        }
+      ]
+    },
+    {
+      "condition": "minecraft:location_check",
+      "predicate": {
+        "dimension": "chronogenesis:precursor_era"
+      }
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.12
+    }
+  ],
+  "table": "chronogenesis:era/verdant_spore"
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "T T",
+    "TCT",
+    "B B"
+  ],
+  "key": {
+    "T": {
+      "item": "chronogenesis:titan_scale"
+    },
+    "C": {
+      "item": "chronogenesis:catgut"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:riders_seat",
+    "count": 1
+  }
+}

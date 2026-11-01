@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "LBL",
+    "A A"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "tag": "c:ingots/brass"
+    },
+    "A": {
+      "item": "chronogenesis:amber_lens"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:chrono_goggles",
+    "count": 1
+  }
+}

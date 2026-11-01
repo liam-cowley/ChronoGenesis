@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:brass_ingot"
+    },
+    {
+      "item": "chronogenesis:brass_ingot"
+    },
+    {
+      "item": "chronogenesis:sunmetal_ingot"
+    },
+    {
+      "item": "chronogenesis:hearth_ember"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:sunbrass_ingot",
+    "count": 3
+  }
+}

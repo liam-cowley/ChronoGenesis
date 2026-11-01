@@ -6,13 +6,13 @@
       "item": "chronogenesis:preserved_brain"
     },
     {
-      "item": "minecraft:rotten_flesh"
+      "item": "chronogenesis:preserving_fluid"
     },
     {
-      "item": "minecraft:string"
+      "item": "chronogenesis:catgut"
     },
     {
-      "tag": "c:nuggets/brass"
+      "item": "chronogenesis:galvanic_jar"
     }
   ],
   "result": {

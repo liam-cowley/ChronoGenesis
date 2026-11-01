@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:sabre_fang"
+    },
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "item": "chronogenesis:catgut"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:maw",
+    "count": 2
+  }
+}

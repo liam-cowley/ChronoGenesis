@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ZSZ",
+    "SRS",
+    "ZSZ"
+  ],
+  "key": {
+    "Z": {
+      "item": "chronogenesis:zircon"
+    },
+    "S": {
+      "item": "chronogenesis:sunbrass_ingot"
+    },
+    "R": {
+      "item": "chronogenesis:resonant_crystal"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:zircon_lattice",
+    "count": 1
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:resonant_crystal"
+    },
+    {
+      "item": "chronogenesis:catgut"
+    },
+    {
+      "item": "chronogenesis:galvanic_jar"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:ganglion",
+    "count": 2
+  }
+}

@@ -17,14 +17,18 @@
   "materials": [
     {
       "item": "minecraft:amethyst_shard",
-      "count": 16
+      "count": 8
     },
     {
       "item": "chronogenesis:preserved_heart",
       "count": 2
     },
     {
-      "item": "minecraft:ender_eye",
+      "item": "chronogenesis:jurassic_amber",
+      "count": 4
+    },
+    {
+      "item": "chronogenesis:raptor_claw",
       "count": 2
     }
   ],

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " I",
+    "C "
+  ],
+  "key": {
+    "I": {
+      "item": "chronogenesis:mammoth_ivory"
+    },
+    "C": {
+      "item": "chronogenesis:catgut"
+    }
+  },
+  "result": {
+    "id": "chronogenesis:ivory_needle",
+    "count": 3
+  }
+}
