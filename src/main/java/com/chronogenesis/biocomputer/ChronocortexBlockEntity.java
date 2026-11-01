@@ -65,7 +65,8 @@ import net.minecraft.world.phys.AABB;
  *       enough. Lessons make it aware.</li>
  *   <li>Stages: lobes and awareness together make it grow up ({@link #STAGE_LOBES}, {@link #STAGE_AWARENESS};
  *       stage 1 also needs words, stage 2 a name). The last stage, the Cerebrum, is a multiblock: its lobes must
- *       fill the whole 5 x 5 x 5 cranium around the jar. Break the cranium and it falls back to stage 2.</li>
+ *       fill the whole 5 x 5 x 5 cranium built up from the jar (the jar is the middle block of its bottom layer, and
+ *       one of its 125 blocks). Break the cranium and it falls back to stage 2.</li>
  *   <li>Speech: once it has words, it answers what is said near it ({@link CortexSpeech}).</li>
  * </ul>
  */
@@ -76,7 +77,11 @@ public class ChronocortexBlockEntity extends BlockEntity {
     public static final int[] STAGE_LOBES = {0, 8, 32, 124};
     public static final int[] STAGE_AWARENESS = {0, 4, 9, 13};
     public static final int MAX_STAGE = 3;
-    /** The cranium: lobes within this many blocks of the jar, all around it, make the Cerebrum. */
+    /**
+     * The cranium: a 5 x 5 x 5 cube standing on the jar's own layer, the jar the middle block of its bottom layer. It
+     * reaches this many blocks out from the jar to each side, and twice this up; lobes fill every block of it but the
+     * jar's own, and make the Cerebrum.
+     */
     public static final int CRANIUM_RADIUS = 2;
     public static final int LOBE_COST = 4;
     /** Awareness each remembered era gives it. */
@@ -621,13 +626,36 @@ public class ChronocortexBlockEntity extends BlockEntity {
                 && Math.abs(pos.getZ() - worldPosition.getZ()) <= CortexLobeBlock.REACH;
     }
 
-    /** Whether lobes (firm ones) fill every block of the 5 x 5 x 5 cranium around the jar. */
+    /** Every block of a cortex's cranium (the jar's own included): see {@link #CRANIUM_RADIUS}. */
+    public static Iterable<BlockPos> cranium(BlockPos jar) {
+        return BlockPos.betweenClosed(jar.offset(-CRANIUM_RADIUS, 0, -CRANIUM_RADIUS),
+                jar.offset(CRANIUM_RADIUS, 2 * CRANIUM_RADIUS, CRANIUM_RADIUS));
+    }
+
+    /**
+     * Whether a block of the cranium opens an eye when it closes: the middle of a face of the cube (one coordinate at
+     * the edge, the other two centred). The bottom face's middle is the jar itself.
+     */
+    public static boolean craniumEye(BlockPos jar, BlockPos pos) {
+        BlockPos centre = craniumCentre(jar);
+        int dx = Math.abs(pos.getX() - centre.getX());
+        int dy = Math.abs(pos.getY() - centre.getY());
+        int dz = Math.abs(pos.getZ() - centre.getZ());
+        return !pos.equals(jar) && (dx == CRANIUM_RADIUS ? 1 : 0) + (dy == CRANIUM_RADIUS ? 1 : 0) + (dz == CRANIUM_RADIUS ? 1 : 0) == 1
+                && (dx == 0 || dx == CRANIUM_RADIUS) && (dy == 0 || dy == CRANIUM_RADIUS) && (dz == 0 || dz == CRANIUM_RADIUS);
+    }
+
+    /** The middle of a cortex's cranium: right above the jar. */
+    public static BlockPos craniumCentre(BlockPos jar) {
+        return jar.above(CRANIUM_RADIUS);
+    }
+
+    /** Whether lobes (firm ones) fill every block of the cranium but the jar's. */
     public boolean craniumComplete() {
         if (level == null) {
             return false;
         }
-        for (BlockPos pos : BlockPos.betweenClosed(worldPosition.offset(-CRANIUM_RADIUS, -CRANIUM_RADIUS, -CRANIUM_RADIUS),
-                worldPosition.offset(CRANIUM_RADIUS, CRANIUM_RADIUS, CRANIUM_RADIUS))) {
+        for (BlockPos pos : cranium(worldPosition)) {
             if (pos.equals(worldPosition)) {
                 continue;
             }
@@ -690,22 +718,18 @@ public class ChronocortexBlockEntity extends BlockEntity {
         }
     }
 
-    /** The cranium closes over the jar (or opens again): its lobes become the Cerebrum, an eye on every face. */
+    /**
+     * The cranium closes over the jar (or opens again): its lobes become the Cerebrum, an eye in the middle of every
+     * face (the bottom face's middle is the jar itself).
+     */
     private void formCerebrum(ServerLevel level, boolean form) {
-        for (BlockPos pos : BlockPos.betweenClosed(worldPosition.offset(-CRANIUM_RADIUS, -CRANIUM_RADIUS, -CRANIUM_RADIUS),
-                worldPosition.offset(CRANIUM_RADIUS, CRANIUM_RADIUS, CRANIUM_RADIUS))) {
+        for (BlockPos pos : cranium(worldPosition)) {
             BlockState state = level.getBlockState(pos);
             if (!state.is(ModBlocks.CORTEX_LOBE.get())) {
                 continue;
             }
-            int dx = Math.abs(pos.getX() - worldPosition.getX());
-            int dy = Math.abs(pos.getY() - worldPosition.getY());
-            int dz = Math.abs(pos.getZ() - worldPosition.getZ());
-            // The middle of each face of the cube: one coordinate at the edge, the other two centred.
-            boolean faceCentre = (dx == CRANIUM_RADIUS ? 1 : 0) + (dy == CRANIUM_RADIUS ? 1 : 0) + (dz == CRANIUM_RADIUS ? 1 : 0) == 1
-                    && (dx == 0 || dx == CRANIUM_RADIUS) && (dy == 0 || dy == CRANIUM_RADIUS) && (dz == 0 || dz == CRANIUM_RADIUS);
             CortexLobeBlock.Part part = !form ? CortexLobeBlock.Part.MATURE
-                    : faceCentre ? CortexLobeBlock.Part.CEREBRUM_EYE : CortexLobeBlock.Part.CEREBRUM;
+                    : craniumEye(worldPosition, pos) ? CortexLobeBlock.Part.CEREBRUM_EYE : CortexLobeBlock.Part.CEREBRUM;
             if (state.getValue(CortexLobeBlock.PART) != part && (form || state.getValue(CortexLobeBlock.PART).formed())) {
                 level.setBlockAndUpdate(pos.immutable(), state.setValue(CortexLobeBlock.PART, part));
             }

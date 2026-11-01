@@ -32,7 +32,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * organisms (see {@link ChronocortexBlockEntity}). Each lobe is room for one more thing in its mind.
  * <p>
  * {@link #PART}: a fresh lobe is still a soft mass in its frame, and firms up with time. Once the lobes fill a
- * 5 x 5 x 5 cranium around the jar, the mind closes over it: the lobes become the Cerebrum, its final stage,
+ * 5 x 5 x 5 cranium built up from the jar (the jar the middle block of its bottom layer), the mind closes over it: the lobes become the Cerebrum, its final stage,
  * with an eye opening in the middle of every face.
  * Using any lobe (empty-handed or with an item) is using the Chronocortex.
  */

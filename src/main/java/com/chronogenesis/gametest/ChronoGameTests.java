@@ -811,6 +811,40 @@ public final class ChronoGameTests {
         helper.succeed();
     }
 
+    /**
+     * The cranium is a 5 x 5 x 5 standing on the jar's own layer, the jar the middle block of its bottom layer and one
+     * of its 125: 124 firm lobes close it, none below the jar, and five of them open eyes (the bottom face's middle is
+     * the jar). Take away a lobe and it is open again.
+     */
+    @GameTest(template = "floor7_tall")
+    public static void craniumStandsOnTheJar(GameTestHelper helper) {
+        BlockPos jar = new BlockPos(3, 1, 3);
+        helper.setBlock(jar, ModBlocks.CHRONOCORTEX.get());
+        ChronocortexBlockEntity cortex = helper.getBlockEntity(jar);
+        BlockPos at = helper.absolutePos(jar);
+        BlockState lobe = ModBlocks.CORTEX_LOBE.get().defaultBlockState().setValue(CortexLobeBlock.PART, CortexLobeBlock.Part.MATURE);
+        int lobes = 0;
+        int eyes = 0;
+        for (BlockPos pos : ChronocortexBlockEntity.cranium(at)) {
+            helper.assertTrue(pos.getY() >= at.getY(), "the cranium reaches below the jar: " + pos);
+            if (pos.equals(at)) {
+                continue;
+            }
+            helper.getLevel().setBlock(pos, lobe, Block.UPDATE_CLIENTS);
+            lobes++;
+            eyes += ChronocortexBlockEntity.craniumEye(at, pos) ? 1 : 0;
+        }
+        helper.assertTrue(lobes == ChronocortexBlockEntity.STAGE_LOBES[ChronocortexBlockEntity.MAX_STAGE], lobes + " lobes in the cranium");
+        helper.assertTrue(eyes == 5, eyes + " eyes on the cranium's faces");
+        helper.assertTrue(ChronocortexBlockEntity.craniumCentre(at).equals(at.above(2)), "the cranium's middle is not over the jar");
+        helper.assertTrue(cortex.craniumComplete(), "a full cranium on the jar does not close");
+        BlockPos top = at.above(4);
+        helper.assertTrue(ChronocortexBlockEntity.craniumEye(at, top), "no eye in the middle of the top");
+        helper.getLevel().setBlock(top, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+        helper.assertFalse(cortex.craniumComplete(), "a cranium with a hole in its top still closes");
+        helper.succeed();
+    }
+
     /** Once the cranium closes over the jar only lobes can be reached: a Nerve Spool used on a lobe still links. */
     @GameTest(template = "floor7")
     public static void spoolLinksThroughALobe(GameTestHelper helper) {

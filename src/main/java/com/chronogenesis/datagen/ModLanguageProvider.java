@@ -547,7 +547,7 @@ public class ModLanguageProvider extends LanguageProvider {
         add("screen.chronogenesis.chronocortex.need_awareness", "%s awareness (from lessons)");
         add("screen.chronogenesis.chronocortex.need_words", "the lesson of Words");
         add("screen.chronogenesis.chronocortex.need_name", "a name (the lesson of A Name)");
-        add("screen.chronogenesis.chronocortex.need_cranium", "firm lobes filling the whole 5x5x5 cranium around the jar");
+        add("screen.chronogenesis.chronocortex.need_cranium", "firm lobes filling a 5x5x5 cranium, the jar in the middle of its bottom layer");
         add("screen.chronogenesis.chronocortex.complete", "Fully grown.");
         add("screen.chronogenesis.chronocortex.lessons", "Lessons (show it the thing):");
         add("screen.chronogenesis.chronocortex.lesson_ready", "%s (ready)");

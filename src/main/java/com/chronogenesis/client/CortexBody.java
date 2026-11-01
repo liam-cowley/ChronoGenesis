@@ -81,7 +81,7 @@ public final class CortexBody {
             new Form(4.2f, 3.2f, 2.5f, 3.3f, 1.25f, 0, 0, 0, 0, 0, 0, 0, 3.2f),
             new Form(6.4f, 4.7f, 4.0f, 5.2f, 2.1f, 4, 10, 1.15f, 0.55f, 0.1f, 1, 0.9f, 3.6f),
             new Form(15f, 9f, 7.5f, 10f, 3.8f, 9, 34, 2.3f, 0.42f, 0.55f, 4, 1.4f, 4.4f),
-            new Form(2f, 30f, 27f, 30f, 14f, 30, 84, 4.6f, 0.5f, 0.3f, 8, 2.6f, 5.2f)};
+            new Form(34f, 30f, 27f, 30f, 14f, 30, 84, 4.6f, 0.5f, 0.3f, 8, 2.6f, 5.2f)};
 
     /** The Cerebrum's mass: lumps round a heart, each {x, y, z, radius} (unit offsets times this distance). */
     private static final float[][] LUMPS = buildLumps();
@@ -460,7 +460,7 @@ public final class CortexBody {
         float time = state.time();
         long seed = state.seed();
         int count = form.tentacles() + Math.min(stage == 3 ? 12 : 4, state.knowledge() / 3);
-        float floor = stage == 3 ? -40 : -8;
+        float floor = -8;
         float[][] lumps = stage == 3 ? lumps(time, breath) : null;
         int segments = Math.max(6, (int) ((stage == 3 ? 22 : 14) * detail));
         int around = Math.max(5, (int) (9 * detail));
@@ -629,7 +629,9 @@ public final class CortexBody {
         for (Lobe lobe : state.lobes()) {
             Vector3f at = lobe.at();
             i++;
-            if (stage == 3 && Math.abs(at.x) <= 33 && Math.abs(at.y) <= 33 && Math.abs(at.z) <= 33) {
+            // The cranium: two blocks out from the jar to each side, four up from its layer (see
+            // ChronocortexBlockEntity.CRANIUM_RADIUS).
+            if (stage == 3 && Math.abs(at.x) <= 33 && at.y >= -1 && at.y <= 65 && Math.abs(at.z) <= 33) {
                 continue;
             }
             float swell = 8.6f * (1 + 0.04f * sin(time * 0.06f + i) + 0.03f * beat(time + i * 4, 40));

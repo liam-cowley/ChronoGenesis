@@ -2,6 +2,7 @@
 Writes the GameTest arena structures (NBT) to src/main/resources/data/chronogenesis/structure/.
 
   floor7: a 7x5x7 space with a stone floor at y=0. Tests place blocks and mobs from y=1 up.
+  floor7_tall: the same, 7 high: room for a whole Chronocortex cranium (5 x 5 x 5) on the floor.
 
 Usage: python3 tools/make_test_structures.py
 """
@@ -63,3 +64,5 @@ def write(file_name, data):
 floor = [((x, 0, z), 0) for x in range(7) for z in range(7)]
 write("floor7.nbt", structure((7, 5, 7), floor, ["minecraft:stone"]))
 print("wrote floor7.nbt")
+write("floor7_tall.nbt", structure((7, 7, 7), floor, ["minecraft:stone"]))
+print("wrote floor7_tall.nbt")

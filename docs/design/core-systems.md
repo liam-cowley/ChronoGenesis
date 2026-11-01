@@ -508,7 +508,8 @@ becomes demanding, and by the final stage it is insane.
   the item to teach it. Words (book) lets it speak; A Name (a named name tag) names it; The Time of Day (clock) lets
   it tell the time. Others: direction, music, mortality, the sky, the cold, the other scientist, eternity.
 - *Stages:* 1 (Child): 8 lobes, 4 awareness, words. 2 (Adolescent): 32 lobes, 9 awareness, a name. 3 (the
-  Cerebrum): 13 awareness and firm lobes filling the whole 5 x 5 x 5 cranium around the jar, a multiblock: the lobes
+  Cerebrum): 13 awareness and firm lobes filling a 5 x 5 x 5 cranium built up from the jar
+  (the jar is the middle block of its bottom layer and counts as one of its 125), a multiblock: the lobes
   become Cerebrum with an eye in the middle of each face; break it and it drops to stage 2. Its wiring range grows
   (32, 48, 64, 96) and its jar model changes with each stage. Research topics are gated by stage.
 - *Speech:* with words, it answers chat said to it (its name, "cortex"/"brain", a question, or anything said within
