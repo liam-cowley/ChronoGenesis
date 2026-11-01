@@ -16,6 +16,7 @@ import com.chronogenesis.timetravel.PastDimension;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
@@ -28,6 +29,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
@@ -50,6 +52,15 @@ public final class LensSync {
     private static final Map<UUID, Set<Long>> SENT = new HashMap<>();
     /** Which level each player was last sent sections of: the past, or an era. */
     private static final Map<UUID, ResourceKey<Level>> SOURCE = new HashMap<>();
+    /**
+     * Ticks after a stamp at which its sections are sent again. Placing blocks only queues relighting, which the light
+     * engine works through over the next ticks; sent at once, a stamped past would keep the light of what stood there
+     * before it (the present's ruin, which the past's own generation built first): its shadows, its lamps.
+     */
+    private static final int[] RELIGHT_RESENDS = {10, 60};
+    private static final List<Resend> RESENDS = new ArrayList<>();
+
+    private record Resend(BoundingBox box, int due) {}
 
     private LensSync() {}
 
@@ -131,7 +142,33 @@ public final class LensSync {
         return PastSectionsPayload.Section.of(key, chunk.getSection(chunk.getSectionIndexFromSectionY(sectionY)), sky, block);
     }
 
-    /** The past changed inside {@code box} (a structure was stamped): send those sections again. */
+    /**
+     * The past changed inside {@code box} (a structure was stamped): send those sections again now, for the blocks,
+     * and again once the past's light has caught up with them.
+     */
+    public static void invalidateStamped(MinecraftServer server, BoundingBox box) {
+        invalidate(box);
+        for (int delay : RELIGHT_RESENDS) {
+            RESENDS.add(new Resend(box, server.getTickCount() + delay));
+        }
+    }
+
+    @SubscribeEvent
+    static void onServerTick(ServerTickEvent.Post event) {
+        if (RESENDS.isEmpty()) {
+            return;
+        }
+        int now = event.getServer().getTickCount();
+        RESENDS.removeIf(resend -> {
+            if (now < resend.due()) {
+                return false;
+            }
+            invalidate(resend.box());
+            return true;
+        });
+    }
+
+    /** The past changed inside {@code box}: send those sections again. */
     public static void invalidate(BoundingBox box) {
         for (Set<Long> sent : SENT.values()) {
             sent.removeIf(pos -> SectionPos.x(pos) >= box.minX() >> 4 && SectionPos.x(pos) <= box.maxX() >> 4

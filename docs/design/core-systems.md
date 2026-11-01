@@ -620,7 +620,10 @@ The past is a **real dimension**, `chronogenesis:past` (`data/chronogenesis/dime
 overworld's generator and seed, so its land is the land as it first generated, before anyone dug or
 built ("player-placed blocks fade out" for free). Where an overworld ruin has a **past view**
 (`data/<ns>/chronogenesis/past_view/<name>.json`: structure, past template, depth, clue), its past
-template is stamped into the past dimension once, at the same spot and rotation (`timetravel/PastStamping`).
+template is stamped into the past dimension once, at the same spot and rotation (`timetravel/PastStamping`). The
+past's own generation builds the present's ruin there first, so a past template must list every position its ruin
+uses (air where the past had nothing), and stamped sections are sent to viewers again 10 and 60 ticks later, once the
+light engine has relit them: otherwise the ruin's blocks and shadows carry over into the past view.
 While the Lens is in use, the server keeps the past chunks around the viewer loaded but not ticking
 (generating them if new) and sends their sections once each, nearest first, with the past's own light
 (`lens/LensSync`). The client builds them into chunk-section meshes a few per frame (`client/PastMesh`,

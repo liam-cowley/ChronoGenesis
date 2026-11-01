@@ -29,7 +29,8 @@ import net.minecraft.world.level.saveddata.SavedData;
 /**
  * Builds the past's structures: where a ruin in the overworld has a {@link PastView}, its past template is placed
  * into the past dimension at the same spot and turned the same way, once. The past's own generation already put
- * the same ruin there; the template (air included) replaces it with the building as it was.
+ * the same ruin there; the template (air included, at every position the ruin uses) replaces it with the building
+ * as it was. Its sections are sent to Lens viewers again once the past is relit, so none of the ruin's shadow is left.
  */
 public final class PastStamping {
     private PastStamping() {}
@@ -65,7 +66,7 @@ public final class PastStamping {
         for (StructurePiece piece : start.getPieces()) {
             if (piece instanceof PoolElementStructurePiece pooled) {
                 place(past, template.get(), pooled.getPosition(), pooled.getRotation());
-                LensSync.invalidate(piece.getBoundingBox());
+                LensSync.invalidateStamped(past.getServer(), piece.getBoundingBox());
             }
         }
         stamps.done.add(key);

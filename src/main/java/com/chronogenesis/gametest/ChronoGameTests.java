@@ -130,8 +130,10 @@ import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.StairBlock;
@@ -1103,6 +1105,41 @@ public final class ChronoGameTests {
         helper.succeed();
     }
 
+    /**
+     * A stamp's blocks change at once but its light only follows over the next ticks, which is why stamped sections are
+     * sent to Lens viewers again after relighting: a roof the present's ruin had, taken away by the stamp, still
+     * shades the spot under it when the blocks change, and no longer does by the last resend.
+     */
+    @GameTest(template = "floor7", timeoutTicks = 300)
+    public static void stampedPastIsRelit(GameTestHelper helper) {
+        ServerLevel past = helper.getLevel();
+        BlockPos under = new BlockPos(helper.absolutePos(BlockPos.ZERO).getX() + 200_000, 200, helper.absolutePos(BlockPos.ZERO).getZ());
+        // Held loaded (as Lens viewing holds the past) so the light engine relights them between beats.
+        for (int dx = -16; dx <= 16; dx += 16) {
+            for (int dz = -16; dz <= 16; dz += 16) {
+                PastDimension.keepLoaded(past, new ChunkPos((under.getX() + dx) >> 4, (under.getZ() + dz) >> 4));
+                past.getChunk((under.getX() + dx) >> 4, (under.getZ() + dz) >> 4);
+            }
+        }
+        List<BlockPos> roof = new ArrayList<>();
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dz = -4; dz <= 4; dz++) {
+                roof.add(under.offset(dx, 4, dz));
+            }
+        }
+        roof.forEach(pos -> past.setBlock(pos, Blocks.STONE.defaultBlockState(), Block.UPDATE_CLIENTS));
+        helper.runAfterDelay(40, () -> {
+            helper.assertTrue(past.getBrightness(LightLayer.SKY, under) < 15, "the ruin's roof casts no shadow to take away");
+            // The stamp: the past has air where the ruin's roof was (placed as a template places it).
+            roof.forEach(pos -> past.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS));
+            helper.runAfterDelay(60, () -> {
+                helper.assertTrue(past.getBrightness(LightLayer.SKY, under) == 15,
+                        "still in the ruin's shadow by the last resend: " + past.getBrightness(LightLayer.SKY, under));
+                helper.succeed();
+            });
+        });
+    }
+
     /** Reading a blueprint scribbles: the sound event exists and plays its pen-on-paper sounds. */
     @GameTest(template = "floor7")
     public static void scribbleSoundRegistered(GameTestHelper helper) {
@@ -1230,6 +1267,11 @@ public final class ChronoGameTests {
             StructureTemplate ruin = level.getStructureManager().get(ChronoGenesis.id(name)).orElseThrow();
             StructureTemplate past = level.getStructureManager().get(view.template()).orElseThrow();
             helper.assertTrue(ruin.getSize().equals(past.getSize()), name + ": past " + past.getSize() + " does not line up with " + ruin.getSize());
+            // Stamped over the ruin, the past must cover every block of it, or the ruin's pieces stand on in the past.
+            Set<BlockPos> covered = new HashSet<>();
+            past.palettes.get(0).blocks().forEach(info -> covered.add(info.pos()));
+            helper.assertTrue(ruin.palettes.get(0).blocks().stream().allMatch(info -> covered.contains(info.pos())),
+                    name + ": the ruin has blocks its past does not replace");
             var blocks = ruin.palettes.get(0).blocks();
             helper.assertTrue(blocks.stream().anyMatch(info -> info.nbt() != null
                     && info.nbt().getString("LootTable").startsWith("chronogenesis:chests/" + name)), name + ": chest loot missing");

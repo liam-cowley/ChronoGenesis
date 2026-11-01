@@ -1210,6 +1210,12 @@ def build(name):
         for pos, state in list(ruin.items()):
             if state == AIR:
                 ruin[pos] = WATER
+    # The past is stamped over the ruin the past's own generation built: wherever the ruin has something the past
+    # did not (rubble, vines, grass in the square), the past must say air, or the ruin's blocks (and their shadows)
+    # would be left standing in it.
+    past = dict(past)
+    for pos in ruin:
+        past.setdefault(pos, AIR)
     return size, past, ruin, chests
 
 
