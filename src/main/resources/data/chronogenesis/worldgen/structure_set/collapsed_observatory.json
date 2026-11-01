@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "chronogenesis:collapsed_observatory",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 48,
+    "separation": 16,
+    "salt": 860443
+  }
+}

@@ -39,6 +39,13 @@
     ],
     [
       "chronogenesis:blueprint_field"
+    ],
+    [
+      "chronogenesis:blueprint_pendulum"
+    ],
+    [
+      "chronogenesis:castle_clocktower",
+      "chronogenesis:dust_to_dust"
     ]
   ],
   "order": 20,

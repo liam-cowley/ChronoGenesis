@@ -40,6 +40,7 @@ Layering: containers = body + `_fill` (tinted by aspect) + `_front`; culture = g
 | `block/brain_tissue.png` | 16x16 | Folded brain matter for the specimen jars |
 | `block/cortex_glass.png` | 16x16 | Jar glass: bright rim, faint fill, one glint (translucent) |
 | `block/cortex_fluid.png` | 16x16 | Green preserving fluid with bubbles (translucent) |
+| `block/cortex_glass_cracked.png` | 16x16 | The jar's glass split by cracks from three corners (stages 1-3 of the Chronocortex) |
 | `block/clock.png` | 16x16 | Clock graft: cream clock face in brass, hands near midnight |
 | `block/flesh_pustule.png` | 16x16 | Pustules on mature flesh |
 | `block/gland_sac.png` | 16x16 | Veined pink sac of the Enhancing Gland |
@@ -145,6 +146,7 @@ The generated block states and models live in `src/generated/resources/assets/ch
 | `entity/precursor_golem.png` | The Hearth's iron golem (iron golem layout, 128x128): bright riveted iron, a brass plate, pale amethyst eyes; no vines or cracks |
 | `entity/mammoth.png`, `smilodon.png`, `woolly_rhino.png` | The Ice Age's creatures, painted to `client/IceAgeModels`' boxes |
 | `entity/organ.png` | 64x64 patches for `client/OrganParts`: pale flesh, an eye, an iron strap, tendon, amethyst, a sac, brain folds, teeth, brass, tentacle rings (tinted parts painted pale) |
+| `entity/cortex_body.png` | 128x128 regions mapped onto the Chronocortex's meshes (`client/CortexBody`), each edge to edge: brain folds (64x64, tinted), tentacle skin (32x64, tinted: rings, suckers down the underside, root at the top), sclera (bloodshot to the back, v 0 at the iris), iris (face on, pale, tinted amber to green), pupil, eyelid, sinew, teeth, brass wire, a shard, the maw's throat |
 | `block/aeon_ice.png` | Ice with time frozen in it: a spiral, glints |
 | `block/dino_egg_0..3.png` | A mottled egg, cracking in three stages as it fills with Time |
 | `item/dino_egg.png`, `item/fossil.png` | The egg; a bone set in grey stone |

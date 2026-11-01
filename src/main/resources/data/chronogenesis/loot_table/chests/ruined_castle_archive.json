@@ -1,0 +1,149 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 3,
+        "max": 6
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:paper",
+          "weight": 20,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 2,
+                "max": 6
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:book",
+          "weight": 12,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:feather",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:ink_sac",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:writable_book",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:map",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:candle",
+          "weight": 8,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:clock",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:book",
+          "weight": 4,
+          "functions": [
+            {
+              "function": "minecraft:enchant_randomly"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 70
+        },
+        {
+          "type": "minecraft:item",
+          "name": "chronogenesis:intact_blueprint",
+          "weight": 20,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "chronogenesis:blueprint": "ledger"
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "chronogenesis:intact_blueprint",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "chronogenesis:blueprint": "pendulum"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

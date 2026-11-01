@@ -536,39 +536,56 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .modelFile(state.getValue(DissectionTableBlock.BRAIN) ? withBrain : empty).build());
         simpleBlockItem(ModBlocks.DISSECTION_TABLE.get(), empty);
 
-        // Stage 0: a great jar, the brain swollen inside, electrodes through the brass lid.
+        // The brain itself (and everything that grows out of it) is drawn animated by client/CortexBrainRenderer: the
+        // models are only what it grows in. The item keeps a brain in its jar.
+        BlockModelBuilder item = tableModel("chronocortex_item");
+        jar(item, 3, 13, 16);
+        // Stage 0: a great jar of preserving fluid, electrodes through the brass lid.
         BlockModelBuilder cortex = tableModel("chronocortex");
-        jar(cortex, 3, 13, 16);
+        box(cortex, 3.25f, 9, 3.25f, 12.75f, 14.5f, 12.75f, "#fluid", false);
+        box(cortex, 3, 9, 3, 13, 15, 13, "#glass", false);
+        box(cortex, 2.5f, 15, 2.5f, 13.5f, 16, 13.5f, "#brass", false);
         box(cortex, 5, 16, 7.5f, 6, 19, 8.5f, "#steel", false);
         box(cortex, 10, 16, 7.5f, 11, 19, 8.5f, "#steel", false);
-        // Stage 1: the brain fills the jar to the glass; more electrodes.
-        BlockModelBuilder child = tableModel("chronocortex_stage_1");
-        box(child, 3.4f, 9, 3.4f, 12.6f, 14.5f, 12.6f, "#brain", false);
-        box(child, 3.25f, 9, 3.25f, 12.75f, 14.5f, 12.75f, "#fluid", false);
-        box(child, 3, 9, 3, 13, 15, 13, "#glass", false);
-        box(child, 2.5f, 15, 2.5f, 13.5f, 16, 13.5f, "#brass", false);
+        // Stage 1: the brain has swollen past the glass and cracked it, and shoved its lid up askew, electrodes and all.
+        BlockModelBuilder child = tableModel("chronocortex_stage_1")
+                .texture("cracked", modLoc("block/cortex_glass_cracked"));
+        box(child, 3.25f, 9, 3.25f, 12.75f, 14, 12.75f, "#fluid", false);
+        box(child, 3, 9, 3, 13, 15, 13, "#cracked", false);
+        child.element().from(2.5f, 16.5f, 2.5f).to(13.5f, 17.5f, 13.5f)
+                .rotation().angle(22.5f).axis(Direction.Axis.Z).origin(8, 17, 8).end()
+                .allFaces((dir, face) -> face.texture("#brass")).end();
         for (float[] e : new float[][] {{5, 7.5f}, {10, 7.5f}, {7.5f, 5}, {7.5f, 10}}) {
-            box(child, e[0], 16, e[1], e[0] + 1, 19, e[1] + 1, "#steel", false);
+            child.element().from(e[0], 17.5f, e[1]).to(e[0] + 1, 20.5f, e[1] + 1)
+                    .rotation().angle(22.5f).axis(Direction.Axis.Z).origin(8, 17, 8).end()
+                    .allFaces((dir, face) -> face.texture("#steel")).end();
         }
-        // Stage 2 and 3: the lid is gone; the brain swells up out of the jar, wired every which way.
-        BlockModelBuilder[] grown = new BlockModelBuilder[2];
-        for (int i = 0; i < 2; i++) {
-            BlockModelBuilder model = tableModel("chronocortex_stage_" + (i + 2));
-            float crown = i == 0 ? 19 : 22;
-            box(model, 3, 9, 3, 13, 14, 13, "#glass", false);
-            box(model, 3.25f, 9, 3.25f, 12.75f, 14, 12.75f, "#brain", false);
-            box(model, 2, 14, 2, 14, crown - 2, 14, "#brain", false);
-            box(model, 4, crown - 2, 4, 12, crown, 12, "#brain", false);
-            box(model, 2.5f, 13, 2.5f, 13.5f, 14, 13.5f, "#brass", false);
-            for (float[] e : new float[][] {{1, 7.5f}, {14, 7.5f}, {7.5f, 1}, {7.5f, 14}}) {
-                box(model, e[0], 13, e[1], e[0] + 1, crown - 1, e[1] + 1, "#steel", false);
-            }
-            grown[i] = model;
+        // Stages 2 and 3: the jar burst. A jagged ring of glass is left round the stalk, shards lean on the table, the
+        // lid has rolled off onto the floor and the electrodes lie where they fell.
+        BlockModelBuilder burst = tableModel("chronocortex_stage_2")
+                .texture("cracked", modLoc("block/cortex_glass_cracked"));
+        box(burst, 3, 9, 3, 13, 10.5f, 13, "#cracked", false);
+        // Shards: x0, z0, x1, z1, height, lean.
+        float[][] shards = {{3, 3, 6, 3.5f, 4, 22.5f}, {9, 3, 12, 3.5f, 3.5f, -22.5f}, {12.5f, 6, 13, 9, 3, 22.5f},
+                {3, 8, 3.5f, 11, 5, -22.5f}, {6, 12.5f, 9, 13, 2.5f, 22.5f}, {10, 12.5f, 12.5f, 13, 4.5f, -22.5f}};
+        for (float[] sh : shards) {
+            burst.element().from(sh[0], 9, sh[1]).to(sh[2], 9 + sh[4], sh[3])
+                    .rotation().angle(sh[5]).axis(Direction.Axis.Y).origin((sh[0] + sh[2]) / 2, 9, (sh[1] + sh[3]) / 2).end()
+                    .allFaces((dir, face) -> face.texture("#cracked")).end();
         }
-        ModelFile[] stages = {cortex, child, grown[0], grown[1]};
+        burst.element().from(9, 0, 9).to(16, 1, 15)
+                .rotation().angle(22.5f).axis(Direction.Axis.Y).origin(12, 0, 12).end()
+                .allFaces((dir, face) -> face.texture("#brass")).end();
+        burst.element().from(1, 9, 12).to(4, 10, 13)
+                .rotation().angle(-22.5f).axis(Direction.Axis.Y).origin(2, 9, 12).end()
+                .allFaces((dir, face) -> face.texture("#steel")).end();
+        burst.element().from(12, 9, 2).to(15, 10, 3)
+                .rotation().angle(22.5f).axis(Direction.Axis.Y).origin(13, 9, 2).end()
+                .allFaces((dir, face) -> face.texture("#steel")).end();
+        ModelFile[] stages = {cortex, child, burst, burst};
         getVariantBuilder(ModBlocks.CHRONOCORTEX.get()).forAllStates(state -> ConfiguredModel.builder()
                 .modelFile(stages[state.getValue(ChronocortexBlock.STAGE)]).build());
-        simpleBlockItem(ModBlocks.CHRONOCORTEX.get(), cortex);
+        simpleBlockItem(ModBlocks.CHRONOCORTEX.get(), item);
         lobes();
         offshoots();
         jurassic();

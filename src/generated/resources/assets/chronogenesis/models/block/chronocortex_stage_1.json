@@ -164,38 +164,6 @@
     {
       "faces": {
         "down": {
-          "texture": "#brain"
-        },
-        "east": {
-          "texture": "#brain"
-        },
-        "north": {
-          "texture": "#brain"
-        },
-        "south": {
-          "texture": "#brain"
-        },
-        "up": {
-          "texture": "#brain"
-        },
-        "west": {
-          "texture": "#brain"
-        }
-      },
-      "from": [
-        3.4,
-        9,
-        3.4
-      ],
-      "to": [
-        12.6,
-        14.5,
-        12.6
-      ]
-    },
-    {
-      "faces": {
-        "down": {
           "texture": "#fluid"
         },
         "east": {
@@ -221,29 +189,29 @@
       ],
       "to": [
         12.75,
-        14.5,
+        14,
         12.75
       ]
     },
     {
       "faces": {
         "down": {
-          "texture": "#glass"
+          "texture": "#cracked"
         },
         "east": {
-          "texture": "#glass"
+          "texture": "#cracked"
         },
         "north": {
-          "texture": "#glass"
+          "texture": "#cracked"
         },
         "south": {
-          "texture": "#glass"
+          "texture": "#cracked"
         },
         "up": {
-          "texture": "#glass"
+          "texture": "#cracked"
         },
         "west": {
-          "texture": "#glass"
+          "texture": "#cracked"
         }
       },
       "from": [
@@ -280,12 +248,21 @@
       },
       "from": [
         2.5,
-        15,
+        16.5,
         2.5
       ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "z",
+        "origin": [
+          8,
+          17,
+          8
+        ]
+      },
       "to": [
         13.5,
-        16,
+        17.5,
         13.5
       ]
     },
@@ -312,12 +289,21 @@
       },
       "from": [
         5,
-        16,
+        17.5,
         7.5
       ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "z",
+        "origin": [
+          8,
+          17,
+          8
+        ]
+      },
       "to": [
         6,
-        19,
+        20.5,
         8.5
       ]
     },
@@ -344,12 +330,21 @@
       },
       "from": [
         10,
-        16,
+        17.5,
         7.5
       ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "z",
+        "origin": [
+          8,
+          17,
+          8
+        ]
+      },
       "to": [
         11,
-        19,
+        20.5,
         8.5
       ]
     },
@@ -376,12 +371,21 @@
       },
       "from": [
         7.5,
-        16,
+        17.5,
         5
       ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "z",
+        "origin": [
+          8,
+          17,
+          8
+        ]
+      },
       "to": [
         8.5,
-        19,
+        20.5,
         6
       ]
     },
@@ -408,12 +412,21 @@
       },
       "from": [
         7.5,
-        16,
+        17.5,
         10
       ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "z",
+        "origin": [
+          8,
+          17,
+          8
+        ]
+      },
       "to": [
         8.5,
-        19,
+        20.5,
         11
       ]
     }
@@ -422,6 +435,7 @@
   "textures": {
     "brain": "chronogenesis:block/brain_tissue",
     "brass": "chronogenesis:block/brass_fitting",
+    "cracked": "chronogenesis:block/cortex_glass_cracked",
     "fluid": "chronogenesis:block/cortex_fluid",
     "glass": "chronogenesis:block/cortex_glass",
     "particle": "chronogenesis:block/dissection_table_top",

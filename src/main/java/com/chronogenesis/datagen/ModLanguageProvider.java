@@ -596,6 +596,17 @@ public class ModLanguageProvider extends LanguageProvider {
         add("clue.chronogenesis.blueprint_locket", "A scribbled blueprint: the locket on a cord");
         add("clue.chronogenesis.blueprint_field", "A scribbled blueprint: the rewinding dome");
         add("clue.chronogenesis.lab_in_its_prime", "A laboratory as it was, lights burning");
+        add("tooltip.chronogenesis.blueprint.ledger", "A lord's wagers on a horse race: the winner came home before he set out");
+        add("tooltip.chronogenesis.blueprint.pendulum", "A pendulum's swings counted against the stars, night after night: slowing");
+        add("tooltip.chronogenesis.blueprint.gills", "Notes on gills taken from the sea's creatures, grafted on to breathe for their host");
+        add("clue.chronogenesis.blueprint_ledger", "The lord's ledger: a race won before it was run");
+        add("clue.chronogenesis.blueprint_pendulum", "A star chart: the pendulum that slowed");
+        add("clue.chronogenesis.blueprint_gills", "Notes on gills: a graft that breathes for its host");
+        add("clue.chronogenesis.castle_clocktower", "The clocktower's inscription: \"A heavy heart keeps slower hours\"");
+        add("clue.chronogenesis.market_wares", "A market as it was: amethyst, copper, glass and silk on its stalls");
+        add("clue.chronogenesis.measured_heavens", "An observatory as it was: they measured time by the heavens");
+        add("clue.chronogenesis.drowned_specimens", "A sunken laboratory as it was, its specimens alive");
+        add("clue.chronogenesis.the_other_scientist", "The hidden laboratory as it was: they woke a brain too");
         add("research.chronogenesis.temporal_lens", "Temporal Lens");
         add("research.chronogenesis.temporal_lens.desc", "A spyglass that looks backwards. Burns Time to show the past over the present: ruins whole again, and old blueprints legible where they lie.");
 

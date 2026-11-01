@@ -13,6 +13,8 @@ line up block for block.
   precursor_shrine_<k>       an obelisk in the shrine a kingdom built round it (the Precursor era)
   jurassic_temple            a sealed ziggurat of the Jurassic Age: a Temporal Core, five seals, raptors
   ice_temple_ruin            what is left of it in the Ice Age: broken, frozen, the obelisk still whole
+  <ruin>, <ruin>_past        the present's other ruins, each with its past: ruined_castle, abandoned_marketplace,
+                             collapsed_observatory, drowned_specimen_house, intact_laboratory. See present_ruins.py
 
 Usage: python3 tools/make_structures.py
 """
@@ -252,6 +254,7 @@ def obelisk():
 # See precursor_cities.py: the kingdoms' cities (over the present's remains) and the shrines round the obelisks.
 
 import precursor_cities  # noqa: E402  (next to this script)
+import present_ruins  # noqa: E402
 
 
 # ---------------------------------------------------------------- the Jurassic temple
@@ -431,6 +434,10 @@ if __name__ == "__main__":
     write("abandoned_laboratory.nbt", structure((W, H, D), ruin, chest))
     write("abandoned_laboratory_past.nbt", structure((W, H, D), past, {}))
     write("obelisk.nbt", structure((3, 12, 3), obelisk(), {}))
+    for ruin_name in present_ruins.BUILDERS:
+        size, past_blocks, ruin_blocks, chests = present_ruins.build(ruin_name)
+        write(ruin_name + ".nbt", structure(size, ruin_blocks, chests))
+        write(ruin_name + "_past.nbt", structure(size, past_blocks, {}))
     for i, city_name in enumerate(precursor_cities.CITIES):
         built = precursor_cities.city(city_name, 4100 + 10 * i)
         write("precursor_city_" + city_name + ".nbt", structure((built.n, built.H, built.n), built.b, built.nbt, built.entities))

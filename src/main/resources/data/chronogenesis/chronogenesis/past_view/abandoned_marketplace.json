@@ -1,0 +1,6 @@
+{
+  "structure": "chronogenesis:abandoned_marketplace",
+  "template": "chronogenesis:abandoned_marketplace_past",
+  "depth": "decades",
+  "clue": "chronogenesis:market_wares"
+}

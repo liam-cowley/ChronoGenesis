@@ -131,8 +131,8 @@
    Centuries; ghosts of past templates; reads faded blueprints into clues). ✅ Abandoned Laboratory (worldgen,
    ruin + past template, faded blueprints, loot with rare intact blueprints). ✅ Obelisks (worldgen, unbreakable;
    through the Lens a black-hole distortion shader; past view swallowed by the horizon; two clues).
-   Still to do: the other structures (castle, marketplace, observatory, drowned specimen house, intact lab),
-   shrines, Echo visuals (recent events), player-placed blocks fading in the Lens, "Ages" (stage 1).
+   ✅ The other structures (castle, marketplace, observatory, drowned specimen house, intact lab), each with its past.
+   Still to do: shrines, Echo visuals (recent events), player-placed blocks fading in the Lens, "Ages" (stage 1).
 
 9. ✅ Powers rework: passive and active powers, the Essence Manipulator (wheel, strength), gland levels
    (cultures, Deeper/Deepest Infusion), the Confluence Needle and ten composite powers. ✅ Time 1-3: Rewind, Slow
@@ -172,6 +172,10 @@
     Eldritch powers. Grafts for the player's body (eye, tendrils, tentacle, hide), shown on the model, cut out again on
     a Dissection Table with Time. ✅ The harness fixed to the beast's body: real blocks in a hold, mirrored on its back
     at any angle, used and built on as normal (Valkyrien Skies-style).
+17. ✅ The Chronocortex as meshes: a body per stage (afloat in the jar, bursting it, out on a stalk, the Cerebrum's
+    writhing mass), 3D eyes that follow the player through line of sight, tentacles that part for its eye and reach
+    for whoever comes close. ✅ The present's ruins: Ruined Castle, Abandoned Marketplace, Collapsed Observatory,
+    Drowned Specimen House and the hidden Intact Laboratory, each with its past view, clues and loot.
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

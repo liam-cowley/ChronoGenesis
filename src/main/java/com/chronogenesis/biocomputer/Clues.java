@@ -36,6 +36,16 @@ public final class Clues {
     public static final ResourceLocation ALIVE = ChronoGenesis.id("its_alive");
     /** An Abandoned Laboratory seen through the Temporal Lens as it was. (Granted by its past view's data.) */
     public static final ResourceLocation LAB_PRIME = ChronoGenesis.id("lab_in_its_prime");
+    /** The Ruined Castle seen through the Lens at Centuries: its clocktower's inscription. (Its past view's data.) */
+    public static final ResourceLocation CASTLE_CLOCKTOWER = ChronoGenesis.id("castle_clocktower");
+    /** The Abandoned Marketplace seen through the Lens: what its stalls sold. */
+    public static final ResourceLocation MARKET_WARES = ChronoGenesis.id("market_wares");
+    /** The Collapsed Observatory seen through the Lens at Centuries: its dome whole, its pendulum swinging. */
+    public static final ResourceLocation MEASURED_HEAVENS = ChronoGenesis.id("measured_heavens");
+    /** The Drowned Specimen House seen through the Lens: dry, lit, its specimens alive. */
+    public static final ResourceLocation DROWNED_SPECIMENS = ChronoGenesis.id("drowned_specimens");
+    /** The Intact Laboratory seen through the Lens: the one before you woke a brain too. */
+    public static final ResourceLocation OTHER_SCIENTIST = ChronoGenesis.id("the_other_scientist");
     /** An obelisk seen through the Lens: the past bends around it and goes dark. */
     public static final ResourceLocation NAIL_IN_TIME = ChronoGenesis.id("nail_in_time");
     /** Fragments of the much older inscription, read at the edge of an obelisk's event horizon. */
@@ -56,7 +66,7 @@ public final class Clues {
 
     /** Clues from witnessing things. Blueprints add one each: see {@link com.chronogenesis.lens.Blueprint#clue()}. */
     public static final List<ResourceLocation> ALL = List.of(FLOATING, VACANT, DUST, TORN, LONG_ROAD, HEAVY_HEART, ALIVE, LAB_PRIME,
-            NAIL_IN_TIME, OLDER_INSCRIPTION, FIRST_CITIES, ICE_AGE,
+            CASTLE_CLOCKTOWER, MARKET_WARES, MEASURED_HEAVENS, DROWNED_SPECIMENS, OTHER_SCIENTIST, NAIL_IN_TIME, OLDER_INSCRIPTION, FIRST_CITIES, ICE_AGE,
             GIANTS_WALKED, SEALED_TEMPLE, UNBEGOTTEN_SLAIN);
 
     /** How close a player must be to notice something. */

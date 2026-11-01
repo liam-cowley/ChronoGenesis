@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "chronogenesis:drowned_specimen_house",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 36,
+    "separation": 12,
+    "salt": 294011
+  }
+}

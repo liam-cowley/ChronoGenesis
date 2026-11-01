@@ -42,6 +42,14 @@
     ],
     [
       "chronogenesis:sealed_temple"
+    ],
+    [
+      "chronogenesis:measured_heavens",
+      "chronogenesis:castle_clocktower"
+    ],
+    [
+      "chronogenesis:the_other_scientist",
+      "chronogenesis:drowned_specimens"
     ]
   ],
   "order": 10

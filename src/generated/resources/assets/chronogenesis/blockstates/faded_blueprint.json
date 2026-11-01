@@ -15,6 +15,36 @@
       "model": "chronogenesis:block/faded_blueprint",
       "y": 270
     },
+    "design=gills,facing=east": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 90
+    },
+    "design=gills,facing=north": {
+      "model": "chronogenesis:block/faded_blueprint"
+    },
+    "design=gills,facing=south": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 180
+    },
+    "design=gills,facing=west": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 270
+    },
+    "design=ledger,facing=east": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 90
+    },
+    "design=ledger,facing=north": {
+      "model": "chronogenesis:block/faded_blueprint"
+    },
+    "design=ledger,facing=south": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 180
+    },
+    "design=ledger,facing=west": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 270
+    },
     "design=locket,facing=east": {
       "model": "chronogenesis:block/faded_blueprint",
       "y": 90
@@ -27,6 +57,21 @@
       "y": 180
     },
     "design=locket,facing=west": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 270
+    },
+    "design=pendulum,facing=east": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 90
+    },
+    "design=pendulum,facing=north": {
+      "model": "chronogenesis:block/faded_blueprint"
+    },
+    "design=pendulum,facing=south": {
+      "model": "chronogenesis:block/faded_blueprint",
+      "y": 180
+    },
+    "design=pendulum,facing=west": {
       "model": "chronogenesis:block/faded_blueprint",
       "y": 270
     }

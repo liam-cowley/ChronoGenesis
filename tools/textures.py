@@ -3284,6 +3284,147 @@ def organ_sheet():
     WRITTEN.append(("entity/organ", img.crop((0, 0, 32, 32)).resize((16, 16))))
 
 
+def cortex_body_sheet():
+    """128x128: the Chronocortex's grown body (client/CortexBody), mapped onto curved meshes rather than boxes:
+    brain folds (64x64, tinted), tentacle skin (32x64, tinted: rings, a double row of suckers down its underside,
+    smaller towards the tip at the bottom), the eye's sclera (bloodshot towards the back), its iris (seen face on,
+    painted pale and tinted from amber to eldritch green), the pupil, eyelid, sinew, teeth, brass wire, a shard and
+    the maw's throat. Every region is drawn whole: meshes map each one once, edge to edge."""
+    img = _sheet(128, 128)
+    r = rng(1801)
+
+    def put(x, y, c, a=255):
+        img.putpixel((x, y), tuple(max(0, min(255, int(k))) for k in c[:3]) + (a,))
+
+    # Brain folds: serpentine gyri, deep sulci between them, fine veins over the crowns.
+    for y in range(64):
+        for x in range(64):
+            w1 = x * 0.72 + 2.6 * math.sin(y * 0.37 + 0.6) + 1.8 * math.sin(x * 0.21 + y * 0.27)
+            w2 = y * 0.5 + 2.4 * math.sin(x * 0.27 + 1.9)
+            crown = abs(math.sin(w1))
+            base = 165 + 80 * crown ** 0.6
+            c = (base, base * 0.86, base * 0.88)
+            if crown < 0.24 or abs(math.sin(w2)) < 0.09:
+                c = (110, 62, 76)
+            elif crown < 0.4:
+                c = (c[0] * 0.8, c[1] * 0.72, c[2] * 0.76)
+            j = r.randint(-4, 4)
+            put(x, y, (c[0] + j, c[1] + j, c[2] + j))
+    # Tentacle skin: u runs round it (32), v along it (64, root at the top). Underside is u 18-30.
+    for y in range(64):
+        tip = y / 63.0
+        for x in range(32):
+            ring = 0.82 + 0.18 * abs(math.sin(y * math.pi / 3.0))
+            belly = 1.0 if 18 <= x <= 30 else 0.0
+            v = 200 * ring + 30 * belly - 25 * tip
+            c = (v, v * 0.84, v * 0.86)
+            if x in (17, 31):
+                c = (c[0] * 0.8, c[1] * 0.74, c[2] * 0.78)
+            j = r.randint(-5, 5)
+            put(64 + x, y, (c[0] + j, c[1] + j, c[2] + j))
+    for row in range(14):
+        cy = 3 + row * 4.4
+        size = 2.1 * (1.0 - row / 18.0)
+        for cx in (21, 27):
+            for y in range(int(cy - 3), int(cy + 4)):
+                for x in range(cx - 3, cx + 4):
+                    if 0 <= y < 64:
+                        d = math.hypot(x - cx, y - cy)
+                        if d < size * 0.5:
+                            put(64 + x, y, (96, 52, 64))
+                        elif d < size:
+                            put(64 + x, y, (246, 226, 222))
+                        elif d < size + 0.7:
+                            put(64 + x, y, (170, 128, 136))
+    # Sclera: v 0 meets the iris, v 31 is the back of the eyeball; veins creep from the back.
+    for y in range(32):
+        for x in range(32):
+            back = y / 31.0
+            v = 236 - 60 * back ** 1.5
+            put(96 + x, y, (v + r.randint(-3, 3), v * 0.95, v * 0.88))
+    for k in range(6):
+        x = 2.5 + k * 5.2 + r.random()
+        for y in range(31, 8 + r.randint(0, 12), -1):
+            x += r.uniform(-0.7, 0.7)
+            xi = int(x) % 32
+            put(96 + xi, y, (190 - y, 40, 48))
+    # Iris: face on, a dark limbal ring, striations from the pupil out, a bright collarette, flecks.
+    for y in range(32):
+        for x in range(32):
+            dx, dy = x - 15.5, y - 15.5
+            d = math.hypot(dx, dy) / 15.5
+            a = math.atan2(dy, dx)
+            if d > 1.0:
+                put(96 + x, 32 + y, (40, 34, 30))
+                continue
+            stria = 0.75 + 0.25 * math.sin(a * 23 + math.sin(d * 9) * 1.5)
+            v = (255 if d < 0.38 else 225 - 70 * (d - 0.38)) * stria
+            c = (v, v * 0.97, v * 0.85)
+            if 0.36 < d < 0.44:
+                c = (255, 250, 220)
+            if d > 0.88:
+                c = (60, 50, 44)
+            if r.random() < 0.04 and d < 0.85:
+                c = (255, 255, 240)
+            put(96 + x, 32 + y, c)
+    # Pupil: almost black, a cold sheen at its middle.
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, y - 7.5) / 7.5
+            put(64 + x, 64 + y, (14 + 26 * max(0, 0.5 - d), 6, 20 + 40 * max(0, 0.5 - d)))
+    # Eyelid: wrinkled flesh, its edge (v 15) dark and wet.
+    for y in range(16):
+        for x in range(16):
+            v = 196 + 24 * math.sin(y * 1.5 + math.sin(x * 0.7)) - (60 if y >= 14 else 0)
+            put(80 + x, 64 + y, (v, v * 0.82, v * 0.84))
+    # Sinew: long fibres along v.
+    for y in range(16):
+        for x in range(16):
+            v = 200 + 30 * math.sin(x * 2.1 + math.sin(y * 0.4) * 1.3) + r.randint(-6, 6)
+            put(96 + x, 64 + y, (v, v * 0.88, v * 0.86))
+    # Teeth: ivory, darker towards the gum (v 15).
+    for y in range(16):
+        for x in range(16):
+            v = 246 - 6 * y - (8 if x % 4 == 0 else 0)
+            put(112 + x, 64 + y, (v, v * 0.96, v * 0.84))
+    # Brass wire, wound.
+    for y in range(16):
+        for x in range(16):
+            c = BRASS_HI if (x + y) % 4 == 0 else BRASS if (x + y) % 4 < 3 else BRASS_DK
+            put(64 + x, 80 + y, c)
+    # A shard of amethyst.
+    for y in range(16):
+        for x in range(16):
+            c = AME_HI if abs(x - 7.5) < 2 else AME if abs(x - 7.5) < 5 else AME_DK
+            put(80 + x, 80 + y, c)
+    # The maw's throat: dark red, ridged, black at its depth (v 15).
+    for y in range(16):
+        for x in range(16):
+            v = (1 - y / 15.0) * (0.75 + 0.25 * abs(math.sin(y * 1.3)))
+            put(96 + x, 80 + y, (150 * v + 10, 30 * v, 44 * v + 6))
+    full = os.path.join(OUT, "entity/cortex_body.png")
+    os.makedirs(os.path.dirname(full), exist_ok=True)
+    img.save(full)
+    WRITTEN.append(("entity/cortex_body", img.crop((0, 0, 64, 64)).resize((16, 16))))
+
+
+def cracked_jar_glass():
+    """The jar's glass split by a brain too big for it: the clear pane with cracks running from one corner."""
+    glass = new()
+    for y in range(16):
+        for x in range(16):
+            glass.putpixel((x, y), GLASS_EDGE if x in (0, 15) or y in (0, 15) else GLASS_IN)
+    r = rng(1802)
+    for start in [(1, 1), (14, 3), (3, 14)]:
+        x, y = start
+        for _ in range(14):
+            if 0 < x < 15 and 0 < y < 15:
+                glass.putpixel((x, y), (236, 248, 255, 230))
+            x += r.choice([0, 1, 1]) * (1 if start[0] < 8 else -1)
+            y += r.choice([0, 1, 1]) * (1 if start[1] < 8 else -1)
+    save(glass, "block/cortex_glass_cracked")
+
+
 def ice_and_eggs():
     """Aeon Ice (pale ice with time frozen in it: a spiral, a clock's tick, glints), the dinosaur egg (mottled, cracking
     in three stages), its item, and the fossil (bone set in grey stone)."""
@@ -3366,6 +3507,8 @@ precursor_kingdoms()
 precursor_golem()
 ice_age_entities()
 organ_sheet()
+cortex_body_sheet()
+cracked_jar_glass()
 ice_and_eggs()
 featherweight_icon()
 

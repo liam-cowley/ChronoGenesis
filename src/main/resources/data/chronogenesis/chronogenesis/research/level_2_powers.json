@@ -33,6 +33,17 @@
     [
       "chronogenesis:torn_time",
       "chronogenesis:heavy_heart"
+    ],
+    [
+      "chronogenesis:market_wares",
+      "chronogenesis:vacant_mind"
+    ],
+    [
+      "chronogenesis:drowned_specimens",
+      "chronogenesis:floating_creature"
+    ],
+    [
+      "chronogenesis:blueprint_gills"
     ]
   ],
   "order": 0

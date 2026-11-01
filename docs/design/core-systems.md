@@ -313,13 +313,28 @@ Its roles:
 
    Most topics accept **several alternative clue sets**, so the research tree branches: you can
    unlock the Lens or the Suit through different discoveries in different orders.
-   **Its look (as built, `client/CortexBrainRenderer`):** not a jar and a cube of lobes but a living brain. Folds of
-   brain rise out of the jar, more every stage; its grown lobes are not drawn as blocks but as swelling masses of
-   folds where they stand (the Cerebrum's eyes open in them, watching). Tendrils reach out of it, more for every
-   stage and every thing it knows, longer as it grows. Its knowledge (`knowledge()`: lessons, eras remembered twice
-   over, creatures learned; synced to clients) makes it stranger: its flesh goes from grey-pink to bruise violet to
-   an eldritch green, eyes open in a ring round it, its folds stop keeping to a brain's shape, a crown of shards
-   turns over it (10+), and at the last a maw opens in it (16+).
+   **Its look (as built, `client/CortexBrainRenderer`, `CortexBody`, `CortexGaze`):** not boxes but curved meshes
+   (`client/FleshMesh`: surfaces sampled on a grid, normals from the grid, each fold shaded by how deep it is; texture
+   `entity/cortex_body.png`), a different body every stage, each bigger and stranger than the last:
+   - **Stage 0:** a folded brain afloat in the jar's fluid (hemispheres, fissure, cerebellum, a trailing spinal cord,
+     drifting nerves, brass wires from the lid's electrodes) with one small eye in its brow. It turns in the fluid to
+     face whoever it watches.
+   - **Stage 1:** swollen to fill the jar; the glass cracked and the lid shoved up askew (block model), a second eye
+     opening, the first tentacles budding over the rim.
+   - **Stage 2:** out of the burst jar on a stalk of itself, roots gripping the table, as big as a torso. Its great
+     eye crawls round under the skin to keep you in sight; small eyes open round it and sink as the great eye passes;
+     tentacles hang over the table and crawl along the floor.
+   - **Stage 3, the Cerebrum:** a writhing mass filling the cranium and more: a heart of folds with fourteen lumps
+     heaving round it, the great eye as wide as a man, eyes on the cranium's faces and on stalks, and thirty-odd
+     tentacles coiling. Those nearest the eye draw back to let it see.
+   Grown lobes outside the mass are folded blobs where they stand, slung to it by sinew. The **eyes** are spheres
+   (a sclera bloodshot to the back, an iris seen face on, a slit pupil, lids and a fleshy rim) that turn to follow the
+   local player continuously while they are in its **line of sight** (blocks that cast no shadow, its own lobes and
+   the jar do not hide them; checked every 4 ticks). Out of sight they wander. When it sees you its pupils widen and
+   its lids open; if you stare back they narrow to slits and it squints; come close and the nearest tentacles reach for
+   you. Heartbeats wash over it and down its tentacles. Its knowledge (`knowledge()`) still makes it stranger: flesh
+   from grey-pink to violet to eldritch green, the iris from amber to a glowing green, more eyes and tentacles, a
+   crown of shards (10+), a maw of teeth under its eye (16+). Fewer facets far off.
 3. **Temporal shifts.** Time travel, from stage 1 onward.
    **As built:** eras are data (`data/<ns>/chronogenesis/era/<name>.json`: dimension, stage, lesson, Time cost,
    minutes, clue). Its **Eras** page sends a player within 8 blocks (`timetravel/TemporalShift`): it needs the era's
@@ -641,6 +656,24 @@ Clues are spent in Chronocortex research.
 | **Abandoned Village / Marketplace** | Through the Lens: trade stalls whose wares hint at recipes and needle materials |
 | **Collapsed Observatory** | Astronomers measured time. Clues for Time synthesis and the Pendulum |
 | **Drowned Specimen House** | Underwater lab. Aquatic specimens and grafts |
+
+**As built** (`tools/present_ruins.py`, each drawn whole as its past template and decayed by a fixed seed into the
+ruin, so the Lens's past view lines up block for block; every one has a past view with a clue, loot tables under
+`chests/`, and the clues stand in for witnessed ones in research):
+- **Ruined Castle** (plains, forests, hills; Centuries, *castle_clocktower*): broken curtain walls (breached in the
+  west), four towers (one fallen), a gatehouse, the keep (the great hall, the lord's archive with his faded
+  **ledger**, his chamber) and the clocktower, still standing, its bell hanging, one face fallen. Skeletons haunt it.
+- **Abandoned Marketplace** (plains, savanna, taiga, desert; Decades, *market_wares*): a square round a dry fountain,
+  six stalls (glazier, jeweller, coppersmith, apothecary, clockmaker, curio-monger), the merchant's house, the bell.
+- **Collapsed Observatory** (hills, meadows, slopes; Centuries, *measured_heavens*): a round tower, a spiral ramp, the
+  pendulum fallen into its cracked rose of candles, the telescope across the study, an orrery, the **star chart**.
+- **Drowned Specimen House** (oceans, on the floor; Decades, *drowned_specimens*): flooded (no air in the template),
+  shattered tanks of dead coral, kelp; the past is dry under its glass roof with the specimens alive. **Notes on
+  gills**. Drowned spawn in it.
+- **Intact Laboratory** (rare; Decades, *the_other_scientist*): a dry well with a rotten lid, a lightning rod in the
+  grass beside it, and a shaft down to a sealed bunker 14 blocks under: a dead Chronocortex under its conductor, a
+  necrotic organism, the scientist's skull on the pillow, one soul lantern burning; an intact blueprint guaranteed.
+  New blueprint designs: `ledger`, `pendulum`, `gills`.
 
 ### Shrines and Obelisks
 These are ancient stones that are **almost untouched by time**: no weathering, no moss. Looking at

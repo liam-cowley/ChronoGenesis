@@ -1,0 +1,37 @@
+{
+  "name": "Other Ruins",
+  "icon": "minecraft:cracked_stone_bricks",
+  "category": "chronogenesis:the_past",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "The laboratory is not the only ruin that remembers. Everywhere I look there are places time has worn down, and the $(l)Temporal Lens$() shows each as it was. Seeing one whole is a $(l)clue$(), and some of them hold old papers I can read through it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Ruined Castle",
+      "text": "A keep inside broken walls, its clocktower still standing with the bell in it. Skeletons walk the bailey at night.$(br2)At $(l)Centuries$() the keep stands whole and the clock goes; there is something cut in the band under its faces. In the archive, the lord's $(l)ledger$() lies faded on its desk."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Abandoned Marketplace",
+      "text": "A square of empty stalls round a dry fountain, the awnings rotted to rags, the bell still on its post.$(br2)At $(l)Decades$() it is a market again, and I can see what the stalls sold: glass, amethyst, copper, silk and skulls, a clockmaker's dials. A needle could be made of what was on those counters."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Collapsed Observatory",
+      "text": "A broken tower on the heights. Its pendulum fell and cracked the floor; its telescope lies across the study.$(br2)At $(l)Centuries$() the dome is whole and the pendulum swings over its rose of candles. The astronomers measured time by the heavens. Their $(l)star chart$() is still on the desk."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Drowned Specimen House",
+      "text": "A laboratory on the sea floor, flooded, its tanks shattered and its coral dead. Drowned keep it now.$(br2)Through the Lens it is dry under its glass roof, lit, and everything in its tanks is alive. On the desk: $(l)notes on gills$()."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "An Old Dry Well",
+      "text": "Somewhere there is a well with a rotten lid and a lightning rod in the grass beside it. Nobody puts a lightning rod by a well.$(br2)Below is a $(l)sealed laboratory$(), barely touched: their organism dead in its frame, a brain in a jar under the conductor, a skull on the pillow. One lamp still burns. Its blueprints are whole."
+    }
+  ]
+}

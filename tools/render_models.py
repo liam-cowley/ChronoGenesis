@@ -215,7 +215,7 @@ def essences_scene(out):
 def cortex_scene(out):
     # The gland at each level (and with a Confluence Needle), the Chronocortex at each stage, and its lobes.
     names = ["enhancing_gland", "enhancing_gland_2", "enhancing_gland_3", "enhancing_gland_3_needle",
-             "chronocortex", "chronocortex_stage_1", "chronocortex_stage_2", "chronocortex_stage_3",
+             "chronocortex_item", "chronocortex", "chronocortex_stage_1", "chronocortex_stage_2",
              "cortex_lobe_fresh", "cortex_lobe", "cerebrum", "cerebrum_eye"]
     cols, cell = 4, 200
     sheet = Image.new("RGBA", (cols * cell, 3 * cell), (46, 42, 52, 255))

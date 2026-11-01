@@ -1,0 +1,6 @@
+{
+  "structure": "chronogenesis:collapsed_observatory",
+  "template": "chronogenesis:collapsed_observatory_past",
+  "depth": "centuries",
+  "clue": "chronogenesis:measured_heavens"
+}

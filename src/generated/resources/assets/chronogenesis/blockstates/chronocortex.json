@@ -10,7 +10,7 @@
       "model": "chronogenesis:block/chronocortex_stage_2"
     },
     "stage=3": {
-      "model": "chronogenesis:block/chronocortex_stage_3"
+      "model": "chronogenesis:block/chronocortex_stage_2"
     }
   }
 }

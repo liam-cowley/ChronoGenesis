@@ -164,22 +164,22 @@
     {
       "faces": {
         "down": {
-          "texture": "#glass"
+          "texture": "#cracked"
         },
         "east": {
-          "texture": "#glass"
+          "texture": "#cracked"
         },
         "north": {
-          "texture": "#glass"
+          "texture": "#cracked"
         },
         "south": {
-          "texture": "#glass"
+          "texture": "#cracked"
         },
         "up": {
-          "texture": "#glass"
+          "texture": "#cracked"
         },
         "west": {
-          "texture": "#glass"
+          "texture": "#cracked"
         }
       },
       "from": [
@@ -189,104 +189,254 @@
       ],
       "to": [
         13,
-        14,
+        10.5,
         13
       ]
     },
     {
       "faces": {
         "down": {
-          "texture": "#brain"
+          "texture": "#cracked"
         },
         "east": {
-          "texture": "#brain"
+          "texture": "#cracked"
         },
         "north": {
-          "texture": "#brain"
+          "texture": "#cracked"
         },
         "south": {
-          "texture": "#brain"
+          "texture": "#cracked"
         },
         "up": {
-          "texture": "#brain"
+          "texture": "#cracked"
         },
         "west": {
-          "texture": "#brain"
+          "texture": "#cracked"
         }
       },
       "from": [
-        3.25,
+        3,
         9,
-        3.25
+        3
       ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "y",
+        "origin": [
+          4.5,
+          9,
+          3.25
+        ]
+      },
       "to": [
-        12.75,
-        14,
-        12.75
+        6,
+        13,
+        3.5
       ]
     },
     {
       "faces": {
         "down": {
-          "texture": "#brain"
+          "texture": "#cracked"
         },
         "east": {
-          "texture": "#brain"
+          "texture": "#cracked"
         },
         "north": {
-          "texture": "#brain"
+          "texture": "#cracked"
         },
         "south": {
-          "texture": "#brain"
+          "texture": "#cracked"
         },
         "up": {
-          "texture": "#brain"
+          "texture": "#cracked"
         },
         "west": {
-          "texture": "#brain"
+          "texture": "#cracked"
         }
       },
       "from": [
-        2,
-        14,
-        2
+        9,
+        9,
+        3
       ],
-      "to": [
-        14,
-        17,
-        14
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#brain"
-        },
-        "east": {
-          "texture": "#brain"
-        },
-        "north": {
-          "texture": "#brain"
-        },
-        "south": {
-          "texture": "#brain"
-        },
-        "up": {
-          "texture": "#brain"
-        },
-        "west": {
-          "texture": "#brain"
-        }
+      "rotation": {
+        "angle": -22.5,
+        "axis": "y",
+        "origin": [
+          10.5,
+          9,
+          3.25
+        ]
       },
-      "from": [
-        4,
-        17,
-        4
-      ],
       "to": [
         12,
-        19,
-        12
+        12.5,
+        3.5
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cracked"
+        },
+        "east": {
+          "texture": "#cracked"
+        },
+        "north": {
+          "texture": "#cracked"
+        },
+        "south": {
+          "texture": "#cracked"
+        },
+        "up": {
+          "texture": "#cracked"
+        },
+        "west": {
+          "texture": "#cracked"
+        }
+      },
+      "from": [
+        12.5,
+        9,
+        6
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "y",
+        "origin": [
+          12.75,
+          9,
+          7.5
+        ]
+      },
+      "to": [
+        13,
+        12,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cracked"
+        },
+        "east": {
+          "texture": "#cracked"
+        },
+        "north": {
+          "texture": "#cracked"
+        },
+        "south": {
+          "texture": "#cracked"
+        },
+        "up": {
+          "texture": "#cracked"
+        },
+        "west": {
+          "texture": "#cracked"
+        }
+      },
+      "from": [
+        3,
+        9,
+        8
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "y",
+        "origin": [
+          3.25,
+          9,
+          9.5
+        ]
+      },
+      "to": [
+        3.5,
+        14,
+        11
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cracked"
+        },
+        "east": {
+          "texture": "#cracked"
+        },
+        "north": {
+          "texture": "#cracked"
+        },
+        "south": {
+          "texture": "#cracked"
+        },
+        "up": {
+          "texture": "#cracked"
+        },
+        "west": {
+          "texture": "#cracked"
+        }
+      },
+      "from": [
+        6,
+        9,
+        12.5
+      ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "y",
+        "origin": [
+          7.5,
+          9,
+          12.75
+        ]
+      },
+      "to": [
+        9,
+        11.5,
+        13
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#cracked"
+        },
+        "east": {
+          "texture": "#cracked"
+        },
+        "north": {
+          "texture": "#cracked"
+        },
+        "south": {
+          "texture": "#cracked"
+        },
+        "up": {
+          "texture": "#cracked"
+        },
+        "west": {
+          "texture": "#cracked"
+        }
+      },
+      "from": [
+        10,
+        9,
+        12.5
+      ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "y",
+        "origin": [
+          11.25,
+          9,
+          12.75
+        ]
+      },
+      "to": [
+        12.5,
+        13.5,
+        13
       ]
     },
     {
@@ -311,14 +461,23 @@
         }
       },
       "from": [
-        2.5,
-        13,
-        2.5
+        9,
+        0,
+        9
       ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "y",
+        "origin": [
+          12,
+          0,
+          12
+        ]
+      },
       "to": [
-        13.5,
-        14,
-        13.5
+        16,
+        1,
+        15
       ]
     },
     {
@@ -344,13 +503,22 @@
       },
       "from": [
         1,
-        13,
-        7.5
+        9,
+        12
       ],
+      "rotation": {
+        "angle": -22.5,
+        "axis": "y",
+        "origin": [
+          2,
+          9,
+          12
+        ]
+      },
       "to": [
-        2,
-        18,
-        8.5
+        4,
+        10,
+        13
       ]
     },
     {
@@ -375,78 +543,23 @@
         }
       },
       "from": [
-        14,
-        13,
-        7.5
+        12,
+        9,
+        2
       ],
+      "rotation": {
+        "angle": 22.5,
+        "axis": "y",
+        "origin": [
+          13,
+          9,
+          2
+        ]
+      },
       "to": [
         15,
-        18,
-        8.5
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#steel"
-        },
-        "east": {
-          "texture": "#steel"
-        },
-        "north": {
-          "texture": "#steel"
-        },
-        "south": {
-          "texture": "#steel"
-        },
-        "up": {
-          "texture": "#steel"
-        },
-        "west": {
-          "texture": "#steel"
-        }
-      },
-      "from": [
-        7.5,
-        13,
-        1
-      ],
-      "to": [
-        8.5,
-        18,
-        2
-      ]
-    },
-    {
-      "faces": {
-        "down": {
-          "texture": "#steel"
-        },
-        "east": {
-          "texture": "#steel"
-        },
-        "north": {
-          "texture": "#steel"
-        },
-        "south": {
-          "texture": "#steel"
-        },
-        "up": {
-          "texture": "#steel"
-        },
-        "west": {
-          "texture": "#steel"
-        }
-      },
-      "from": [
-        7.5,
-        13,
-        14
-      ],
-      "to": [
-        8.5,
-        18,
-        15
+        10,
+        3
       ]
     }
   ],
@@ -454,6 +567,7 @@
   "textures": {
     "brain": "chronogenesis:block/brain_tissue",
     "brass": "chronogenesis:block/brass_fitting",
+    "cracked": "chronogenesis:block/cortex_glass_cracked",
     "fluid": "chronogenesis:block/cortex_fluid",
     "glass": "chronogenesis:block/cortex_glass",
     "particle": "chronogenesis:block/dissection_table_top",

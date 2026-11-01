@@ -39,6 +39,14 @@
     ],
     [
       "chronogenesis:blueprint_locket"
+    ],
+    [
+      "chronogenesis:castle_clocktower",
+      "chronogenesis:floating_creature"
+    ],
+    [
+      "chronogenesis:market_wares",
+      "chronogenesis:torn_time"
     ]
   ],
   "order": 10,

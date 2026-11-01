@@ -1,0 +1,6 @@
+{
+  "structure": "chronogenesis:drowned_specimen_house",
+  "template": "chronogenesis:drowned_specimen_house_past",
+  "depth": "decades",
+  "clue": "chronogenesis:drowned_specimens"
+}

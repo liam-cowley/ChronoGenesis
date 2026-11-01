@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
@@ -49,6 +50,7 @@ import com.chronogenesis.lens.FadedBlueprintBlock;
 import com.chronogenesis.lens.LensDepth;
 import com.chronogenesis.lens.LensSync;
 import com.chronogenesis.lens.Obelisks;
+import com.chronogenesis.lens.PastView;
 import com.chronogenesis.lens.PastViews;
 import com.chronogenesis.lens.TemporalLensItem;
 import com.chronogenesis.lore.PrecursorLore;
@@ -1136,6 +1138,40 @@ public final class ChronoGameTests {
                 "the ruin should keep its two blueprints");
         helper.assertTrue(blocks.stream().anyMatch(info -> info.state().is(Blocks.CHEST) && info.nbt() != null
                 && info.nbt().getString("LootTable").equals("chronogenesis:chests/abandoned_laboratory")), "chest loot missing");
+        helper.succeed();
+    }
+
+    /**
+     * The present's other ruins are registered, each with a past view whose template lines up with it (same size), its
+     * loot chests, and what makes it what it is (the ledger, the bell, the star chart, the flood, the dead cortex).
+     */
+    @GameTest(template = "floor7")
+    public static void presentRuinsAreRegistered(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var views = level.registryAccess().registryOrThrow(PastViews.REGISTRY);
+        Map<String, Predicate<BlockState>> marks = Map.of(
+                "ruined_castle", state -> state.is(ModBlocks.FADED_BLUEPRINT.get()) && state.getValue(FadedBlueprintBlock.DESIGN) == Blueprint.LEDGER,
+                "abandoned_marketplace", state -> state.is(Blocks.BELL),
+                "collapsed_observatory", state -> state.is(ModBlocks.FADED_BLUEPRINT.get()) && state.getValue(FadedBlueprintBlock.DESIGN) == Blueprint.PENDULUM,
+                "drowned_specimen_house", state -> state.is(ModBlocks.FADED_BLUEPRINT.get()) && state.getValue(FadedBlueprintBlock.DESIGN) == Blueprint.GILLS,
+                "intact_laboratory", state -> state.is(ModBlocks.DISSECTION_TABLE.get()) && state.getValue(DissectionTableBlock.BRAIN));
+        for (var entry : marks.entrySet()) {
+            String name = entry.getKey();
+            helper.assertTrue(level.registryAccess().registryOrThrow(Registries.STRUCTURE).containsKey(ChronoGenesis.id(name)), name + " not registered");
+            helper.assertTrue(level.registryAccess().registryOrThrow(Registries.STRUCTURE_SET).containsKey(ChronoGenesis.id(name)), name + " has no set");
+            PastView view = views.get(ChronoGenesis.id(name));
+            helper.assertTrue(view != null && view.clue().isPresent(), name + " has no past view with a clue");
+            StructureTemplate ruin = level.getStructureManager().get(ChronoGenesis.id(name)).orElseThrow();
+            StructureTemplate past = level.getStructureManager().get(view.template()).orElseThrow();
+            helper.assertTrue(ruin.getSize().equals(past.getSize()), name + ": past " + past.getSize() + " does not line up with " + ruin.getSize());
+            var blocks = ruin.palettes.get(0).blocks();
+            helper.assertTrue(blocks.stream().anyMatch(info -> info.nbt() != null
+                    && info.nbt().getString("LootTable").startsWith("chronogenesis:chests/" + name)), name + ": chest loot missing");
+            helper.assertTrue(blocks.stream().anyMatch(info -> entry.getValue().test(info.state())), name + ": its mark is missing");
+        }
+        // The drowned house is flooded: no air in it to leave a bubble in the sea.
+        StructureTemplate drowned = level.getStructureManager().get(ChronoGenesis.id("drowned_specimen_house")).orElseThrow();
+        helper.assertTrue(drowned.palettes.get(0).blocks().stream().noneMatch(info -> info.state().isAir()), "the drowned house holds air");
         helper.succeed();
     }
 

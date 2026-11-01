@@ -1,0 +1,6 @@
+{
+  "structure": "chronogenesis:intact_laboratory",
+  "template": "chronogenesis:intact_laboratory_past",
+  "depth": "decades",
+  "clue": "chronogenesis:the_other_scientist"
+}

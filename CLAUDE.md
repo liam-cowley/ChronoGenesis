@@ -97,7 +97,8 @@ Docs (read the relevant one before implementing a feature, and keep names consis
 - Lasting blocks placed in an era become remnants (`timetravel/Remnants`, data map `data_maps/block/remnant.json`):
   crumbled copies appear in the present and in the Lens's past dimension when the spot loads.
 - `tools/make_structures.py` writes the worldgen structure templates (including the Precursor cities, with their
-  Precursors as template entities). Each ruin is generated from its "past"
+  Precursors as template entities, and the present's ruins from `tools/present_ruins.py`: castle, marketplace,
+  observatory, drowned specimen house, intact laboratory). Each ruin is generated from its "past"
   template by seeded decay, so the Temporal Lens's past view lines up with it block for block. Edit the layout
   there and re-run; never hand-edit the NBT.
 - `tools/render_models.py <out.png>` renders isometric previews of the generated block models (pull the
@@ -112,6 +113,9 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   5 blocks, or they are malformed (`formed` false: `extract` gives nothing). Living parts of cores, grafts and the
   Chronocortex are animated block entity renderers (`client/OrganParts`, `OrganismCoreRenderer`, `GraftRenderer`,
   `CortexBrainRenderer`); core block models are only their frames, grown cortex lobes are not drawn as blocks.
+- The Chronocortex's body is curved meshes, not boxes: `client/FleshMesh` (grid surfaces: spheres, tubes, caps, tori)
+  and `client/CortexBody` (one form per stage; pure geometry, JOML only, so it can be rasterised offline), its eyes
+  aimed by `client/CortexGaze` (line of sight to the local player, wandering, staring back, tentacles reaching).
 - Powers are `player/Power` entries (passive or active, single essence or composite). Per-chunk time (Slow Time,
   Time Freeze) is `time/TimeZones` plus mixins in `mixin/`; it must stay cheap when no zone exists.
 - The Chrono-Insulated Suit is worn as 3D models (`client/SuitModel`, one per slot, texture

@@ -164,38 +164,6 @@
     {
       "faces": {
         "down": {
-          "texture": "#brain"
-        },
-        "east": {
-          "texture": "#brain"
-        },
-        "north": {
-          "texture": "#brain"
-        },
-        "south": {
-          "texture": "#brain"
-        },
-        "up": {
-          "texture": "#brain"
-        },
-        "west": {
-          "texture": "#brain"
-        }
-      },
-      "from": [
-        4.5,
-        9,
-        4.5
-      ],
-      "to": [
-        11.5,
-        13,
-        11.5
-      ]
-    },
-    {
-      "faces": {
-        "down": {
           "texture": "#fluid"
         },
         "east": {

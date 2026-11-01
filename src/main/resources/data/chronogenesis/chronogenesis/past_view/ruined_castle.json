@@ -1,0 +1,6 @@
+{
+  "structure": "chronogenesis:ruined_castle",
+  "template": "chronogenesis:ruined_castle_past",
+  "depth": "centuries",
+  "clue": "chronogenesis:castle_clocktower"
+}

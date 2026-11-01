@@ -37,6 +37,10 @@
     ],
     [
       "chronogenesis:its_alive"
+    ],
+    [
+      "chronogenesis:market_wares",
+      "chronogenesis:blueprint_ledger"
     ]
   ],
   "order": 8,
