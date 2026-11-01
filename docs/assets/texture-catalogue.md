@@ -167,3 +167,11 @@ finished like every other texture.
 | `item/zircon`, `item/primordial_ash`, `item/meteoric_iron`, `item/unbegotten_ichor` | A red-brown gem; a heap of ash with embers; a dark lump etched with silver lines; a vial of black-violet ichor |
 | `item/amber_lens`, `item/rime_coil`, `item/zircon_lattice` | Amber in a brass ring; copper wound round a rime core; a sunbrass grid with zircon at its joints |
 | `item/sabre_needle`, `item/claw_needle`, `item/ivory_needle`, `item/zircon_needle` | Needles of the ages (the needles' diagonal shape) |
+
+## Items: the item pass
+Every `item/` texture except layers drawn over or under another (`_fill`, `_front`, the culture) is finished by
+`_item_finish` in `tools/textures.py`, the way current Minecraft items are drawn: each material shaded from its own
+hue-shifted five-tone ramp by a rounded form lit from the top-left (a lit rim inside the top-left of the outline, a
+shaded one inside the bottom-right), one glint on each larger part, and an outline coloured from the material it rings,
+darkest where it faces away from the light. Sprites drawn without an outline get one round their silhouette, so draw
+items as flat-coloured shapes and leave the outline and shading to the pass.

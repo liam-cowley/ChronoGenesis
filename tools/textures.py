@@ -2967,9 +2967,169 @@ def _reramp(img, light, wrap, contrast=1.0, grain=2.2):
     return out
 
 
+# Layers drawn over or under another item texture (tinted fills, overlays): they must keep lining up, so they get the
+# plain sprite pass, not an outline of their own.
+ITEM_LAYERS = ("_front", "_fill", "culture")
+# Light for items: from the top-left and in front, a little more from above (as vanilla items are lit).
+ITEM_LIGHT = (-1.0, -1.25, 1.6)
+
+
+def _item_finish(img):
+    """Items the way current Minecraft draws them: a rounded form lit from the top-left (a highlight inside the lit
+    edge, shadow gathering bottom-right), each material shaded from its own hue-shifted five-tone ramp, one glint on
+    each larger part, and an outline coloured from the material it rings (darkest bottom-right) instead of black.
+    Sprites drawn without an outline get one round their silhouette."""
+    w, h = img.size
+    src = img.convert("RGBA")
+
+    def opaque(x, y):
+        return 0 <= x < w and 0 <= y < h and src.getpixel((x, y))[3] > 0
+
+    four = ((1, 0), (-1, 0), (0, 1), (0, -1))
+    eight = four + ((1, 1), (-1, -1), (1, -1), (-1, 1))
+    mask = {(x, y) for y in range(h) for x in range(w) if opaque(x, y)}
+    if not mask:
+        return img
+    edge = {(x, y) for (x, y) in mask if any(not opaque(x + dx, y + dy) for dx, dy in four)}
+    dark = lambda c: _lum(c) < 75
+    outlined = sum(1 for p in edge if dark(src.getpixel(p))) >= 0.5 * len(edge)
+    if outlined:
+        outline = {p for p in edge if dark(src.getpixel(p))}
+    else:
+        outline = {(x + dx, y + dy) for (x, y) in mask for dx, dy in four
+                   if 0 <= x + dx < w and 0 <= y + dy < h and (x + dx, y + dy) not in mask}
+    interior = mask - outline
+
+    # Materials: the interior, smoothed a touch, split into regions of like colour.
+    body = Image.new("RGBA", (w, h), CLEAR)
+    for p in interior:
+        body.putpixel(p, src.getpixel(p))
+    body = _smooth(body, wrap=False, passes=2, sigma=14.0)
+    ids, count = _regions(body, wrap=False, threshold=40)
+    members = [[] for _ in range(count)]
+    for (x, y) in interior:
+        if ids[y][x] >= 0:
+            members[ids[y][x]].append((x, y))
+
+    # A rounded form: height rises from the outline in towards the middle of the silhouette, and of each part.
+    def distance(boundary):
+        big = 99.0
+        d = [[0.0 if boundary(x, y) else big for x in range(w)] for y in range(h)]
+        steps = [((-1, 0), 1.0), ((0, -1), 1.0), ((-1, -1), 1.41), ((1, -1), 1.41)]
+        for _ in range(2):
+            for y in range(h):
+                for x in range(w):
+                    for (dx, dy), cost in steps:
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < w and 0 <= ny < h:
+                            d[y][x] = min(d[y][x], d[ny][nx] + cost)
+                        else:
+                            d[y][x] = min(d[y][x], cost)
+            for y in range(h - 1, -1, -1):
+                for x in range(w - 1, -1, -1):
+                    for (dx, dy), cost in steps:
+                        nx, ny = x - dx, y - dy
+                        if 0 <= nx < w and 0 <= ny < h:
+                            d[y][x] = min(d[y][x], d[ny][nx] + cost)
+                        else:
+                            d[y][x] = min(d[y][x], cost)
+        return d
+
+    silhouette = distance(lambda x, y: (x, y) not in interior)
+    parts = distance(lambda x, y: (x, y) not in interior or ids[y][x] < 0 or any(
+        0 <= x + dx < w and 0 <= y + dy < h and (x + dx, y + dy) in interior and ids[y + dy][x + dx] >= 0
+        and ids[y + dy][x + dx] != ids[y][x] for dx, dy in four))
+    reach = max(2.0, min(3.5, max(silhouette[y][x] for (x, y) in interior) if interior else 2.0))
+
+    def profile(d, radius):
+        d = min(d, radius) / radius
+        return radius * math.sqrt(max(0.0, 1 - (1 - d) ** 2))
+
+    height = [[0.0] * w for _ in range(h)]
+    for (x, y) in interior:
+        height[y][x] = 0.7 * profile(silhouette[y][x], reach) + 0.3 * profile(parts[y][x] + 0.5, 2.0)
+
+    def at(x, y):
+        return height[y][x] if 0 <= x < w and 0 <= y < h else 0.0
+
+    lx, ly, lz = ITEM_LIGHT
+    ln = math.sqrt(lx * lx + ly * ly + lz * lz)
+    flat = lz / ln
+    xs = [x for x, _ in mask]
+    ys = [y for _, y in mask]
+    cx, cy = (min(xs) + max(xs)) / 2.0, (min(ys) + max(ys)) / 2.0
+    span = max(4.0, (max(xs) - min(xs)) + (max(ys) - min(ys))) / 2.0
+    lit = {}
+    for (x, y) in interior:
+        gx = (at(x + 1, y) - at(x - 1, y)) / 2.0
+        gy = (at(x, y + 1) - at(x, y - 1)) / 2.0
+        nx, ny, nz = -gx, -gy, 1.0
+        nn = math.sqrt(nx * nx + ny * ny + nz * nz)
+        lam = (nx * lx + ny * ly + nz * lz) / (nn * ln)
+        lit[(x, y)] = (lam - flat) * 4.0 + ((cx - x) + (cy - y)) / span * 0.3
+        # The bevel vanilla items have: a lit rim inside the top-left of the outline, a shaded one inside the bottom-right.
+        if (x - 1, y) not in interior or (x, y - 1) not in interior:
+            lit[(x, y)] += 0.45
+        if (x + 1, y) not in interior or (x, y + 1) not in interior:
+            lit[(x, y)] -= 0.4
+
+    out = Image.new("RGBA", (w, h), CLEAR)
+    for p in mask:
+        out.putpixel(p, src.getpixel(p))
+    ramps = {}
+    for rid, region in enumerate(members):
+        colours = [body.getpixel(p) for p in region]
+        if not region:
+            continue
+        base = tuple(sum(c[i] for c in colours) // len(colours) for i in range(3))
+        tones = _ramp(base)
+        ramps[rid] = tones
+        if len(region) <= TINY_REGION:
+            continue
+        lums = [_lum(c) for c in colours]
+        mean = sum(lums) / len(lums)
+        spread = max(20.0, (sum((v - mean) ** 2 for v in lums) / len(lums)) ** 0.5 * 2.4)
+        steps = {}
+        for (x, y), c, v in zip(region, colours, lums):
+            t = lit[(x, y)] + (v - mean) / spread * 0.9
+            steps[(x, y)] = max(0, min(RAMP_STEPS - 1, int(round(2 + t * 1.5))))
+            out.putpixel((x, y), tones[steps[(x, y)]] + (src.getpixel((x, y))[3],))
+        # One glint on the brightest part nearest the light.
+        if len(region) >= 8:
+            best = min(region, key=lambda p: (-steps[p], p[0] + p[1]))
+            if steps[best] >= 3:
+                glint = tuple(int(tones[4][i] + (255 - tones[4][i]) * 0.45) for i in range(3))
+                out.putpixel(best, glint + (src.getpixel(best)[3],))
+
+    # The outline, coloured from what it rings: darkest where it faces away from the light.
+    for (x, y) in outline:
+        near = [ids[y + dy][x + dx] for dx, dy in eight
+                if 0 <= x + dx < w and 0 <= y + dy < h and (x + dx, y + dy) in interior and ids[y + dy][x + dx] in ramps]
+        if not near:
+            if (x, y) not in mask:
+                continue
+            c = src.getpixel((x, y))
+            out.putpixel((x, y), c)
+            continue
+        rid = max(set(near), key=near.count)
+        r, g, b = ramps[rid][0]
+        hue, sat, val = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)
+        away = not opaque(x + 1, y) and (x + 1, y) not in interior or not opaque(x, y + 1) and (x, y + 1) not in interior
+        val *= 0.5 if away else 0.68
+        sat = min(1.0, sat * 1.15 + 0.06)
+        if sat > 0.1:
+            hue = (hue + max(-0.03, min(0.03, (((0.7 - hue + 0.5) % 1.0) - 0.5)))) % 1.0
+        rr, gg, bb = colorsys.hsv_to_rgb(hue, sat, max(0.07, val))
+        alpha = src.getpixel((x, y))[3] if (x, y) in mask else 255
+        out.putpixel((x, y), (int(rr * 255), int(gg * 255), int(bb * 255), max(alpha, 200)))
+    return out
+
+
 def finish(img, path):
     if any(part in path for part in FINISH_SKIP) or img.size != (16, 16):
         return img
+    if path.startswith("item/") and not any(part in path for part in ITEM_LAYERS):
+        return _item_finish(img)
     alphas = [img.getpixel((x, y))[3] for y in range(16) for x in range(16)]
     tile = all(a == 255 for a in alphas)
     soft = tile and any(part in path for part in SOFT_TILES)
@@ -3858,12 +4018,13 @@ def era_materials():
 
     img = new()
     gut = _tones((246, 226, 200, 255), (226, 198, 166, 255), (196, 160, 128, 255), (150, 116, 90, 255))
-    _shape_paint(img, _cut(_oval(7.5, 9, 5.5, 4.5), _oval(7.5, 9, 2.6, 1.8)), gut)
-    for x in range(3, 13, 2):
-        if img.getpixel((x, 7))[3]:
-            img.putpixel((x, 7), (176, 136, 104, 255))
-    for i, (x, y) in enumerate([(12, 6), (13, 5), (13, 4), (14, 3)]):
-        img.putpixel((x, y), gut[2])
+    _shape_paint(img, _cut(_oval(7.5, 8.5, 6.0, 5.0), _oval(7.5, 8.5, 2.4, 1.6)), gut, outline=None)
+    for x in range(2, 14):
+        for y in range(4, 14):
+            if img.getpixel((x, y))[3] and (x * 2 + y) % 5 == 0:
+                img.putpixel((x, y), gut[3])
+    for x, y in [(12, 3), (13, 2), (14, 1), (12, 4)]:
+        img.putpixel((x, y), gut[1])
     save(img, "item/catgut")
 
     # The Age of the Precursors.
@@ -3944,13 +4105,17 @@ def era_materials():
     save(img, "item/titan_scale")
     img = new()
     green = _tones((150, 214, 110, 255), (108, 176, 74, 255), (72, 136, 50, 255), (44, 92, 34, 255))
-    for i in range(6):
-        s = 3 + i * 1.8
-        bx, by = 2 + s * 0.8, 14 - s * 0.8
-        _shape_paint(img, _curve_band([(bx, by), (bx - 3 + i * 0.2, by - 3)], lambda t: 1.0), green, outline=None)
-        _shape_paint(img, _curve_band([(bx, by), (bx + 3, by + 2.5 - i * 0.2)], lambda t: 1.0), green, outline=None)
+    stem = (110, 84, 44, 255)
+    # A frond from the bottom-left corner up to the top-right, leaflets paired along it, shorter towards the tip.
     for k in range(13):
-        img.putpixel((2 + k * 10 // 13 + 1, 14 - k * 10 // 13), (96, 70, 36, 255))
+        x, y = 1 + k, 14 - k
+        size = 4 if k < 5 else 3 if k < 9 else 2 if k < 11 else 1
+        if k % 2 == 1 and k > 1:
+            for j in range(1, size + 1):
+                for (lx, ly) in ((x + j, y + j - 1), (x - j + 1, y - j)):
+                    if 0 <= lx < 16 and 0 <= ly < 16:
+                        img.putpixel((lx, ly), green[1] if j < size else green[2])
+        img.putpixel((x, y), stem if k < 9 else green[3])
     save(img, "item/cycad_frond")
     img = new()
     _shape_paint(img, _polygon([(4, 5), (8, 2), (12, 4), (13, 9), (10, 13), (5, 13), (3, 9)]),
