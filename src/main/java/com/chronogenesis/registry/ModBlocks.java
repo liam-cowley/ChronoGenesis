@@ -121,6 +121,17 @@ public final class ModBlocks {
                     .lightLevel(state -> state.getValue(CortexLobeBlock.PART).formed() ? 5 : 0)
                     .pushReaction(PushReaction.BLOCK));
 
+    /** A moment of the deep past sealed in brass and glass: built into the Chronocortex, it reaches further back. */
+    public static final DeferredBlock<com.chronogenesis.biocomputer.TimeCapsuleBlock> TIME_CAPSULE = BLOCKS.registerBlock("time_capsule",
+            com.chronogenesis.biocomputer.TimeCapsuleBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.GOLD)
+                    .strength(3.0f, 1200.0f)
+                    .sound(SoundType.COPPER)
+                    .noOcclusion()
+                    .lightLevel(state -> 9)
+                    .pushReaction(PushReaction.BLOCK));
+
     /** A bud of the Chronocortex in a jar, to be planted in a past era. */
     public static final DeferredBlock<CortexOffshootBlock> CORTEX_OFFSHOOT = BLOCKS.registerBlock("cortex_offshoot",
             CortexOffshootBlock::new,

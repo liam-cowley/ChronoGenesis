@@ -28,7 +28,7 @@ final class CortexGaze {
     /** Ticks between two line-of-sight checks. */
     private static final int CHECK = 4;
     /** Where the great eye is, roughly, above the block's middle (blocks), by stage. */
-    private static final float[] EYE_HEIGHT = {0.26f, 0.4f, 0.95f, 2.15f};
+    private static final float[] EYE_HEIGHT = {0.26f, 0.4f, 0.5f, 1.0f};
 
     private final Vector3f look = new Vector3f(0, 0, 48);
     private final RandomSource random = RandomSource.create();
@@ -52,12 +52,13 @@ final class CortexGaze {
         Player player = Minecraft.getInstance().player;
         Vec3 eye = centre.add(0, EYE_HEIGHT[Math.min(3, stage)], 0);
         Vec3 seen = player == null ? null : player.getEyePosition(partialTick);
-        if (stage == 3 && seen != null) {
-            // The Cerebrum's eye is on its surface, the side facing whoever it looks for, round the cranium's middle.
-            Vec3 heart = Vec3.atCenterOf(ChronocortexBlockEntity.craniumCentre(pos));
+        if (stage >= 2 && seen != null) {
+            // A grown body's great eye is on its surface, on the side facing whoever it looks for.
+            int reach = ChronocortexBlockEntity.structureRadius(stage);
+            Vec3 heart = centre.add(0, reach * 0.5, 0);
             Vec3 toward = seen.subtract(heart);
             if (toward.lengthSqr() > 1e-4) {
-                eye = heart.add(toward.normalize().scale(Math.min(2.6, toward.length() * 0.5)));
+                eye = heart.add(toward.normalize().scale(Math.min(reach + 1.2, toward.length() * 0.5)));
             }
         }
         if (time - checked >= CHECK || time < checked) {

@@ -20,5 +20,13 @@ public final class ModSounds {
     public static final Supplier<SoundEvent> CORTEX_SPEAKS = SOUND_EVENTS.register("cortex.speaks",
             () -> SoundEvent.createVariableRangeEvent(ChronoGenesis.id("cortex.speaks")));
 
+    /** The Chronocortex from its third stage: thought crackling through it. */
+    public static final Supplier<SoundEvent> CORTEX_CRACKLE = SOUND_EVENTS.register("cortex.crackle",
+            () -> SoundEvent.createVariableRangeEvent(ChronoGenesis.id("cortex.crackle")));
+
+    /** The Chronocortex from its third stage: something in it calling, in whispers. */
+    public static final Supplier<SoundEvent> CORTEX_WHISPER = SOUND_EVENTS.register("cortex.whisper",
+            () -> SoundEvent.createVariableRangeEvent(ChronoGenesis.id("cortex.whisper")));
+
     private ModSounds() {}
 }

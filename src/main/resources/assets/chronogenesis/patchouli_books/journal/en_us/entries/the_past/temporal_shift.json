@@ -7,7 +7,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "The Lens only looks. Once the Chronocortex has grown up a little (stage 1) it can $(o)send$() me: its $(l)Eras$() page lists the times it can reach. I arrive where I stood, in the land as it was then."
+      "text": "The Lens only looks. Once the Chronocortex has grown up a little (stage 1) it can $(o)send$() me: its $(l)Eras$() page lists the times it can reach, but only when I use the $(l)jar itself$() (once it has a body, from the end of the way in). I arrive where I stood, in the land as it was then."
     },
     {
       "type": "patchouli:text",
@@ -18,6 +18,11 @@
       "type": "patchouli:text",
       "title": "Where It Can Send Me",
       "text": "$(l)The Age of the Precursors$(): before the villagers, a taller people built cities of gold and stone. Every ruin I know was new then. Their cities are alive.$(br2)$(l)The Ice Age$(): the same hills under ice. It must be taught $(l)the cold$() (blue ice) and remember the Precursors first.$(br2)Shifting is hard on an unprotected body."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Time Capsules",
+      "text": "It cannot reach past the Ice Age on its own. A $(l)Time Capsule$() built into its last shell, in place of a frame, lets it reach the $(l)Jurassic$(); a second, the $(l)Hadean$() and what is before.$(br2)The first I must piece together: a $(l)casing$() from the Precursors' vaults and tombs, an $(l)escapement$() from their archives, a $(l)heart$() from the Ice Age's temple remains and a $(l)seal$() its beasts carry, with two sunbrass. The second stands at the heart of every Jurassic temple, held still with the rest of it."
     },
     {
       "type": "patchouli:text",

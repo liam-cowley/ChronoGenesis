@@ -19,22 +19,27 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
- * A lobe of the Chronocortex: brain matter grown over Brass Armature around it, fed on Awareness from its wired
+ * A lobe of the Chronocortex: brain matter grown into Brass Armature built round it, fed on Awareness from its wired
  * organisms (see {@link ChronocortexBlockEntity}). Each lobe is room for one more thing in its mind.
  * <p>
- * {@link #PART}: a fresh lobe is still a soft mass in its frame, and firms up with time. Once the lobes fill a
- * 5 x 5 x 5 cranium built up from the jar (the jar the middle block of its bottom layer), the mind closes over it: the lobes become the Cerebrum, its final stage,
- * with an eye opening in the middle of every face.
- * Using any lobe (empty-handed or with an item) is using the Chronocortex.
+ * {@link #PART}: a fresh lobe is still a soft mass in its frame, and firms up with time (still in its frame). Once
+ * the lobes fill a stage's structure (the 3 x 3 x 2 box over the jar, then the 5 x 5 x 3 round it), they merge into
+ * one body: {@code CEREBRUM}, not drawn as blocks (client/CortexBrainRenderer draws the body). {@code CEREBRUM_EYE}
+ * is from older worlds and counts the same. {@link #OPEN}: part of an open corridor to the jar, nothing to bump into.
+ * Using any lobe (empty-handed or with an item) is using the Chronocortex; sneaking empty-handed opens (or closes) the
+ * way in.
  */
 public class CortexLobeBlock extends Block {
     public enum Part implements StringRepresentable {
@@ -51,17 +56,19 @@ public class CortexLobeBlock extends Block {
     }
 
     public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
+    /** Parted, to let someone through to the jar. */
+    public static final BooleanProperty OPEN = BooleanProperty.create("open");
     /** How far from the jar a lobe may be and still belong to it. */
     public static final int REACH = 4;
 
     public CortexLobeBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(PART, Part.FRESH));
+        registerDefaultState(stateDefinition.any().setValue(PART, Part.FRESH).setValue(OPEN, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(PART);
+        builder.add(PART, OPEN);
     }
 
     @Override
@@ -77,14 +84,19 @@ public class CortexLobeBlock extends Block {
         }
     }
 
-    /** Grown lobes are not drawn as blocks: the Chronocortex draws them, swelling folds of brain (client/CortexBrainRenderer). */
+    /** Lobes merged into the body are not drawn as blocks: the Chronocortex draws its body (client/CortexBrainRenderer). */
     public static boolean drawnByCortex(BlockState state) {
-        return state.getValue(PART) != Part.FRESH;
+        return state.getValue(PART).formed();
     }
 
     @Override
-    protected net.minecraft.world.level.block.RenderShape getRenderShape(BlockState state) {
-        return drawnByCortex(state) ? net.minecraft.world.level.block.RenderShape.INVISIBLE : net.minecraft.world.level.block.RenderShape.MODEL;
+    protected RenderShape getRenderShape(BlockState state) {
+        return drawnByCortex(state) || state.getValue(OPEN) ? RenderShape.INVISIBLE : RenderShape.MODEL;
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return state.getValue(OPEN) ? Shapes.empty() : Shapes.block();
     }
 
     @Override
@@ -109,16 +121,25 @@ public class CortexLobeBlock extends Block {
         return best;
     }
 
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    /** Used empty-handed, a part of the cortex opens its view; sneaking, it opens (or closes) the way in to the jar. */
+    public static InteractionResult usePart(Level level, BlockPos pos, Player player) {
         ChronocortexBlockEntity cortex = cortexOf(level, pos);
         if (cortex == null) {
             return InteractionResult.PASS;
         }
         if (player instanceof ServerPlayer serverPlayer) {
-            PacketDistributor.sendToPlayer(serverPlayer, OpenChronocortexPayload.of(cortex));
+            if (player.isSecondaryUseActive()) {
+                cortex.togglePath(serverPlayer);
+            } else {
+                PacketDistributor.sendToPlayer(serverPlayer, OpenChronocortexPayload.of(cortex, false));
+            }
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        return usePart(level, pos, player);
     }
 
     @Override

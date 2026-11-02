@@ -115,9 +115,11 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   5 blocks, or they are malformed (`formed` false: `extract` gives nothing). Living parts of cores, grafts and the
   Chronocortex are animated block entity renderers (`client/OrganParts`, `OrganismCoreRenderer`, `GraftRenderer`,
   `CortexBrainRenderer`); core block models are only their frames, grown cortex lobes are not drawn as blocks.
-- The Chronocortex's body is curved meshes, not boxes: `client/FleshMesh` (grid surfaces: spheres, tubes, caps, tori)
-  and `client/CortexBody` (one form per stage; pure geometry, JOML only, so it can be rasterised offline), its eyes
-  aimed by `client/CortexGaze` (line of sight to the local player, wandering, staring back, tentacles reaching).
+- The Chronocortex grows in shells (`ChronocortexBlockEntity.structure`: 3x3x2 then 5x5x3, the jar the middle of the
+  bottom layer); lobes are blocks in their frames until a shell is whole, then merge (`cerebrum`, not drawn) into one
+  body drawn of boxes only: `client/BoxModel` (transform stack, a texel a pixel) and `client/CortexBody` (pure geometry,
+  JOML only, so it can be rasterised offline), eyes aimed by `client/CortexGaze`. Time travel only from the jar
+  (`reachableCore`: a corridor opens with sneak-use); Time Capsules in its last shell set how far back (eras' `capsules`).
 - Era materials (`item/EraMaterialItem`, tooltip names the age): creature drops in `loot_table/entities/`, drops
   limited to one age as `loot_modifiers/era_*` (dimension `location_check`). Keep every item needed before the first
   temporal shift craftable from present-day things; the ages add better/cheaper recipes and gate later research.

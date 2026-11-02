@@ -216,6 +216,18 @@ public final class ModItems {
     public static final DeferredItem<DeferredSpawnEggItem> UNBEGOTTEN_SPAWN_EGG = ITEMS.registerItem("unbegotten_spawn_egg",
             properties -> new DeferredSpawnEggItem(ModEntities.UNBEGOTTEN, 0x1A0A24, 0xA6FF80, properties));
     public static final DeferredItem<BlockItem> CORE_SINEW = ITEMS.registerSimpleBlockItem("core_sinew", ModBlocks.CORE_SINEW);
+    /** A Time Capsule: built into the Chronocortex's last shell, it reaches further back. */
+    public static final DeferredItem<BlockItem> TIME_CAPSULE = ITEMS.registerSimpleBlockItem("time_capsule", ModBlocks.TIME_CAPSULE,
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    // The parts of the first Time Capsule, strewn through the Age of the Precursors and the Ice Age.
+    /** Its casing (Precursor vaults and tombs). */
+    public static final DeferredItem<EraMaterialItem> CAPSULE_CASING = material("capsule_casing", Age.PRECURSOR_ERA);
+    /** Its escapement (Precursor archives). */
+    public static final DeferredItem<EraMaterialItem> CAPSULE_ESCAPEMENT = material("capsule_escapement", Age.PRECURSOR_ERA);
+    /** Its heart: a moment frozen still (the Ice Age's temple remains). */
+    public static final DeferredItem<EraMaterialItem> CAPSULE_HEART = material("capsule_heart", Age.ICE_AGE);
+    /** Its seal (carried off by the Ice Age's beasts). */
+    public static final DeferredItem<EraMaterialItem> CAPSULE_SEAL = material("capsule_seal", Age.ICE_AGE);
     public static final DeferredItem<BlockItem> HEAVY_SEAL = ITEMS.registerSimpleBlockItem("heavy_seal", ModBlocks.HEAVY_SEAL);
     public static final DeferredItem<BlockItem> NARROW_SEAL = ITEMS.registerSimpleBlockItem("narrow_seal", ModBlocks.NARROW_SEAL);
     public static final DeferredItem<BlockItem> SWIFT_SEAL = ITEMS.registerSimpleBlockItem("swift_seal", ModBlocks.SWIFT_SEAL);

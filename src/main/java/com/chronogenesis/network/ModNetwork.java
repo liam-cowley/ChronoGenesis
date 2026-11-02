@@ -59,7 +59,7 @@ public final class ModNetwork {
                             && player.blockPosition().distSqr(payload.pos()) <= RESEARCH_REACH * RESEARCH_REACH
                             && player.level().getBlockEntity(payload.pos()) instanceof ChronocortexBlockEntity cortex) {
                         Research.perform(player, cortex, payload.topic());
-                        PacketDistributor.sendToPlayer(player, OpenChronocortexPayload.of(cortex));
+                        PacketDistributor.sendToPlayer(player, OpenChronocortexPayload.of(cortex, cortex.reachableCore(player)));
                     }
                 }));
 
@@ -68,9 +68,10 @@ public final class ModNetwork {
 
         registrar.playToServer(ShiftPayload.TYPE, ShiftPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
+                    // Only from its core: the jar, out in the open or at the end of a corridor through its body.
                     if (context.player() instanceof ServerPlayer player
-                            && player.blockPosition().distSqr(payload.pos()) <= TemporalShift.REACH * TemporalShift.REACH
-                            && player.level().getBlockEntity(payload.pos()) instanceof ChronocortexBlockEntity cortex) {
+                            && player.level().getBlockEntity(payload.pos()) instanceof ChronocortexBlockEntity cortex
+                            && cortex.reachableCore(player)) {
                         TemporalShift.begin(player, cortex, payload.era());
                     }
                 }));

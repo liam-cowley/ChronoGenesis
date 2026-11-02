@@ -9,7 +9,7 @@
     "item": "chronogenesis:temporal_residue"
   },
   "stage": 2,
-  "capacity": 80,
+  "capacity": 70,
   "awareness": 2,
   "learned": {
     "translate": "lesson.chronogenesis.eternity.learned"

@@ -1,15 +1,27 @@
 {
   "variants": {
-    "part=cerebrum": {
-      "model": "chronogenesis:block/cerebrum"
+    "open=false,part=cerebrum": {
+      "model": "chronogenesis:block/cortex_lobe"
     },
-    "part=cerebrum_eye": {
-      "model": "chronogenesis:block/cerebrum_eye"
+    "open=false,part=cerebrum_eye": {
+      "model": "chronogenesis:block/cortex_lobe"
     },
-    "part=fresh": {
+    "open=false,part=fresh": {
       "model": "chronogenesis:block/cortex_lobe_fresh"
     },
-    "part=mature": {
+    "open=false,part=mature": {
+      "model": "chronogenesis:block/cortex_lobe"
+    },
+    "open=true,part=cerebrum": {
+      "model": "chronogenesis:block/cortex_lobe"
+    },
+    "open=true,part=cerebrum_eye": {
+      "model": "chronogenesis:block/cortex_lobe"
+    },
+    "open=true,part=fresh": {
+      "model": "chronogenesis:block/cortex_lobe_fresh"
+    },
+    "open=true,part=mature": {
       "model": "chronogenesis:block/cortex_lobe"
     }
   }

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "formed=false": {
+      "model": "chronogenesis:block/time_capsule"
+    },
+    "formed=true": {
+      "model": "chronogenesis:block/time_capsule"
+    }
+  }
+}

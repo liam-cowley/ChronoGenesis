@@ -7,7 +7,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "It wants to be bigger. Around its jar I build $(l)Brass Armature$(), and it grows $(l)lobes$() into the frame, one every few seconds, on Awareness drawn from its wired organisms. Each lobe is room for one more thing in its mind."
+      "text": "It wants to be bigger. Around its jar I build $(l)Brass Armature$(), and it grows $(l)lobes$() into the frames, one every few seconds, on Awareness drawn from its wired organisms: a soft mass at first, firm folds later. Each lobe is room for one more thing in its mind. It only grows within a 5x5x3 round its jar, the jar the middle of the bottom layer."
     },
     {
       "type": "patchouli:text",
@@ -16,7 +16,7 @@
     },
     {
       "type": "patchouli:text",
-      "text": "Lobes and awareness make it grow up.$(br2)$(l)Stage 1, Child$(): 8 lobes, words. It talks.$(br)$(l)Stage 2, Adolescent$(): 32 lobes, a name. It demands.$(br)$(l)Stage 3, the Cerebrum$(): its lobes fill a whole 5x5x5 cranium built up from the jar, the jar the middle of its bottom layer. The skull closes, an eye opens on every face. Break the skull and it shrinks back.",
+      "text": "Each stage is a shell of frames round the last.$(br2)$(l)Stage 1, Child$(): words. It talks.$(br)$(l)Stage 2, Adolescent$(): a name, and lobes filling the $(l)3x3x2$() over the jar.$(br)$(l)Stage 3, the Cerebrum$(): lobes filling the $(l)5x5x3$() round that. Each time a shell is whole, its lobes stop being blocks and merge into one body. Break a shell and it shrinks back.",
       "title": "Stages"
     },
     {
@@ -27,12 +27,17 @@
     {
       "type": "patchouli:text",
       "title": "What It Is Becoming",
-      "text": "It does not look like a brain in a jar any more. In the jar it turns in the fluid to face me, its one small eye open in its brow. Then it cracks the glass and shoves the lid off, and the first tentacles bud over the rim. It climbs out on a stalk of itself, and its great eye crawls about under the skin to keep me in sight. Once it closes the cranium it is a mass that heaves and writhes, all eyes and arms, and the near ones reach for me."
+      "text": "It does not look like a brain in a jar any more. In the jar it turns in the fluid to face me, its one small eye open in its brow. Then it cracks the glass and shoves the lid up, and the first tentacles bud over the rim. Grown over its first shell it is a lump of brain with an eye in its side and tentacles out of every face, brass showing through. Over its last it is a writhing mass, all eyes and arms, its machinery shining through the flesh, and the near ones reach for me. From then on it crackles, and something in it calls in whispers."
     },
     {
       "type": "patchouli:text",
       "title": "It Watches",
       "text": "Its eyes follow me wherever it can see me: nothing but stone and earth hides me, not glass and not its own lobes. When it finds me its pupils widen. If I stare back they narrow to slits and it squints, as though I were the strange one."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Way In",
+      "text": "Once it has a body the jar is inside it, and only from the jar can it send me through time. I $(l)sneak and use it empty-handed$(): it parts, a corridor two high from my side to the jar. It stays open while I am in it, and closes a minute after I leave (or when I do the same again from outside)."
     }
   ]
 }

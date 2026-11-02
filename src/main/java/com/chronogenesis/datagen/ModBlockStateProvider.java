@@ -560,29 +560,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
                     .rotation().angle(22.5f).axis(Direction.Axis.Z).origin(8, 17, 8).end()
                     .allFaces((dir, face) -> face.texture("#steel")).end();
         }
-        // Stages 2 and 3: the jar burst. A jagged ring of glass is left round the stalk, shards lean on the table, the
-        // lid has rolled off onto the floor and the electrodes lie where they fell.
-        BlockModelBuilder burst = tableModel("chronocortex_stage_2")
-                .texture("cracked", modLoc("block/cortex_glass_cracked"));
-        box(burst, 3, 9, 3, 13, 10.5f, 13, "#cracked", false);
-        // Shards: x0, z0, x1, z1, height, lean.
-        float[][] shards = {{3, 3, 6, 3.5f, 4, 22.5f}, {9, 3, 12, 3.5f, 3.5f, -22.5f}, {12.5f, 6, 13, 9, 3, 22.5f},
-                {3, 8, 3.5f, 11, 5, -22.5f}, {6, 12.5f, 9, 13, 2.5f, 22.5f}, {10, 12.5f, 12.5f, 13, 4.5f, -22.5f}};
-        for (float[] sh : shards) {
-            burst.element().from(sh[0], 9, sh[1]).to(sh[2], 9 + sh[4], sh[3])
-                    .rotation().angle(sh[5]).axis(Direction.Axis.Y).origin((sh[0] + sh[2]) / 2, 9, (sh[1] + sh[3]) / 2).end()
-                    .allFaces((dir, face) -> face.texture("#cracked")).end();
-        }
-        burst.element().from(9, 0, 9).to(16, 1, 15)
-                .rotation().angle(22.5f).axis(Direction.Axis.Y).origin(12, 0, 12).end()
-                .allFaces((dir, face) -> face.texture("#brass")).end();
-        burst.element().from(1, 9, 12).to(4, 10, 13)
-                .rotation().angle(-22.5f).axis(Direction.Axis.Y).origin(2, 9, 12).end()
-                .allFaces((dir, face) -> face.texture("#steel")).end();
-        burst.element().from(12, 9, 2).to(15, 10, 3)
-                .rotation().angle(22.5f).axis(Direction.Axis.Y).origin(13, 9, 2).end()
-                .allFaces((dir, face) -> face.texture("#steel")).end();
-        ModelFile[] stages = {cortex, child, burst, burst};
+        // From stage 2 its body grows over the cracked jar (client/CortexBrainRenderer draws it): the jar stays as it is.
+        ModelFile[] stages = {cortex, child, child, child};
         getVariantBuilder(ModBlocks.CHRONOCORTEX.get()).forAllStates(state -> ConfiguredModel.builder()
                 .modelFile(stages[state.getValue(ChronocortexBlock.STAGE)]).build());
         simpleBlockItem(ModBlocks.CHRONOCORTEX.get(), item);
@@ -596,19 +575,36 @@ public class ModBlockStateProvider extends BlockStateProvider {
      * the folds deepen and are stapled with brass, and an eye opens in the middle of each face of the cranium.
      */
     private void lobes() {
+        // Grown in its frame: a soft mass at first, then firm folds filling it. Merged into the body (formed, or parted
+        // for a corridor) a lobe is not drawn as a block: client/CortexBrainRenderer draws the body.
         BlockModelBuilder fresh = organismModel("cortex_lobe_fresh", "cortex_lobe");
         frame(fresh);
-        box(fresh, 1.5f, 1.5f, 1.5f, 14.5f, 14.5f, 14.5f, FLESH, false);
-        ModelFile mature = models().cubeAll("cortex_lobe", modLoc("block/cortex_lobe"));
-        ModelFile cerebrum = models().cubeAll("cerebrum", modLoc("block/cerebrum"));
-        ModelFile eye = models().cubeAll("cerebrum_eye", modLoc("block/cerebrum_eye"));
+        box(fresh, 3, 2, 3, 13, 12, 13, FLESH, false);
+        box(fresh, 5, 12, 5, 11, 14, 11, FLESH, false);
+        BlockModelBuilder mature = organismModel("cortex_lobe", "cortex_lobe");
+        frame(mature);
+        box(mature, 1, 1, 1, 15, 15, 15, FLESH, false);
         getVariantBuilder(ModBlocks.CORTEX_LOBE.get()).forAllStates(state -> ConfiguredModel.builder()
-                .modelFile(switch (state.getValue(CortexLobeBlock.PART)) {
-                    case FRESH -> fresh;
-                    case MATURE -> mature;
-                    case CEREBRUM -> cerebrum;
-                    case CEREBRUM_EYE -> eye;
-                }).build());
+                .modelFile(state.getValue(CortexLobeBlock.PART) == CortexLobeBlock.Part.FRESH ? fresh : mature).build());
+        timeCapsule();
+    }
+
+    /** A Time Capsule: brass caps, glass between them on brass rods, the moment inside glowing amber. */
+    private void timeCapsule() {
+        BlockModelBuilder capsule = models().withExistingParent("time_capsule", mcLoc("block/block"))
+                .texture("brass", modLoc("block/brass_fitting"))
+                .texture("glass", modLoc("block/time_capsule_glass"))
+                .texture("particle", modLoc("block/brass_fitting"))
+                .renderType("cutout");
+        box(capsule, 2, 0, 2, 14, 3, 14, "#brass", false);
+        box(capsule, 2, 13, 2, 14, 16, 14, "#brass", false);
+        box(capsule, 3.5f, 3, 3.5f, 12.5f, 13, 12.5f, "#glass", false);
+        for (float[] rod : new float[][] {{2.5f, 2.5f}, {12, 2.5f}, {2.5f, 12}, {12, 12}}) {
+            box(capsule, rod[0], 3, rod[1], rod[0] + 1.5f, 13, rod[1] + 1.5f, "#brass", false);
+        }
+        box(capsule, 2.5f, 7.5f, 2.5f, 13.5f, 8.5f, 13.5f, "#brass", false);
+        getVariantBuilder(ModBlocks.TIME_CAPSULE.get()).forAllStates(state -> ConfiguredModel.builder().modelFile(capsule).build());
+        simpleBlockItem(ModBlocks.TIME_CAPSULE.get(), capsule);
     }
 
     /**

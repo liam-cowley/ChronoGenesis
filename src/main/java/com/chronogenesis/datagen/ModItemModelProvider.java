@@ -47,6 +47,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.GOLD_NEEDLE.get());
         basicItem(ModItems.BONE_NEEDLE.get());
         basicItem(ModItems.AMETHYST_NEEDLE.get());
+        basicItem(ModItems.CAPSULE_CASING.get());
+        basicItem(ModItems.CAPSULE_ESCAPEMENT.get());
+        basicItem(ModItems.CAPSULE_HEART.get());
+        basicItem(ModItems.CAPSULE_SEAL.get());
         basicItem(ModItems.SABRE_NEEDLE.get());
         basicItem(ModItems.CLAW_NEEDLE.get());
         basicItem(ModItems.IVORY_NEEDLE.get());

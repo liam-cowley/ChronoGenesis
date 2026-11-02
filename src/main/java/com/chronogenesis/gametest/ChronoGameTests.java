@@ -19,6 +19,7 @@ import com.chronogenesis.biocomputer.DissectionTableBlockEntity;
 import com.chronogenesis.biocomputer.Lessons;
 import com.chronogenesis.biocomputer.PlayerResearch;
 import com.chronogenesis.biocomputer.Research;
+import com.chronogenesis.biocomputer.TimeCapsuleBlock;
 import com.chronogenesis.entity.DinoEggBlock;
 import com.chronogenesis.entity.DinoEggBlockEntity;
 import com.chronogenesis.entity.Dinos;
@@ -558,7 +559,7 @@ public final class ChronoGameTests {
             player.setItemSlot(EquipmentSlot.CHEST, coat);
             helper.assertTrue(TemporalExposure.wardedPieces(player) == 1, "one warded piece worn");
             Era era = new Era(Component.literal("Test"), Component.empty(), Items.CLOCK, Level.OVERWORLD, 1, Optional.empty(),
-                    Optional.empty(), List.of(), 10, 4, Optional.empty(), 0, false, true);
+                    Optional.empty(), List.of(), 0, 10, 4, Optional.empty(), 0, false, true);
             helper.assertTrue(TemporalShift.duration(era, 0) == 4 * 1200 / 2, "unwarded: half the minutes");
             helper.assertTrue(TemporalShift.duration(era, 3) == 4 * 1200 * 7 / 8, "three pieces: seven eighths");
             helper.assertTrue(TemporalShift.duration(era, 4) == TemporalShift.HELD, "warded head to foot: as long as they like");
@@ -677,10 +678,10 @@ public final class ChronoGameTests {
         Era era = Eras.get(helper.getLevel().registryAccess(), ChronoGenesis.id("ice_age"));
         helper.assertTrue(era != null, "the Ice Age era is missing");
         Map<Aspect, Integer> time = Map.of(Aspect.TIME, era.cost());
-        TemporalShift.Check bare = TemporalShift.check(player, era, 0, Set.of(), Set.of(), Map.of());
+        TemporalShift.Check bare = TemporalShift.check(player, era, 0, 0, Set.of(), Set.of(), Map.of());
         helper.assertFalse(bare.stage() || bare.lesson() || bare.memory() || bare.tether() || bare.time(), "nothing should be met yet");
         player.getInventory().add(new ItemStack(ModItems.CHRONO_TETHER.get()));
-        TemporalShift.Check ready = TemporalShift.check(player, era, 1, Set.of(Lessons.COLD), Set.of(ChronoGenesis.id("precursor_era")), time);
+        TemporalShift.Check ready = TemporalShift.check(player, era, 1, 0, Set.of(Lessons.COLD), Set.of(ChronoGenesis.id("precursor_era")), time);
         helper.assertTrue(ready.ok(), "everything is met: " + ready);
         helper.succeed();
     }
@@ -776,7 +777,7 @@ public final class ChronoGameTests {
         helper.assertTrue(Research.has(player, Precursor.TONGUE), "the linker should understand the Precursors");
         helper.assertTrue(spool.isEmpty(), "the spool should be laid");
         Era iceAge = Eras.get(level.registryAccess(), ChronoGenesis.id("ice_age"));
-        helper.assertTrue(TemporalShift.check(player, iceAge, 1, Set.of(Lessons.COLD), cortex.memories(), Map.of()).memory(),
+        helper.assertTrue(TemporalShift.check(player, iceAge, 1, 0, Set.of(Lessons.COLD), cortex.memories(), Map.of()).memory(),
                 "the Ice Age should now be within memory");
         helper.succeed();
     }
@@ -812,40 +813,94 @@ public final class ChronoGameTests {
     }
 
     /**
-     * The cranium is a 5 x 5 x 5 standing on the jar's own layer, the jar the middle block of its bottom layer and one
-     * of its 125: 124 firm lobes close it, none below the jar, and five of them open eyes (the bottom face's middle is
-     * the jar). Take away a lobe and it is open again.
+     * Each stage is a shell round the last, the jar the middle of the bottom layer: 17 firm lobes close the 3 x 3 x 2 of
+     * stage 2, and the 5 x 5 x 3 of stage 3 takes 74 more, any of its outer shell's blocks a Time Capsule in place of a
+     * frame. Lobes only grow within it. Formed, its lobes and capsules merge into its body; a hole and it is open again.
      */
     @GameTest(template = "floor7_tall")
-    public static void craniumStandsOnTheJar(GameTestHelper helper) {
+    public static void shellsGrowRoundTheJar(GameTestHelper helper) {
         BlockPos jar = new BlockPos(3, 1, 3);
         helper.setBlock(jar, ModBlocks.CHRONOCORTEX.get());
         ChronocortexBlockEntity cortex = helper.getBlockEntity(jar);
         BlockPos at = helper.absolutePos(jar);
+        ServerLevel level = helper.getLevel();
         BlockState lobe = ModBlocks.CORTEX_LOBE.get().defaultBlockState().setValue(CortexLobeBlock.PART, CortexLobeBlock.Part.MATURE);
-        int lobes = 0;
-        int eyes = 0;
-        for (BlockPos pos : ChronocortexBlockEntity.cranium(at)) {
-            helper.assertTrue(pos.getY() >= at.getY(), "the cranium reaches below the jar: " + pos);
-            if (pos.equals(at)) {
-                continue;
+        int inner = 0;
+        for (BlockPos pos : ChronocortexBlockEntity.structure(at, 2)) {
+            helper.assertTrue(pos.getY() >= at.getY() && pos.getY() <= at.getY() + 1, "stage 2 is two layers on the jar's: " + pos);
+            if (!pos.equals(at)) {
+                level.setBlock(pos, lobe, Block.UPDATE_CLIENTS);
+                inner++;
             }
-            helper.getLevel().setBlock(pos, lobe, Block.UPDATE_CLIENTS);
-            lobes++;
-            eyes += ChronocortexBlockEntity.craniumEye(at, pos) ? 1 : 0;
         }
-        helper.assertTrue(lobes == ChronocortexBlockEntity.STAGE_LOBES[ChronocortexBlockEntity.MAX_STAGE], lobes + " lobes in the cranium");
-        helper.assertTrue(eyes == 5, eyes + " eyes on the cranium's faces");
-        helper.assertTrue(ChronocortexBlockEntity.craniumCentre(at).equals(at.above(2)), "the cranium's middle is not over the jar");
-        helper.assertTrue(cortex.craniumComplete(), "a full cranium on the jar does not close");
-        BlockPos top = at.above(4);
-        helper.assertTrue(ChronocortexBlockEntity.craniumEye(at, top), "no eye in the middle of the top");
-        helper.getLevel().setBlock(top, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
-        helper.assertFalse(cortex.craniumComplete(), "a cranium with a hole in its top still closes");
+        helper.assertTrue(inner == ChronocortexBlockEntity.STAGE_LOBES[2], inner + " lobes close stage 2");
+        helper.assertTrue(cortex.structureComplete(2), "a full 3x3x2 does not close");
+        helper.assertFalse(cortex.structureComplete(3), "stage 3 is not there yet");
+        BlockPos capsule = at.offset(2, 1, 0);
+        helper.assertTrue(ChronocortexBlockEntity.inShell(at, capsule, 3), "the capsule's spot should be in the last shell");
+        int outer = 0;
+        for (BlockPos pos : ChronocortexBlockEntity.structure(at, 3)) {
+            if (ChronocortexBlockEntity.inShell(at, pos, 3)) {
+                level.setBlock(pos, pos.equals(capsule) ? ModBlocks.TIME_CAPSULE.get().defaultBlockState() : lobe, Block.UPDATE_CLIENTS);
+                outer++;
+            }
+        }
+        helper.assertTrue(inner + outer == 74, (inner + outer) + " blocks round the jar in all");
+        helper.assertTrue(cortex.structureComplete(3), "a full 5x5x3 (with a capsule in it) does not close");
+        cortex.forceStage(level, 3);
+        helper.assertTrue(cortex.capsules() == 1, cortex.capsules() + " capsules counted");
+        helper.assertTrue(level.getBlockState(at.east()).getValue(CortexLobeBlock.PART).formed(), "the body did not merge");
+        helper.assertTrue(level.getBlockState(capsule).getValue(TimeCapsuleBlock.FORMED), "the capsule is not part of the body");
+        // A lobe outside the structure is no part of it, and does not grow there.
+        helper.assertFalse(ChronocortexBlockEntity.inStructure(at, at.offset(0, 3, 0), 3), "the structure is three high");
+        helper.assertFalse(ChronocortexBlockEntity.inStructure(at, at.below(), 3), "nothing below the jar");
+        level.setBlock(at.offset(-2, 2, -2), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+        helper.assertFalse(cortex.structureComplete(3), "a hole in its last shell and it still closes");
         helper.succeed();
     }
 
-    /** Once the cranium closes over the jar only lobes can be reached: a Nerve Spool used on a lobe still links. */
+    /**
+     * Sneaking at a grown cortex opens a corridor through its body to the jar, two high, on the side the player stands;
+     * only from in there (or from beside a jar that has no body) can it shift anyone through time.
+     */
+    @GameTest(template = "floor7_tall")
+    public static void corridorOpensToTheJar(GameTestHelper helper) {
+        BlockPos jar = new BlockPos(3, 1, 3);
+        helper.setBlock(jar, ModBlocks.CHRONOCORTEX.get());
+        ChronocortexBlockEntity cortex = helper.getBlockEntity(jar);
+        BlockPos at = helper.absolutePos(jar);
+        ServerLevel level = helper.getLevel();
+        ServerPlayer player = fakePlayer(helper);
+        player.moveTo(Vec3.atBottomCenterOf(at).add(1.5, 0, 0));
+        helper.assertTrue(cortex.reachableCore(player), "a bare jar is in reach");
+        BlockState lobe = ModBlocks.CORTEX_LOBE.get().defaultBlockState().setValue(CortexLobeBlock.PART, CortexLobeBlock.Part.MATURE);
+        for (BlockPos pos : ChronocortexBlockEntity.structure(at, 3)) {
+            if (!pos.equals(at)) {
+                level.setBlock(pos, lobe, Block.UPDATE_CLIENTS);
+            }
+        }
+        cortex.forceStage(level, 3);
+        player.moveTo(Vec3.atBottomCenterOf(at).add(4.5, 0, 0));
+        helper.assertFalse(cortex.reachableCore(player), "its core should be shut inside its body");
+        cortex.togglePath(player);
+        helper.assertTrue(cortex.path() == Direction.EAST, "the corridor should open towards the player: " + cortex.path());
+        for (BlockPos pos : ChronocortexBlockEntity.pathBlocks(at, 3, Direction.EAST)) {
+            helper.assertTrue(level.getBlockState(pos).getValue(CortexLobeBlock.OPEN), "the corridor is not open at " + pos);
+            helper.assertTrue(level.getBlockState(pos).getCollisionShape(level, pos).isEmpty(), "the corridor is not walkable at " + pos);
+        }
+        helper.assertTrue(ChronocortexBlockEntity.pathBlocks(at, 3, Direction.EAST).size() == 4, "two blocks deep, two high");
+        player.moveTo(Vec3.atBottomCenterOf(at).add(1.5, 0, 0));
+        helper.assertTrue(cortex.reachableCore(player), "from inside the corridor the jar is in reach");
+        cortex.togglePath(player);
+        helper.assertTrue(cortex.path() != null, "it should not close on someone inside");
+        player.moveTo(Vec3.atBottomCenterOf(at).add(6.5, 0, 0));
+        cortex.togglePath(player);
+        helper.assertTrue(cortex.path() == null, "it should close once they are out");
+        helper.assertFalse(level.getBlockState(at.east()).getValue(CortexLobeBlock.OPEN), "the corridor's lobes should close again");
+        helper.succeed();
+    }
+
+    /** Once its body closes over the jar only lobes can be reached: a Nerve Spool used on a lobe still links. */
     @GameTest(template = "floor7")
     public static void spoolLinksThroughALobe(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
@@ -898,7 +953,10 @@ public final class ChronoGameTests {
         helper.succeed();
     }
 
-    /** The Jurassic Age has two ways in: the Ice Age's memory, or the Precursors' and the lesson of Deep Time. */
+    /**
+     * The Jurassic Age has two ways in: the Ice Age's memory, or the Precursors' and the lesson of Deep Time; and it is
+     * too far back for a cortex without a Time Capsule built into its last shell.
+     */
     @GameTest(template = "floor7")
     public static void jurassicHasTwoRoutes(GameTestHelper helper) {
         ServerPlayer player = fakePlayer(helper);
@@ -907,12 +965,16 @@ public final class ChronoGameTests {
         Map<Aspect, Integer> time = Map.of(Aspect.TIME, era.cost());
         ResourceLocation precursors = ChronoGenesis.id("precursor_era");
         ResourceLocation deepTime = ChronoGenesis.id("deep_time");
-        helper.assertTrue(TemporalShift.check(player, era, 2, Set.of(), Set.of(ChronoGenesis.id("ice_age")), time).ok(),
+        helper.assertTrue(TemporalShift.check(player, era, 3, 1, Set.of(), Set.of(ChronoGenesis.id("ice_age")), time).ok(),
                 "the Ice Age's memory should open it");
-        helper.assertTrue(TemporalShift.check(player, era, 2, Set.of(deepTime), Set.of(precursors), time).ok(),
+        helper.assertTrue(TemporalShift.check(player, era, 3, 1, Set.of(deepTime), Set.of(precursors), time).ok(),
                 "the Precursors' memory and Deep Time should open it");
-        helper.assertFalse(TemporalShift.check(player, era, 2, Set.of(), Set.of(precursors), time).ok(),
+        helper.assertFalse(TemporalShift.check(player, era, 3, 1, Set.of(), Set.of(precursors), time).ok(),
                 "the Precursors' memory alone should not");
+        helper.assertFalse(TemporalShift.check(player, era, 3, 0, Set.of(), Set.of(ChronoGenesis.id("ice_age")), time).ok(),
+                "without a Time Capsule it cannot reach that far back");
+        Era hadean = Eras.get(helper.getLevel().registryAccess(), ChronoGenesis.id("hadean_eon"));
+        helper.assertTrue(hadean.capsules() == 2, "the Hadean should need both capsules");
         helper.succeed();
     }
 

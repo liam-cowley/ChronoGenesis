@@ -123,7 +123,7 @@
    ✅ Heart graft (Taps pump faster), Eye graft (redstone + comparator), Twin Clocks (Law of the Heavy Heart).
 7. ✅ Chronocortex (stage 0) + Ganglion + data-driven research + reanimation ritual. Clues come from
    witnessed experiments until the Lens exists; the first topic is Level 2 powers (Deeper Infusion).
-   ✅ Growth: lobes on armature (Awareness), lessons (data-driven), stages 1-3, the Cerebrum (5x5x5 multiblock),
+   ✅ Growth: lobes on armature (Awareness), lessons (data-driven), stages 1-3 as shells (3x3x2, then 5x5x3 multiblocks),
    speech in chat (data-driven dialogue). Still to do: flow control from the Chronocortex (redirecting, Tap limits),
    time travel from stage 1.
 8. ✅ Umbilical Locket (Curios necklace; grown by research, re-growable). ✅ Temporal Field (graft on a Time
@@ -181,6 +181,11 @@
     Jurassic's claws, scales and amber, the Hadean's ash, zircon and meteoric iron, the Unbegotten's ichor), four
     alloys and parts made of them, needles of the ages (two drams a jab), better recipes and later research that
     need them.
+19. ✅ The Chronocortex's shells: lobes grow as blocks in their frames, and each whole shell (3x3x2, then 5x5x3, the jar
+    the middle of the bottom layer) merges into one box-built body (a lump of brain, then a writhing mass with eyes,
+    tentacles and machinery shining through). A corridor opens to the jar (sneak-use), where alone it shifts anyone
+    through time. Time Capsules (pieced together from the Precursors and the Ice Age; one at the heart of each
+    Jurassic temple) built into its last shell reach the Jurassic and beyond. It crackles and whispers from stage 3.
 
 ## Open questions
 1. **Brains for Awareness cultures and the Chronocortex:** zombie villagers and witches only, or

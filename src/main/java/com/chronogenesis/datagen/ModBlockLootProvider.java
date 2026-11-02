@@ -57,6 +57,7 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
         // Broken off its Cradle, the last bud survives; linked, its link is gone.
         dropSelf(ModBlocks.LAST_OFFSHOOT.get());
         dropSelf(ModBlocks.RIDERS_SEAT.get());
+        dropSelf(ModBlocks.TIME_CAPSULE.get());
         // The harness comes off whole; the core, stilled, is all the time it held.
         dropOther(ModBlocks.BUCKLED_HARNESS.get(), ModItems.DINO_HARNESS.get());
         dropOther(ModBlocks.TEMPORAL_CORE.get(), ModItems.STILLED_CORE.get());

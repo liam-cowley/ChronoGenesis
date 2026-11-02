@@ -262,7 +262,8 @@ import present_ruins  # noqa: E402
 # its five seals are broken, each by a different gift of the glands (see temple/SealBlock):
 #   heavy (east room, Iron Fists or a Ground Slam), narrow (west, at the end of a one-block crawlspace: Shrink),
 #   swift (north, at the end of a long hall: run into it with Quickening), veiled (one of the core chamber's walls,
-#   seen with Glowing Sight), stilled (the upper room, up the ladder: slow or stop its time).
+#   seen with Glowing Sight), stilled (the upper room, up the ladder: slow or stop its time). At its heart, on a plinth
+#   beside the shaft, stands a Time Capsule.
 # It is built around an obelisk (the same one that stands in the present: the temple is centred on the obelisks'
 # placement), whose shaft rises through the core chamber and out of the summit. The core hangs beside the shaft,
 # tied to it by sinews. Local coordinates: the shaft at (17, y, 17), the core at (17, 3, 15); its barrier reaches 18
@@ -310,6 +311,9 @@ def jurassic_temple():
     for x, z in [(12, 12), (12, 22), (22, 12), (22, 22)]:
         box(x, 1, z, x, 8, z, T_PILLAR)
     b[(17, 1, 12)] = "minecraft:chest[facing=south,type=single,waterlogged=false]"
+    # At the temple's heart, on a gold plinth beside the shaft: a Time Capsule, held still with everything else.
+    b[(17, 1, 20)] = T_TRIM
+    b[(17, 2, 20)] = CG + "time_capsule[formed=false]"
     for x, z in [(14, 14), (20, 14), (14, 20), (20, 20)]:
         b[(x, 8, z)] = T_LAMP
     # The veiled seal: one block of the west wall, like all the others.
@@ -388,7 +392,7 @@ def ice_temple_ruin():
         if "seal" in state or "lantern" in state or "ladder" in state:
             out[(x, y, z)] = AIR if "seal" not in state else T_WALL
             continue
-        if "temporal_core" in state:
+        if "temporal_core" in state or "time_capsule" in state:
             continue
         if r.random() < (y - 6) / 26.0:
             continue

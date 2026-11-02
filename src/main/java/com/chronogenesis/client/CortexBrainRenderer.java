@@ -12,12 +12,10 @@ import org.joml.Vector3f;
 import com.chronogenesis.ChronoGenesis;
 import com.chronogenesis.biocomputer.ChronocortexBlock;
 import com.chronogenesis.biocomputer.ChronocortexBlockEntity;
-import com.chronogenesis.biocomputer.CortexLobeBlock;
 import com.chronogenesis.registry.ModBlocks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -25,27 +23,25 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 
 /**
- * The Chronocortex as what it is becoming: a living brain grown in curved flesh rather than boxes ({@link CortexBody},
- * one form per stage, from a brain afloat in its jar to the Cerebrum's writhing mass), its eyes following whoever is
- * in its line of sight ({@link CortexGaze}). Its grown lobes (their blocks are not drawn, see {@link CortexLobeBlock})
- * are drawn here as swelling folds where they stand, tied to it by sinew.
+ * The Chronocortex as what it is becoming ({@link CortexBody}): the brain in its jar, and from its second stage the body
+ * its whole shells have merged into (their lobes and capsules are not drawn as blocks then), one model of boxes, its eyes
+ * following whoever is in its line of sight ({@link CortexGaze}). An open corridor is carved out of it.
  */
 public class CortexBrainRenderer implements BlockEntityRenderer<ChronocortexBlockEntity> {
     public static final ResourceLocation TEXTURE = ChronoGenesis.id("textures/entity/cortex_body.png");
     private static final int RESCAN = 40;
 
-    private final Map<ChronocortexBlockEntity, Lobes> lobes = new WeakHashMap<>();
+    private final Map<ChronocortexBlockEntity, Capsules> capsules = new WeakHashMap<>();
     private final Map<ChronocortexBlockEntity, CortexGaze> gazes = new WeakHashMap<>();
 
-    private record Lobes(long scanned, List<CortexBody.Lobe> found) {}
+    private record Capsules(long scanned, int stage, List<int[]> found) {}
 
     public CortexBrainRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -61,14 +57,9 @@ public class CortexBrainRenderer implements BlockEntityRenderer<ChronocortexBloc
         float time = level.getGameTime() + partialTick;
         CortexGaze gaze = gazes.computeIfAbsent(cortex, c -> new CortexGaze());
         CortexBody.Look look = gaze.update(level, cortex.getBlockPos(), stage, time, partialTick);
-
-        // Fewer facets far off.
-        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        double distance = camera.distanceTo(Vec3.atCenterOf(cortex.getBlockPos()));
-        float detail = (float) Mth.clampedMap(distance, 16, 56, 1.0, 0.4);
-
+        Direction path = cortex.path();
         CortexBody.State body = new CortexBody.State(stage, cortex.knowledge(), time, cortex.getBlockPos().asLong(),
-                lobes(cortex, level, (long) time), look, detail);
+                capsules(cortex, level, stage, (long) time), path == null ? null : new int[] {path.getStepX(), path.getStepZ()}, look);
         pose.pushPose();
         pose.translate(0.5, 0.5, 0.5);
         pose.scale(1 / 16.0f, 1 / 16.0f, 1 / 16.0f);
@@ -77,7 +68,7 @@ public class CortexBrainRenderer implements BlockEntityRenderer<ChronocortexBloc
     }
 
     /** A sink drawing into {@code buffer} through {@code pose}. */
-    static FleshMesh.Sink sink(PoseStack.Pose pose, VertexConsumer buffer) {
+    static BoxModel.Sink sink(PoseStack.Pose pose, VertexConsumer buffer) {
         Matrix4f matrix = pose.pose();
         Matrix3f normals = pose.normal();
         Vector3f p = new Vector3f();
@@ -89,23 +80,23 @@ public class CortexBrainRenderer implements BlockEntityRenderer<ChronocortexBloc
         };
     }
 
-    /** Its grown lobes (any but fresh), in pixels from its middle, looked for now and then round it. */
-    private List<CortexBody.Lobe> lobes(ChronocortexBlockEntity cortex, Level level, long now) {
-        Lobes cached = lobes.get(cortex);
-        if (cached != null && now - cached.scanned() < RESCAN && now >= cached.scanned()) {
+    /** The Time Capsules built into its last shell (block offsets from the jar), looked for now and then. */
+    private List<int[]> capsules(ChronocortexBlockEntity cortex, Level level, int stage, long now) {
+        if (stage < ChronocortexBlockEntity.MAX_STAGE) {
+            return List.of();
+        }
+        Capsules cached = capsules.get(cortex);
+        if (cached != null && cached.stage() == stage && now - cached.scanned() < RESCAN && now >= cached.scanned()) {
             return cached.found();
         }
-        List<CortexBody.Lobe> found = new ArrayList<>();
-        int reach = CortexLobeBlock.REACH;
-        BlockPos origin = cortex.getBlockPos();
-        for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-reach, -reach, -reach), origin.offset(reach, reach, reach))) {
-            BlockState state = level.getBlockState(pos);
-            if (state.is(ModBlocks.CORTEX_LOBE.get()) && CortexLobeBlock.drawnByCortex(state)) {
-                found.add(new CortexBody.Lobe(new Vector3f(pos.getX() - origin.getX(), pos.getY() - origin.getY(), pos.getZ() - origin.getZ()).mul(16),
-                        state.getValue(CortexLobeBlock.PART) == CortexLobeBlock.Part.CEREBRUM_EYE));
+        List<int[]> found = new ArrayList<>();
+        BlockPos jar = cortex.getBlockPos();
+        for (BlockPos pos : ChronocortexBlockEntity.structure(jar, stage)) {
+            if (ChronocortexBlockEntity.inShell(jar, pos, stage) && level.getBlockState(pos).is(ModBlocks.TIME_CAPSULE.get())) {
+                found.add(new int[] {pos.getX() - jar.getX(), pos.getY() - jar.getY(), pos.getZ() - jar.getZ()});
             }
         }
-        lobes.put(cortex, new Lobes(now, found));
+        capsules.put(cortex, new Capsules(now, stage, found));
         return found;
     }
 
@@ -116,7 +107,7 @@ public class CortexBrainRenderer implements BlockEntityRenderer<ChronocortexBloc
 
     @Override
     public AABB getRenderBoundingBox(ChronocortexBlockEntity cortex) {
-        return new AABB(cortex.getBlockPos()).inflate(CortexLobeBlock.REACH + 8);
+        return new AABB(cortex.getBlockPos()).inflate(8);
     }
 
     @Override

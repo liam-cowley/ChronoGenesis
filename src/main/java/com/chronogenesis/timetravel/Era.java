@@ -26,6 +26,7 @@ import net.minecraft.world.level.Level;
  * @param memory    an era it must remember first (an offshoot planted there, linked back): each era leads to the next
  * @param routes    other ways in: any one route (a memory and/or a lesson) will do, so eras branch rather than queue.
  *                  Empty: only {@code memory} and {@code lesson} count
+ * @param capsules  Time Capsules it must have built into its last shell to reach this far back
  * @param cost      drams of Time, drawn from its wired organisms
  * @param minutes   how long the shift holds before time snaps the traveller back
  * @param clue      noticed on arrival
@@ -33,7 +34,7 @@ import net.minecraft.world.level.Level;
  * @param lens      whether the Temporal Lens can look into it once visited (not Before Time: there is nothing to see)
  */
 public record Era(Component title, Component description, Item icon, ResourceKey<Level> dimension, int stage,
-                  Optional<ResourceLocation> lesson, Optional<ResourceLocation> memory, List<Route> routes, int cost, int minutes,
+                  Optional<ResourceLocation> lesson, Optional<ResourceLocation> memory, List<Route> routes, int capsules, int cost, int minutes,
                   Optional<ResourceLocation> clue, int order, boolean toxicAir, boolean lens) {
     /** One way into an era: a memory it must hold and/or a lesson it must have learned. */
     public record Route(Optional<ResourceLocation> memory, Optional<ResourceLocation> lesson) {
@@ -56,6 +57,7 @@ public record Era(Component title, Component description, Item icon, ResourceKey
             ResourceLocation.CODEC.optionalFieldOf("lesson").forGetter(Era::lesson),
             ResourceLocation.CODEC.optionalFieldOf("requires_memory").forGetter(Era::memory),
             Route.CODEC.listOf().optionalFieldOf("routes", List.of()).forGetter(Era::routes),
+            Codec.intRange(0, 16).optionalFieldOf("capsules", 0).forGetter(Era::capsules),
             Codec.intRange(0, 100_000).optionalFieldOf("cost", 0).forGetter(Era::cost),
             Codec.intRange(1, 1440).optionalFieldOf("minutes", 5).forGetter(Era::minutes),
             ResourceLocation.CODEC.optionalFieldOf("clue").forGetter(Era::clue),

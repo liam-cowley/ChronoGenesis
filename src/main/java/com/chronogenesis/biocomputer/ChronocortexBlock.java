@@ -32,7 +32,11 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-/** The woken brain in its jar on the old Dissection Table. Use it to see its view: organisms, research, its mind. */
+/**
+ * The woken brain in its jar on the old Dissection Table. Use it to see its view: organisms, research, its mind, and
+ * (only here, at its core) the eras it can shift a traveller into. Once it has a body the jar is inside it: sneak and
+ * use any part of it empty-handed to open a way in.
+ */
 public class ChronocortexBlock extends BaseEntityBlock {
     public static final MapCodec<ChronocortexBlock> CODEC = simpleCodec(ChronocortexBlock::new);
     /** How far it has grown (0-3): the brain swells in its jar, then out of it. */
@@ -86,14 +90,18 @@ public class ChronocortexBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null
+        return level.isClientSide() ? createTickerHelper(type, ModBlockEntities.CHRONOCORTEX.get(), ChronocortexBlockEntity::clientTick)
                 : createTickerHelper(type, ModBlockEntities.CHRONOCORTEX.get(), ChronocortexBlockEntity::serverTick);
     }
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof ChronocortexBlockEntity cortex) {
-            PacketDistributor.sendToPlayer(serverPlayer, OpenChronocortexPayload.of(cortex));
+            if (player.isSecondaryUseActive() && cortex.stage() >= 2) {
+                cortex.togglePath(serverPlayer);
+            } else {
+                PacketDistributor.sendToPlayer(serverPlayer, OpenChronocortexPayload.of(cortex, true));
+            }
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
     }

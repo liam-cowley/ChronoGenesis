@@ -101,7 +101,7 @@ public class ChronocortexScreen extends Screen {
         addRenderableWidget(Button.builder(Component.translatable("screen.chronogenesis.chronocortex.eras"),
                 b -> { page = ERAS; rebuildWidgets(); }).bounds(x + 222, y - 22, 70, 20).build()).active = page != ERAS;
 
-        if (page == ERAS) {
+        if (page == ERAS && data.core()) {
             List<Map.Entry<ResourceLocation, Era>> eras = Eras.all(minecraft.level.registryAccess());
             for (int i = 0; i < eras.size() && i < 8; i++) {
                 ResourceLocation id = eras.get(i).getKey();
@@ -252,9 +252,11 @@ public class ChronocortexScreen extends Screen {
             } else if (next == 2) {
                 line = requirement(graphics, x + 14, line, mind.lessons().contains(Lessons.SELF),
                         Component.translatable("screen.chronogenesis.chronocortex.need_name"));
+                line = requirement(graphics, x + 14, line, mind.structure(),
+                        Component.translatable("screen.chronogenesis.chronocortex.need_structure_2"));
             } else {
-                line = requirement(graphics, x + 14, line, mind.cranium(),
-                        Component.translatable("screen.chronogenesis.chronocortex.need_cranium"));
+                line = requirement(graphics, x + 14, line, mind.structure(),
+                        Component.translatable("screen.chronogenesis.chronocortex.need_structure_3"));
             }
         } else {
             graphics.drawString(font, Component.translatable("screen.chronogenesis.chronocortex.complete"), x + 8, line, OK, false);
@@ -309,6 +311,12 @@ public class ChronocortexScreen extends Screen {
 
     /** The eras it can reach, and what a shift into the selected one still needs. */
     private void renderEras(GuiGraphics graphics, int x, int y) {
+        if (!data.core()) {
+            // Its sense of time is in the jar: from out here it cannot shift anyone.
+            graphics.drawWordWrap(font, Component.translatable(data.stage() >= 2 ? "screen.chronogenesis.chronocortex.eras_inside"
+                    : "screen.chronogenesis.chronocortex.eras_at_jar"), x + 8, y + 8, WIDTH - 16, DIM);
+            return;
+        }
         int dx = x + 124;
         Era era = selectedEra == null ? null : Eras.get(minecraft.level.registryAccess(), selectedEra);
         if (era == null) {
@@ -316,8 +324,8 @@ public class ChronocortexScreen extends Screen {
             return;
         }
         OpenChronocortexPayload.Mind mind = data.mind();
-        TemporalShift.Check check = TemporalShift.check(minecraft.player, era, data.stage(), mind.lessons(), mind.memories(),
-                data.essence());
+        TemporalShift.Check check = TemporalShift.check(minecraft.player, era, data.stage(), mind.capsules(), mind.lessons(),
+                mind.memories(), data.essence());
         shiftButton.active = check.ok();
         int line = y + 8;
         graphics.renderItem(new ItemStack(era.icon()), dx, line - 2);
@@ -356,6 +364,10 @@ public class ChronocortexScreen extends Screen {
                 }
                 line = requirement(graphics, dx + 6, line, route.open(mind.lessons(), mind.memories()), way);
             }
+        }
+        if (era.capsules() > 0) {
+            line = requirement(graphics, dx, line, check.capsules(), Component.translatable("screen.chronogenesis.chronocortex.need_capsules",
+                    mind.capsules(), era.capsules()));
         }
         line = requirement(graphics, dx, line, check.tether(), Component.translatable("screen.chronogenesis.chronocortex.need_tether"));
         line = requirement(graphics, dx, line, check.time(), EternalHourglassItem.carried(minecraft.player)

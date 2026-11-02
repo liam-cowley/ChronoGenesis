@@ -3562,6 +3562,42 @@ def cortex_body_sheet():
         for x in range(16):
             v = (1 - y / 15.0) * (0.75 + 0.25 * abs(math.sin(y * 1.3)))
             put(96 + x, 80 + y, (150 * v + 10, 30 * v, 44 * v + 6))
+    # The machinery shining through its body (stages 2 and 3), and its Time Capsules.
+    # Iron plate (0,64 32x32): dark, riveted along its seams.
+    for y in range(32):
+        for x in range(32):
+            v = 92 + r.randint(-6, 6) - (14 if x % 16 in (0, 15) or y % 16 in (0, 15) else 0)
+            c = (v, v + 2, v + 10)
+            if x % 16 in (2, 13) and y % 16 in (2, 13):
+                c = (170, 172, 182)
+            put(x, 64 + y, c)
+    # Copper (32,64 16x16): warm, streaked with verdigris.
+    for y in range(16):
+        for x in range(16):
+            green = (x * 3 + y * 5) % 11 == 0 or (x + y * 2) % 13 == 0
+            put(32 + x, 64 + y, (88, 168, 136) if green else (196 - y * 3, 112 - y * 2, 66))
+    # A gauge (48,64 16x16): a brass bezel, a pale dial, its ticks.
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, y - 7.5)
+            c = (176, 132, 56) if d > 6.4 else (236, 226, 196) if d > 0.9 else (40, 30, 30)
+            a2 = math.atan2(y - 7.5, x - 7.5)
+            if 4.6 < d < 6.2 and abs(math.sin(a2 * 6)) < 0.25:
+                c = (60, 46, 40)
+            put(48 + x, 64 + y, c)
+    # Glow (32,80 16x16): what its vents and lamps burn with (drawn full bright).
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, y - 7.5) / 10.6
+            put(32 + x, 80 + y, (150 + 100 * (1 - d), 255, 200 + 50 * (1 - d)))
+    # Capsule glass (48,80 16x16): pale glass round an amber moment, a glint.
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, (y - 7.5) * 0.6) / 7.5
+            c = (255, 196, 90) if d < 0.45 else (190, 226, 236) if d < 0.95 else (140, 176, 190)
+            if x in (3, 4) and 3 <= y <= 10:
+                c = (250, 255, 255)
+            put(48 + x, 80 + y, c)
     full = os.path.join(OUT, "entity/cortex_body.png")
     os.makedirs(os.path.dirname(full), exist_ok=True)
     img.save(full)
@@ -4199,8 +4235,62 @@ def era_materials():
            (255, 240, 220, 255), wide=True)
 
 
+def time_capsule_textures():
+    """The Time Capsule's glass (a moment of amber light in pale glass, a brass band round it) and its four parts:
+    a sunmetal casing, a Precursor escapement (a toothed wheel), the frozen heart (a moment in ice), the seal (a ring)."""
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x - 7.5, (y - 7.5) * 0.7) / 7.5
+            c = (255, 200, 96, 255) if d < 0.42 else (255, 226, 160, 255) if d < 0.55 else (176, 214, 226, 255) if d < 0.95 else (124, 160, 176, 255)
+            if x in (2, 3) and 2 <= y <= 11:
+                c = (236, 250, 255, 255)
+            img.putpixel((x, y), c)
+    save(img, "block/time_capsule_glass")
+
+    sun = _tones((255, 246, 200, 255), (250, 222, 140, 255), (232, 186, 80, 255), (176, 124, 40, 255))
+    img = new()
+    _shape_paint(img, _polygon([(4, 2), (12, 2), (13, 4), (13, 12), (12, 14), (4, 14), (3, 12), (3, 4)]), sun, outline=None)
+    for y in (4, 8, 12):
+        for x in range(3, 14):
+            if img.getpixel((x, y))[3]:
+                img.putpixel((x, y), sun[3])
+    for x, y in ((5, 6), (11, 6), (5, 10), (11, 10)):
+        img.putpixel((x, y), (255, 252, 230, 255))
+    save(img, "item/capsule_casing")
+
+    img = new()
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x - 7.5, y - 7.5
+            d = math.hypot(dx, dy)
+            a = math.atan2(dy, dx)
+            tooth = d < 7.2 and math.cos(a * 8) > 0.2
+            if (d < 5.8 or tooth) and d > 1.6:
+                img.putpixel((x, y), sun[1] if (dx + dy) < 0 else sun[2])
+            elif 2.6 < d < 3.4 and abs(dx) < 0.8:
+                img.putpixel((x, y), sun[3])
+    save(img, "item/capsule_escapement")
+
+    ice = _tones((236, 250, 255, 255), (186, 226, 246, 255), (130, 190, 228, 255), (80, 140, 190, 255))
+    img = new()
+    _shape_paint(img, _polygon([(8, 1), (13, 5), (13, 11), (8, 15), (3, 11), (3, 5)]), ice, outline=None)
+    for y in range(6, 11):
+        for x in range(6, 11):
+            if math.hypot(x - 8, y - 8) < 2.4:
+                img.putpixel((x, y), (255, 196, 90, 255) if math.hypot(x - 8, y - 8) < 1.4 else (255, 226, 150, 255))
+    save(img, "item/capsule_heart")
+
+    img = new()
+    _shape_paint(img, _cut(_oval(7.5, 7.5, 6.0, 6.0), _oval(7.5, 7.5, 3.0, 3.0)), sun, outline=None)
+    for x, y in ((7, 1), (8, 1), (14, 7), (14, 8), (1, 7), (1, 8), (7, 14), (8, 14)):
+        img.putpixel((x, y), (110, 96, 110, 255))
+    save(img, "item/capsule_seal")
+
+
 eldritch_endgame()
 era_materials()
+time_capsule_textures()
 
 if PREVIEW:
     # Preview sheet: each texture at 4x, on a dark background, with tinted examples for tinted layers.

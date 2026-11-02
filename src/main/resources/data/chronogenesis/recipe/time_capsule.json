@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "chronogenesis:capsule_casing"
+    },
+    {
+      "item": "chronogenesis:capsule_escapement"
+    },
+    {
+      "item": "chronogenesis:capsule_heart"
+    },
+    {
+      "item": "chronogenesis:capsule_seal"
+    },
+    {
+      "item": "chronogenesis:sunbrass_ingot"
+    },
+    {
+      "item": "chronogenesis:sunbrass_ingot"
+    }
+  ],
+  "result": {
+    "id": "chronogenesis:time_capsule",
+    "count": 1
+  }
+}

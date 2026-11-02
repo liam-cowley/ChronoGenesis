@@ -313,28 +313,29 @@ Its roles:
 
    Most topics accept **several alternative clue sets**, so the research tree branches: you can
    unlock the Lens or the Suit through different discoveries in different orders.
-   **Its look (as built, `client/CortexBrainRenderer`, `CortexBody`, `CortexGaze`):** not boxes but curved meshes
-   (`client/FleshMesh`: surfaces sampled on a grid, normals from the grid, each fold shaded by how deep it is; texture
-   `entity/cortex_body.png`), a different body every stage, each bigger and stranger than the last:
-   - **Stage 0:** a folded brain afloat in the jar's fluid (hemispheres, fissure, cerebellum, a trailing spinal cord,
-     drifting nerves, brass wires from the lid's electrodes) with one small eye in its brow. It turns in the fluid to
-     face whoever it watches.
-   - **Stage 1:** swollen to fill the jar; the glass cracked and the lid shoved up askew (block model), a second eye
-     opening, the first tentacles budding over the rim.
-   - **Stage 2:** out of the burst jar on a stalk of itself, roots gripping the table, as big as a torso. Its great
-     eye crawls round under the skin to keep you in sight; small eyes open round it and sink as the great eye passes;
-     tentacles hang over the table and crawl along the floor.
-   - **Stage 3, the Cerebrum:** a writhing mass filling the cranium and more: a heart of folds with fourteen lumps
-     heaving round it, the great eye as wide as a man, eyes on the cranium's faces and on stalks, and thirty-odd
-     tentacles coiling. Those nearest the eye draw back to let it see.
-   Grown lobes outside the mass are folded blobs where they stand, slung to it by sinew. The **eyes** are spheres
-   (a sclera bloodshot to the back, an iris seen face on, a slit pupil, lids and a fleshy rim) that turn to follow the
-   local player continuously while they are in its **line of sight** (blocks that cast no shadow, its own lobes and
-   the jar do not hide them; checked every 4 ticks). Out of sight they wander. When it sees you its pupils widen and
-   its lids open; if you stare back they narrow to slits and it squints; come close and the nearest tentacles reach for
-   you. Heartbeats wash over it and down its tentacles. Its knowledge (`knowledge()`) still makes it stranger: flesh
-   from grey-pink to violet to eldritch green, the iris from amber to a glowing green, more eyes and tentacles, a
-   crown of shards (10+), a maw of teeth under its eye (16+). Fewer facets far off.
+   **Its look (as built, `client/CortexBrainRenderer`, `CortexBody`, `CortexGaze`):** all of it boxes, as entity
+   models are, posed freely each frame (`client/BoxModel`: a transform stack, each face taking a piece of its texture
+   region the size of the face, one texel a pixel; texture `entity/cortex_body.png`). While its shells grow, its lobes
+   are blocks in their frames; when a shell is whole they merge into one model:
+   - **Stage 0:** a folded brain afloat in the jar (hemispheres, fissure, folds, cerebellum, spinal cord, electrodes)
+     with one small eye in its brow. It turns in the fluid to face whoever it watches.
+   - **Stage 1:** swollen to fill the jar, the glass cracked and the lid shoved up (block model, which stays from here
+     on), a second eye, tentacles budding over the rim.
+   - **Stage 2:** a lump of brain over its 3 x 3 x 2: one heaving box per block, swelling out of the faces that look
+     out, rounded off at its corners and crown, big lobes across the joins, folds on its crown; a great eye that crawls
+     round its box to face whoever it watches, smaller ones, tentacles, a brass band and a gauge. Nerves run up from
+     the brain in the jar into it.
+   - **Stage 3:** the same over its 5 x 5 x 3, writhing: thirty-odd tentacles (some ending in eyes), a dozen eyes,
+     brass ribs, pistons, gauges, glowing vents, iron plates, and its Time Capsules mounted in brass collars, the
+     moment in each turning, copper pipes from them over its crown.
+   An open corridor is carved out of it to the jar (parted lips at its mouth, strands from its roof). The **eyes** are
+   box balls (sclera, iris on the front, a slit pupil, lids and a rim of flesh on the socket) that follow the local
+   player continuously while they are in its **line of sight** (blocks that cast no shadow, its own lobes and the jar
+   do not hide them; checked every 4 ticks). Out of sight they wander. When it sees you its pupils widen; if you stare
+   back they narrow to slits and it squints; come close and the nearest tentacles reach for you. Its knowledge
+   (`knowledge()`) makes it stranger: flesh from grey-pink to violet to eldritch green, the iris from amber to a glowing
+   green, more eyes and tentacles. From stage 3 it crackles (`cortex.crackle`) and whispers (`cortex.whisper`), both
+   built from vanilla sounds in `sounds.json`, played round it on the client.
 3. **Temporal shifts.** Time travel, from stage 1 onward.
    **As built:** eras are data (`data/<ns>/chronogenesis/era/<name>.json`: dimension, stage, lesson, Time cost,
    minutes, clue). Its **Eras** page sends a player within 8 blocks (`timetravel/TemporalShift`): it needs the era's
@@ -502,16 +503,26 @@ It talks. At first it whispers in chat and in the journal, curious and childlike
 becomes demanding, and by the final stage it is insane.
 
 **As built (growth, lessons, stages, speech):**
-- *Lobes:* it grows `cortex_lobe` blocks into Brass Armature touching it (within 4 blocks of the jar), one every
-  5 s for 4 drams of Awareness from its wired organisms. Lobes are its capacity. Using a lobe is using the cortex.
+- *Lobes:* it grows `cortex_lobe` blocks into Brass Armature touching it, one every 5 s for 4 drams of Awareness
+  from its wired organisms, only within its structure (a 5 x 5 x 3, the jar the middle block of the bottom layer):
+  a soft mass in its frame, then firm folds (still in the frame). Lobes are its capacity (74 at most: lessons fit).
+  Using a lobe is using the cortex.
 - *Lessons* (`data/<ns>/chronogenesis/lesson/<name>.json`: item, stage, capacity, awareness, what it says): show it
   the item to teach it. Words (book) lets it speak; A Name (a named name tag) names it; The Time of Day (clock) lets
   it tell the time. Others: direction, music, mortality, the sky, the cold, the other scientist, eternity.
-- *Stages:* 1 (Child): 8 lobes, 4 awareness, words. 2 (Adolescent): 32 lobes, 9 awareness, a name. 3 (the
-  Cerebrum): 13 awareness and firm lobes filling a 5 x 5 x 5 cranium built up from the jar
-  (the jar is the middle block of its bottom layer and counts as one of its 125), a multiblock: the lobes
-  become Cerebrum with an eye in the middle of each face; break it and it drops to stage 2. Its wiring range grows
-  (32, 48, 64, 96) and its jar model changes with each stage. Research topics are gated by stage.
+- *Stages are shells:* 1 (Child): 4 awareness, words (the jar alone). 2 (Adolescent): 9 awareness, a name, and
+  firm lobes filling the 3 x 3 x 2 over the jar (17). 3 (the Cerebrum): 13 awareness and the 5 x 5 x 3 round that
+  (74 in all), any blocks of its last shell Time Capsules instead of lobes. A whole shell is a multiblock: its lobes
+  become `cerebrum` (not drawn; the body is) and its capsules `formed`. Break a shell and it drops back. Its wiring
+  range grows (32, 48, 64, 96). Research topics are gated by stage.
+- *The way in:* sneak-use any part of it empty-handed: a corridor two high opens from beside the jar out through its
+  body on the player's side (or the nearest side that is all lobe; its lobes `open`, nothing to bump into), stays
+  open while anyone is in it and closes a minute after. Only from the jar (`reachableCore`: anywhere near a bare jar,
+  else at the end of an open corridor) does its screen show the Eras page, and the server checks the same.
+- *Time Capsules* (`time_capsule`): each built into its last shell lets it reach further back (eras' `capsules`:
+  Jurassic 1, Hadean and Before Time 2, all at stage 3). The first is crafted from four parts (casing: Precursor vaults
+  and tombs; escapement: their archives; heart: the Ice Age's temple remains; seal: Ice Age beasts) and two sunbrass;
+  the second stands on a plinth at the heart of every Jurassic temple, behind its barrier.
 - *Speech:* with words, it answers chat said to it (its name, "cortex"/"brain", a question, or anything said within
   6 blocks) to everyone in hearing range (16-48 blocks by stage), after a moment. Replies are data
   (`data/<ns>/chronogenesis/dialogue/<name>.json`: keywords, lines per stage, and answers it works out: its state,

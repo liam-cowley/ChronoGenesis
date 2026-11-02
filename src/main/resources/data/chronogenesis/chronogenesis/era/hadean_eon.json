@@ -8,6 +8,7 @@
   "icon": "minecraft:magma_block",
   "dimension": "chronogenesis:hadean_eon",
   "stage": 3,
+  "capsules": 2,
   "requires_memory": "chronogenesis:jurassic_age",
   "cost": 96,
   "minutes": 8,

@@ -52,6 +52,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * The Chronocortex (Temporal Control Unit), core-systems.md section 5.
@@ -59,30 +60,30 @@ import net.minecraft.world.phys.AABB;
  *   <li>Essence interface: organisms with a Ganglion graft within its wiring range (32 blocks, more as it grows)
  *       are wired to it. It reports their levels, and warns before a wired Time organism bursts.</li>
  *   <li>Research: costs are drawn from the essence stored in wired organisms (see {@link Research}).</li>
- *   <li>Growth: it grows lobes ({@link CortexLobeBlock}) over Brass Armature around its jar, one every few seconds,
- *       for {@value #LOBE_COST} drams of Awareness from its wired organisms. Each lobe is room in its mind.</li>
+ *   <li>Growth: it grows lobes ({@link CortexLobeBlock}) into Brass Armature built round its jar, one every few
+ *       seconds, for {@value #LOBE_COST} drams of Awareness from its wired organisms. Each lobe is room in its mind.
+ *       It only grows within its structure (see {@link #structure}): a 5 x 5 x 3 box, the jar the middle block of
+ *       its bottom layer.</li>
  *   <li>Lessons: show it things ({@link Lesson}) and it learns what they mean, if it has the room and is old
  *       enough. Lessons make it aware.</li>
- *   <li>Stages: lobes and awareness together make it grow up ({@link #STAGE_LOBES}, {@link #STAGE_AWARENESS};
- *       stage 1 also needs words, stage 2 a name). The last stage, the Cerebrum, is a multiblock: its lobes must
- *       fill the whole 5 x 5 x 5 cranium built up from the jar (the jar is the middle block of its bottom layer, and
- *       one of its 125 blocks). Break the cranium and it falls back to stage 2.</li>
+ *   <li>Stages: each stage from 2 is a shell of lobes round the last, and a multiblock: stage 2 is the 3 x 3 x 2
+ *       box over the jar, stage 3 the 5 x 5 x 3 box round that (two of whose blocks may be Time Capsules). When a
+ *       shell is whole its lobes stop being blocks and merge into one body (client/CortexBrainRenderer). Stage 1
+ *       needs words, stage 2 a name; all need awareness ({@link #STAGE_AWARENESS}). Break a shell and it falls back.
+ *       </li>
+ *   <li>The way in: sneaking, empty-handed, a player opens a corridor through its body to the jar, where its sense of
+ *       time is: only from the jar can it shift anyone into another era. Its Time Capsules let it reach further
+ *       back.</li>
  *   <li>Speech: once it has words, it answers what is said near it ({@link CortexSpeech}).</li>
  * </ul>
  */
 public class ChronocortexBlockEntity extends BlockEntity {
     /** How far its nerves reach, by stage: Ganglions this close are wired to it. */
     private static final int[] WIRE_RANGES = {32, 48, 64, 96};
-    /** Lobes and awareness needed for each stage (stage 3 also needs the full cranium). */
-    public static final int[] STAGE_LOBES = {0, 8, 32, 124};
+    /** Lobes and awareness needed for each stage (stages 2 and 3 also need their structure whole). */
+    public static final int[] STAGE_LOBES = {0, 4, 17, 72};
     public static final int[] STAGE_AWARENESS = {0, 4, 9, 13};
     public static final int MAX_STAGE = 3;
-    /**
-     * The cranium: a 5 x 5 x 5 cube standing on the jar's own layer, the jar the middle block of its bottom layer. It
-     * reaches this many blocks out from the jar to each side, and twice this up; lobes fill every block of it but the
-     * jar's own, and make the Cerebrum.
-     */
-    public static final int CRANIUM_RADIUS = 2;
     public static final int LOBE_COST = 4;
     /** Awareness each remembered era gives it. */
     public static final int MEMORY_AWARENESS = 3;
@@ -267,7 +268,7 @@ public class ChronocortexBlockEntity extends BlockEntity {
     // ---------------------------------------------------------------- teaching
 
     /**
-     * Something used on it (the jar, or any of its lobes: once its cranium has closed, the jar cannot be reached):
+     * Something used on it (the jar, or any of its lobes or capsules: once it has a body, the jar is inside it):
      * a Nerve Spool lays a nerve to a fossil; anything else may be a lesson.
      */
     public ItemInteractionResult use(ItemStack stack, Player player) {
@@ -472,6 +473,13 @@ public class ChronocortexBlockEntity extends BlockEntity {
             cortex.grow(serverLevel, false);
             cortex.checkStage(serverLevel);
         }
+        if (cortex.tick % 10 == 3) {
+            cortex.tendPath(serverLevel);
+        }
+        if (cortex.tick == 2) {
+            // Lobes left from an older shape of the cortex (or a world from before shells) are put right.
+            cortex.shapeStructure(serverLevel);
+        }
         if (!cortex.heard.isEmpty()) {
             Heard first = cortex.heard.get(0);
             if (cortex.tick >= first.at) {
@@ -572,7 +580,7 @@ public class ChronocortexBlockEntity extends BlockEntity {
     }
 
     /**
-     * The lobes it has, found by walking from the jar through touching lobes (within reach); and one more grown
+     * The lobes it has, found by walking from the jar through touching lobes (within its structure); and one more grown
      * into the nearest bare armature that touches them, if its organisms can spare the Awareness ({@code free}:
      * without asking, and already firm). Returns whether a lobe grew.
      */
@@ -620,54 +628,70 @@ public class ChronocortexBlockEntity extends BlockEntity {
         return grew;
     }
 
+    /** It only grows (and counts lobes) within its last stage's structure. */
     private boolean withinReach(BlockPos pos) {
-        return Math.abs(pos.getX() - worldPosition.getX()) <= CortexLobeBlock.REACH
-                && Math.abs(pos.getY() - worldPosition.getY()) <= CortexLobeBlock.REACH
-                && Math.abs(pos.getZ() - worldPosition.getZ()) <= CortexLobeBlock.REACH;
+        return inStructure(worldPosition, pos, MAX_STAGE);
     }
 
-    /** Every block of a cortex's cranium (the jar's own included): see {@link #CRANIUM_RADIUS}. */
-    public static Iterable<BlockPos> cranium(BlockPos jar) {
-        return BlockPos.betweenClosed(jar.offset(-CRANIUM_RADIUS, 0, -CRANIUM_RADIUS),
-                jar.offset(CRANIUM_RADIUS, 2 * CRANIUM_RADIUS, CRANIUM_RADIUS));
+    /** How far a stage's structure reaches out from the jar to each side (and up, less one): 0 for the jar alone. */
+    public static int structureRadius(int stage) {
+        return Math.max(0, stage - 1);
     }
 
     /**
-     * Whether a block of the cranium opens an eye when it closes: the middle of a face of the cube (one coordinate at
-     * the edge, the other two centred). The bottom face's middle is the jar itself.
+     * Every block of a stage's structure, the jar's own included: a box standing on the jar's layer, the jar the middle
+     * block of its bottom layer. Stage 2: 3 x 3 x 2. Stage 3: 5 x 5 x 3.
      */
-    public static boolean craniumEye(BlockPos jar, BlockPos pos) {
-        BlockPos centre = craniumCentre(jar);
-        int dx = Math.abs(pos.getX() - centre.getX());
-        int dy = Math.abs(pos.getY() - centre.getY());
-        int dz = Math.abs(pos.getZ() - centre.getZ());
-        return !pos.equals(jar) && (dx == CRANIUM_RADIUS ? 1 : 0) + (dy == CRANIUM_RADIUS ? 1 : 0) + (dz == CRANIUM_RADIUS ? 1 : 0) == 1
-                && (dx == 0 || dx == CRANIUM_RADIUS) && (dy == 0 || dy == CRANIUM_RADIUS) && (dz == 0 || dz == CRANIUM_RADIUS);
+    public static Iterable<BlockPos> structure(BlockPos jar, int stage) {
+        int r = structureRadius(stage);
+        return BlockPos.betweenClosed(jar.offset(-r, 0, -r), jar.offset(r, r, r));
     }
 
-    /** The middle of a cortex's cranium: right above the jar. */
-    public static BlockPos craniumCentre(BlockPos jar) {
-        return jar.above(CRANIUM_RADIUS);
+    public static boolean inStructure(BlockPos jar, BlockPos pos, int stage) {
+        int r = structureRadius(stage);
+        int dy = pos.getY() - jar.getY();
+        return Math.abs(pos.getX() - jar.getX()) <= r && Math.abs(pos.getZ() - jar.getZ()) <= r && dy >= 0 && dy <= r;
     }
 
-    /** Whether lobes (firm ones) fill every block of the cranium but the jar's. */
-    public boolean craniumComplete() {
-        if (level == null) {
-            return false;
+    /** Whether a block is in the shell a stage adds round the last: where a Time Capsule may stand (stage 3). */
+    public static boolean inShell(BlockPos jar, BlockPos pos, int stage) {
+        return inStructure(jar, pos, stage) && !inStructure(jar, pos, stage - 1);
+    }
+
+    /** Whether lobes (firm ones) fill every block of a stage's structure but the jar; Time Capsules may stand in its last shell. */
+    public boolean structureComplete(int stage) {
+        if (level == null || stage < 2) {
+            return stage < 2;
         }
-        for (BlockPos pos : cranium(worldPosition)) {
+        for (BlockPos pos : structure(worldPosition, stage)) {
             if (pos.equals(worldPosition)) {
                 continue;
             }
             BlockState state = level.getBlockState(pos);
-            if (!state.is(ModBlocks.CORTEX_LOBE.get()) || state.getValue(CortexLobeBlock.PART) == CortexLobeBlock.Part.FRESH) {
+            boolean lobe = state.is(ModBlocks.CORTEX_LOBE.get()) && state.getValue(CortexLobeBlock.PART) != CortexLobeBlock.Part.FRESH;
+            boolean capsule = stage == MAX_STAGE && state.is(ModBlocks.TIME_CAPSULE.get()) && inShell(worldPosition, pos, MAX_STAGE);
+            if (!lobe && !capsule) {
                 return false;
             }
         }
         return true;
     }
 
-    /** The stage its lobes and lessons allow, one step at a time. The Cerebrum is lost if its cranium breaks. */
+    /** Time Capsules built into its last shell, once it is whole: each lets it reach further back. */
+    public int capsules() {
+        if (level == null || stage < MAX_STAGE) {
+            return 0;
+        }
+        int count = 0;
+        for (BlockPos pos : structure(worldPosition, MAX_STAGE)) {
+            if (inShell(worldPosition, pos, MAX_STAGE) && level.getBlockState(pos).is(ModBlocks.TIME_CAPSULE.get())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /** The stage its lobes and lessons allow, one step at a time. A stage is lost if its structure breaks. */
     public int reachableStage() {
         int awareness = awareness();
         int reached = 0;
@@ -676,9 +700,9 @@ public class ChronocortexBlockEntity extends BlockEntity {
             if (s == 1) {
                 ok &= knows(Lessons.WORDS);
             } else if (s == 2) {
-                ok &= knows(Lessons.SELF);
+                ok &= knows(Lessons.SELF) && structureComplete(2);
             } else {
-                ok &= craniumComplete();
+                ok &= structureComplete(3);
             }
             if (!ok) {
                 break;
@@ -690,17 +714,17 @@ public class ChronocortexBlockEntity extends BlockEntity {
 
     private void checkStage(ServerLevel level) {
         int reachable = reachableStage();
-        if (stage == MAX_STAGE && reachable < MAX_STAGE) {
-            setStage(level, MAX_STAGE - 1);
-            formCerebrum(level, false);
+        if (stage >= 2 && reachable < stage) {
+            // A shell broke: it shrinks back to what still stands, and its lobes are blocks again.
+            setStage(level, Math.max(1, reachable));
+            closePath(level);
+            shapeStructure(level);
             say("stage.lost");
             return;
         }
         if (reachable > stage) {
             setStage(level, stage + 1);
-            if (stage == MAX_STAGE) {
-                formCerebrum(level, true);
-            }
+            shapeStructure(level);
             level.playSound(null, worldPosition, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.2f, 0.5f + 0.1f * stage);
             level.playSound(null, worldPosition, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.BLOCKS, 0.4f, 1.5f);
             level.sendParticles(ParticleTypes.ELECTRIC_SPARK, worldPosition.getX() + 0.5, worldPosition.getY() + 1.0,
@@ -719,20 +743,186 @@ public class ChronocortexBlockEntity extends BlockEntity {
     }
 
     /**
-     * The cranium closes over the jar (or opens again): its lobes become the Cerebrum, an eye in the middle of every
-     * face (the bottom face's middle is the jar itself).
+     * Its lobes and capsules as its stage has them: inside its whole structure they are part of its body (not drawn as
+     * blocks, see {@link CortexLobeBlock#drawnByCortex}); outside it (grown ahead into the next shell, or left from
+     * an older shape) they are lobes in their frames again.
      */
-    private void formCerebrum(ServerLevel level, boolean form) {
-        for (BlockPos pos : cranium(worldPosition)) {
+    private void shapeStructure(ServerLevel level) {
+        int reach = CortexLobeBlock.REACH;
+        for (BlockPos pos : BlockPos.betweenClosed(worldPosition.offset(-reach, -reach, -reach), worldPosition.offset(reach, reach, reach))) {
             BlockState state = level.getBlockState(pos);
-            if (!state.is(ModBlocks.CORTEX_LOBE.get())) {
-                continue;
+            boolean inside = stage >= 2 && inStructure(worldPosition, pos, stage);
+            if (state.is(ModBlocks.CORTEX_LOBE.get())) {
+                CortexLobeBlock.Part part = state.getValue(CortexLobeBlock.PART);
+                CortexLobeBlock.Part wanted = inside && part != CortexLobeBlock.Part.FRESH ? CortexLobeBlock.Part.CEREBRUM
+                        : part.formed() ? CortexLobeBlock.Part.MATURE : part;
+                if (wanted != part || (!inside && state.getValue(CortexLobeBlock.OPEN))) {
+                    level.setBlockAndUpdate(pos.immutable(), state.setValue(CortexLobeBlock.PART, wanted).setValue(CortexLobeBlock.OPEN, false));
+                }
+            } else if (state.is(ModBlocks.TIME_CAPSULE.get())) {
+                boolean formed = inside && stage == MAX_STAGE;
+                if (state.getValue(TimeCapsuleBlock.FORMED) != formed) {
+                    level.setBlockAndUpdate(pos.immutable(), state.setValue(TimeCapsuleBlock.FORMED, formed));
+                }
             }
-            CortexLobeBlock.Part part = !form ? CortexLobeBlock.Part.MATURE
-                    : craniumEye(worldPosition, pos) ? CortexLobeBlock.Part.CEREBRUM_EYE : CortexLobeBlock.Part.CEREBRUM;
-            if (state.getValue(CortexLobeBlock.PART) != part && (form || state.getValue(CortexLobeBlock.PART).formed())) {
-                level.setBlockAndUpdate(pos.immutable(), state.setValue(CortexLobeBlock.PART, part));
+        }
+    }
+
+    /** For the creative Chronocortex and tests: sets its stage outright and shapes its structure to it. */
+    public void forceStage(ServerLevel level, int newStage) {
+        setStage(level, Math.max(0, Math.min(MAX_STAGE, newStage)));
+        closePath(level);
+        shapeStructure(level);
+        sync();
+    }
+
+    // ---------------------------------------------------------------- the way in
+
+    /** How long a corridor stays open once nobody is in it, in ticks. */
+    public static final int PATH_TICKS = 1200;
+
+    /** The corridor through its body to the jar, if one is open: the side it opens on. Synced. */
+    @Nullable
+    private Direction path;
+    private long pathUntil;
+
+    @Nullable
+    public Direction path() {
+        return path;
+    }
+
+    /** The blocks a corridor on {@code side} opens: from beside the jar out through its structure, two high. */
+    public static List<BlockPos> pathBlocks(BlockPos jar, int stage, Direction side) {
+        List<BlockPos> blocks = new ArrayList<>();
+        for (int d = 1; d <= structureRadius(stage); d++) {
+            for (int y = 0; y <= 1; y++) {
+                blocks.add(jar.relative(side, d).above(y));
             }
+        }
+        return blocks;
+    }
+
+    /** The corridor's space (and the jar's), to see who is in it. */
+    private AABB pathSpace() {
+        AABB space = new AABB(worldPosition);
+        if (path != null) {
+            for (BlockPos pos : pathBlocks(worldPosition, stage, path)) {
+                space = space.minmax(new AABB(pos));
+            }
+        }
+        return space;
+    }
+
+    private boolean someoneInPath() {
+        return level != null && path != null && !level.getEntitiesOfClass(Player.class, pathSpace()).isEmpty();
+    }
+
+    /**
+     * Sneak-used with an empty hand: opens a corridor through its body to the jar on the side the player stands (or the
+     * nearest side that is all lobe), or closes the one that is open, if nobody is in it.
+     */
+    public void togglePath(ServerPlayer player) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (stage < 2) {
+            player.displayClientMessage(Component.translatable("message.chronogenesis.cortex.path_needless").withStyle(ChatFormatting.GRAY), true);
+            return;
+        }
+        if (path != null) {
+            if (someoneInPath() || pathSpace().contains(player.position())) {
+                player.displayClientMessage(Component.translatable("message.chronogenesis.cortex.path_occupied").withStyle(ChatFormatting.GRAY), true);
+                return;
+            }
+            closePath(serverLevel);
+            return;
+        }
+        double dx = player.getX() - (worldPosition.getX() + 0.5);
+        double dz = player.getZ() - (worldPosition.getZ() + 0.5);
+        List<Direction> sides = new ArrayList<>(List.of(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST));
+        sides.sort(java.util.Comparator.comparingDouble(side -> -(side.getStepX() * dx + side.getStepZ() * dz)));
+        for (Direction side : sides) {
+            List<BlockPos> blocks = pathBlocks(worldPosition, stage, side);
+            if (blocks.stream().allMatch(pos -> level.getBlockState(pos).is(ModBlocks.CORTEX_LOBE.get()))) {
+                for (BlockPos pos : blocks) {
+                    level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(CortexLobeBlock.OPEN, true));
+                }
+                path = side;
+                pathUntil = serverLevel.getGameTime() + PATH_TICKS;
+                BlockPos mouth = worldPosition.relative(side, structureRadius(stage));
+                serverLevel.playSound(null, mouth, SoundEvents.HONEY_BLOCK_SLIDE, SoundSource.BLOCKS, 1.4f, 0.5f);
+                serverLevel.playSound(null, mouth, SoundEvents.SLIME_SQUISH, SoundSource.BLOCKS, 1.0f, 0.4f);
+                serverLevel.sendParticles(ParticleTypes.ITEM_SLIME, mouth.getX() + 0.5, mouth.getY() + 1.0, mouth.getZ() + 0.5,
+                        30, 0.4, 0.6, 0.4, 0.05);
+                say("path.open");
+                setChanged();
+                sync();
+                return;
+            }
+        }
+        player.displayClientMessage(Component.translatable("message.chronogenesis.cortex.path_blocked").withStyle(ChatFormatting.GRAY), true);
+    }
+
+    /** Closes the corridor: its lobes close back over it. */
+    private void closePath(ServerLevel level) {
+        if (path == null) {
+            return;
+        }
+        for (BlockPos pos : pathBlocks(worldPosition, stage, path)) {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(ModBlocks.CORTEX_LOBE.get()) && state.getValue(CortexLobeBlock.OPEN)) {
+                level.setBlockAndUpdate(pos, state.setValue(CortexLobeBlock.OPEN, false));
+            }
+        }
+        level.playSound(null, worldPosition.relative(path, structureRadius(stage)), SoundEvents.HONEY_BLOCK_SLIDE, SoundSource.BLOCKS, 1.2f, 0.4f);
+        path = null;
+        setChanged();
+        sync();
+    }
+
+    /** It keeps the corridor while anyone is in it, and closes it a minute after they leave. */
+    private void tendPath(ServerLevel level) {
+        if (path == null) {
+            return;
+        }
+        boolean intact = stage >= 2 && pathBlocks(worldPosition, stage, path).stream()
+                .allMatch(pos -> level.getBlockState(pos).is(ModBlocks.CORTEX_LOBE.get()));
+        if (someoneInPath()) {
+            pathUntil = level.getGameTime() + PATH_TICKS;
+        } else if (!intact || level.getGameTime() >= pathUntil) {
+            closePath(level);
+        }
+    }
+
+    /**
+     * Whether a player can reach its sense of time: the jar itself. While it is only a jar, from anywhere near; once it
+     * has a body, only from inside it, at the end of an open corridor.
+     */
+    public boolean reachableCore(Player player) {
+        double distance = player.position().distanceTo(Vec3.atBottomCenterOf(worldPosition));
+        if (stage < 2) {
+            return distance <= com.chronogenesis.timetravel.TemporalShift.REACH;
+        }
+        return path != null && distance <= structureRadius(stage) + 1.5;
+    }
+
+    // ---------------------------------------------------------------- what it sounds like
+
+    /** From its third stage it crackles with thought, and something in it calls, in whispers. */
+    public static void clientTick(Level level, BlockPos pos, BlockState state, ChronocortexBlockEntity cortex) {
+        if (cortex.stage < MAX_STAGE) {
+            return;
+        }
+        net.minecraft.util.RandomSource random = level.getRandom();
+        double x = pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 4;
+        double y = pos.getY() + 1.5 + random.nextDouble() * 1.5;
+        double z = pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 4;
+        if (random.nextInt(50) == 0) {
+            level.playLocalSound(x, y, z, ModSounds.CORTEX_CRACKLE.get(), SoundSource.BLOCKS, 0.6f + random.nextFloat() * 0.3f,
+                    0.8f + random.nextFloat() * 0.4f, false);
+        }
+        if (random.nextInt(260) == 0) {
+            level.playLocalSound(x, y, z, ModSounds.CORTEX_WHISPER.get(), SoundSource.AMBIENT, 0.9f, 0.55f + random.nextFloat() * 0.2f, false);
         }
     }
 
@@ -786,6 +976,10 @@ public class ChronocortexBlockEntity extends BlockEntity {
         species.forEach(id -> learnedSpecies.add(StringTag.valueOf(id.toString())));
         tag.put("species", learnedSpecies);
         tag.putInt("next_species", nextSpecies);
+        if (path != null) {
+            tag.putString("path", path.getSerializedName());
+            tag.putLong("path_until", pathUntil);
+        }
     }
 
     @Override
@@ -816,6 +1010,8 @@ public class ChronocortexBlockEntity extends BlockEntity {
             }
         }
         nextSpecies = tag.getInt("next_species");
+        path = tag.contains("path") ? Direction.byName(tag.getString("path")) : null;
+        pathUntil = tag.getLong("path_until");
         nicknames.clear();
         CompoundTag nicks = tag.getCompound("nicknames");
         for (String key : nicks.getAllKeys()) {

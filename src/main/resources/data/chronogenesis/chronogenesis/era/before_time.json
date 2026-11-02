@@ -8,6 +8,7 @@
   "icon": "chronogenesis:unmade_nail",
   "dimension": "chronogenesis:before_time",
   "stage": 3,
+  "capsules": 2,
   "requires_memory": "chronogenesis:hadean_eon",
   "cost": 128,
   "minutes": 15,
