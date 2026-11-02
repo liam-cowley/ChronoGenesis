@@ -35,8 +35,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * organisms (see {@link ChronocortexBlockEntity}). Each lobe is room for one more thing in its mind.
  * <p>
  * {@link #PART}: a fresh lobe is still a soft mass in its frame, and firms up with time (still in its frame). Once
- * the lobes fill a stage's structure (the 3 x 3 x 2 box over the jar, then the 5 x 5 x 3 round it), they merge into
- * one body: {@code CEREBRUM}, not drawn as blocks (client/CortexBrainRenderer draws the body). {@code CEREBRUM_EYE}
+ * the lobes fill a stage's structure (the 3 x 3 x 2 box over the jar, then the 5 x 5 x 3 round it), the stage's own
+ * model takes their place: {@code CEREBRUM}, not drawn as blocks (client/CortexBrainRenderer draws the model). {@code CEREBRUM_EYE}
  * is from older worlds and counts the same. {@link #OPEN}: part of an open corridor to the jar, nothing to bump into.
  * Using any lobe (empty-handed or with an item) is using the Chronocortex; sneaking empty-handed opens (or closes) the
  * way in.

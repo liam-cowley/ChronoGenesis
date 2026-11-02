@@ -182,7 +182,7 @@
     alloys and parts made of them, needles of the ages (two drams a jab), better recipes and later research that
     need them.
 19. ✅ The Chronocortex's shells: lobes grow as blocks in their frames, and each whole shell (3x3x2, then 5x5x3, the jar
-    the middle of the bottom layer) merges into one box-built body (a lump of brain, then a writhing mass with eyes,
+    the middle of the bottom layer) is replaced by that stage's authored model (a heap of brain, then a writhing mass with eyes,
     tentacles and machinery shining through). A corridor opens to the jar (sneak-use), where alone it shifts anyone
     through time. Time Capsules (pieced together from the Precursors and the Ice Age; one at the heart of each
     Jurassic temple) built into its last shell reach the Jurassic and beyond. It crackles and whispers from stage 3.

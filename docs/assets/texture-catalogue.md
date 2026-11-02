@@ -146,7 +146,6 @@ The generated block states and models live in `src/generated/resources/assets/ch
 | `entity/precursor_golem.png` | The Hearth's iron golem (iron golem layout, 128x128): bright riveted iron, a brass plate, pale amethyst eyes; no vines or cracks |
 | `entity/mammoth.png`, `smilodon.png`, `woolly_rhino.png` | The Ice Age's creatures, painted to `client/IceAgeModels`' boxes |
 | `entity/organ.png` | 64x64 patches for `client/OrganParts`: pale flesh, an eye, an iron strap, tendon, amethyst, a sac, brain folds, teeth, brass, tentacle rings (tinted parts painted pale) |
-| `entity/cortex_body.png` | 128x128 regions mapped onto the Chronocortex's meshes (`client/CortexBody`), each edge to edge: brain folds (64x64, tinted), tentacle skin (32x64, tinted: rings, suckers down the underside, root at the top), sclera (bloodshot to the back, v 0 at the iris), iris (face on, pale, tinted amber to green), pupil, eyelid, sinew, teeth, brass wire, a shard, the maw's throat |
 | `block/aeon_ice.png` | Ice with time frozen in it: a spiral, glints |
 | `block/dino_egg_0..3.png` | A mottled egg, cracking in three stages as it fills with Time |
 | `item/dino_egg.png`, `item/fossil.png` | The egg; a bone set in grey stone |
@@ -175,3 +174,10 @@ hue-shifted five-tone ramp by a rounded form lit from the top-left (a lit rim in
 shaded one inside the bottom-right), one glint on each larger part, and an outline coloured from the material it rings,
 darkest where it faces away from the light. Sprites drawn without an outline get one round their silhouette, so draw
 items as flat-coloured shapes and leave the outline and shading to the pass.
+
+## The Chronocortex's models (`tools/cortex_models.py`)
+Each stage's model (`geo/cortex_stage_<n>.geo.json`, Bedrock geometry with box UV, openable in Blockbench) has its own
+texture, `entity/cortex_stage_<n>.png` (and `entity/cortex_capsule.png` for a Time Capsule built into it), painted by
+the same tool for each cube's unwrap by what its bone is called: brain folds (pale, tinted in game), tentacle skin with
+rings and suckers, sclera, iris (its front a picture, tinted), pupil, lids, sinew, brass, riveted iron, copper, a gauge's
+dial, glow, capsule glass, see-through vial glass. Repainting one in Blockbench works the same.

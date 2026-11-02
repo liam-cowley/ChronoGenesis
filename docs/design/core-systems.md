@@ -313,29 +313,27 @@ Its roles:
 
    Most topics accept **several alternative clue sets**, so the research tree branches: you can
    unlock the Lens or the Suit through different discoveries in different orders.
-   **Its look (as built, `client/CortexBrainRenderer`, `CortexBody`, `CortexGaze`):** all of it boxes, as entity
-   models are, posed freely each frame (`client/BoxModel`: a transform stack, each face taking a piece of its texture
-   region the size of the face, one texel a pixel; texture `entity/cortex_body.png`). While its shells grow, its lobes
-   are blocks in their frames; when a shell is whole they merge into one model:
-   - **Stage 0:** a folded brain afloat in the jar (hemispheres, fissure, folds, cerebellum, spinal cord, electrodes)
-     with one small eye in its brow. It turns in the fluid to face whoever it watches.
-   - **Stage 1:** swollen to fill the jar, the glass cracked and the lid shoved up (block model, which stays from here
-     on), a second eye, tentacles budding over the rim.
-   - **Stage 2:** a lump of brain over its 3 x 3 x 2: one heaving box per block, swelling out of the faces that look
-     out, rounded off at its corners and crown, big lobes across the joins, folds on its crown; a great eye that crawls
-     round its box to face whoever it watches, smaller ones, tentacles, a brass band and a gauge. Nerves run up from
-     the brain in the jar into it.
-   - **Stage 3:** the same over its 5 x 5 x 3, writhing: thirty-odd tentacles (some ending in eyes), a dozen eyes,
-     brass ribs, pistons, gauges, glowing vents, iron plates, and its Time Capsules mounted in brass collars, the
-     moment in each turning, copper pipes from them over its crown.
-   An open corridor is carved out of it to the jar (parted lips at its mouth, strands from its roof). The **eyes** are
-   box balls (sclera, iris on the front, a slit pupil, lids and a rim of flesh on the socket) that follow the local
-   player continuously while they are in its **line of sight** (blocks that cast no shadow, its own lobes and the jar
-   do not hide them; checked every 4 ticks). Out of sight they wander. When it sees you its pupils widen; if you stare
-   back they narrow to slits and it squints; come close and the nearest tentacles reach for you. Its knowledge
-   (`knowledge()`) makes it stranger: flesh from grey-pink to violet to eldritch green, the iris from amber to a glowing
-   green, more eyes and tentacles. From stage 3 it crackles (`cortex.crackle`) and whispers (`cortex.whisper`), both
-   built from vanilla sounds in `sounds.json`, played round it on the client.
+   **Its look (as built, `client/CortexBrainRenderer`, `CortexBody`, `GeoModel`, `CortexGaze`):** an authored model for
+   each stage, Bedrock geometry with box UV (`assets/chronogenesis/geo/cortex_stage_<n>.geo.json`, openable and editable
+   in Blockbench; textures `entity/cortex_stage_<n>.png`), written by `tools/cortex_models.py`. While a shell is being
+   grown its lobes are blocks in their frames round the current model; when the shell is whole the next stage's model
+   replaces them all:
+   - **Stage 0:** a folded brain afloat in the jar (hemispheres, folds, cerebellum, spinal cord, electrodes), one small
+     eye in its brow; it turns in the fluid to face whoever it watches. **Stage 1:** swollen to fill the jar, cracking
+     it, a second eye, tentacles budding over the rim. (Both authored at two units a pixel, drawn at half.)
+   - **Stage 2:** a heap of brain over its 3 x 3 x 2: lumps in each quadrant round the jar, a domed crown of lobes and
+     folds, a great eye under its brow, smaller eyes, eleven tentacles, a brass band, a gauge, a pipe.
+   - **Stage 3:** the writhing mass over its 5 x 5 x 3: heaps, knobs, a domed crown of folds, a great eye as wide as a
+     man, sixteen more, thirty-odd tentacles (some ending in eyes), brass ribs, pistons, gauges, glowing vents, vials
+     burning in its corners, iron plates, copper pipes. A Time Capsule's own model (`cortex_capsule`) is mounted, facing
+     out, wherever one stands in its last shell.
+   The models leave the jar's block and the four corridor slots clear and fill each slot with a `door_<side>` bone,
+   hidden while a corridor is open on that side (strands, `inside_<side>`, hang from its roof then). Bones are posed by
+   their names (`CortexBody`): `eye_*` turn to follow the local player continuously while they are in its **line of
+   sight** (within their sockets' reach), `lid_*` blink, pupils narrow when stared at, tentacle chains sway down their
+   length, lumps heave, needles twitch, pistons pump, a capsule's moment turns; flesh is tinted by what it knows (grey-pink
+   to violet to eldritch green), irises from amber to a glowing green. From stage 3 it crackles (`cortex.crackle`) and
+   whispers (`cortex.whisper`), built from vanilla sounds in `sounds.json`.
 3. **Temporal shifts.** Time travel, from stage 1 onward.
    **As built:** eras are data (`data/<ns>/chronogenesis/era/<name>.json`: dimension, stage, lesson, Time cost,
    minutes, clue). Its **Eras** page sends a player within 8 blocks (`timetravel/TemporalShift`): it needs the era's

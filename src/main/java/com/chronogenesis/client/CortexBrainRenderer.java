@@ -1,8 +1,12 @@
 package com.chronogenesis.client;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
 
 import org.joml.Matrix3f;
@@ -16,6 +20,7 @@ import com.chronogenesis.registry.ModBlocks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -24,19 +29,26 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 
 /**
- * The Chronocortex as what it is becoming ({@link CortexBody}): the brain in its jar, and from its second stage the body
- * its whole shells have merged into (their lobes and capsules are not drawn as blocks then), one model of boxes, its eyes
- * following whoever is in its line of sight ({@link CortexGaze}). An open corridor is carved out of it.
+ * The Chronocortex as what it has become ({@link CortexBody}): its stage's model (the brain in its jar, then the body its
+ * whole shells have merged into: their lobes and capsules are not drawn as blocks then), its eyes following whoever is
+ * in its line of sight ({@link CortexGaze}). The models are {@code assets/chronogenesis/geo/<name>.geo.json} with
+ * {@code textures/entity/<name>.png}, read once and again on a resource reload.
  */
+@EventBusSubscriber(modid = ChronoGenesis.MODID, value = Dist.CLIENT)
 public class CortexBrainRenderer implements BlockEntityRenderer<ChronocortexBlockEntity> {
-    public static final ResourceLocation TEXTURE = ChronoGenesis.id("textures/entity/cortex_body.png");
     private static final int RESCAN = 40;
+    private static final Map<String, Optional<GeoModel>> MODELS = new HashMap<>();
 
     private final Map<ChronocortexBlockEntity, Capsules> capsules = new WeakHashMap<>();
     private final Map<ChronocortexBlockEntity, CortexGaze> gazes = new WeakHashMap<>();
@@ -44,6 +56,28 @@ public class CortexBrainRenderer implements BlockEntityRenderer<ChronocortexBloc
     private record Capsules(long scanned, int stage, List<int[]> found) {}
 
     public CortexBrainRenderer(BlockEntityRendererProvider.Context context) {
+    }
+
+    @SubscribeEvent
+    static void registerReload(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((ResourceManagerReloadListener) manager -> MODELS.clear());
+    }
+
+    /** A model by name, read from its .geo.json the first time it is wanted (null if it is missing or broken). */
+    static GeoModel model(String name) {
+        return MODELS.computeIfAbsent(name, key -> {
+            Optional<Resource> resource = Minecraft.getInstance().getResourceManager().getResource(ChronoGenesis.id("geo/" + key + ".geo.json"));
+            if (resource.isEmpty()) {
+                ChronoGenesis.LOGGER.warn("Missing model geo/{}.geo.json", key);
+                return Optional.empty();
+            }
+            try (Reader reader = resource.get().openAsReader()) {
+                return Optional.of(GeoModel.read(reader));
+            } catch (IOException | RuntimeException e) {
+                ChronoGenesis.LOGGER.warn("Could not read model geo/{}.geo.json", key, e);
+                return Optional.empty();
+            }
+        }).orElse(null);
     }
 
     @Override
@@ -61,9 +95,12 @@ public class CortexBrainRenderer implements BlockEntityRenderer<ChronocortexBloc
         CortexBody.State body = new CortexBody.State(stage, cortex.knowledge(), time, cortex.getBlockPos().asLong(),
                 capsules(cortex, level, stage, (long) time), path == null ? null : new int[] {path.getStepX(), path.getStepZ()}, look);
         pose.pushPose();
-        pose.translate(0.5, 0.5, 0.5);
+        pose.translate(0.5, 0, 0.5);
         pose.scale(1 / 16.0f, 1 / 16.0f, 1 / 16.0f);
-        CortexBody.draw(body, sink(pose.last(), buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE))), light, LightTexture.FULL_BRIGHT);
+        PoseStack.Pose last = pose.last();
+        CortexBody.draw(body, CortexBrainRenderer::model,
+                name -> sink(last, buffers.getBuffer(RenderType.entityCutoutNoCull(ChronoGenesis.id("textures/entity/" + name + ".png")))),
+                light, LightTexture.FULL_BRIGHT);
         pose.popPose();
     }
 

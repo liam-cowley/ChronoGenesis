@@ -116,13 +116,12 @@ Docs (read the relevant one before implementing a feature, and keep names consis
   Chronocortex are animated block entity renderers (`client/OrganParts`, `OrganismCoreRenderer`, `GraftRenderer`,
   `CortexBrainRenderer`); core block models are only their frames, grown cortex lobes are not drawn as blocks.
 - The Chronocortex grows in shells (`ChronocortexBlockEntity.structure`: 3x3x2 then 5x5x3, the jar the middle of the
-  bottom layer); lobes are blocks in their frames until a shell is whole, then merge (`cerebrum`, not drawn) into one
-  body drawn of boxes only: `client/BoxModel` (transform stack, a texel a pixel) and `client/CortexBody` (pure geometry,
-  JOML only, so it can be rasterised offline), eyes aimed by `client/CortexGaze`. Time travel only from the jar
-  (`reachableCore`: a corridor opens with sneak-use); Time Capsules in its last shell set how far back (eras' `capsules`).
-- Era materials (`item/EraMaterialItem`, tooltip names the age): creature drops in `loot_table/entities/`, drops
-  limited to one age as `loot_modifiers/era_*` (dimension `location_check`). Keep every item needed before the first
-  temporal shift craftable from present-day things; the ages add better/cheaper recipes and gate later research.
+  bottom layer); lobes are blocks in their frames until a shell is whole, then the next stage's authored model replaces
+  them (`cerebrum`, not drawn). The models are Bedrock geometry (`geo/cortex_stage_<n>.geo.json`, Blockbench-editable)
+  written with their textures by `tools/cortex_models.py`, read by `client/GeoModel`, posed by bone name in
+  `client/CortexBody` (pure: Gson and JOML, so they can be rasterised offline), eyes aimed by `client/CortexGaze`. Time
+  travel only from the jar (`reachableCore`: a corridor opens with sneak-use, the model's `door_<side>` bone hidden);
+  Time Capsules in its last shell set how far back (eras' `capsules`).
 - Powers are `player/Power` entries (passive or active, single essence or composite). Per-chunk time (Slow Time,
   Time Freeze) is `time/TimeZones` plus mixins in `mixin/`; it must stay cheap when no zone exists.
 - The Chrono-Insulated Suit is worn as 3D models (`client/SuitModel`, one per slot, texture
